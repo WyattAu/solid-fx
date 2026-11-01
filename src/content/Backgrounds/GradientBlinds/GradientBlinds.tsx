@@ -1,87 +1,87 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type BlindsShineDirection = 'left' | 'right';
-export type BlindsClickEffect = 'ripple' | 'none';
-export type BlindsIdle = 'drift' | 'center' | 'stay';
+export type BlindsShineDirection = 'left' | 'right'
+export type BlindsClickEffect = 'ripple' | 'none'
+export type BlindsIdle = 'drift' | 'center' | 'stay'
 
 export interface GradientBlindsProps {
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
-  dpr?: number;
-  paused?: boolean;
-  gradientColors?: string[];
-  angle?: number;
-  noise?: number;
-  blindCount?: number;
-  blindMinWidth?: number;
-  mouseDampening?: number;
-  mirrorGradient?: boolean;
-  spotlightRadius?: number;
-  spotlightSoftness?: number;
-  spotlightOpacity?: number;
-  distortAmount?: number;
-  shineDirection?: BlindsShineDirection;
-  lightColor?: string;
-  perspective?: number;
-  gradientSpeed?: number;
-  shine?: number;
-  relief?: number;
-  glow?: number;
-  sway?: number;
-  speed?: number;
-  hoverTilt?: number;
-  clickEffect?: BlindsClickEffect;
-  idle?: BlindsIdle;
-  intro?: boolean;
-  mixBlendMode?: JSX.CSSProperties['mix-blend-mode'];
-  lightMode?: boolean;
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
+  dpr?: number
+  paused?: boolean
+  gradientColors?: string[]
+  angle?: number
+  noise?: number
+  blindCount?: number
+  blindMinWidth?: number
+  mouseDampening?: number
+  mirrorGradient?: boolean
+  spotlightRadius?: number
+  spotlightSoftness?: number
+  spotlightOpacity?: number
+  distortAmount?: number
+  shineDirection?: BlindsShineDirection
+  lightColor?: string
+  perspective?: number
+  gradientSpeed?: number
+  shine?: number
+  relief?: number
+  glow?: number
+  sway?: number
+  speed?: number
+  hoverTilt?: number
+  clickEffect?: BlindsClickEffect
+  idle?: BlindsIdle
+  intro?: boolean
+  mixBlendMode?: JSX.CSSProperties['mix-blend-mode']
+  lightMode?: boolean
 }
 
 type Settings = {
-  paused: boolean;
-  colorKey: string;
-  gradientColors?: string[];
-  angle: number;
-  noise: number;
-  blindCount: number;
-  blindMinWidth: number;
-  mouseDampening: number;
-  mirrorGradient: boolean;
-  spotlightRadius: number;
-  spotlightSoftness: number;
-  spotlightOpacity: number;
-  distortAmount: number;
-  shineDirection: BlindsShineDirection;
-  lightColor: string;
-  perspective: number;
-  gradientSpeed: number;
-  shine: number;
-  relief: number;
-  glow: number;
-  sway: number;
-  speed: number;
-  hoverTilt: number;
-  clickEffect: BlindsClickEffect;
-  idle: BlindsIdle;
-  intro: boolean;
-  lightMode: boolean;
-  dpr?: number;
-};
+  paused: boolean
+  colorKey: string
+  gradientColors?: string[]
+  angle: number
+  noise: number
+  blindCount: number
+  blindMinWidth: number
+  mouseDampening: number
+  mirrorGradient: boolean
+  spotlightRadius: number
+  spotlightSoftness: number
+  spotlightOpacity: number
+  distortAmount: number
+  shineDirection: BlindsShineDirection
+  lightColor: string
+  perspective: number
+  gradientSpeed: number
+  shine: number
+  relief: number
+  glow: number
+  sway: number
+  speed: number
+  hoverTilt: number
+  clickEffect: BlindsClickEffect
+  idle: BlindsIdle
+  intro: boolean
+  lightMode: boolean
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-const MAX_COLORS = 8;
-const MAX_WAVES = 4;
-const INTRO_SECONDS = 1.8;
-const RIPPLE_SECONDS = 1.6;
+const MAX_COLORS = 8
+const MAX_WAVES = 4
+const INTRO_SECONDS = 1.8
+const RIPPLE_SECONDS = 1.6
 
 const VERTEX = `#version 300 es
 void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -265,73 +265,75 @@ void main() {
   float presence = smoothstep(0.0, 0.65, uIntro);
   col = uLightMode > 0.5 ? mix(vec3(1.0), col, presence) : col * presence;
   outColor = vec4(clamp(col, 0.0, 1.0), 1.0);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (!info) continue;
-    const name = info.name.replace(/\[0\]$/, '');
-    uniforms[name] = gl.getUniformLocation(program, name);
+    const info = gl.getActiveUniform(program, i)
+    if (!info) continue
+    const name = info.name.replace(/\[0\]$/, '')
+    uniforms[name] = gl.getUniformLocation(program, name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const hexToRGB = (hex: string): number[] => {
   const c = String(hex || '')
     .replace('#', '')
-    .padEnd(6, '0');
-  const r = parseInt(c.slice(0, 2), 16) / 255;
-  const g = parseInt(c.slice(2, 4), 16) / 255;
-  const b = parseInt(c.slice(4, 6), 16) / 255;
-  return [r || 0, g || 0, b || 0];
-};
+    .padEnd(6, '0')
+  const r = parseInt(c.slice(0, 2), 16) / 255
+  const g = parseInt(c.slice(2, 4), 16) / 255
+  const b = parseInt(c.slice(4, 6), 16) / 255
+  return [r || 0, g || 0, b || 0]
+}
 
 const prepStops = (stops?: string[]) => {
-  const base = (stops && stops.length ? stops : ['#FF9FFC', '#5227FF']).slice(0, MAX_COLORS);
-  if (base.length === 1) base.push(base[0]);
-  while (base.length < MAX_COLORS) base.push(base[base.length - 1]);
-  const flat = new Float32Array(MAX_COLORS * 3);
-  for (let i = 0; i < MAX_COLORS; i++) flat.set(hexToRGB(base[i]), i * 3);
-  const count = Math.max(2, Math.min(MAX_COLORS, stops?.length ?? 2));
-  return { flat, count };
-};
+  const base = (stops?.length ? stops : ['#FF9FFC', '#5227FF']).slice(0, MAX_COLORS)
+  if (base.length === 1) base.push(base[0])
+  while (base.length < MAX_COLORS) base.push(base[base.length - 1])
+  const flat = new Float32Array(MAX_COLORS * 3)
+  for (let i = 0; i < MAX_COLORS; i++) flat.set(hexToRGB(base[i]), i * 3)
+  const count = Math.max(2, Math.min(MAX_COLORS, stops?.length ?? 2))
+  return { flat, count }
+}
 
 const GradientBlinds = (props: GradientBlindsProps) => {
-  let containerEl!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let wake: (() => void) | null = null;
+  let containerEl!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let wake: (() => void) | null = null
 
   const buildSettings = (): Settings => {
-    const gradientColors = props.gradientColors;
-    const colorKey = (gradientColors && gradientColors.length ? gradientColors : ['#FF9FFC', '#5227FF']).join(',');
+    const gradientColors = props.gradientColors
+    const colorKey = (
+      gradientColors?.length ? gradientColors : ['#FF9FFC', '#5227FF']
+    ).join(',')
     return {
       paused: props.paused ?? false,
       colorKey,
@@ -360,170 +362,174 @@ const GradientBlinds = (props: GradientBlindsProps) => {
       idle: props.idle ?? 'drift',
       intro: props.intro ?? true,
       lightMode: props.lightMode ?? false,
-      dpr: props.dpr
-    };
-  };
-  const settingsRef: { current: Settings } = { current: buildSettings() };
+      dpr: props.dpr,
+    }
+  }
+  const settingsRef: { current: Settings } = { current: buildSettings() }
 
   onMount(() => {
-    const container = containerEl;
-    const canvas = canvasEl;
+    const container = containerEl
+    const canvas = canvasEl
     const gl = canvas?.getContext('webgl2', {
       alpha: false,
       antialias: false,
       depth: false,
       stencil: false,
-      premultipliedAlpha: false
-    });
-    if (!container || !canvas || !gl) return;
-    const shader = link(gl);
-    if (!shader) return;
-    const u = shader.uniforms;
-    const vao = gl.createVertexArray();
+      premultipliedAlpha: false,
+    })
+    if (!container || !canvas || !gl) return
+    const shader = link(gl)
+    if (!shader) return
+    const u = shader.uniforms
+    const vao = gl.createVertexArray()
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const view = { width: 1, height: 1, ratio: 1, count: 1 };
-    const pointer = { x: 0, y: 0, inside: false };
-    const light = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, ready: false };
-    const waves = new Float32Array(MAX_WAVES * 4);
-    let waveIndex = 0;
-    let hover = 0;
-    let time = 0;
-    let swayTime = 0;
-    let shift = 0;
-    let grainTime = 0;
-    let introClock = settingsRef.current.intro && !reduce ? 0 : 1;
-    let colorKeyCache = '';
-    let colorStops = prepStops(settingsRef.current.gradientColors);
-    let raf = 0;
-    let last = 0;
-    let visible = true;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const view = { width: 1, height: 1, ratio: 1, count: 1 }
+    const pointer = { x: 0, y: 0, inside: false }
+    const light = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, ready: false }
+    const waves = new Float32Array(MAX_WAVES * 4)
+    let waveIndex = 0
+    let hover = 0
+    let time = 0
+    let swayTime = 0
+    let shift = 0
+    let grainTime = 0
+    let introClock = settingsRef.current.intro && !reduce ? 0 : 1
+    let colorKeyCache = ''
+    let colorStops = prepStops(settingsRef.current.gradientColors)
+    let raf = 0
+    let last = 0
+    let visible = true
 
     const blindTotal = (s: Settings) => {
       if (s.blindMinWidth && s.blindMinWidth > 0) {
-        const byWidth = Math.max(1, Math.floor(view.width / s.blindMinWidth));
-        return Math.max(1, s.blindCount ? Math.min(s.blindCount, byWidth) : byWidth);
+        const byWidth = Math.max(1, Math.floor(view.width / s.blindMinWidth))
+        return Math.max(1, s.blindCount ? Math.min(s.blindCount, byWidth) : byWidth)
       }
-      return Math.max(1, s.blindCount);
-    };
+      return Math.max(1, s.blindCount)
+    }
 
     const draw = () => {
-      const s = settingsRef.current;
+      const s = settingsRef.current
       if (colorKeyCache !== s.colorKey) {
-        colorStops = prepStops(s.gradientColors);
-        colorKeyCache = s.colorKey;
+        colorStops = prepStops(s.gradientColors)
+        colorKeyCache = s.colorKey
       }
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(shader.program);
-      gl.bindVertexArray(vao);
-      gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-      gl.uniform1f(u.uTime, time);
-      gl.uniform2f(u.uMouse, light.x * view.ratio, (view.height - light.y) * view.ratio);
-      gl.uniform1f(u.uAngle, (s.angle * Math.PI) / 180);
-      gl.uniform1f(u.uNoise, s.noise);
-      gl.uniform1f(u.uBlindCount, blindTotal(s));
-      gl.uniform1f(u.uSpotlightRadius, s.spotlightRadius);
-      gl.uniform1f(u.uSpotlightSoftness, s.spotlightSoftness);
-      gl.uniform1f(u.uSpotlightOpacity, s.spotlightOpacity);
-      gl.uniform1f(u.uMirror, s.mirrorGradient ? 1 : 0);
-      gl.uniform1f(u.uDistort, s.distortAmount);
-      gl.uniform1f(u.uShineFlip, s.shineDirection === 'right' ? 1 : 0);
-      gl.uniform3fv(u.uColors, colorStops.flat);
-      gl.uniform1i(u.uColorCount, colorStops.count);
-      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0);
-      gl.uniform1f(u.uShine, s.shine);
-      gl.uniform1f(u.uRelief, s.relief);
-      gl.uniform1f(u.uGlow, s.glow);
-      gl.uniform1f(u.uSway, reduce ? 0 : s.sway);
-      gl.uniform1f(u.uSwayTime, swayTime);
-      gl.uniform1f(u.uHover, hover * s.hoverTilt);
-      gl.uniform4fv(u.uWaves, waves);
-      gl.uniform1f(u.uIntro, introClock);
-      gl.uniform1f(u.uGrainTime, grainTime);
-      gl.uniform3fv(u.uLightColor, hexToRGB(s.lightColor || '#ffffff'));
-      gl.uniform1f(u.uPerspective, s.perspective);
-      gl.uniform1f(u.uGradientShift, shift);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.bindVertexArray(null);
-    };
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(shader.program)
+      gl.bindVertexArray(vao)
+      gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+      gl.uniform1f(u.uTime, time)
+      gl.uniform2f(u.uMouse, light.x * view.ratio, (view.height - light.y) * view.ratio)
+      gl.uniform1f(u.uAngle, (s.angle * Math.PI) / 180)
+      gl.uniform1f(u.uNoise, s.noise)
+      gl.uniform1f(u.uBlindCount, blindTotal(s))
+      gl.uniform1f(u.uSpotlightRadius, s.spotlightRadius)
+      gl.uniform1f(u.uSpotlightSoftness, s.spotlightSoftness)
+      gl.uniform1f(u.uSpotlightOpacity, s.spotlightOpacity)
+      gl.uniform1f(u.uMirror, s.mirrorGradient ? 1 : 0)
+      gl.uniform1f(u.uDistort, s.distortAmount)
+      gl.uniform1f(u.uShineFlip, s.shineDirection === 'right' ? 1 : 0)
+      gl.uniform3fv(u.uColors, colorStops.flat)
+      gl.uniform1i(u.uColorCount, colorStops.count)
+      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0)
+      gl.uniform1f(u.uShine, s.shine)
+      gl.uniform1f(u.uRelief, s.relief)
+      gl.uniform1f(u.uGlow, s.glow)
+      gl.uniform1f(u.uSway, reduce ? 0 : s.sway)
+      gl.uniform1f(u.uSwayTime, swayTime)
+      gl.uniform1f(u.uHover, hover * s.hoverTilt)
+      gl.uniform4fv(u.uWaves, waves)
+      gl.uniform1f(u.uIntro, introClock)
+      gl.uniform1f(u.uGrainTime, grainTime)
+      gl.uniform3fv(u.uLightColor, hexToRGB(s.lightColor || '#ffffff'))
+      gl.uniform1f(u.uPerspective, s.perspective)
+      gl.uniform1f(u.uGradientShift, shift)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      gl.bindVertexArray(null)
+    }
 
     const aim = (s: Settings) => {
       if (pointer.inside) {
-        light.tx = pointer.x;
-        light.ty = pointer.y;
+        light.tx = pointer.x
+        light.ty = pointer.y
       } else if (s.idle === 'center') {
-        light.tx = view.width / 2;
-        light.ty = view.height / 2;
+        light.tx = view.width / 2
+        light.ty = view.height / 2
       } else if (s.idle === 'drift' && !reduce) {
-        light.tx = view.width * (0.5 + 0.22 * Math.sin(swayTime * 0.23) + 0.05 * Math.sin(swayTime * 0.61 + 1.3));
-        light.ty = view.height * (0.5 + 0.16 * Math.sin(swayTime * 0.31 + 0.7) + 0.04 * Math.sin(swayTime * 0.83));
+        light.tx =
+          view.width *
+          (0.5 + 0.22 * Math.sin(swayTime * 0.23) + 0.05 * Math.sin(swayTime * 0.61 + 1.3))
+        light.ty =
+          view.height *
+          (0.5 + 0.16 * Math.sin(swayTime * 0.31 + 0.7) + 0.04 * Math.sin(swayTime * 0.83))
       }
-    };
+    }
 
     const follow = (s: Settings, dt: number) => {
-      const tau = s.mouseDampening;
+      const tau = s.mouseDampening
       if (tau <= 0) {
-        light.x = light.tx;
-        light.y = light.ty;
-        light.vx = 0;
-        light.vy = 0;
-        return;
+        light.x = light.tx
+        light.y = light.ty
+        light.vx = 0
+        light.vy = 0
+        return
       }
-      const omega = 2.4 / tau;
-      const k = omega * omega;
-      const c = 2 * omega;
-      const steps = Math.max(1, Math.ceil(dt / 0.008));
-      const h = dt / steps;
+      const omega = 2.4 / tau
+      const k = omega * omega
+      const c = 2 * omega
+      const steps = Math.max(1, Math.ceil(dt / 0.008))
+      const h = dt / steps
       for (let i = 0; i < steps; i++) {
-        light.vx += (k * (light.tx - light.x) - c * light.vx) * h;
-        light.vy += (k * (light.ty - light.y) - c * light.vy) * h;
-        light.x += light.vx * h;
-        light.y += light.vy * h;
+        light.vx += (k * (light.tx - light.x) - c * light.vx) * h
+        light.vy += (k * (light.ty - light.y) - c * light.vy) * h
+        light.x += light.vx * h
+        light.y += light.vy * h
       }
-    };
+    }
 
     const resize = () => {
-      const s = settingsRef.current;
-      view.width = Math.max(1, container.clientWidth);
-      view.height = Math.max(1, container.clientHeight);
-      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(view.width * view.ratio));
-      canvas.height = Math.max(1, Math.round(view.height * view.ratio));
+      const s = settingsRef.current
+      view.width = Math.max(1, container.clientWidth)
+      view.height = Math.max(1, container.clientHeight)
+      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      canvas.width = Math.max(1, Math.round(view.width * view.ratio))
+      canvas.height = Math.max(1, Math.round(view.height * view.ratio))
       if (!light.ready) {
-        light.ready = true;
-        light.x = light.tx = view.width / 2;
-        light.y = light.ty = view.height / 2;
+        light.ready = true
+        light.x = light.tx = view.width / 2
+        light.y = light.ty = view.height / 2
       }
-      draw();
-      wake?.();
-    };
+      draw()
+      wake?.()
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settingsRef.current;
-      const dt = last ? clamp((now - last) / 1000, 0.001, 1 / 20) : 1 / 60;
-      last = now;
-      if (s.paused) return;
-      time += dt;
+      raf = 0
+      if (!visible || document.hidden) return
+      const s = settingsRef.current
+      const dt = last ? clamp((now - last) / 1000, 0.001, 1 / 20) : 1 / 60
+      last = now
+      if (s.paused) return
+      time += dt
       if (!reduce) {
-        swayTime += dt * s.speed;
-        shift = (shift + dt * s.gradientSpeed * 0.06) % 2;
+        swayTime += dt * s.speed
+        shift = (shift + dt * s.gradientSpeed * 0.06) % 2
       }
-      grainTime = Math.floor(time * 24) * 17.13;
-      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS);
-      hover += ((pointer.inside ? 1 : 0) - hover) * (1 - Math.exp(-dt / 0.35));
-      aim(s);
-      follow(s, dt);
+      grainTime = Math.floor(time * 24) * 17.13
+      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS)
+      hover += ((pointer.inside ? 1 : 0) - hover) * (1 - Math.exp(-dt / 0.35))
+      aim(s)
+      follow(s, dt)
       for (let i = 0; i < MAX_WAVES; i++) {
-        if (waves[i * 4 + 3] > 0 && time - waves[i * 4 + 2] > RIPPLE_SECONDS) waves[i * 4 + 3] = 0;
+        if (waves[i * 4 + 3] > 0 && time - waves[i * 4 + 2] > RIPPLE_SECONDS) waves[i * 4 + 3] = 0
       }
-      draw();
+      draw()
       const settling =
         Math.abs(light.tx - light.x) > 0.05 ||
         Math.abs(light.ty - light.y) > 0.05 ||
         Math.abs(light.vx) + Math.abs(light.vy) > 0.05 ||
-        Math.abs((pointer.inside ? 1 : 0) - hover) > 0.002;
+        Math.abs((pointer.inside ? 1 : 0) - hover) > 0.002
       const active =
         settling ||
         introClock < 1 ||
@@ -532,104 +538,106 @@ const GradientBlinds = (props: GradientBlindsProps) => {
           (s.noise > 0 ||
             s.gradientSpeed !== 0 ||
             (s.sway > 0 && s.speed > 0) ||
-            (s.idle === 'drift' && !pointer.inside)));
-      if (active) raf = requestAnimationFrame(frame);
-    };
+            (s.idle === 'drift' && !pointer.inside)))
+      if (active) raf = requestAnimationFrame(frame)
+    }
 
     // Function declaration (like upstream) so the initial resize() can call it.
     function wakeFn() {
       if (!raf && visible && !document.hidden) {
-        last = 0;
-        raf = requestAnimationFrame(frame);
+        last = 0
+        raf = requestAnimationFrame(frame)
       }
     }
-    wake = wakeFn;
+    wake = wakeFn
 
     const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height };
-    };
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height }
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const { x, y, inside } = locate(event);
-      pointer.x = x;
-      pointer.y = y;
-      pointer.inside = inside;
-      if (inside) wakeFn();
-    };
+      const { x, y, inside } = locate(event)
+      pointer.x = x
+      pointer.y = y
+      pointer.inside = inside
+      if (inside) wakeFn()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      const s = settingsRef.current;
-      const { x, y, inside } = locate(event);
-      if (!inside || reduce || s.clickEffect !== 'ripple') return;
-      const o = waveIndex * 4;
-      waves[o] = x * view.ratio;
-      waves[o + 1] = (view.height - y) * view.ratio;
-      waves[o + 2] = time;
-      waves[o + 3] = 1;
-      waveIndex = (waveIndex + 1) % MAX_WAVES;
-      wakeFn();
-    };
+      const s = settingsRef.current
+      const { x, y, inside } = locate(event)
+      if (!inside || reduce || s.clickEffect !== 'ripple') return
+      const o = waveIndex * 4
+      waves[o] = x * view.ratio
+      waves[o + 1] = (view.height - y) * view.ratio
+      waves[o + 2] = time
+      waves[o + 3] = 1
+      waveIndex = (waveIndex + 1) % MAX_WAVES
+      wakeFn()
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      wakeFn();
-    };
+      pointer.inside = false
+      wakeFn()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wakeFn();
-    };
+      last = 0
+      wakeFn()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      if (visible) wakeFn();
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
+      visible = entries.some(entry => entry.isIntersecting)
+      if (visible) wakeFn()
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wake = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(shader.program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      wake = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(shader.program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   // Upstream re-ran the wake effect after every render; settings refresh covers
   // the same prop-change window.
   createEffect(() => {
-    settingsRef.current = buildSettings();
-    wake?.();
-  });
+    settingsRef.current = buildSettings()
+    wake?.()
+  })
 
   return (
     <div
       ref={containerEl}
       class={`relative h-full w-full overflow-hidden${props.class ? ` ${props.class}` : ''}${props.className ? ` ${props.className}` : ''}`}
       style={{
-        ...(!(props.lightMode ?? false) && props.mixBlendMode ? { 'mix-blend-mode': props.mixBlendMode } : null),
-        ...props.style
+        ...(!(props.lightMode ?? false) && props.mixBlendMode
+          ? { 'mix-blend-mode': props.mixBlendMode }
+          : null),
+        ...props.style,
       }}
     >
-      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default GradientBlinds;
+export default GradientBlinds

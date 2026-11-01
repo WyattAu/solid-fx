@@ -1,8 +1,8 @@
-import { createSignal } from 'solid-js';
-import Counter from './Counter';
+import { createSignal } from 'solid-js'
+import Counter from './Counter'
 
 function CounterDemo() {
-  const [value, setValue] = createSignal(42000);
+  const [value, setValue] = createSignal(42000)
   return (
     <div class="flex h-96 w-full flex-col items-center justify-center gap-6 bg-gray-950">
       <Counter
@@ -30,7 +30,7 @@ function CounterDemo() {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
-export default CounterDemo;
+export default CounterDemo

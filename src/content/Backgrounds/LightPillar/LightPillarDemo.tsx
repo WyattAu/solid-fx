@@ -1,4 +1,4 @@
-import LightPillar from './LightPillar';
+import LightPillar from './LightPillar'
 
 const LightPillarDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -11,6 +11,6 @@ const LightPillarDemo = () => (
       glowAmount={0.002}
     />
   </div>
-);
+)
 
-export default LightPillarDemo;
+export default LightPillarDemo

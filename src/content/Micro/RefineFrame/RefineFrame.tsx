@@ -1,46 +1,46 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-import HugeiconsIcon from '@/lib/HugeiconsIcon';
-import { Alert02Icon, Loading03Icon, RefreshIcon, Tick02Icon } from '@hugeicons/core-free-icons';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
+import { Alert02Icon, Loading03Icon, RefreshIcon, Tick02Icon } from '@hugeicons/core-free-icons'
 
-export type RefineFrameStatus = 'queued' | 'generating' | 'refining' | 'complete' | 'error';
+export type RefineFrameStatus = 'queued' | 'generating' | 'refining' | 'complete' | 'error'
 
 export interface RefineFrameProps {
-  status?: RefineFrameStatus;
-  children?: JSX.Element;
-  aspectRatio?: string;
-  width?: number;
-  radius?: number;
-  background?: string;
-  color?: string;
-  stageDuration?: number;
-  sweep?: boolean;
-  showStatus?: boolean;
-  hideAfter?: number;
-  labels?: Partial<Record<RefineFrameStatus, string>>;
-  retryLabel?: string;
-  onRetry?: () => void;
-  className?: string;
-  class?: string;
+  status?: RefineFrameStatus
+  children?: JSX.Element
+  aspectRatio?: string
+  width?: number
+  radius?: number
+  background?: string
+  color?: string
+  stageDuration?: number
+  sweep?: boolean
+  showStatus?: boolean
+  hideAfter?: number
+  labels?: Partial<Record<RefineFrameStatus, string>>
+  retryLabel?: string
+  onRetry?: () => void
+  className?: string
+  class?: string
 }
 
-type Stage = { blur: number; sat: number; scale: number; opacity: number };
+type Stage = { blur: number; sat: number; scale: number; opacity: number }
 interface Sim {
-  p: number;
-  raf: number;
-  last: number;
-  key: string;
-  w: number;
-  h: number;
-  levels: HTMLCanvasElement[];
-  glint: CanvasGradient | null;
-  sent: boolean;
+  p: number
+  raf: number
+  last: number
+  key: string
+  w: number
+  h: number
+  levels: HTMLCanvasElement[]
+  glint: CanvasGradient | null
+  sent: boolean
 }
 interface Live {
-  status: RefineFrameStatus;
-  stageDuration: number;
-  sweep: boolean;
-  reduce: boolean;
+  status: RefineFrameStatus
+  stageDuration: number
+  sweep: boolean
+  reduce: boolean
 }
 
 const STAGES: Record<RefineFrameStatus, Stage> = {
@@ -48,40 +48,45 @@ const STAGES: Record<RefineFrameStatus, Stage> = {
   generating: { blur: 1.5, sat: 0.8, scale: 1.02, opacity: 0.85 },
   refining: { blur: 0.5, sat: 0.95, scale: 1.005, opacity: 1 },
   complete: { blur: 0, sat: 1, scale: 1, opacity: 1 },
-  error: { blur: 2, sat: 0.5, scale: 1, opacity: 0.28 }
-};
-const TARGET: Partial<Record<RefineFrameStatus, number>> = { queued: 0, generating: 0.5, refining: 0.875, complete: 1 };
-const LEVELS = [48, 32, 20, 12, 8, 5, 3, 2, 1];
-const EDGE = 28;
-const STRIPS = 14;
+  error: { blur: 2, sat: 0.5, scale: 1, opacity: 0.28 },
+}
+const TARGET: Partial<Record<RefineFrameStatus, number>> = {
+  queued: 0,
+  generating: 0.5,
+  refining: 0.875,
+  complete: 1,
+}
+const LEVELS = [48, 32, 20, 12, 8, 5, 3, 2, 1]
+const EDGE = 28
+const STRIPS = 14
 const DEFAULT_LABELS: Record<RefineFrameStatus, string> = {
   queued: 'Queued',
   generating: 'Generating',
   refining: 'Refining',
   complete: 'Ready',
-  error: 'Failed'
-};
-const ACTIVE = new Set<string>(['queued', 'generating', 'refining']);
+  error: 'Failed',
+}
+const ACTIVE = new Set<string>(['queued', 'generating', 'refining'])
 
 const build = (s: Sim, canvas: HTMLCanvasElement, img: HTMLImageElement, dpr: number) => {
-  const rect = canvas.getBoundingClientRect();
-  const W = Math.max(1, Math.round(rect.width * dpr));
-  const H = Math.max(1, Math.round(rect.height * dpr));
-  const key = `${img.currentSrc}|${W}x${H}`;
-  if (s.key === key) return;
-  s.key = key;
-  s.w = W;
-  s.h = H;
-  canvas.width = W;
-  canvas.height = H;
-  const iw = img.naturalWidth;
-  const ih = img.naturalHeight;
-  const cover = Math.max(W / iw, H / ih);
-  const sw = W / cover;
-  const sh = H / cover;
-  const sx = (iw - sw) / 2;
-  const sy = (ih - sh) / 2;
-  const glint = canvas.getContext('2d')?.createLinearGradient(0, 0, W, 0) ?? null;
+  const rect = canvas.getBoundingClientRect()
+  const W = Math.max(1, Math.round(rect.width * dpr))
+  const H = Math.max(1, Math.round(rect.height * dpr))
+  const key = `${img.currentSrc}|${W}x${H}`
+  if (s.key === key) return
+  s.key = key
+  s.w = W
+  s.h = H
+  canvas.width = W
+  canvas.height = H
+  const iw = img.naturalWidth
+  const ih = img.naturalHeight
+  const cover = Math.max(W / iw, H / ih)
+  const sw = W / cover
+  const sh = H / cover
+  const sx = (iw - sw) / 2
+  const sy = (ih - sh) / 2
+  const glint = canvas.getContext('2d')?.createLinearGradient(0, 0, W, 0) ?? null
   if (glint) {
     for (const [at, a] of [
       [0, 0],
@@ -91,195 +96,210 @@ const build = (s: Sim, canvas: HTMLCanvasElement, img: HTMLImageElement, dpr: nu
       [0.68, 1],
       [0.8, 0.7],
       [0.92, 0.1],
-      [1, 0]
+      [1, 0],
     ]) {
-      glint.addColorStop(at, `rgba(255, 255, 255, ${a})`);
+      glint.addColorStop(at, `rgba(255, 255, 255, ${a})`)
     }
   }
-  s.glint = glint;
+  s.glint = glint
   s.levels = LEVELS.map(block => {
-    const b = block === 1 ? 1 : Math.max(2, Math.round(block * dpr));
-    const full = document.createElement('canvas');
-    full.width = W;
-    full.height = H;
-    const fc = full.getContext('2d');
-    if (!fc) return full;
+    const b = block === 1 ? 1 : Math.max(2, Math.round(block * dpr))
+    const full = document.createElement('canvas')
+    full.width = W
+    full.height = H
+    const fc = full.getContext('2d')
+    if (!fc) return full
     if (b === 1) {
-      fc.imageSmoothingEnabled = true;
-      fc.imageSmoothingQuality = 'high';
-      fc.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
-      return full;
+      fc.imageSmoothingEnabled = true
+      fc.imageSmoothingQuality = 'high'
+      fc.drawImage(img, sx, sy, sw, sh, 0, 0, W, H)
+      return full
     }
-    const small = document.createElement('canvas');
-    small.width = Math.max(1, Math.round(W / b));
-    small.height = Math.max(1, Math.round(H / b));
-    const sc = small.getContext('2d');
+    const small = document.createElement('canvas')
+    small.width = Math.max(1, Math.round(W / b))
+    small.height = Math.max(1, Math.round(H / b))
+    const sc = small.getContext('2d')
     if (sc) {
-      sc.imageSmoothingEnabled = true;
-      sc.imageSmoothingQuality = 'high';
-      sc.drawImage(img, sx, sy, sw, sh, 0, 0, small.width, small.height);
+      sc.imageSmoothingEnabled = true
+      sc.imageSmoothingQuality = 'high'
+      sc.drawImage(img, sx, sy, sw, sh, 0, 0, small.width, small.height)
     }
-    fc.imageSmoothingEnabled = false;
-    fc.drawImage(small, 0, 0, W, H);
-    return full;
-  });
-};
+    fc.imageSmoothingEnabled = false
+    fc.drawImage(small, 0, 0, W, H)
+    return full
+  })
+}
 
 const STYLE = `
 @keyframes refine-frame-sweep { from { background-position: 130% 0; } to { background-position: -130% 0; } }
 @keyframes refine-frame-spin { to { transform: rotate(360deg); } }
 @keyframes refine-frame-label { from { opacity: 0; filter: blur(2px); } }
 @keyframes refine-frame-wait { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.65; } }
-`;
+`
 
 const RefineFrame = (props: RefineFrameProps) => {
-  const status = () => props.status ?? 'generating';
-  const stage = () => STAGES[status()] ?? STAGES.generating;
-  const active = () => ACTIVE.has(status());
-  const text = createMemo(() => ({ ...DEFAULT_LABELS, ...(props.labels ?? {}) }));
-  let printEl!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  const sim: Sim = { p: 0, raf: 0, last: 0, key: '', w: 0, h: 0, levels: [], glint: null, sent: false };
-  const live: Live = { status: status(), stageDuration: props.stageDuration ?? 400, sweep: props.sweep ?? true, reduce: false };
-  const [mosaic, setMosaic] = createSignal(false);
-  const [resolved, setResolved] = createSignal(false);
-  const [chip, setChip] = createSignal(props.showStatus ?? true);
-  let timer: ReturnType<typeof setTimeout> | undefined;
+  const status = () => props.status ?? 'generating'
+  const stage = () => STAGES[status()] ?? STAGES.generating
+  const active = () => ACTIVE.has(status())
+  const text = createMemo(() => ({ ...DEFAULT_LABELS, ...(props.labels ?? {}) }))
+  let printEl!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  const sim: Sim = {
+    p: 0,
+    raf: 0,
+    last: 0,
+    key: '',
+    w: 0,
+    h: 0,
+    levels: [],
+    glint: null,
+    sent: false,
+  }
+  const live: Live = {
+    status: status(),
+    stageDuration: props.stageDuration ?? 400,
+    sweep: props.sweep ?? true,
+    reduce: false,
+  }
+  const [mosaic, setMosaic] = createSignal(false)
+  const [resolved, setResolved] = createSignal(false)
+  const [chip, setChip] = createSignal(props.showStatus ?? true)
+  let timer: ReturnType<typeof setTimeout> | undefined
 
   // Upstream wrote live.current on every render.
   createEffect(() => {
-    live.status = props.status ?? 'generating';
-    live.stageDuration = props.stageDuration ?? 400;
-    live.sweep = props.sweep ?? true;
-  });
+    live.status = props.status ?? 'generating'
+    live.stageDuration = props.stageDuration ?? 400
+    live.sweep = props.sweep ?? true
+  })
 
   function tick(now: number) {
-    const s = sim;
-    const c = live;
-    const canvas = canvasEl;
-    const img = printEl?.querySelector('img') as HTMLImageElement | null;
-    if (!canvas || !img || !img.naturalWidth) {
-      s.raf = 0;
-      return;
+    const s = sim
+    const c = live
+    const canvas = canvasEl
+    const img = printEl?.querySelector('img') as HTMLImageElement | null
+    if (!canvas || !img?.naturalWidth) {
+      s.raf = 0
+      return
     }
-    const dt = Math.min(0.05, s.last ? (now - s.last) / 1000 : 0.016);
-    s.last = now;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    build(s, canvas, img, dpr);
-    const n = s.levels.length - 1;
-    const target = TARGET[c.status] ?? s.p;
-    const rate = c.reduce ? 1e9 : 1 / (n * (c.stageDuration / 1000));
-    const step = rate * dt;
-    if (target < s.p) s.p = target;
-    else if (target - s.p <= step) s.p = target;
-    else s.p += step;
-    const ctx = canvas.getContext('2d');
+    const dt = Math.min(0.05, s.last ? (now - s.last) / 1000 : 0.016)
+    s.last = now
+    const dpr = Math.min(2, window.devicePixelRatio || 1)
+    build(s, canvas, img, dpr)
+    const n = s.levels.length - 1
+    const target = TARGET[c.status] ?? s.p
+    const rate = c.reduce ? 1e9 : 1 / (n * (c.stageDuration / 1000))
+    const step = rate * dt
+    if (target < s.p) s.p = target
+    else if (target - s.p <= step) s.p = target
+    else s.p += step
+    const ctx = canvas.getContext('2d')
     if (ctx) {
-      const L = s.p * n;
-      const i = Math.min(n, Math.floor(L + 1e-6));
-      const frac = L - i;
-      ctx.globalAlpha = 1;
-      ctx.drawImage(s.levels[i], 0, 0);
+      const L = s.p * n
+      const i = Math.min(n, Math.floor(L + 1e-6))
+      const frac = L - i
+      ctx.globalAlpha = 1
+      ctx.drawImage(s.levels[i], 0, 0)
       if (i < n && frac > 0) {
-        const edge = EDGE * dpr;
-        const front = frac * (s.h + edge) - edge / 2;
-        const top = Math.max(0, Math.floor(front - edge / 2));
-        if (top > 0) ctx.drawImage(s.levels[i + 1], 0, 0, s.w, top, 0, 0, s.w, top);
-        const sh = edge / STRIPS;
+        const edge = EDGE * dpr
+        const front = frac * (s.h + edge) - edge / 2
+        const top = Math.max(0, Math.floor(front - edge / 2))
+        if (top > 0) ctx.drawImage(s.levels[i + 1], 0, 0, s.w, top, 0, 0, s.w, top)
+        const sh = edge / STRIPS
         for (let k = 0; k < STRIPS; k += 1) {
-          const y = front - edge / 2 + k * sh;
-          if (y + sh <= 0 || y >= s.h) continue;
-          const t = 1 - (k + 0.5) / STRIPS;
-          ctx.globalAlpha = t * t * (3 - 2 * t);
-          const y0 = Math.max(0, y);
-          const h0 = Math.min(s.h, y + sh) - y0;
-          if (h0 > 0) ctx.drawImage(s.levels[i + 1], 0, y0, s.w, h0, 0, y0, s.w, h0);
+          const y = front - edge / 2 + k * sh
+          if (y + sh <= 0 || y >= s.h) continue
+          const t = 1 - (k + 0.5) / STRIPS
+          ctx.globalAlpha = t * t * (3 - 2 * t)
+          const y0 = Math.max(0, y)
+          const h0 = Math.min(s.h, y + sh) - y0
+          if (h0 > 0) ctx.drawImage(s.levels[i + 1], 0, y0, s.w, h0, 0, y0, s.w, h0)
         }
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = 1
         if (c.sweep && !c.reduce && s.glint && front > 0 && front < s.h) {
-          ctx.fillStyle = s.glint;
-          ctx.globalAlpha = 0.12;
-          ctx.fillRect(0, front - 2 * dpr, s.w, 4 * dpr);
-          ctx.globalAlpha = 0.3;
-          ctx.fillRect(0, front - dpr, s.w, 2 * dpr);
-          ctx.globalAlpha = 1;
+          ctx.fillStyle = s.glint
+          ctx.globalAlpha = 0.12
+          ctx.fillRect(0, front - 2 * dpr, s.w, 4 * dpr)
+          ctx.globalAlpha = 0.3
+          ctx.fillRect(0, front - dpr, s.w, 2 * dpr)
+          ctx.globalAlpha = 1
         }
       }
     }
-    const done = s.p >= 1;
+    const done = s.p >= 1
     if (done !== s.sent) {
-      s.sent = done;
-      setResolved(done);
+      s.sent = done
+      setResolved(done)
     }
-    const keep = (!c.reduce && ACTIVE.has(c.status)) || Math.abs(target - s.p) > 0.0005;
-    s.raf = keep ? requestAnimationFrame(tick) : 0;
-    if (!keep) s.last = 0;
+    const keep = (!c.reduce && ACTIVE.has(c.status)) || Math.abs(target - s.p) > 0.0005
+    s.raf = keep ? requestAnimationFrame(tick) : 0
+    if (!keep) s.last = 0
   }
   const wake = () => {
-    const s = sim;
-    if (!s.raf) s.raf = requestAnimationFrame(tick);
-  };
+    const s = sim
+    if (!s.raf) s.raf = requestAnimationFrame(tick)
+  }
 
   onMount(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     const sync = () => {
-      live.reduce = mq.matches;
-    };
-    sync();
-    mq.addEventListener('change', sync);
-    onCleanup(() => mq.removeEventListener('change', sync));
-  });
-
-  createEffect(() => {
-    void props.children;
-    void status();
-    const img = untrack(() => printEl?.querySelector('img') as HTMLImageElement | null);
-    if (!img) {
-      setMosaic(false);
-      return;
+      live.reduce = mq.matches
     }
-    let gone = false;
-    const start = () => {
-      if (gone) return;
-      setMosaic(true);
-      wake();
-    };
-    if (img.complete && img.naturalWidth) start();
-    else img.addEventListener('load', start, { once: true });
-    onCleanup(() => {
-      gone = true;
-      img.removeEventListener('load', start);
-    });
-  });
+    sync()
+    mq.addEventListener('change', sync)
+    onCleanup(() => mq.removeEventListener('change', sync))
+  })
 
   createEffect(() => {
-    void status();
-    void props.width;
-    void props.aspectRatio;
-    untrack(() => wake());
-  });
+    void props.children
+    void status()
+    const img = untrack(() => printEl?.querySelector('img') as HTMLImageElement | null)
+    if (!img) {
+      setMosaic(false)
+      return
+    }
+    let gone = false
+    const start = () => {
+      if (gone) return
+      setMosaic(true)
+      wake()
+    }
+    if (img.complete && img.naturalWidth) start()
+    else img.addEventListener('load', start, { once: true })
+    onCleanup(() => {
+      gone = true
+      img.removeEventListener('load', start)
+    })
+  })
+
+  createEffect(() => {
+    void status()
+    void props.width
+    void props.aspectRatio
+    untrack(() => wake())
+  })
 
   onMount(() => {
     onCleanup(() => {
-      cancelAnimationFrame(sim.raf);
-      sim.raf = 0;
-    });
-  });
+      cancelAnimationFrame(sim.raf)
+      sim.raf = 0
+    })
+  })
 
   createEffect(() => {
-    const showStatus = props.showStatus ?? true;
-    const hideAfter = props.hideAfter ?? 1200;
-    clearTimeout(timer);
+    const showStatus = props.showStatus ?? true
+    const hideAfter = props.hideAfter ?? 1200
+    clearTimeout(timer)
     if (!showStatus) {
-      setChip(false);
-      return;
+      setChip(false)
+      return
     }
-    setChip(true);
+    setChip(true)
     if (status() === 'complete' && hideAfter > 0) {
-      timer = setTimeout(() => setChip(false), hideAfter);
+      timer = setTimeout(() => setChip(false), hideAfter)
     }
-    onCleanup(() => clearTimeout(timer));
-  });
+    onCleanup(() => clearTimeout(timer))
+  })
 
   return (
     <div
@@ -302,7 +322,7 @@ const RefineFrame = (props: RefineFrameProps) => {
         '--rf-blur': `${mosaic() ? 0 : stage().blur}px`,
         '--rf-sat': stage().sat,
         '--rf-scale': mosaic() ? 1 : stage().scale,
-        '--rf-opacity': stage().opacity
+        '--rf-opacity': stage().opacity,
       }}
     >
       <style>{STYLE}</style>
@@ -342,7 +362,9 @@ const RefineFrame = (props: RefineFrameProps) => {
               <HugeiconsIcon icon={Loading03Icon} size={13} strokeWidth={2.2} />
             )}
           </span>
-          <span class="[animation:refine-frame-label_200ms_ease_both]">{text()[status()] ?? status()}</span>
+          <span class="[animation:refine-frame-label_200ms_ease_both]">
+            {text()[status()] ?? status()}
+          </span>
         </div>
       ) : null}
       {status() === 'error' && props.onRetry ? (
@@ -359,7 +381,7 @@ const RefineFrame = (props: RefineFrameProps) => {
         {text()[status()] ?? status()}
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default RefineFrame;
+export default RefineFrame

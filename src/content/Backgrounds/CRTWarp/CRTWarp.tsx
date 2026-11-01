@@ -1,71 +1,71 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createMemo, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface CRTWarpProps {
-  color?: string;
-  backgroundColor?: string;
-  lightMode?: boolean;
-  speed?: number;
-  variation?: number;
-  waveAmplitude?: number;
-  waveFrequency?: number;
-  levels?: number;
-  columns?: number;
-  persistence?: number;
-  curvature?: number;
-  corners?: number;
-  scanlineStrength?: number;
-  scanlineFrequency?: number;
-  mask?: 'aperture' | 'shadow' | 'slot' | 'none';
-  maskStrength?: number;
-  bloom?: number;
-  bloomRadius?: number;
-  rgbShift?: number;
-  noise?: number;
-  flicker?: number;
-  interference?: number;
-  vignette?: number;
-  brightness?: number;
-  intro?: boolean;
-  mouseReact?: boolean;
-  mouseStrength?: number;
-  changeOnClick?: boolean;
-  dpr?: number;
-  fps?: number;
-  paused?: boolean;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  color?: string
+  backgroundColor?: string
+  lightMode?: boolean
+  speed?: number
+  variation?: number
+  waveAmplitude?: number
+  waveFrequency?: number
+  levels?: number
+  columns?: number
+  persistence?: number
+  curvature?: number
+  corners?: number
+  scanlineStrength?: number
+  scanlineFrequency?: number
+  mask?: 'aperture' | 'shadow' | 'slot' | 'none'
+  maskStrength?: number
+  bloom?: number
+  bloomRadius?: number
+  rgbShift?: number
+  noise?: number
+  flicker?: number
+  interference?: number
+  vignette?: number
+  brightness?: number
+  intro?: boolean
+  mouseReact?: boolean
+  mouseStrength?: number
+  changeOnClick?: boolean
+  dpr?: number
+  fps?: number
+  paused?: boolean
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type RGB = [number, number, number];
+type RGB = [number, number, number]
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
+  program: WebGLProgram
+  uniforms: Record<string, WebGLUniformLocation | null>
 }
 
 interface Target {
-  texture: WebGLTexture;
-  framebuffer: WebGLFramebuffer;
-  width: number;
-  height: number;
+  texture: WebGLTexture
+  framebuffer: WebGLFramebuffer
+  width: number
+  height: number
 }
 
-const ROOT = 'relative h-full w-full overflow-hidden';
-const CANVAS = 'absolute inset-0 block h-full w-full';
+const ROOT = 'relative h-full w-full overflow-hidden'
+const CANVAS = 'absolute inset-0 block h-full w-full'
 
-const MASKS: Record<string, number> = { none: 0, aperture: 1, shadow: 2, slot: 3 };
-const CELL_ASPECT = 0.56;
-const INTRO_SECONDS = 1.6;
-const FLIP_SECONDS = 0.8;
-const TAU = Math.PI * 2;
+const MASKS: Record<string, number> = { none: 0, aperture: 1, shadow: 2, slot: 3 }
+const CELL_ASPECT = 0.56
+const INTRO_SECONDS = 1.6
+const FLIP_SECONDS = 0.8
+const TAU = Math.PI * 2
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const CONTENT = `#version 300 es
 precision highp float;
@@ -104,7 +104,7 @@ void main() {
   float previous = texelFetch(uPrevious, ivec2(cell), 0).r;
   float lifted = min(level, previous + uRise);
   outColor = vec4(max(lifted, previous * uDecay - 0.004), level, 0.0, 1.0);
-}`;
+}`
 
 const GLOW = `#version 300 es
 precision highp float;
@@ -115,7 +115,7 @@ out vec4 outColor;
 void main() {
   float v = texture(uContent, gl_FragCoord.xy / uSize).r;
   outColor = vec4(v * v, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const BLUR = `#version 300 es
 precision highp float;
@@ -137,7 +137,7 @@ void main() {
     total += w;
   }
   outColor = vec4(sum / total, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const DISPLAY = `#version 300 es
 precision highp float;
@@ -320,117 +320,124 @@ void main() {
     if (uOpaque < 0.5) color = uColor * cov;
   }
   outColor = uOpaque > 0.5 ? vec4(color, 1.0) : vec4(color, alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const smooth = (t: number) => t * t * (3 - 2 * t);
+const smooth = (t: number) => t * t * (3 - 2 * t)
 
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 
-let probe: CanvasRenderingContext2D | null = null;
+let probe: CanvasRenderingContext2D | null = null
 
 const parseColor = (value: string, fallback: RGB | null): RGB | null => {
-  if (value === 'transparent') return null;
-  if (typeof document === 'undefined') return fallback;
-  if (!probe) probe = document.createElement('canvas').getContext('2d');
-  if (!probe) return fallback;
-  probe.fillStyle = '#000000';
-  probe.fillStyle = value;
-  const text = probe.fillStyle;
+  if (value === 'transparent') return null
+  if (typeof document === 'undefined') return fallback
+  if (!probe) probe = document.createElement('canvas').getContext('2d')
+  if (!probe) return fallback
+  probe.fillStyle = '#000000'
+  probe.fillStyle = value
+  const text = probe.fillStyle
   if (text.startsWith('#')) {
-    const hex = parseInt(text.slice(1), 16);
-    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+    const hex = parseInt(text.slice(1), 16)
+    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255]
   }
-  const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text);
-  if (!match) return fallback;
-  if (match[4] !== undefined && Number(match[4]) === 0) return null;
-  return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255];
-};
+  const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text)
+  if (!match) return fallback
+  if (match[4] !== undefined && Number(match[4]) === 0) return null
+  return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255]
+}
 
 const seedFor = (channel: number) => {
-  const a = Math.sin(channel * 12.9898 + 1.7) * 43758.5453;
-  const b = Math.sin(channel * 78.233 + 4.1) * 24634.6345;
-  const c = Math.sin(channel * 37.719 + 2.9) * 17431.7731;
-  const d = Math.sin(channel * 91.113 + 0.3) * 31337.1337;
-  const f = (v: number) => (v - Math.floor(v)) * TAU;
-  return channel === 0 ? [0, 0, 0, 0] : [f(a), f(b), f(c), f(d)];
-};
+  const a = Math.sin(channel * 12.9898 + 1.7) * 43758.5453
+  const b = Math.sin(channel * 78.233 + 4.1) * 24634.6345
+  const c = Math.sin(channel * 37.719 + 2.9) * 17431.7731
+  const d = Math.sin(channel * 91.113 + 0.3) * 31337.1337
+  const f = (v: number) => (v - Math.floor(v)) * TAU
+  return channel === 0 ? [0, 0, 0, 0] : [f(a), f(b), f(c), f(d)]
+}
 
 const introAt = (t: number) => {
-  if (t >= INTRO_SECONDS) return [1, 1, 1];
-  const reveal = smooth(clamp(t / INTRO_SECONDS, 0, 1));
-  const warm = smooth(clamp(t / 0.6, 0, 1));
-  const focus = smooth(clamp((t - 0.15) / (INTRO_SECONDS - 0.15), 0, 1));
-  return [reveal, warm, focus];
-};
+  if (t >= INTRO_SECONDS) return [1, 1, 1]
+  const reveal = smooth(clamp(t / INTRO_SECONDS, 0, 1))
+  const warm = smooth(clamp(t / 0.6, 0, 1))
+  const focus = smooth(clamp((t - 0.15) / (INTRO_SECONDS - 0.15), 0, 1))
+  return [reveal, warm, focus]
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    gl.deleteShader(shader);
-    return null;
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
-const createProgram = (gl: WebGL2RenderingContext, fragment: string, names: string[]): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const shader = compile(gl, gl.FRAGMENT_SHADER, fragment);
-  if (!vertex || !shader) return null;
-  const program = gl.createProgram();
-  if (!program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, shader);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(shader);
+const createProgram = (
+  gl: WebGL2RenderingContext,
+  fragment: string,
+  names: string[],
+): Program | null => {
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const shader = compile(gl, gl.FRAGMENT_SHADER, fragment)
+  if (!vertex || !shader) return null
+  const program = gl.createProgram()
+  if (!program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, shader)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(shader)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
   names.forEach(name => {
-    uniforms[name] = gl.getUniformLocation(program, name);
-  });
-  return { program, uniforms };
-};
+    uniforms[name] = gl.getUniformLocation(program, name)
+  })
+  return { program, uniforms }
+}
 
 const createTarget = (gl: WebGL2RenderingContext, width: number, height: number): Target => {
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  const framebuffer = gl.createFramebuffer();
-  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  return { texture, framebuffer, width, height };
-};
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  const framebuffer = gl.createFramebuffer()
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+  gl.clearColor(0, 0, 0, 1)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  return { texture, framebuffer, width, height }
+}
 
 const deleteTarget = (gl: WebGL2RenderingContext, target: Target | null) => {
-  if (!target) return;
-  gl.deleteTexture(target.texture);
-  gl.deleteFramebuffer(target.framebuffer);
-};
+  if (!target) return
+  gl.deleteTexture(target.texture)
+  gl.deleteFramebuffer(target.framebuffer)
+}
 
 const prefersReduced = () =>
-  typeof window !== 'undefined' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+  typeof window !== 'undefined' &&
+  (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
 
 export default function CRTWarp(props: CRTWarpProps) {
-  let containerRef!: HTMLDivElement;
+  let containerRef!: HTMLDivElement
 
   // Upstream: useMemo on [color] / [backgroundColor].
-  const ink = createMemo((): RGB => parseColor(props.color ?? '#c755f7', [0.78, 0.33, 0.97]) ?? [0.78, 0.33, 0.97]);
-  const paper = createMemo(() => parseColor(props.backgroundColor ?? '#120f17', [0.07, 0.06, 0.09]));
+  const ink = createMemo(
+    (): RGB => parseColor(props.color ?? '#c755f7', [0.78, 0.33, 0.97]) ?? [0.78, 0.33, 0.97],
+  )
+  const paper = createMemo(() => parseColor(props.backgroundColor ?? '#120f17', [0.07, 0.06, 0.09]))
 
   const settings = createMemo(() => ({
     ink: ink(),
@@ -463,26 +470,26 @@ export default function CRTWarp(props: CRTWarpProps) {
     changeOnClick: props.changeOnClick ?? true,
     dpr: Math.max(0.5, props.dpr ?? 2),
     fps: Math.max(1, props.fps ?? 60),
-    paused: props.paused ?? false
-  }));
+    paused: props.paused ?? false,
+  }))
 
   onMount(() => {
-    const container = containerRef;
-    if (!container) return;
-    const canvas = document.createElement('canvas');
-    canvas.className = CANVAS;
-    container.appendChild(canvas);
+    const container = containerRef
+    if (!container) return
+    const canvas = document.createElement('canvas')
+    canvas.className = CANVAS
+    container.appendChild(canvas)
     const gl = canvas.getContext('webgl2', {
       alpha: true,
       antialias: false,
       depth: false,
       stencil: false,
       premultipliedAlpha: true,
-      powerPreference: 'high-performance'
-    });
+      powerPreference: 'high-performance',
+    })
     if (!gl) {
-      canvas.remove();
-      return;
+      canvas.remove()
+      return
     }
 
     const content = createProgram(gl, CONTENT, [
@@ -495,10 +502,10 @@ export default function CRTWarp(props: CRTWarpProps) {
       'uReveal',
       'uRise',
       'uSeed',
-      'uPrevious'
-    ]);
-    const glowSource = createProgram(gl, GLOW, ['uContent', 'uSize']);
-    const blur = createProgram(gl, BLUR, ['uSource', 'uSize', 'uDirection', 'uSigma']);
+      'uPrevious',
+    ])
+    const glowSource = createProgram(gl, GLOW, ['uContent', 'uSize'])
+    const blur = createProgram(gl, BLUR, ['uSource', 'uSize', 'uDirection', 'uSigma'])
     const display = createProgram(gl, DISPLAY, [
       'uContent',
       'uGlow',
@@ -530,20 +537,20 @@ export default function CRTWarp(props: CRTWarpProps) {
       'uTear',
       'uGain',
       'uMagnet',
-      'uPurity'
-    ]);
+      'uPurity',
+    ])
     if (!content || !glowSource || !blur || !display) {
-      canvas.remove();
-      return;
+      canvas.remove()
+      return
     }
 
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    const buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
     const state = {
       width: 1,
@@ -568,195 +575,212 @@ export default function CRTWarp(props: CRTWarpProps) {
       magnetGoal: 0,
       lost: false,
       quiet: 0,
-      seen: null as ReturnType<typeof settings> | null
-    };
+      seen: null as ReturnType<typeof settings> | null,
+    }
 
     const ensureTargets = () => {
-      const s = settings();
-      const cols = s.columns;
-      const rows = clamp(Math.round((cols * CELL_ASPECT * state.height) / Math.max(state.width, 1)), 4, 300);
+      const s = settings()
+      const cols = s.columns
+      const rows = clamp(
+        Math.round((cols * CELL_ASPECT * state.height) / Math.max(state.width, 1)),
+        4,
+        300,
+      )
       if (cols !== state.grid[0] || rows !== state.grid[1]) {
-        state.cells.forEach(target => deleteTarget(gl, target));
-        state.cells = [createTarget(gl, cols, rows), createTarget(gl, cols, rows)];
-        state.grid = [cols, rows];
+        state.cells.forEach(target => deleteTarget(gl, target))
+        state.cells = [createTarget(gl, cols, rows), createTarget(gl, cols, rows)]
+        state.grid = [cols, rows]
       }
-      const gw = Math.max(1, Math.round(state.width / 4));
-      const gh = Math.max(1, Math.round(state.height / 4));
-      const glow = state.glows[0];
+      const gw = Math.max(1, Math.round(state.width / 4))
+      const gh = Math.max(1, Math.round(state.height / 4))
+      const glow = state.glows[0]
       if (!glow || glow.width !== gw || glow.height !== gh) {
-        state.glows.forEach(target => deleteTarget(gl, target));
-        state.glows = [createTarget(gl, gw, gh), createTarget(gl, gw, gh)];
+        state.glows.forEach(target => deleteTarget(gl, target))
+        state.glows = [createTarget(gl, gw, gh), createTarget(gl, gw, gh)]
       }
-    };
+    }
 
     const resize = () => {
-      const s = settings();
-      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr);
-      const width = Math.max(1, Math.round(container.clientWidth * ratio));
-      const height = Math.max(1, Math.round(container.clientHeight * ratio));
-      state.pixel = ratio;
-      if (width === state.width && height === state.height) return;
-      state.quiet = 0;
-      state.width = width;
-      state.height = height;
-      canvas.width = width;
-      canvas.height = height;
-    };
+      const s = settings()
+      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr)
+      const width = Math.max(1, Math.round(container.clientWidth * ratio))
+      const height = Math.max(1, Math.round(container.clientHeight * ratio))
+      state.pixel = ratio
+      if (width === state.width && height === state.height) return
+      state.quiet = 0
+      state.width = width
+      state.height = height
+      canvas.width = width
+      canvas.height = height
+    }
 
     const draw = (target: Target | null, width: number, height: number) => {
-      gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.framebuffer : null);
-      gl.viewport(0, 0, width, height);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.framebuffer : null)
+      gl.viewport(0, 0, width, height)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
-    const bindTexture = (unit: number, texture: WebGLTexture, location: WebGLUniformLocation | null) => {
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(location, unit);
-    };
+    const bindTexture = (
+      unit: number,
+      texture: WebGLTexture,
+      location: WebGLUniformLocation | null,
+    ) => {
+      gl.activeTexture(gl.TEXTURE0 + unit)
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.uniform1i(location, unit)
+    }
 
     const render = (dt: number, reduced: boolean) => {
-      const s = settings();
-      ensureTargets();
-      const [cols, rows] = state.grid;
-      const seed = seedFor(s.variation + state.channel);
-      const introClock = state.introAt < 0 ? 0 : state.clock - state.introAt;
-      const [reveal, warm, focus] = s.intro && !reduced ? introAt(introClock) : [1, 1, 1];
+      const s = settings()
+      ensureTargets()
+      const [cols, rows] = state.grid
+      const seed = seedFor(s.variation + state.channel)
+      const introClock = state.introAt < 0 ? 0 : state.clock - state.introAt
+      const [reveal, warm, focus] = s.intro && !reduced ? introAt(introClock) : [1, 1, 1]
 
-      const previous = state.cells[state.flip];
-      const next = state.cells[1 - state.flip];
-      const [glowA, glowB] = state.glows;
-      if (!previous || !next || !glowA || !glowB) return;
-      gl.useProgram(content.program);
-      gl.uniform2f(content.uniforms.uGrid, cols, rows);
-      gl.uniform1f(content.uniforms.uTime, state.time);
-      gl.uniform1f(content.uniforms.uAmplitude, s.amplitude);
-      gl.uniform1f(content.uniforms.uFrequency, s.frequency);
-      gl.uniform1f(content.uniforms.uLevels, s.levels);
-      gl.uniform1f(content.uniforms.uDecay, reduced ? 0 : s.persistence ** (dt * 60));
-      gl.uniform1f(content.uniforms.uReveal, reveal);
-      gl.uniform1f(content.uniforms.uRise, reveal < 1 ? dt / 0.22 : 1);
-      gl.uniform4f(content.uniforms.uSeed, seed[0], seed[1], seed[2], seed[3]);
-      bindTexture(0, previous.texture, content.uniforms.uPrevious);
-      draw(next, cols, rows);
-      state.flip = 1 - state.flip;
+      const previous = state.cells[state.flip]
+      const next = state.cells[1 - state.flip]
+      const [glowA, glowB] = state.glows
+      if (!previous || !next || !glowA || !glowB) return
+      gl.useProgram(content.program)
+      gl.uniform2f(content.uniforms.uGrid, cols, rows)
+      gl.uniform1f(content.uniforms.uTime, state.time)
+      gl.uniform1f(content.uniforms.uAmplitude, s.amplitude)
+      gl.uniform1f(content.uniforms.uFrequency, s.frequency)
+      gl.uniform1f(content.uniforms.uLevels, s.levels)
+      gl.uniform1f(content.uniforms.uDecay, reduced ? 0 : s.persistence ** (dt * 60))
+      gl.uniform1f(content.uniforms.uReveal, reveal)
+      gl.uniform1f(content.uniforms.uRise, reveal < 1 ? dt / 0.22 : 1)
+      gl.uniform4f(content.uniforms.uSeed, seed[0], seed[1], seed[2], seed[3])
+      bindTexture(0, previous.texture, content.uniforms.uPrevious)
+      draw(next, cols, rows)
+      state.flip = 1 - state.flip
 
-      gl.useProgram(glowSource.program);
-      gl.uniform2f(glowSource.uniforms.uSize, glowA.width, glowA.height);
-      bindTexture(0, next.texture, glowSource.uniforms.uContent);
-      draw(glowA, glowA.width, glowA.height);
-      const sigma = Math.max(0.6, (glowA.height / 48) * s.bloomRadius);
-      gl.useProgram(blur.program);
-      gl.uniform2f(blur.uniforms.uSize, glowA.width, glowA.height);
-      gl.uniform1f(blur.uniforms.uSigma, sigma);
-      gl.uniform2f(blur.uniforms.uDirection, 1, 0);
-      bindTexture(0, glowA.texture, blur.uniforms.uSource);
-      draw(glowB, glowB.width, glowB.height);
-      gl.uniform2f(blur.uniforms.uDirection, 0, 1);
-      bindTexture(0, glowB.texture, blur.uniforms.uSource);
-      draw(glowA, glowA.width, glowA.height);
+      gl.useProgram(glowSource.program)
+      gl.uniform2f(glowSource.uniforms.uSize, glowA.width, glowA.height)
+      bindTexture(0, next.texture, glowSource.uniforms.uContent)
+      draw(glowA, glowA.width, glowA.height)
+      const sigma = Math.max(0.6, (glowA.height / 48) * s.bloomRadius)
+      gl.useProgram(blur.program)
+      gl.uniform2f(blur.uniforms.uSize, glowA.width, glowA.height)
+      gl.uniform1f(blur.uniforms.uSigma, sigma)
+      gl.uniform2f(blur.uniforms.uDirection, 1, 0)
+      bindTexture(0, glowA.texture, blur.uniforms.uSource)
+      draw(glowB, glowB.width, glowB.height)
+      gl.uniform2f(blur.uniforms.uDirection, 0, 1)
+      bindTexture(0, glowB.texture, blur.uniforms.uSource)
+      draw(glowA, glowA.width, glowA.height)
 
-      let roll = 0;
-      let tear = 0;
-      let staticNoise = 0;
-      let gain = 1;
+      let roll = 0
+      let tear = 0
+      let staticNoise = 0
+      let gain = 1
       if (state.flipAt >= 0) {
-        const t = state.clock - state.flipAt;
+        const t = state.clock - state.flipAt
         if (!state.flipped && t >= 0.22) {
-          state.flipped = true;
-          state.channel += 1;
+          state.flipped = true
+          state.channel += 1
         }
         if (t >= FLIP_SECONDS) {
-          state.flipAt = -1;
+          state.flipAt = -1
         } else {
-          const p = t / FLIP_SECONDS;
-          roll = easeInOut(p);
-          tear = Math.sin(Math.PI * clamp(t / 0.5, 0, 1)) * 0.6;
-          staticNoise = Math.sin(Math.PI * clamp(t / 0.55, 0, 1)) * 0.75;
-          gain = 1 - 0.3 * Math.sin(Math.PI * p);
+          const p = t / FLIP_SECONDS
+          roll = easeInOut(p)
+          tear = Math.sin(Math.PI * clamp(t / 0.5, 0, 1)) * 0.6
+          staticNoise = Math.sin(Math.PI * clamp(t / 0.55, 0, 1)) * 0.75
+          gain = 1 - 0.3 * Math.sin(Math.PI * p)
         }
       }
 
-      gl.useProgram(display.program);
-      const u = display.uniforms;
-      bindTexture(0, next.texture, u.uContent);
-      bindTexture(1, glowA.texture, u.uGlow);
-      gl.uniform2f(u.uGrid, cols, rows);
-      gl.uniform2f(u.uResolution, state.width, state.height);
-      gl.uniform1f(u.uPixel, state.pixel);
-      gl.uniform1f(u.uTime, reduced ? 0 : state.clock);
-      gl.uniform3f(u.uColor, s.ink[0], s.ink[1], s.ink[2]);
-      const paperColor = s.paper ?? [0, 0, 0];
-      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2]);
-      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0);
-      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0);
-      gl.uniform1f(u.uLines, s.lines);
-      gl.uniform1f(u.uScanline, s.scanline);
-      gl.uniform1f(u.uCurve, s.curve);
-      gl.uniform1f(u.uCorners, s.corners);
-      gl.uniform1i(u.uMaskType, s.mask);
-      gl.uniform1f(u.uMask, s.maskStrength);
-      gl.uniform1f(u.uBloom, s.bloom);
-      gl.uniform1f(u.uBrightness, s.brightness);
-      gl.uniform1f(u.uNoise, s.noise);
-      gl.uniform1f(u.uFlicker, reduced ? 0 : s.flicker);
-      gl.uniform1f(u.uInterference, s.interference);
-      gl.uniform1f(u.uVignette, s.vignette);
-      gl.uniform1f(u.uShift, s.rgbShift);
-      gl.uniform1f(u.uWarm, warm);
-      gl.uniform1f(u.uFocus, focus);
-      gl.uniform1f(u.uStatic, staticNoise);
-      gl.uniform1f(u.uRoll, roll);
-      gl.uniform1f(u.uTear, tear);
-      gl.uniform1f(u.uGain, gain);
-      gl.uniform4f(u.uMagnet, state.magnet[0], 1 - state.magnet[1], state.magnet[4] * s.mouseStrength * 2, 0.24);
-      gl.uniform1f(u.uPurity, s.mask > 0 ? 1 : 0);
-      draw(null, state.width, state.height);
-    };
+      gl.useProgram(display.program)
+      const u = display.uniforms
+      bindTexture(0, next.texture, u.uContent)
+      bindTexture(1, glowA.texture, u.uGlow)
+      gl.uniform2f(u.uGrid, cols, rows)
+      gl.uniform2f(u.uResolution, state.width, state.height)
+      gl.uniform1f(u.uPixel, state.pixel)
+      gl.uniform1f(u.uTime, reduced ? 0 : state.clock)
+      gl.uniform3f(u.uColor, s.ink[0], s.ink[1], s.ink[2])
+      const paperColor = s.paper ?? [0, 0, 0]
+      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2])
+      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0)
+      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0)
+      gl.uniform1f(u.uLines, s.lines)
+      gl.uniform1f(u.uScanline, s.scanline)
+      gl.uniform1f(u.uCurve, s.curve)
+      gl.uniform1f(u.uCorners, s.corners)
+      gl.uniform1i(u.uMaskType, s.mask)
+      gl.uniform1f(u.uMask, s.maskStrength)
+      gl.uniform1f(u.uBloom, s.bloom)
+      gl.uniform1f(u.uBrightness, s.brightness)
+      gl.uniform1f(u.uNoise, s.noise)
+      gl.uniform1f(u.uFlicker, reduced ? 0 : s.flicker)
+      gl.uniform1f(u.uInterference, s.interference)
+      gl.uniform1f(u.uVignette, s.vignette)
+      gl.uniform1f(u.uShift, s.rgbShift)
+      gl.uniform1f(u.uWarm, warm)
+      gl.uniform1f(u.uFocus, focus)
+      gl.uniform1f(u.uStatic, staticNoise)
+      gl.uniform1f(u.uRoll, roll)
+      gl.uniform1f(u.uTear, tear)
+      gl.uniform1f(u.uGain, gain)
+      gl.uniform4f(
+        u.uMagnet,
+        state.magnet[0],
+        1 - state.magnet[1],
+        state.magnet[4] * s.mouseStrength * 2,
+        0.24,
+      )
+      gl.uniform1f(u.uPurity, s.mask > 0 ? 1 : 0)
+      draw(null, state.width, state.height)
+    }
 
     const tick = (now: number) => {
-      state.raf = requestAnimationFrame(tick);
+      state.raf = requestAnimationFrame(tick)
       if (!state.visible || document.hidden || state.lost) {
-        state.last = now;
-        return;
+        state.last = now
+        return
       }
-      const s = settings();
-      const interval = 1000 / s.fps;
-      if (state.last && now - state.last < interval - 1) return;
-      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 1 / 60;
-      state.last = now;
-      const reduced = prefersReduced();
-      state.clock += dt;
-      if (state.introAt < 0) state.introAt = state.clock;
-      if (!s.paused && !reduced) state.time += dt * s.speed;
+      const s = settings()
+      const interval = 1000 / s.fps
+      if (state.last && now - state.last < interval - 1) return
+      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 1 / 60
+      state.last = now
+      const reduced = prefersReduced()
+      state.clock += dt
+      if (state.introAt < 0) state.introAt = state.clock
+      if (!s.paused && !reduced) state.time += dt * s.speed
 
-      const m = state.magnet;
-      const omega = TAU / 0.3;
+      const m = state.magnet
+      const omega = TAU / 0.3
       for (let i = 0; i < 2; i++) {
-        const accel = -omega * omega * (m[i] - state.pointer[i]) - 2 * omega * m[2 + i];
-        m[2 + i] += accel * dt;
-        m[i] += m[2 + i] * dt;
+        const accel = -omega * omega * (m[i] - state.pointer[i]) - 2 * omega * m[2 + i]
+        m[2 + i] += accel * dt
+        m[i] += m[2 + i] * dt
       }
-      const goal = s.mouseReact && !reduced ? state.magnetGoal : 0;
-      m[4] += (goal - m[4]) * (1 - Math.exp(-dt / 0.18));
+      const goal = s.mouseReact && !reduced ? state.magnetGoal : 0
+      m[4] += (goal - m[4]) * (1 - Math.exp(-dt / 0.18))
 
-      const still = s.paused || reduced;
+      const still = s.paused || reduced
       const settling =
         Math.abs(m[4] - goal) > 0.002 ||
-        (m[4] > 0.002 && (Math.abs(m[2]) + Math.abs(m[3]) > 0.0005 || Math.abs(m[0] - state.pointer[0]) > 0.0005));
+        (m[4] > 0.002 &&
+          (Math.abs(m[2]) + Math.abs(m[3]) > 0.0005 || Math.abs(m[0] - state.pointer[0]) > 0.0005))
       const transient =
-        state.flipAt >= 0 || (s.intro && !reduced && state.clock - state.introAt < INTRO_SECONDS) || settling;
-      if (state.seen !== s || transient || !still) state.quiet = 0;
-      else state.quiet += 1;
-      state.seen = s;
-      if (state.quiet > 90) return;
+        state.flipAt >= 0 ||
+        (s.intro && !reduced && state.clock - state.introAt < INTRO_SECONDS) ||
+        settling
+      if (state.seen !== s || transient || !still) state.quiet = 0
+      else state.quiet += 1
+      state.seen = s
+      if (state.quiet > 90) return
 
-      resize();
-      render(dt, reduced);
-    };
+      resize()
+      render(dt, reduced)
+    }
 
     const local = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
+      const rect = container.getBoundingClientRect()
       return {
         x: (event.clientX - rect.left) / Math.max(rect.width, 1),
         y: (event.clientY - rect.top) / Math.max(rect.height, 1),
@@ -764,82 +788,82 @@ export default function CRTWarp(props: CRTWarpProps) {
           event.clientX >= rect.left &&
           event.clientX <= rect.right &&
           event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-      };
-    };
+          event.clientY <= rect.bottom,
+      }
+    }
 
     const onMove = (event: PointerEvent) => {
-      const point = local(event);
+      const point = local(event)
       if (point.inside) {
         if (state.magnetGoal === 0 && state.magnet[4] < 0.02) {
-          state.magnet[0] = point.x;
-          state.magnet[1] = point.y;
-          state.magnet[2] = 0;
-          state.magnet[3] = 0;
+          state.magnet[0] = point.x
+          state.magnet[1] = point.y
+          state.magnet[2] = 0
+          state.magnet[3] = 0
         }
-        state.pointer = [point.x, point.y];
+        state.pointer = [point.x, point.y]
       }
-      state.magnetGoal = point.inside ? 1 : 0;
-    };
+      state.magnetGoal = point.inside ? 1 : 0
+    }
 
     const onLeave = () => {
-      state.magnetGoal = 0;
-    };
+      state.magnetGoal = 0
+    }
 
     const onDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.changeOnClick || event.button !== 0) return;
+      const s = settings()
+      if (!s.changeOnClick || event.button !== 0) return
       if (
         event.target instanceof Element &&
         event.target.closest('a, button, input, textarea, select, label, [role="button"]')
       )
-        return;
-      const point = local(event);
-      if (!point.inside) return;
+        return
+      const point = local(event)
+      if (!point.inside) return
       if (prefersReduced()) {
-        state.channel += 1;
-        return;
+        state.channel += 1
+        return
       }
-      if (state.flipAt >= 0) return;
-      state.flipAt = state.clock;
-      state.flipped = false;
-    };
+      if (state.flipAt >= 0) return
+      state.flipAt = state.clock
+      state.flipped = false
+    }
 
     const onLost = (event: Event) => {
-      event.preventDefault();
-      state.lost = true;
-    };
+      event.preventDefault()
+      state.lost = true
+    }
 
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-    });
-    visibility.observe(container);
-    const sizes = new ResizeObserver(resize);
-    sizes.observe(container);
-    resize();
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onDown);
-    document.documentElement.addEventListener('pointerleave', onLeave);
-    canvas.addEventListener('webglcontextlost', onLost);
-    state.raf = requestAnimationFrame(tick);
+      state.visible = entries.some(entry => entry.isIntersecting)
+    })
+    visibility.observe(container)
+    const sizes = new ResizeObserver(resize)
+    sizes.observe(container)
+    resize()
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown)
+    document.documentElement.addEventListener('pointerleave', onLeave)
+    canvas.addEventListener('webglcontextlost', onLost)
+    state.raf = requestAnimationFrame(tick)
 
     onCleanup(() => {
-      cancelAnimationFrame(state.raf);
-      visibility.disconnect();
-      sizes.disconnect();
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerdown', onDown);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      canvas.removeEventListener('webglcontextlost', onLost);
-      state.cells.forEach(target => deleteTarget(gl, target));
-      state.glows.forEach(target => deleteTarget(gl, target));
-      [content, glowSource, blur, display].forEach(item => gl.deleteProgram(item.program));
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      canvas.remove();
-    });
-  });
+      cancelAnimationFrame(state.raf)
+      visibility.disconnect()
+      sizes.disconnect()
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
+      canvas.removeEventListener('webglcontextlost', onLost)
+      state.cells.forEach(target => deleteTarget(gl, target))
+      state.glows.forEach(target => deleteTarget(gl, target))
+      ;[content, glowSource, blur, display].forEach(item => gl.deleteProgram(item.program))
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.remove()
+    })
+  })
 
   return (
     <div
@@ -847,5 +871,5 @@ export default function CRTWarp(props: CRTWarpProps) {
       class={[ROOT, props.class, props.className].filter(Boolean).join(' ')}
       style={props.style}
     />
-  );
+  )
 }

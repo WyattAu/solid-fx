@@ -1,86 +1,89 @@
-import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type GalaxyDirection = 'forward' | 'backward';
+export type GalaxyDirection = 'forward' | 'backward'
 
 export interface GalaxyProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'className' | 'style' | 'ref'> {
-  focal?: [number, number];
-  rotation?: [number, number];
-  starSpeed?: number;
-  density?: number;
-  hueShift?: number;
-  disableAnimation?: boolean;
-  speed?: number;
-  mouseInteraction?: boolean;
-  glowIntensity?: number;
-  saturation?: number;
-  mouseRepulsion?: boolean;
-  repulsionStrength?: number;
-  twinkleIntensity?: number;
-  rotationSpeed?: number;
-  autoCenterRepulsion?: number;
-  transparent?: boolean;
-  lightMode?: boolean;
-  starColors?: string[];
-  starSize?: number;
-  flareIntensity?: number;
-  layers?: number;
-  direction?: GalaxyDirection;
-  clickWarp?: boolean;
-  intro?: boolean;
-  backgroundColor?: string;
-  opacity?: number;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
-  children?: JSX.Element;
+  extends Omit<
+    JSX.HTMLAttributes<HTMLDivElement>,
+    'children' | 'class' | 'className' | 'style' | 'ref'
+  > {
+  focal?: [number, number]
+  rotation?: [number, number]
+  starSpeed?: number
+  density?: number
+  hueShift?: number
+  disableAnimation?: boolean
+  speed?: number
+  mouseInteraction?: boolean
+  glowIntensity?: number
+  saturation?: number
+  mouseRepulsion?: boolean
+  repulsionStrength?: number
+  twinkleIntensity?: number
+  rotationSpeed?: number
+  autoCenterRepulsion?: number
+  transparent?: boolean
+  lightMode?: boolean
+  starColors?: string[]
+  starSize?: number
+  flareIntensity?: number
+  layers?: number
+  direction?: GalaxyDirection
+  clickWarp?: boolean
+  intro?: boolean
+  backgroundColor?: string
+  opacity?: number
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
+  children?: JSX.Element
 }
 
 type Settings = {
-  focal: number[];
-  rotation: number[];
-  starSpeed: number;
-  density: number;
-  hueShift: number;
-  disableAnimation: boolean;
-  speed: number;
-  mouseInteraction: boolean;
-  glowIntensity: number;
-  saturation: number;
-  mouseRepulsion: boolean;
-  repulsionStrength: number;
-  twinkleIntensity: number;
-  rotationSpeed: number;
-  autoCenterRepulsion: number;
-  transparent: boolean;
-  lightMode: boolean;
-  palette: string[];
-  starSize: number;
-  flareIntensity: number;
-  layers: number;
-  reverse: boolean;
-  clickWarp: boolean;
-  intro: boolean;
-  backgroundColor?: string;
-  opacity: number;
-  dpr?: number;
-};
+  focal: number[]
+  rotation: number[]
+  starSpeed: number
+  density: number
+  hueShift: number
+  disableAnimation: boolean
+  speed: number
+  mouseInteraction: boolean
+  glowIntensity: number
+  saturation: number
+  mouseRepulsion: boolean
+  repulsionStrength: number
+  twinkleIntensity: number
+  rotationSpeed: number
+  autoCenterRepulsion: number
+  transparent: boolean
+  lightMode: boolean
+  palette: string[]
+  starSize: number
+  flareIntensity: number
+  layers: number
+  reverse: boolean
+  clickWarp: boolean
+  intro: boolean
+  backgroundColor?: string
+  opacity: number
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-type Variant = { program: WebGLProgram | null; linked: Program | null; done: boolean };
+type Variant = { program: WebGLProgram | null; linked: Program | null; done: boolean }
 
-const MAX_LAYERS = 8;
-const MAX_COLORS = 4;
-const INTRO_SECONDS = 2.2;
+const MAX_LAYERS = 8
+const MAX_COLORS = 4
+const INTRO_SECONDS = 2.2
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -269,48 +272,48 @@ void main() {
   } else {
     outColor = vec4(mix(uBackground, col, uOpacity), 1.0);
   }
-}`;
+}`
 
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-
-const keyOf = (palette: boolean, repel: boolean, warp: boolean) => (palette ? 4 : 0) + (repel ? 2 : 0) + (warp ? 1 : 0);
+const keyOf = (palette: boolean, repel: boolean, warp: boolean) =>
+  (palette ? 4 : 0) + (repel ? 2 : 0) + (warp ? 1 : 0)
 
 const start = (gl: WebGL2RenderingContext, palette: boolean, repel: boolean, warp: boolean) => {
-  const defines = `${palette ? '#define PALETTE\n' : ''}${repel ? '#define REPEL\n' : ''}${warp ? '#define WARP\n' : ''}`;
-  const program = gl.createProgram();
-  const vertex = gl.createShader(gl.VERTEX_SHADER);
-  const fragment = gl.createShader(gl.FRAGMENT_SHADER);
-  if (!program || !vertex || !fragment) return null;
-  gl.shaderSource(vertex, VERTEX);
-  gl.shaderSource(fragment, FRAGMENT.replace('\n', `\n${defines}`));
-  gl.compileShader(vertex);
-  gl.compileShader(fragment);
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
-  return program;
-};
+  const defines = `${palette ? '#define PALETTE\n' : ''}${repel ? '#define REPEL\n' : ''}${warp ? '#define WARP\n' : ''}`
+  const program = gl.createProgram()
+  const vertex = gl.createShader(gl.VERTEX_SHADER)
+  const fragment = gl.createShader(gl.FRAGMENT_SHADER)
+  if (!program || !vertex || !fragment) return null
+  gl.shaderSource(vertex, VERTEX)
+  gl.shaderSource(fragment, FRAGMENT.replace('\n', `\n${defines}`))
+  gl.compileShader(vertex)
+  gl.compileShader(fragment)
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
+  return program
+}
 
 const finish = (gl: WebGL2RenderingContext, program: WebGLProgram): Program | null => {
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const Galaxy = (props: GalaxyProps) => {
-  const [own, rest] = splitProps(props, ['children', 'class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, ['children', 'class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = (): Settings => ({
     focal: Array.isArray(props.focal) ? props.focal : [0.5, 0.5],
@@ -330,7 +333,9 @@ const Galaxy = (props: GalaxyProps) => {
     autoCenterRepulsion: Math.max(0, props.autoCenterRepulsion ?? 0),
     transparent: props.transparent ?? true,
     lightMode: props.lightMode ?? false,
-    palette: Array.isArray(props.starColors) ? props.starColors.filter(Boolean).slice(0, MAX_COLORS) : [],
+    palette: Array.isArray(props.starColors)
+      ? props.starColors.filter(Boolean).slice(0, MAX_COLORS)
+      : [],
     starSize: Math.max(0, props.starSize ?? 1),
     flareIntensity: Math.max(0, props.flareIntensity ?? 1),
     layers: clamp(Math.round(props.layers ?? 4), 2, MAX_LAYERS),
@@ -339,79 +344,84 @@ const Galaxy = (props: GalaxyProps) => {
     intro: props.intro ?? true,
     backgroundColor: props.backgroundColor,
     opacity: clamp(props.opacity ?? 1, 0, 1),
-    dpr: props.dpr
-  });
+    dpr: props.dpr,
+  })
 
   onMount(() =>
     untrack(() => {
-      const container = containerRef;
-      const canvas = canvasRef;
+      const container = containerRef
+      const canvas = canvasRef
       const gl = canvas?.getContext('webgl2', {
         alpha: true,
         premultipliedAlpha: true,
         antialias: false,
         depth: false,
-        stencil: false
-      });
-      if (!container || !canvas || !gl) return;
+        stencil: false,
+      })
+      if (!container || !canvas || !gl) return
 
-      const parallel = gl.getExtension('KHR_parallel_shader_compile');
-      const programs = new Map<number, Variant>();
+      const parallel = gl.getExtension('KHR_parallel_shader_compile')
+      const programs = new Map<number, Variant>()
       const entry = (palette: boolean, repel: boolean, warp: boolean) => {
-        const key = keyOf(palette, repel, warp);
-        let found = programs.get(key);
+        const key = keyOf(palette, repel, warp)
+        let found = programs.get(key)
         if (!found) {
-          found = { program: start(gl, palette, repel, warp), linked: null, done: false };
-          programs.set(key, found);
+          found = { program: start(gl, palette, repel, warp), linked: null, done: false }
+          programs.set(key, found)
         }
-        return found;
-      };
+        return found
+      }
       const variant = (palette: boolean, repel: boolean, warp: boolean, wait: boolean) => {
-        const found = entry(palette, repel, warp);
+        const found = entry(palette, repel, warp)
         if (!found.done && found.program) {
-          if (!wait && parallel && !gl.getProgramParameter(found.program, parallel.COMPLETION_STATUS_KHR)) return null;
-          found.linked = finish(gl, found.program);
-          found.done = true;
+          if (
+            !wait &&
+            parallel &&
+            !gl.getProgramParameter(found.program, parallel.COMPLETION_STATUS_KHR)
+          )
+            return null
+          found.linked = finish(gl, found.program)
+          found.done = true
         }
-        return found.linked;
-      };
-      const initial = settings();
+        return found.linked
+      }
+      const initial = settings()
       if (!variant(initial.palette.length > 0, false, false, true)) {
-        programs.forEach(found => found.program && gl.deleteProgram(found.program));
-        return;
+        programs.forEach(found => found.program && gl.deleteProgram(found.program))
+        return
       }
 
-      const buffer = gl.createBuffer();
-      const vao = gl.createVertexArray();
-      gl.bindVertexArray(vao);
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      const buffer = gl.createBuffer()
+      const vao = gl.createVertexArray()
+      gl.bindVertexArray(vao)
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+      gl.enableVertexAttribArray(0)
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-      const cache = new Map<string, number[]>();
+      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+      const cache = new Map<string, number[]>()
       const parse = (value: string | undefined, fallback: number[]): number[] => {
-        if (!value) return fallback;
-        const key = String(value);
-        const cached = cache.get(key);
-        if (cached) return cached;
-        let rgb = fallback;
+        if (!value) return fallback
+        const key = String(value)
+        const cached = cache.get(key)
+        if (cached) return cached
+        let rgb = fallback
         if (probe) {
-          probe.clearRect(0, 0, 1, 1);
-          probe.fillStyle = '#000000';
-          probe.fillStyle = key;
-          probe.fillRect(0, 0, 1, 1);
-          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-          rgb = [r / 255, g / 255, b / 255];
+          probe.clearRect(0, 0, 1, 1)
+          probe.fillStyle = '#000000'
+          probe.fillStyle = key
+          probe.fillRect(0, 0, 1, 1)
+          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+          rgb = [r / 255, g / 255, b / 255]
         }
-        cache.set(key, rgb);
-        return rgb;
-      };
-      const colors = new Float32Array(MAX_COLORS * 3);
+        cache.set(key, rgb)
+        return rgb
+      }
+      const colors = new Float32Array(MAX_COLORS * 3)
 
-      const pointer = { x: 0.5, y: 0.5, inside: false };
+      const pointer = { x: 0.5, y: 0.5, inside: false }
       const state = {
         time: 0,
         gloss: 0,
@@ -421,220 +431,225 @@ const Galaxy = (props: GalaxyProps) => {
         my: 0.5,
         active: 0,
         boost: 0,
-        reveal: settings().intro && !reduce ? 0 : 1
-      };
-      let raf = 0;
-      let last = 0;
-      let visible = true;
+        reveal: settings().intro && !reduce ? 0 : 1,
+      }
+      let raf = 0
+      let last = 0
+      let visible = true
 
       const render = () => {
-        const s = settings();
-        s.palette.forEach((value, index) => colors.set(parse(value, [1, 1, 1]), index * 3));
-        const mode = s.lightMode ? (s.transparent ? 3 : 2) : s.transparent ? 1 : 0;
-        const background = parse(s.backgroundColor, s.lightMode ? [1, 1, 1] : [0, 0, 0]);
-        const reveal = state.reveal;
-        const palette = s.palette.length > 0;
-        const repel = s.autoCenterRepulsion > 0 || (s.mouseRepulsion && s.repulsionStrength > 0 && state.active > 0);
-        const warp = state.boost > 0;
-        const base = variant(palette, false, false, true);
-        if (!base) return;
-        const program = (repel || warp ? variant(palette, repel, warp, false) : null) ?? base;
-        const u = program.uniforms;
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(program.program);
-        gl.bindVertexArray(vao);
-        gl.uniform1f(u.uTime, state.time);
-        gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-        gl.uniform2f(u.uFocal, s.focal[0], s.focal[1]);
-        gl.uniform2f(u.uRotation, s.rotation[0], s.rotation[1]);
-        gl.uniform1f(u.uGloss, state.gloss);
-        gl.uniform1f(u.uDepth, state.depth);
-        gl.uniform1f(u.uDensity, s.density);
-        gl.uniform1f(u.uHueShift, s.hueShift);
-        gl.uniform1f(u.uSpeed, s.speed);
-        gl.uniform2f(u.uMouse, state.mx, state.my);
-        const stretch = 1 + state.boost * 5;
-        gl.uniform1f(u.uStarGlow, (0.05 * s.glowIntensity * s.starSize) / Math.pow(stretch, 0.6));
-        gl.uniform1f(u.uFlareGain, s.glowIntensity * s.flareIntensity);
-        gl.uniform1f(u.uSquash, 1 - 1 / (stretch * stretch));
-        gl.uniform1f(u.uSaturation, s.saturation);
-        gl.uniform1f(u.uMouseRepulsion, s.mouseRepulsion ? 1 : 0);
-        gl.uniform1f(u.uTwinkleIntensity, s.twinkleIntensity);
-        gl.uniform1f(u.uRotationAngle, state.angle);
-        gl.uniform1f(u.uRepulsionStrength, s.repulsionStrength);
-        gl.uniform1f(u.uMouseActiveFactor, state.active);
-        gl.uniform1f(u.uAutoCenterRepulsion, s.autoCenterRepulsion);
-        gl.uniform1i(u.uLayers, s.layers);
-        gl.uniform3fv(u.uColors, colors);
-        gl.uniform1i(u.uColorCount, s.palette.length);
-        gl.uniform1f(u.uWarp, state.boost);
-        const fade = Math.min(1, reveal / 0.35);
-        gl.uniform1f(u.uReveal, fade * fade * (3 - 2 * fade));
-        gl.uniform1f(u.uMode, mode);
-        gl.uniform3fv(u.uBackground, background);
-        gl.uniform1f(u.uOpacity, s.opacity);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      };
+        const s = settings()
+        s.palette.forEach((value, index) => colors.set(parse(value, [1, 1, 1]), index * 3))
+        const mode = s.lightMode ? (s.transparent ? 3 : 2) : s.transparent ? 1 : 0
+        const background = parse(s.backgroundColor, s.lightMode ? [1, 1, 1] : [0, 0, 0])
+        const reveal = state.reveal
+        const palette = s.palette.length > 0
+        const repel =
+          s.autoCenterRepulsion > 0 ||
+          (s.mouseRepulsion && s.repulsionStrength > 0 && state.active > 0)
+        const warp = state.boost > 0
+        const base = variant(palette, false, false, true)
+        if (!base) return
+        const program = (repel || warp ? variant(palette, repel, warp, false) : null) ?? base
+        const u = program.uniforms
+        gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.useProgram(program.program)
+        gl.bindVertexArray(vao)
+        gl.uniform1f(u.uTime, state.time)
+        gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+        gl.uniform2f(u.uFocal, s.focal[0], s.focal[1])
+        gl.uniform2f(u.uRotation, s.rotation[0], s.rotation[1])
+        gl.uniform1f(u.uGloss, state.gloss)
+        gl.uniform1f(u.uDepth, state.depth)
+        gl.uniform1f(u.uDensity, s.density)
+        gl.uniform1f(u.uHueShift, s.hueShift)
+        gl.uniform1f(u.uSpeed, s.speed)
+        gl.uniform2f(u.uMouse, state.mx, state.my)
+        const stretch = 1 + state.boost * 5
+        gl.uniform1f(u.uStarGlow, (0.05 * s.glowIntensity * s.starSize) / stretch ** 0.6)
+        gl.uniform1f(u.uFlareGain, s.glowIntensity * s.flareIntensity)
+        gl.uniform1f(u.uSquash, 1 - 1 / (stretch * stretch))
+        gl.uniform1f(u.uSaturation, s.saturation)
+        gl.uniform1f(u.uMouseRepulsion, s.mouseRepulsion ? 1 : 0)
+        gl.uniform1f(u.uTwinkleIntensity, s.twinkleIntensity)
+        gl.uniform1f(u.uRotationAngle, state.angle)
+        gl.uniform1f(u.uRepulsionStrength, s.repulsionStrength)
+        gl.uniform1f(u.uMouseActiveFactor, state.active)
+        gl.uniform1f(u.uAutoCenterRepulsion, s.autoCenterRepulsion)
+        gl.uniform1i(u.uLayers, s.layers)
+        gl.uniform3fv(u.uColors, colors)
+        gl.uniform1i(u.uColorCount, s.palette.length)
+        gl.uniform1f(u.uWarp, state.boost)
+        const fade = Math.min(1, reveal / 0.35)
+        gl.uniform1f(u.uReveal, fade * fade * (3 - 2 * fade))
+        gl.uniform1f(u.uMode, mode)
+        gl.uniform3fv(u.uBackground, background)
+        gl.uniform1f(u.uOpacity, s.opacity)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+      }
 
       const frame = (now: number) => {
-        raf = 0;
-        if (!visible || document.hidden) return;
-        const s = settings();
-        const dt = last ? clamp((now - last) / 1000, 0.0005, 0.05) : 1 / 60;
-        last = now;
-        const motion = s.disableAnimation || reduce ? 0 : 1;
+        raf = 0
+        if (!visible || document.hidden) return
+        const s = settings()
+        const dt = last ? clamp((now - last) / 1000, 0.0005, 0.05) : 1 / 60
+        last = now
+        const motion = s.disableAnimation || reduce ? 0 : 1
         if (s.intro && !reduce && state.reveal < 1) {
-          state.reveal = Math.min(1, state.reveal + dt / INTRO_SECONDS);
-          state.boost = Math.max(state.boost, Math.pow(1 - state.reveal, 2) * 1.4);
+          state.reveal = Math.min(1, state.reveal + dt / INTRO_SECONDS)
+          state.boost = Math.max(state.boost, (1 - state.reveal) ** 2 * 1.4)
         } else if (!s.intro || reduce) {
-          state.reveal = 1;
+          state.reveal = 1
         }
-        const flight = (s.starSpeed / 10) * (s.reverse ? -1 : 1);
-        state.time += dt * motion;
-        state.gloss += dt * flight * motion;
-        state.depth += dt * flight * s.speed * motion * (1 + state.boost * 14);
-        state.angle += dt * s.rotationSpeed * motion;
-        state.boost *= Math.exp(-dt * 1.3);
-        if (state.boost < 0.001) state.boost = 0;
+        const flight = (s.starSpeed / 10) * (s.reverse ? -1 : 1)
+        state.time += dt * motion
+        state.gloss += dt * flight * motion
+        state.depth += dt * flight * s.speed * motion * (1 + state.boost * 14)
+        state.angle += dt * s.rotationSpeed * motion
+        state.boost *= Math.exp(-dt * 1.3)
+        if (state.boost < 0.001) state.boost = 0
 
-        const follow = 1 - Math.exp(-dt / 0.325);
-        const engaged = s.mouseInteraction && pointer.inside && !reduce;
+        const follow = 1 - Math.exp(-dt / 0.325)
+        const engaged = s.mouseInteraction && pointer.inside && !reduce
         if (engaged) {
-          state.mx += (pointer.x - state.mx) * follow;
-          state.my += (pointer.y - state.my) * follow;
+          state.mx += (pointer.x - state.mx) * follow
+          state.my += (pointer.y - state.my) * follow
         }
-        const target = engaged ? 1 : 0;
-        state.active += (target - state.active) * follow;
-        if (Math.abs(target - state.active) < 0.001) state.active = target;
+        const target = engaged ? 1 : 0
+        state.active += (target - state.active) * follow
+        if (Math.abs(target - state.active) < 0.001) state.active = target
 
-        render();
-        const busy = motion > 0 || state.boost > 0 || state.active !== target || state.reveal < 1;
-        if (busy) raf = requestAnimationFrame(frame);
-        else last = 0;
-      };
+        render()
+        const busy = motion > 0 || state.boost > 0 || state.active !== target || state.reveal < 1
+        if (busy) raf = requestAnimationFrame(frame)
+        else last = 0
+      }
 
       const wake = () => {
-        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
-      };
+        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
+      }
 
       const resize = () => {
-        const s = settings();
-        const width = Math.max(1, container.clientWidth);
-        const height = Math.max(1, container.clientHeight);
-        const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-        canvas.width = Math.max(1, Math.round(width * ratio));
-        canvas.height = Math.max(1, Math.round(height * ratio));
-        render();
-        wake();
-      };
+        const s = settings()
+        const width = Math.max(1, container.clientWidth)
+        const height = Math.max(1, container.clientHeight)
+        const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+        canvas.width = Math.max(1, Math.round(width * ratio))
+        canvas.height = Math.max(1, Math.round(height * ratio))
+        render()
+        wake()
+      }
 
       const locate = (event: PointerEvent) => {
-        const rect = container.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
-        pointer.x = x / Math.max(1, rect.width);
-        pointer.y = 1 - y / Math.max(1, rect.height);
-      };
+        const rect = container.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+        pointer.x = x / Math.max(1, rect.width)
+        pointer.y = 1 - y / Math.max(1, rect.height)
+      }
 
       const onPointerMove = (event: PointerEvent) => {
-        locate(event);
-        wake();
-      };
+        locate(event)
+        wake()
+      }
 
       const onPointerDown = (event: PointerEvent) => {
-        const s = settings();
-        locate(event);
-        if (!pointer.inside || !s.clickWarp || reduce) return;
-        state.boost = Math.min(1.6, state.boost + 1);
-        wake();
-      };
+        const s = settings()
+        locate(event)
+        if (!pointer.inside || !s.clickWarp || reduce) return
+        state.boost = Math.min(1.6, state.boost + 1)
+        wake()
+      }
 
       const onPointerUp = (event: PointerEvent) => {
-        if (event.pointerType !== 'mouse') pointer.inside = false;
-      };
+        if (event.pointerType !== 'mouse') pointer.inside = false
+      }
 
       const onPointerLeave = () => {
-        pointer.inside = false;
-      };
+        pointer.inside = false
+      }
 
       const onVisibility = () => {
-        last = 0;
-        wake();
-      };
+        last = 0
+        wake()
+      }
 
-      const resizeObserver = new ResizeObserver(resize);
-      resizeObserver.observe(container);
+      const resizeObserver = new ResizeObserver(resize)
+      resizeObserver.observe(container)
       const intersection = new IntersectionObserver(entries => {
-        visible = entries.some(entry => entry.isIntersecting);
+        visible = entries.some(entry => entry.isIntersecting)
         if (visible) {
-          last = 0;
-          wake();
+          last = 0
+          wake()
         }
-      });
-      intersection.observe(container);
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerdown', onPointerDown, { passive: true });
-      window.addEventListener('pointerup', onPointerUp, { passive: true });
-      window.addEventListener('pointercancel', onPointerUp, { passive: true });
-      document.documentElement.addEventListener('pointerleave', onPointerLeave);
-      document.addEventListener('visibilitychange', onVisibility);
-      resize();
+      })
+      intersection.observe(container)
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { passive: true })
+      window.addEventListener('pointercancel', onPointerUp, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onPointerLeave)
+      document.addEventListener('visibilitychange', onVisibility)
+      resize()
 
-      const repelling = initial.autoCenterRepulsion > 0 || (initial.mouseInteraction && initial.mouseRepulsion);
-      const tinted = initial.palette.length > 0;
-      if (initial.clickWarp || initial.intro) entry(tinted, false, true);
-      if (repelling) entry(tinted, true, false);
-      if (repelling && initial.clickWarp) entry(tinted, true, true);
+      const repelling =
+        initial.autoCenterRepulsion > 0 || (initial.mouseInteraction && initial.mouseRepulsion)
+      const tinted = initial.palette.length > 0
+      if (initial.clickWarp || initial.intro) entry(tinted, false, true)
+      if (repelling) entry(tinted, true, false)
+      if (repelling && initial.clickWarp) entry(tinted, true, true)
 
-      let lastDpr = settings().dpr;
+      let lastDpr = settings().dpr
       wakeRef = () => {
-        const s = settings();
+        const s = settings()
         if (s.dpr !== lastDpr) {
-          lastDpr = s.dpr;
-          resize();
-          return;
+          lastDpr = s.dpr
+          resize()
+          return
         }
-        if (!raf) render();
-        wake();
-      };
+        if (!raf) render()
+        wake()
+      }
 
       onCleanup(() => {
-        cancelAnimationFrame(raf);
-        wakeRef = null;
-        resizeObserver.disconnect();
-        intersection.disconnect();
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerdown', onPointerDown);
-        window.removeEventListener('pointerup', onPointerUp);
-        window.removeEventListener('pointercancel', onPointerUp);
-        document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-        document.removeEventListener('visibilitychange', onVisibility);
-        programs.forEach(found => found.program && gl.deleteProgram(found.program));
-        gl.deleteBuffer(buffer);
-        gl.deleteVertexArray(vao);
-        gl.getExtension('WEBGL_lose_context')?.loseContext();
-      });
-    })
-  );
+        cancelAnimationFrame(raf)
+        wakeRef = null
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointerup', onPointerUp)
+        window.removeEventListener('pointercancel', onPointerUp)
+        document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        programs.forEach(found => found.program && gl.deleteProgram(found.program))
+        gl.deleteBuffer(buffer)
+        gl.deleteVertexArray(vao)
+        gl.getExtension('WEBGL_lose_context')?.loseContext()
+      })
+    }),
+  )
 
   // Upstream's dependency-free effect nudged the renderer after every render;
   // tracking every prop read reproduces that wake-on-any-change behavior.
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       style={own.style}
       {...rest}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default Galaxy;
+export default Galaxy

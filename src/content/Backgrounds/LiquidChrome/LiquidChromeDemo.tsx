@@ -1,4 +1,4 @@
-import LiquidChrome from './LiquidChrome';
+import LiquidChrome from './LiquidChrome'
 
 const LiquidChromeDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -11,6 +11,6 @@ const LiquidChromeDemo = () => (
       roughness={0.3}
     />
   </div>
-);
+)
 
-export default LiquidChromeDemo;
+export default LiquidChromeDemo

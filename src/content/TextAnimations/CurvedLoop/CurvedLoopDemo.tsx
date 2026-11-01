@@ -1,4 +1,4 @@
-import CurvedLoop from './CurvedLoop';
+import CurvedLoop from './CurvedLoop'
 
 function CurvedLoopDemo() {
   return (
@@ -11,7 +11,7 @@ function CurvedLoopDemo() {
         edgeFade={0.3}
       />
     </div>
-  );
+  )
 }
 
-export default CurvedLoopDemo;
+export default CurvedLoopDemo

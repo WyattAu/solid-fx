@@ -1,4 +1,4 @@
-import GlassSurface from './GlassSurface';
+import GlassSurface from './GlassSurface'
 
 function GlassSurfaceDemo() {
   return (
@@ -6,8 +6,7 @@ function GlassSurfaceDemo() {
       <div
         class="flex h-full w-full items-center justify-center rounded-2xl"
         style={{
-          background:
-            'linear-gradient(135deg, #0f172a 0%, #1e3a8a 35%, #7c3aed 70%, #db2777 100%)'
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 35%, #7c3aed 70%, #db2777 100%)',
         }}
       >
         <GlassSurface width={280} height={140} borderRadius={24}>
@@ -15,7 +14,7 @@ function GlassSurfaceDemo() {
         </GlassSurface>
       </div>
     </div>
-  );
+  )
 }
 
-export default GlassSurfaceDemo;
+export default GlassSurfaceDemo

@@ -1,4 +1,4 @@
-import ScrollExpand from './ScrollExpand';
+import ScrollExpand from './ScrollExpand'
 
 function ScrollExpandDemo() {
   return (
@@ -16,7 +16,7 @@ function ScrollExpandDemo() {
         </ScrollExpand>
       </div>
     </div>
-  );
+  )
 }
 
-export default ScrollExpandDemo;
+export default ScrollExpandDemo

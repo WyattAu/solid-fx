@@ -1,4 +1,4 @@
-import ScrambledText from './ScrambledText';
+import ScrambledText from './ScrambledText'
 
 function ScrambledTextDemo() {
   return (
@@ -14,7 +14,7 @@ function ScrambledTextDemo() {
         Hover over this text to scramble it with a magnetic wave.
       </ScrambledText>
     </div>
-  );
+  )
 }
 
-export default ScrambledTextDemo;
+export default ScrambledTextDemo

@@ -1,4 +1,4 @@
-import ScrollVelocity from './ScrollVelocity';
+import ScrollVelocity from './ScrollVelocity'
 
 function ScrollVelocityDemo() {
   return (
@@ -17,7 +17,7 @@ function ScrollVelocityDemo() {
         className="text-white/70"
       />
     </div>
-  );
+  )
 }
 
-export default ScrollVelocityDemo;
+export default ScrollVelocityDemo

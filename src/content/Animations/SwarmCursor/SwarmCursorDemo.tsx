@@ -1,4 +1,4 @@
-import SwarmCursor from './SwarmCursor';
+import SwarmCursor from './SwarmCursor'
 
 function SwarmCursorDemo() {
   return (
@@ -20,7 +20,7 @@ function SwarmCursorDemo() {
         </div>
       </SwarmCursor>
     </div>
-  );
+  )
 }
 
-export default SwarmCursorDemo;
+export default SwarmCursorDemo

@@ -1,4 +1,4 @@
-import Noise from './Noise';
+import Noise from './Noise'
 
 function NoiseDemo() {
   return (
@@ -18,7 +18,7 @@ function NoiseDemo() {
         fps={24}
       />
     </div>
-  );
+  )
 }
 
-export default NoiseDemo;
+export default NoiseDemo

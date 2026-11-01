@@ -1,4 +1,4 @@
-import HoldButton from './HoldButton';
+import HoldButton from './HoldButton'
 
 function HoldButtonDemo() {
   return (
@@ -6,7 +6,7 @@ function HoldButtonDemo() {
       <HoldButton holdTime={1600} onHold={() => console.log('held!')} />
       <HoldButton size="lg" fillColor="#ef4444" doneLabel="Everything gone" holdTime={1200} />
     </div>
-  );
+  )
 }
 
-export default HoldButtonDemo;
+export default HoldButtonDemo

@@ -1,4 +1,4 @@
-import LightRays from './LightRays';
+import LightRays from './LightRays'
 
 const LightRaysDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -12,6 +12,6 @@ const LightRaysDemo = () => (
       pulsating
     />
   </div>
-);
+)
 
-export default LightRaysDemo;
+export default LightRaysDemo

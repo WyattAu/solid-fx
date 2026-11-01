@@ -1,5 +1,5 @@
-import { For } from 'solid-js';
-import WakeSlider from './WakeSlider';
+import { For } from 'solid-js'
+import WakeSlider from './WakeSlider'
 
 function WakeSliderDemo() {
   return (
@@ -16,14 +16,16 @@ function WakeSliderDemo() {
           crestColor="#fbbf24"
           fillColor="#f59e0b"
           trackColor="#3f3f46"
-          formatValue={(v) => `${Math.round(v)}°`}
+          formatValue={v => `${Math.round(v)}°`}
         />
       </div>
       <p class="text-xs text-zinc-600">
-        <For each={['Drag to scrub', 'Arrow keys step', 'Flick for wake']}>{(t) => <span class="mx-2">{t}</span>}</For>
+        <For each={['Drag to scrub', 'Arrow keys step', 'Flick for wake']}>
+          {t => <span class="mx-2">{t}</span>}
+        </For>
       </p>
     </div>
-  );
+  )
 }
 
-export default WakeSliderDemo;
+export default WakeSliderDemo

@@ -1,4 +1,4 @@
-import LightTunnel from './LightTunnel';
+import LightTunnel from './LightTunnel'
 
 const LightTunnelDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -12,6 +12,6 @@ const LightTunnelDemo = () => (
       brightness={1.1}
     />
   </div>
-);
+)
 
-export default LightTunnelDemo;
+export default LightTunnelDemo

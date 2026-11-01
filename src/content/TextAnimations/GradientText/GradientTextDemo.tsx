@@ -1,4 +1,4 @@
-import GradientText from './GradientText';
+import GradientText from './GradientText'
 
 function GradientTextDemo() {
   return (
@@ -12,7 +12,7 @@ function GradientTextDemo() {
         Gradient Text
       </GradientText>
     </div>
-  );
+  )
 }
 
-export default GradientTextDemo;
+export default GradientTextDemo

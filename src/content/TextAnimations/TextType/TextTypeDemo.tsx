@@ -1,4 +1,4 @@
-import TextType from './TextType';
+import TextType from './TextType'
 
 function TextTypeDemo() {
   return (
@@ -11,9 +11,13 @@ function TextTypeDemo() {
         pauseDuration={1400}
         cursorStyle="bar"
       />
-      <TextType class="text-lg text-gray-400" text="Deleting is just typing in reverse..." cursorCharacter="_" />
+      <TextType
+        class="text-lg text-gray-400"
+        text="Deleting is just typing in reverse..."
+        cursorCharacter="_"
+      />
     </div>
-  );
+  )
 }
 
-export default TextTypeDemo;
+export default TextTypeDemo

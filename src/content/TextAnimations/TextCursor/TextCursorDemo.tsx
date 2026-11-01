@@ -1,4 +1,4 @@
-import TextCursor from './TextCursor';
+import TextCursor from './TextCursor'
 
 function TextCursorDemo() {
   return (
@@ -8,7 +8,7 @@ function TextCursorDemo() {
         Move the pointer around to stamp glyphs along its path.
       </p>
     </div>
-  );
+  )
 }
 
-export default TextCursorDemo;
+export default TextCursorDemo

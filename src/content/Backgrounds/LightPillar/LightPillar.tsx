@@ -1,74 +1,74 @@
-import { createEffect, createSignal, onCleanup, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface LightPillarProps {
-  topColor?: string;
-  bottomColor?: string;
-  intensity?: number;
-  rotationSpeed?: number;
-  flow?: number;
-  interactive?: boolean;
-  clickPulse?: boolean;
-  glowAmount?: number;
-  bloom?: number;
-  pillarWidth?: number;
-  pillarHeight?: number;
-  pillarRotation?: number;
-  twist?: number;
-  detail?: number;
-  noiseIntensity?: number;
-  fade?: number;
-  intro?: boolean;
-  mixBlendMode?: JSX.CSSProperties['mix-blend-mode'];
-  quality?: 'low' | 'medium' | 'high';
-  resolution?: number;
-  lightMode?: boolean;
-  paused?: boolean;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  topColor?: string
+  bottomColor?: string
+  intensity?: number
+  rotationSpeed?: number
+  flow?: number
+  interactive?: boolean
+  clickPulse?: boolean
+  glowAmount?: number
+  bloom?: number
+  pillarWidth?: number
+  pillarHeight?: number
+  pillarRotation?: number
+  twist?: number
+  detail?: number
+  noiseIntensity?: number
+  fade?: number
+  intro?: boolean
+  mixBlendMode?: JSX.CSSProperties['mix-blend-mode']
+  quality?: 'low' | 'medium' | 'high'
+  resolution?: number
+  lightMode?: boolean
+  paused?: boolean
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 interface Settings {
-  topColor: string;
-  bottomColor: string;
-  intensity: number;
-  rotationSpeed: number;
-  flow: number;
-  interactive: boolean;
-  clickPulse: boolean;
-  glowAmount: number;
-  bloom: number;
-  pillarWidth: number;
-  pillarHeight: number;
-  pillarRotation: number;
-  twist: number;
-  detail: number;
-  noiseIntensity: number;
-  fade: number;
-  intro: boolean;
-  scale: number;
-  lightMode: boolean;
-  paused: boolean;
+  topColor: string
+  bottomColor: string
+  intensity: number
+  rotationSpeed: number
+  flow: number
+  interactive: boolean
+  clickPulse: boolean
+  glowAmount: number
+  bloom: number
+  pillarWidth: number
+  pillarHeight: number
+  pillarRotation: number
+  twist: number
+  detail: number
+  noiseIntensity: number
+  fade: number
+  intro: boolean
+  scale: number
+  lightMode: boolean
+  paused: boolean
 }
 
-type Uniforms = Record<string, WebGLUniformLocation | null>;
+type Uniforms = Record<string, WebGLUniformLocation | null>
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Uniforms;
+  program: WebGLProgram
+  uniforms: Uniforms
 }
 
 interface Pulse {
-  axis: number;
-  age: number;
+  axis: number
+  age: number
 }
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const MARCH = `#version 300 es
 precision highp float;
@@ -134,7 +134,7 @@ void main() {
   vec3 col = tanh((uBottomColor * glow + (uTopColor - uBottomColor) * lift) * uGlowAmount / uWidthNorm);
   float peak = max(col.r, max(col.g, col.b));
   outColor = vec4(col, smoothstep(0.62, 1.0, peak));
-}`;
+}`
 
 const COMPOSITE = `#version 300 es
 precision highp float;
@@ -243,57 +243,57 @@ void main() {
     result *= mask;
   }
   outColor = vec4(result, 1.0);
-}`;
+}`
 
-const QUALITY: Record<string, number> = { low: 0.35, medium: 0.5, high: 0.6 };
-const INTRO_SECONDS = 2.1;
-const PULSE_LIFE = 1.4;
-const MIN_SCALE = 0.25;
+const QUALITY: Record<string, number> = { low: 0.35, medium: 0.5, high: 0.6 }
+const INTRO_SECONDS = 2.1
+const PULSE_LIFE = 1.4
+const MIN_SCALE = 0.25
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-const ease = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+const easeOut = (t: number) => 1 - (1 - t) ** 3
+const ease = (t: number) => t * t * t * (t * (t * 6 - 15) + 10)
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Uniforms = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Uniforms = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const LightPillar = (props: LightPillarProps) => {
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
-  const mixBlendMode = () => props.mixBlendMode ?? 'screen';
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
+  const mixBlendMode = () => props.mixBlendMode ?? 'screen'
 
   // Upstream rebuilt this object each render and read it back through
   // settingsRef.current; re-reading props per call has the same freshness.
@@ -315,89 +315,93 @@ const LightPillar = (props: LightPillarProps) => {
     noiseIntensity: Math.max(0, props.noiseIntensity ?? 0.5),
     fade: clamp(props.fade ?? 0, 0, 1),
     intro: props.intro ?? true,
-    scale: clamp(props.resolution ?? QUALITY[props.quality ?? 'high'] ?? QUALITY.high, MIN_SCALE, 2),
+    scale: clamp(
+      props.resolution ?? QUALITY[props.quality ?? 'high'] ?? QUALITY.high,
+      MIN_SCALE,
+      2,
+    ),
     lightMode: props.lightMode ?? false,
-    paused: props.paused ?? false
-  });
+    paused: props.paused ?? false,
+  })
 
   // Upstream rebuilt the whole pipeline keyed on [generation] after context restore.
   createEffect(() => {
-    const gen = generation();
+    const _gen = generation()
     untrack(() => {
-      const container = containerRef;
-      const canvas = canvasRef;
+      const container = containerRef
+      const canvas = canvasRef
       const gl = canvas?.getContext('webgl2', {
         alpha: true,
         premultipliedAlpha: true,
         antialias: false,
         depth: false,
         stencil: false,
-        powerPreference: 'high-performance'
-      });
-      if (!container || !canvas || !gl) return;
+        powerPreference: 'high-performance',
+      })
+      if (!container || !canvas || !gl) return
 
-      const floatTargets = !!gl.getExtension('EXT_color_buffer_float');
-      const marchProgram = link(gl, MARCH);
-      const compositeProgram = link(gl, COMPOSITE);
-      if (!marchProgram || !compositeProgram) return;
+      const floatTargets = !!gl.getExtension('EXT_color_buffer_float')
+      const marchProgram = link(gl, MARCH)
+      const compositeProgram = link(gl, COMPOSITE)
+      if (!marchProgram || !compositeProgram) return
 
       const onContextLost = (event: Event) => {
-        event.preventDefault();
-      };
-      const onContextRestored = () => setGeneration(generation() + 1);
-      canvas.addEventListener('webglcontextlost', onContextLost);
-      canvas.addEventListener('webglcontextrestored', onContextRestored);
+        event.preventDefault()
+      }
+      const onContextRestored = () => setGeneration(generation() + 1)
+      canvas.addEventListener('webglcontextlost', onContextLost)
+      canvas.addEventListener('webglcontextrestored', onContextRestored)
 
-      const buffer = gl.createBuffer();
-      const vao = gl.createVertexArray();
-      gl.bindVertexArray(vao);
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      const buffer = gl.createBuffer()
+      const vao = gl.createVertexArray()
+      gl.bindVertexArray(vao)
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+      gl.enableVertexAttribArray(0)
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-      let texture: WebGLTexture | null = null;
-      const framebuffer = gl.createFramebuffer();
-      const target = { width: 0, height: 0 };
+      let texture: WebGLTexture | null = null
+      const framebuffer = gl.createFramebuffer()
+      const target = { width: 0, height: 0 }
       const sizeTarget = (width: number, height: number) => {
-        if (target.width === width && target.height === height) return;
-        target.width = width;
-        target.height = height;
-        if (texture) gl.deleteTexture(texture);
-        texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        const levels = Math.floor(Math.log2(Math.max(width, height))) + 1;
-        gl.texStorage2D(gl.TEXTURE_2D, levels, floatTargets ? gl.RGBA16F : gl.RGBA8, width, height);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-      };
+        if (target.width === width && target.height === height) return
+        target.width = width
+        target.height = height
+        if (texture) gl.deleteTexture(texture)
+        texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        const levels = Math.floor(Math.log2(Math.max(width, height))) + 1
+        gl.texStorage2D(gl.TEXTURE_2D, levels, floatTargets ? gl.RGBA16F : gl.RGBA8, width, height)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+      }
 
-      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-      const colorCache = new Map<string, number[]>();
+      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+      const colorCache = new Map<string, number[]>()
       const toRgb = (value: string): number[] => {
-        if (colorCache.has(value)) return colorCache.get(value) as number[];
-        let rgb = [1, 1, 1];
+        if (colorCache.has(value)) return colorCache.get(value) as number[]
+        let rgb = [1, 1, 1]
         if (probe) {
-          probe.clearRect(0, 0, 1, 1);
-          probe.fillStyle = '#ffffff';
-          probe.fillStyle = value;
-          probe.fillRect(0, 0, 1, 1);
-          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-          rgb = [r / 255, g / 255, b / 255];
+          probe.clearRect(0, 0, 1, 1)
+          probe.fillStyle = '#ffffff'
+          probe.fillStyle = value
+          probe.fillRect(0, 0, 1, 1)
+          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+          rgb = [r / 255, g / 255, b / 255]
         }
-        colorCache.set(value, rgb);
-        return rgb;
-      };
+        colorCache.set(value, rgb)
+        return rgb
+      }
 
-      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-      const view = { width: 1, height: 1, ratio: 1 };
-      const pointer = { x: 0, y: 0, inside: false };
-      const pulses: Pulse[] = [];
-      const pulseData = new Float32Array(12);
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+      const view = { width: 1, height: 1, ratio: 1 }
+      const pointer = { x: 0, y: 0, inside: false }
+      const pulses: Pulse[] = []
+      const pulseData = new Float32Array(12)
       const state = {
         clock: 0,
         intro: settings().intro && !reduce ? 0 : 1,
@@ -407,242 +411,248 @@ const LightPillar = (props: LightPillarProps) => {
         shift: 0,
         governor: 1,
         slow: 0,
-        quick: 0
-      };
-      let raf = 0;
-      let last = 0;
-      let visible = true;
+        quick: 0,
+      }
+      let raf = 0
+      let last = 0
+      let visible = true
 
       const axisAt = (x: number, y: number, angle: number) => {
-        const aspect = view.width / view.height;
-        const px = ((x / view.width) * 2 - 1) * aspect - state.shift;
-        const py = 1 - (y / view.height) * 2;
-        return Math.sin(angle) * px + Math.cos(angle) * py;
-      };
+        const aspect = view.width / view.height
+        const px = ((x / view.width) * 2 - 1) * aspect - state.shift
+        const py = 1 - (y / view.height) * 2
+        return Math.sin(angle) * px + Math.cos(angle) * py
+      }
 
       const render = () => {
-        const s = settings();
-        const scale = Math.max(MIN_SCALE, s.scale * state.governor);
-        const fieldWidth = Math.max(1, Math.round(view.width * scale));
-        const fieldHeight = Math.max(1, Math.round(view.height * scale));
-        sizeTarget(fieldWidth, fieldHeight);
+        const s = settings()
+        const scale = Math.max(MIN_SCALE, s.scale * state.governor)
+        const fieldWidth = Math.max(1, Math.round(view.width * scale))
+        const fieldHeight = Math.max(1, Math.round(view.height * scale))
+        sizeTarget(fieldWidth, fieldHeight)
 
-        const grow = ease(state.intro);
-        const rise = easeOut(state.intro);
-        const tilt = ((s.pillarRotation + state.lean) * Math.PI) / 180;
-        const angle = state.clock * 0.3 + state.spin;
-        const width = s.pillarWidth * (0.3 + 0.7 * grow);
+        const grow = ease(state.intro)
+        const rise = easeOut(state.intro)
+        const tilt = ((s.pillarRotation + state.lean) * Math.PI) / 180
+        const angle = state.clock * 0.3 + state.spin
+        const width = s.pillarWidth * (0.3 + 0.7 * grow)
 
-        gl.bindVertexArray(vao);
-        const m = marchProgram.uniforms;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        gl.viewport(0, 0, target.width, target.height);
-        gl.useProgram(marchProgram.program);
-        gl.uniform1f(m.uTime, state.clock * s.flow);
-        gl.uniform2f(m.uResolution, view.width, view.height);
-        gl.uniform2f(m.uTarget, target.width, target.height);
-        gl.uniform2f(m.uRot, Math.cos(angle), Math.sin(angle));
-        gl.uniform2f(m.uPillarRot, Math.cos(tilt), Math.sin(tilt));
-        gl.uniform2f(m.uWave, Math.sin(s.twist), Math.cos(s.twist));
-        gl.uniform1f(m.uShift, state.shift);
-        gl.uniform1f(m.uPillarWidth, width);
-        gl.uniform1f(m.uPillarHeight, s.pillarHeight);
-        gl.uniform1i(m.uDetail, s.detail);
-        gl.uniform3fv(m.uTopColor, toRgb(s.topColor));
-        gl.uniform3fv(m.uBottomColor, toRgb(s.bottomColor));
-        gl.uniform1f(m.uGlowAmount, s.glowAmount);
-        gl.uniform1f(m.uWidthNorm, width / 3);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        if (s.bloom > 0) gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindVertexArray(vao)
+        const m = marchProgram.uniforms
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.viewport(0, 0, target.width, target.height)
+        gl.useProgram(marchProgram.program)
+        gl.uniform1f(m.uTime, state.clock * s.flow)
+        gl.uniform2f(m.uResolution, view.width, view.height)
+        gl.uniform2f(m.uTarget, target.width, target.height)
+        gl.uniform2f(m.uRot, Math.cos(angle), Math.sin(angle))
+        gl.uniform2f(m.uPillarRot, Math.cos(tilt), Math.sin(tilt))
+        gl.uniform2f(m.uWave, Math.sin(s.twist), Math.cos(s.twist))
+        gl.uniform1f(m.uShift, state.shift)
+        gl.uniform1f(m.uPillarWidth, width)
+        gl.uniform1f(m.uPillarHeight, s.pillarHeight)
+        gl.uniform1i(m.uDetail, s.detail)
+        gl.uniform3fv(m.uTopColor, toRgb(s.topColor))
+        gl.uniform3fv(m.uBottomColor, toRgb(s.bottomColor))
+        gl.uniform1f(m.uGlowAmount, s.glowAmount)
+        gl.uniform1f(m.uWidthNorm, width / 3)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        if (s.bloom > 0) gl.generateMipmap(gl.TEXTURE_2D)
 
-        pulseData.fill(0);
+        pulseData.fill(0)
         pulses.forEach((pulse, index) => {
-          pulseData.set([pulse.axis + pulse.age * 1.7, Math.exp(-pulse.age / (PULSE_LIFE * 0.45)), 0, 0], index * 4);
-        });
+          pulseData.set(
+            [pulse.axis + pulse.age * 1.7, Math.exp(-pulse.age / (PULSE_LIFE * 0.45)), 0, 0],
+            index * 4,
+          )
+        })
 
-        const c = compositeProgram.uniforms;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(compositeProgram.program);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.uniform1i(c.uField, 0);
-        gl.uniform2f(c.uFieldSize, target.width, target.height);
-        gl.uniform2f(c.uView, canvas.width, canvas.height);
-        gl.uniform2f(c.uAspect, view.width / view.height, 1);
-        gl.uniform2f(c.uPillarRot, Math.cos(tilt), Math.sin(tilt));
-        gl.uniform1f(c.uShift, state.shift);
-        gl.uniform1f(c.uIntensity, s.intensity * (0.15 + 0.85 * rise) * (1 + 0.12 * state.touch));
-        gl.uniform1f(c.uNoiseIntensity, s.noiseIntensity);
-        gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0);
-        const chroma = (rgb: number[]) => Math.max(...rgb) - Math.min(...rgb);
-        const vivid = Math.max(chroma(toRgb(s.topColor)), chroma(toRgb(s.bottomColor)));
-        gl.uniform1f(c.uNeutral, 1 - clamp((vivid - 0.08) / 0.12, 0, 1));
-        gl.uniform1f(c.uBloom, s.bloom);
-        gl.uniform1f(c.uFade, s.fade);
-        const span = view.width / view.height + 1.2;
-        gl.uniform1f(c.uReveal, state.intro >= 1 ? 1e4 : -span + rise * (span * 2 + 1.2));
-        gl.uniform1f(c.uFlare, state.intro >= 1 ? 0 : (1 - rise) * 1.3 * Math.min(1, state.intro * 8));
-        gl.uniform4fv(c.uPulses, pulseData);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      };
+        const c = compositeProgram.uniforms
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.useProgram(compositeProgram.program)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.uniform1i(c.uField, 0)
+        gl.uniform2f(c.uFieldSize, target.width, target.height)
+        gl.uniform2f(c.uView, canvas.width, canvas.height)
+        gl.uniform2f(c.uAspect, view.width / view.height, 1)
+        gl.uniform2f(c.uPillarRot, Math.cos(tilt), Math.sin(tilt))
+        gl.uniform1f(c.uShift, state.shift)
+        gl.uniform1f(c.uIntensity, s.intensity * (0.15 + 0.85 * rise) * (1 + 0.12 * state.touch))
+        gl.uniform1f(c.uNoiseIntensity, s.noiseIntensity)
+        gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0)
+        const chroma = (rgb: number[]) => Math.max(...rgb) - Math.min(...rgb)
+        const vivid = Math.max(chroma(toRgb(s.topColor)), chroma(toRgb(s.bottomColor)))
+        gl.uniform1f(c.uNeutral, 1 - clamp((vivid - 0.08) / 0.12, 0, 1))
+        gl.uniform1f(c.uBloom, s.bloom)
+        gl.uniform1f(c.uFade, s.fade)
+        const span = view.width / view.height + 1.2
+        gl.uniform1f(c.uReveal, state.intro >= 1 ? 1e4 : -span + rise * (span * 2 + 1.2))
+        gl.uniform1f(
+          c.uFlare,
+          state.intro >= 1 ? 0 : (1 - rise) * 1.3 * Math.min(1, state.intro * 8),
+        )
+        gl.uniform4fv(c.uPulses, pulseData)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+      }
 
       const tune = (dt: number) => {
         if (dt > 1 / 40) {
-          state.slow += 1;
-          state.quick = 0;
+          state.slow += 1
+          state.quick = 0
         } else if (dt < 1 / 55) {
-          state.quick += 1;
-          state.slow = 0;
+          state.quick += 1
+          state.slow = 0
         }
         if (state.slow > 20) {
-          state.governor = Math.max(0.5, state.governor * 0.85);
-          state.slow = 0;
+          state.governor = Math.max(0.5, state.governor * 0.85)
+          state.slow = 0
         } else if (state.quick > 180 && state.governor < 1) {
-          state.governor = Math.min(1, state.governor * 1.1);
-          state.quick = 0;
+          state.governor = Math.min(1, state.governor * 1.1)
+          state.quick = 0
         }
-      };
+      }
 
       const frame = (now: number) => {
-        raf = 0;
-        if (!visible || document.hidden) return;
-        const s = settings();
-        const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-        if (last) tune((now - last) / 1000);
-        last = now;
-        const running = !s.paused && !reduce && s.rotationSpeed !== 0;
-        if (running) state.clock += dt * 0.96 * s.rotationSpeed;
-        if (!s.intro || reduce) state.intro = 1;
-        else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS);
+        raf = 0
+        if (!visible || document.hidden) return
+        const s = settings()
+        const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+        if (last) tune((now - last) / 1000)
+        last = now
+        const running = !s.paused && !reduce && s.rotationSpeed !== 0
+        if (running) state.clock += dt * 0.96 * s.rotationSpeed
+        if (!s.intro || reduce) state.intro = 1
+        else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS)
 
-        const engaged = s.interactive && pointer.inside && !reduce;
-        const aim = engaged ? pointer.x / view.width - 0.5 : 0;
-        const follow = 1 - Math.exp(-dt * 2.4);
-        state.spin += (aim * 1.4 - state.spin) * follow;
-        state.lean += (aim * 9 - state.lean) * follow;
-        state.shift += (aim * 0.35 * (view.width / view.height) - state.shift) * follow;
-        state.touch += ((engaged ? 1 : 0) - state.touch) * (1 - Math.exp(-dt * 3));
+        const engaged = s.interactive && pointer.inside && !reduce
+        const aim = engaged ? pointer.x / view.width - 0.5 : 0
+        const follow = 1 - Math.exp(-dt * 2.4)
+        state.spin += (aim * 1.4 - state.spin) * follow
+        state.lean += (aim * 9 - state.lean) * follow
+        state.shift += (aim * 0.35 * (view.width / view.height) - state.shift) * follow
+        state.touch += ((engaged ? 1 : 0) - state.touch) * (1 - Math.exp(-dt * 3))
 
         for (let i = pulses.length - 1; i >= 0; i--) {
-          pulses[i].age += dt;
-          if (pulses[i].age > PULSE_LIFE * 2.2) pulses.splice(i, 1);
+          pulses[i].age += dt
+          if (pulses[i].age > PULSE_LIFE * 2.2) pulses.splice(i, 1)
         }
 
-        render();
+        render()
 
         const settling =
           state.intro < 1 ||
           pulses.length > 0 ||
           Math.abs(aim * 1.4 - state.spin) > 0.0005 ||
-          Math.abs((engaged ? 1 : 0) - state.touch) > 0.002;
-        if (running || settling) raf = requestAnimationFrame(frame);
-        else last = 0;
-      };
+          Math.abs((engaged ? 1 : 0) - state.touch) > 0.002
+        if (running || settling) raf = requestAnimationFrame(frame)
+        else last = 0
+      }
 
       const wake = () => {
-        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
-      };
+        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
+      }
 
       const resize = () => {
-        const width = Math.max(1, container.clientWidth);
-        const height = Math.max(1, container.clientHeight);
-        const ratio = Math.min(window.devicePixelRatio || 1, 2);
-        view.width = width;
-        view.height = height;
-        view.ratio = ratio;
-        canvas.width = Math.max(1, Math.round(width * ratio));
-        canvas.height = Math.max(1, Math.round(height * ratio));
-        if (!raf) render();
-        wake();
-      };
+        const width = Math.max(1, container.clientWidth)
+        const height = Math.max(1, container.clientHeight)
+        const ratio = Math.min(window.devicePixelRatio || 1, 2)
+        view.width = width
+        view.height = height
+        view.ratio = ratio
+        canvas.width = Math.max(1, Math.round(width * ratio))
+        canvas.height = Math.max(1, Math.round(height * ratio))
+        if (!raf) render()
+        wake()
+      }
 
       const locate = (event: PointerEvent) => {
-        const rect = container.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height };
-      };
+        const rect = container.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height }
+      }
 
       const onPointerMove = (event: PointerEvent) => {
-        const point = locate(event);
-        pointer.x = point.x;
-        pointer.y = point.y;
-        pointer.inside = point.inside;
-        wake();
-      };
+        const point = locate(event)
+        pointer.x = point.x
+        pointer.y = point.y
+        pointer.inside = point.inside
+        wake()
+      }
 
       const onPointerDown = (event: PointerEvent) => {
-        const s = settings();
-        if (!s.clickPulse || reduce) return;
-        const point = locate(event);
-        if (!point.inside) return;
-        const tilt = ((s.pillarRotation + state.lean) * Math.PI) / 180;
-        pulses.push({ axis: axisAt(point.x, point.y, tilt), age: 0 });
-        if (pulses.length > 3) pulses.shift();
-        wake();
-      };
+        const s = settings()
+        if (!s.clickPulse || reduce) return
+        const point = locate(event)
+        if (!point.inside) return
+        const tilt = ((s.pillarRotation + state.lean) * Math.PI) / 180
+        pulses.push({ axis: axisAt(point.x, point.y, tilt), age: 0 })
+        if (pulses.length > 3) pulses.shift()
+        wake()
+      }
 
       const onPointerLeave = () => {
-        pointer.inside = false;
-        wake();
-      };
+        pointer.inside = false
+        wake()
+      }
 
       const onVisibility = () => {
-        last = 0;
-        wake();
-      };
+        last = 0
+        wake()
+      }
 
-      const resizeObserver = new ResizeObserver(resize);
-      resizeObserver.observe(container);
+      const resizeObserver = new ResizeObserver(resize)
+      resizeObserver.observe(container)
       const intersection = new IntersectionObserver(entries => {
-        visible = entries.some(entry => entry.isIntersecting);
+        visible = entries.some(entry => entry.isIntersecting)
         if (visible) {
-          last = 0;
-          wake();
+          last = 0
+          wake()
         }
-      });
-      intersection.observe(container);
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerdown', onPointerDown, { passive: true });
-      document.documentElement.addEventListener('pointerleave', onPointerLeave);
-      document.addEventListener('visibilitychange', onVisibility);
-      resize();
+      })
+      intersection.observe(container)
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onPointerLeave)
+      document.addEventListener('visibilitychange', onVisibility)
+      resize()
 
       wakeRef = () => {
-        if (!raf) render();
-        wake();
-      };
+        if (!raf) render()
+        wake()
+      }
 
       onCleanup(() => {
-        cancelAnimationFrame(raf);
-        wakeRef = null;
-        canvas.removeEventListener('webglcontextlost', onContextLost);
-        canvas.removeEventListener('webglcontextrestored', onContextRestored);
-        resizeObserver.disconnect();
-        intersection.disconnect();
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerdown', onPointerDown);
-        document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-        document.removeEventListener('visibilitychange', onVisibility);
-        if (texture) gl.deleteTexture(texture);
-        gl.deleteFramebuffer(framebuffer);
-        gl.deleteProgram(marchProgram.program);
-        gl.deleteProgram(compositeProgram.program);
-        gl.deleteBuffer(buffer);
-        gl.deleteVertexArray(vao);
-        if (!gl.isContextLost()) gl.getExtension('WEBGL_lose_context')?.loseContext();
-      });
-    });
-  });
+        cancelAnimationFrame(raf)
+        wakeRef = null
+        canvas.removeEventListener('webglcontextlost', onContextLost)
+        canvas.removeEventListener('webglcontextrestored', onContextRestored)
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        if (texture) gl.deleteTexture(texture)
+        gl.deleteFramebuffer(framebuffer)
+        gl.deleteProgram(marchProgram.program)
+        gl.deleteProgram(compositeProgram.program)
+        gl.deleteBuffer(buffer)
+        gl.deleteVertexArray(vao)
+        if (!gl.isContextLost()) gl.getExtension('WEBGL_lose_context')?.loseContext()
+      })
+    })
+  })
 
   // Upstream's dependency-free effect nudged the renderer after every render;
   // tracking every prop read reproduces that wake-on-any-change behavior.
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
@@ -650,9 +660,9 @@ const LightPillar = (props: LightPillarProps) => {
       class={`absolute top-0 left-0 w-full h-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`}
       style={{ 'mix-blend-mode': mixBlendMode(), ...props.style }}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block w-full h-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block w-full h-full" />
     </div>
-  );
-};
+  )
+}
 
-export default LightPillar;
+export default LightPillar

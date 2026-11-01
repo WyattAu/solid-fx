@@ -1,4 +1,4 @@
-import ProfileCard from './ProfileCard';
+import ProfileCard from './ProfileCard'
 
 function ProfileCardDemo() {
   return (
@@ -14,7 +14,7 @@ function ProfileCardDemo() {
         contactText="Contact"
       />
     </div>
-  );
+  )
 }
 
-export default ProfileCardDemo;
+export default ProfileCardDemo

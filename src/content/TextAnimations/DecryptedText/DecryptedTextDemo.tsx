@@ -1,4 +1,4 @@
-import DecryptedText from './DecryptedText';
+import DecryptedText from './DecryptedText'
 
 function DecryptedTextDemo() {
   return (
@@ -20,7 +20,7 @@ function DecryptedTextDemo() {
         parentClassName="text-xl"
       />
     </div>
-  );
+  )
 }
 
-export default DecryptedTextDemo;
+export default DecryptedTextDemo

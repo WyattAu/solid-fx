@@ -3,7 +3,7 @@ import solidJs from '@astrojs/solid-js';
 import starlight from '@astrojs/starlight';
 import tailwindcss from '@tailwindcss/vite';
 
-const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds'] as const;
+const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds'];
 
 export default defineConfig({
   output: 'static',
@@ -12,8 +12,7 @@ export default defineConfig({
       title: 'solid-bits',
       description:
         'Animated, interactive SolidJS components — a component-for-component port of react-bits.',
-      defaultAppearance: 'dark',
-      socials: { github: 'https://github.com/WyattAu/solid-bits' },
+      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/WyattAu/solid-bits' }],
       customCss: ['./src/site/global.css'],
       sidebar: CATEGORIES.map((category) => ({
         label: category,

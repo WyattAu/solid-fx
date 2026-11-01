@@ -1,26 +1,26 @@
 // Inspired by https://vercel.com/labs
-import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js';
-import { effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu';
-import type { Gpu, StorageBuffer, Texture } from 'vgpu';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js'
+import { effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu'
+import type { Gpu, StorageBuffer, Texture } from 'vgpu'
 
-type ChargeBuffer = StorageBuffer & { destroy(): void };
+type ChargeBuffer = StorageBuffer & { destroy(): void }
 
-const SHAPE_MODES = { mixed: 0, squares: 1, circles: 2, triangles: 3 } as const;
+const SHAPE_MODES = { mixed: 0, squares: 1, circles: 2, triangles: 3 } as const
 
-export type ShapeWavesShapes = keyof typeof SHAPE_MODES;
-const MAX_DPR = 2;
-const MAX_MASK_SIZE = 1024;
-const NOISE_CELLS = 32;
-const TIME_RATE = 0.1;
-const SIMULATION_STEP = 1 / 60;
-const WAVE_SPEED = 0.42;
-const WAVE_FRICTION = 0.94;
-const WAVE_DECAY = 0.972;
-const SETTLED_THRESHOLD = 0.01;
-const INTRO_BAND = 0.2;
-const INTRO_WARP = 0.3;
-const INTRO_JITTER = 0.16;
-const INTRO_END = 1 + INTRO_WARP + INTRO_JITTER + INTRO_BAND;
+export type ShapeWavesShapes = keyof typeof SHAPE_MODES
+const MAX_DPR = 2
+const MAX_MASK_SIZE = 1024
+const NOISE_CELLS = 32
+const TIME_RATE = 0.1
+const SIMULATION_STEP = 1 / 60
+const WAVE_SPEED = 0.42
+const WAVE_FRICTION = 0.94
+const WAVE_DECAY = 0.972
+const SETTLED_THRESHOLD = 0.01
+const INTRO_BAND = 0.2
+const INTRO_WARP = 0.3
+const INTRO_JITTER = 0.16
+const INTRO_END = 1 + INTRO_WARP + INTRO_JITTER + INTRO_BAND
 
 const NOISE_WGSL = `
 fn mod289v3(x: vec3f) -> vec3f { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -109,7 +109,7 @@ fn fbm(p: vec3f) -> f32 {
   }
   return total / weight;
 }
-`;
+`
 
 const SCENE_SHADER = `
 struct Params {
@@ -223,7 +223,7 @@ fn hash21(p: vec2f) -> f32 {
   let glow = max(0.0, (luminance - GLOW_THRESHOLD) / (1.0 - GLOW_THRESHOLD)) * coverage;
   return vec4f(rgb, glow);
 }
-`;
+`
 
 const BLUR_SHADER = `
 struct Blur { direction: vec4f }
@@ -245,7 +245,7 @@ struct Blur { direction: vec4f }
   }
   return vec4f(sum / weight, 1.0);
 }
-`;
+`
 
 const COMPOSITE_SHADER = `
 struct Composite { strength: vec4f }
@@ -259,79 +259,83 @@ struct Composite { strength: vec4f }
   let glow = textureSampleLevel(glowTexture, linearSampler, uv, 0.0).rgb;
   return vec4f(scene + glow * composite.strength.x, 1.0);
 }
-`;
+`
 
 const parseColor = (value: string | undefined, fallback: string): [number, number, number] => {
-  const source = typeof value === 'string' ? value.trim() : '';
-  const match = /^#?([\da-f]{3}|[\da-f]{6})$/i.exec(source) || /^#?([\da-f]{6})$/i.exec(fallback);
-  let hex = (match as RegExpExecArray)[1];
-  if (hex.length === 3) hex = hex.replace(/./g, char => char + char);
-  return [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16) / 255) as [number, number, number];
-};
+  const source = typeof value === 'string' ? value.trim() : ''
+  const match = /^#?([\da-f]{3}|[\da-f]{6})$/i.exec(source) || /^#?([\da-f]{6})$/i.exec(fallback)
+  let hex = (match as RegExpExecArray)[1]
+  if (hex.length === 3) hex = hex.replace(/./g, char => char + char)
+  return [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16) / 255) as [
+    number,
+    number,
+    number,
+  ]
+}
 
 export interface ShapeWavesProps {
-  text?: string;
-  fontFamily?: string;
-  fontWeight?: string | number;
-  textSize?: number;
-  shapes?: ShapeWavesShapes;
-  cellSize?: number;
-  dotSize?: number;
-  color?: string;
-  hoverColor?: string;
-  backgroundColor?: string;
-  speed?: number;
-  scale?: number;
-  contrast?: number;
-  brightness?: number;
-  flow?: number;
-  direction?: number;
-  fade?: number;
-  interactive?: boolean;
-  splashRadius?: number;
-  splashStrength?: number;
-  glow?: number;
-  intro?: boolean;
-  introDuration?: number;
-  introKey?: string | number;
-  paused?: boolean;
-  onError?: (error: Error) => void;
-  className?: string;
-  class?: string;
+  text?: string
+  fontFamily?: string
+  fontWeight?: string | number
+  textSize?: number
+  shapes?: ShapeWavesShapes
+  cellSize?: number
+  dotSize?: number
+  color?: string
+  hoverColor?: string
+  backgroundColor?: string
+  speed?: number
+  scale?: number
+  contrast?: number
+  brightness?: number
+  flow?: number
+  direction?: number
+  fade?: number
+  interactive?: boolean
+  splashRadius?: number
+  splashStrength?: number
+  glow?: number
+  intro?: boolean
+  introDuration?: number
+  introKey?: string | number
+  paused?: boolean
+  onError?: (error: Error) => void
+  className?: string
+  class?: string
 }
 
 interface ShapeWavesSettings {
-  text: string;
-  fontFamily: string;
-  fontWeight: string | number;
-  textSize: number;
-  shapes: ShapeWavesShapes;
-  cellSize: number;
-  dotSize: number;
-  color: string;
-  hoverColor: string;
-  backgroundColor: string;
-  speed: number;
-  scale: number;
-  contrast: number;
-  brightness: number;
-  flow: number;
-  direction: number;
-  fade: number;
-  interactive: boolean;
-  splashRadius: number;
-  splashStrength: number;
-  glow: number;
-  intro: boolean;
-  introDuration: number;
-  introKey: string | number;
-  paused: boolean;
+  text: string
+  fontFamily: string
+  fontWeight: string | number
+  textSize: number
+  shapes: ShapeWavesShapes
+  cellSize: number
+  dotSize: number
+  color: string
+  hoverColor: string
+  backgroundColor: string
+  speed: number
+  scale: number
+  contrast: number
+  brightness: number
+  flow: number
+  direction: number
+  fade: number
+  interactive: boolean
+  splashRadius: number
+  splashStrength: number
+  glow: number
+  intro: boolean
+  introDuration: number
+  introKey: string | number
+  paused: boolean
 }
 
 const ShapeWaves = (props: ShapeWavesProps) => {
-  let root!: HTMLDivElement;
-  let canvas!: HTMLCanvasElement;
-  const [ready, setReady] = createSignal(false);
+  let root!: HTMLDivElement
+  let canvas!: HTMLCanvasElement
+  const [ready, setReady] = createSignal(false)
 
   // Upstream rebuilt a settings object each render; the memo tracks the same props.
   const settings = createMemo(
@@ -360,179 +364,186 @@ const ShapeWaves = (props: ShapeWavesProps) => {
       intro: props.intro ?? true,
       introDuration: Math.max(0.1, props.introDuration ?? 1.6),
       introKey: props.introKey ?? 0,
-      paused: props.paused ?? false
-    })
-  );
+      paused: props.paused ?? false,
+    }),
+  )
 
-  let applySettingsFn: () => void = () => {};
-  let applyMaskFn: () => void = () => {};
-  let replayFn: () => void = () => {};
+  let applySettingsFn: () => void = () => {}
+  let applyMaskFn: () => void = () => {}
+  let replayFn: () => void = () => {}
 
-  const settingsSignature = createMemo(
-    () =>
-      [
-        settings().shapes,
-        settings().cellSize,
-        settings().dotSize,
-        settings().color,
-        settings().hoverColor,
-        settings().backgroundColor,
-        settings().speed,
-        settings().scale,
-        settings().contrast,
-        settings().brightness,
-        settings().flow,
-        settings().direction,
-        settings().fade,
-        settings().interactive,
-        settings().splashRadius,
-        settings().splashStrength,
-        settings().glow,
-        settings().intro,
-        settings().introDuration,
-        settings().paused
-      ].join('|')
-  );
-  const maskSignature = createMemo(
-    () => [settings().text, settings().fontFamily, settings().fontWeight, settings().textSize].join('|')
-  );
-
-  createEffect(() => {
-    settingsSignature();
-    applySettingsFn();
-  });
+  const settingsSignature = createMemo(() =>
+    [
+      settings().shapes,
+      settings().cellSize,
+      settings().dotSize,
+      settings().color,
+      settings().hoverColor,
+      settings().backgroundColor,
+      settings().speed,
+      settings().scale,
+      settings().contrast,
+      settings().brightness,
+      settings().flow,
+      settings().direction,
+      settings().fade,
+      settings().interactive,
+      settings().splashRadius,
+      settings().splashStrength,
+      settings().glow,
+      settings().intro,
+      settings().introDuration,
+      settings().paused,
+    ].join('|'),
+  )
+  const maskSignature = createMemo(() =>
+    [settings().text, settings().fontFamily, settings().fontWeight, settings().textSize].join('|'),
+  )
 
   createEffect(() => {
-    maskSignature();
-    applyMaskFn();
-  });
+    settingsSignature()
+    applySettingsFn()
+  })
 
   createEffect(() => {
-    if (props.introKey) replayFn();
-  });
+    maskSignature()
+    applyMaskFn()
+  })
+
+  createEffect(() => {
+    if (props.introKey) replayFn()
+  })
 
   onMount(() => {
     // Reads inside the async startup are not reactive; untrack the synchronous
     // part so onMount does not subscribe to the settings memo.
     untrack(() => {
-      const r = root;
-      const cv = canvas;
-      if (!r || !cv) return;
+      const r = root
+      const cv = canvas
+      if (!r || !cv) return
 
-      let disposed = false;
-      let failed = false;
-      let gpu: Gpu | undefined;
-      let maskTexture: Texture | undefined;
-      let chargeBuffer: ChargeBuffer | undefined;
-      let frameId = 0;
-      let lastFrameTime = 0;
-      let time = 0;
-      let drift: [number, number] = [0, 0];
-      let dpr = 1;
-      let visible = true;
-      let presented = false;
-      let cols = 1;
-      let rows = 1;
-      let cellPx = 10;
-      let gridOrigin: [number, number] = [0, 0];
-      let charges = new Float32Array(1);
-      let heights = new Float32Array(1);
-      let previousHeights = new Float32Array(1);
-      let simulationBacklog = 0;
-      let introStart = 0;
-      let introProgress = INTRO_END;
-      let introArmed = false;
-      let chargesActive = false;
-      let bounds: DOMRect | null = null;
-      let unsubscribeGpuError: (() => void) | undefined;
-      let resizeObserver: ResizeObserver | undefined;
-      let visibilityObserver: IntersectionObserver | undefined;
-      let wakeRenderer: () => void = () => {};
-      const pointer = { x: 0, y: 0, at: 0, inside: false };
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const maskCanvas = document.createElement('canvas');
-      const maskContext = maskCanvas.getContext('2d') as CanvasRenderingContext2D;
+      let disposed = false
+      let failed = false
+      let gpu: Gpu | undefined
+      let maskTexture: Texture | undefined
+      let chargeBuffer: ChargeBuffer | undefined
+      let frameId = 0
+      let lastFrameTime = 0
+      let time = 0
+      let drift: [number, number] = [0, 0]
+      let dpr = 1
+      let visible = true
+      let presented = false
+      let cols = 1
+      let rows = 1
+      let cellPx = 10
+      let gridOrigin: [number, number] = [0, 0]
+      let charges = new Float32Array(1)
+      let heights = new Float32Array(1)
+      let previousHeights = new Float32Array(1)
+      let simulationBacklog = 0
+      let introStart = 0
+      let introProgress = INTRO_END
+      let introArmed = false
+      let chargesActive = false
+      let bounds: DOMRect | null = null
+      let unsubscribeGpuError: (() => void) | undefined
+      let resizeObserver: ResizeObserver | undefined
+      let visibilityObserver: IntersectionObserver | undefined
+      let wakeRenderer: () => void = () => {}
+      const pointer = { x: 0, y: 0, at: 0, inside: false }
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+      const maskCanvas = document.createElement('canvas')
+      const maskContext = maskCanvas.getContext('2d') as CanvasRenderingContext2D
 
-      const handleWake = () => wakeRenderer();
+      const handleWake = () => wakeRenderer()
       const invalidateBounds = () => {
-        bounds = null;
-      };
+        bounds = null
+      }
       const splash = (x: number, y: number, strength: number) => {
-        const s = settings();
-        const sigma = Math.max(0.5, ((s.splashRadius * dpr) / cellPx) * 0.5);
-        const reach = Math.ceil(sigma * 2.5);
-        const centerCol = (x * dpr - gridOrigin[0]) / cellPx - 0.5;
-        const centerRow = (y * dpr - gridOrigin[1]) / cellPx - 0.5;
-        const minRow = Math.max(0, Math.floor(centerRow - reach));
-        const maxRow = Math.min(rows - 1, Math.ceil(centerRow + reach));
-        const minCol = Math.max(0, Math.floor(centerCol - reach));
-        const maxCol = Math.min(cols - 1, Math.ceil(centerCol + reach));
+        const s = settings()
+        const sigma = Math.max(0.5, ((s.splashRadius * dpr) / cellPx) * 0.5)
+        const reach = Math.ceil(sigma * 2.5)
+        const centerCol = (x * dpr - gridOrigin[0]) / cellPx - 0.5
+        const centerRow = (y * dpr - gridOrigin[1]) / cellPx - 0.5
+        const minRow = Math.max(0, Math.floor(centerRow - reach))
+        const maxRow = Math.min(rows - 1, Math.ceil(centerRow + reach))
+        const minCol = Math.max(0, Math.floor(centerCol - reach))
+        const maxCol = Math.min(cols - 1, Math.ceil(centerCol + reach))
         for (let row = minRow; row <= maxRow; row++) {
-          const dy = row - centerRow;
+          const dy = row - centerRow
           for (let col = minCol; col <= maxCol; col++) {
-            const dx = col - centerCol;
-            const bump = strength * Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
-            const index = row * cols + col;
-            heights[index] = Math.min(1.2, heights[index] + bump);
+            const dx = col - centerCol
+            const bump = strength * Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma))
+            const index = row * cols + col
+            heights[index] = Math.min(1.2, heights[index] + bump)
           }
         }
-        chargesActive = true;
-      };
+        chargesActive = true
+      }
 
       const handlePointerMove = (event: PointerEvent) => {
-        if (!settings().interactive) return;
-        if (!bounds) bounds = r.getBoundingClientRect();
-        const now = performance.now();
-        const x = event.clientX - bounds.left;
-        const y = event.clientY - bounds.top;
-        const inside = x >= 0 && y >= 0 && x <= bounds.width && y <= bounds.height;
+        if (!settings().interactive) return
+        if (!bounds) bounds = r.getBoundingClientRect()
+        const now = performance.now()
+        const x = event.clientX - bounds.left
+        const y = event.clientY - bounds.top
+        const inside = x >= 0 && y >= 0 && x <= bounds.width && y <= bounds.height
         if (inside) {
-          const elapsed = pointer.inside ? Math.max(8, now - pointer.at) : 16;
-          const travelled = pointer.inside ? Math.hypot(x - pointer.x, y - pointer.y) : 0;
-          const speed = (travelled / elapsed) * 1000;
-          splash(x, y, Math.min(1, 0.22 + speed * 0.0006) * settings().splashStrength);
-          wakeRenderer();
+          const elapsed = pointer.inside ? Math.max(8, now - pointer.at) : 16
+          const travelled = pointer.inside ? Math.hypot(x - pointer.x, y - pointer.y) : 0
+          const speed = (travelled / elapsed) * 1000
+          splash(x, y, Math.min(1, 0.22 + speed * 0.0006) * settings().splashStrength)
+          wakeRenderer()
         }
-        pointer.x = x;
-        pointer.y = y;
-        pointer.at = now;
-        pointer.inside = inside;
-      };
+        pointer.x = x
+        pointer.y = y
+        pointer.at = now
+        pointer.inside = inside
+      }
 
       const reportFailure = (error: unknown) => {
-        if (disposed || failed) return;
-        failed = true;
-        if (frameId) cancelAnimationFrame(frameId);
-        frameId = 0;
-        resizeObserver?.disconnect();
-        visibilityObserver?.disconnect();
-        unsubscribeGpuError?.();
-        applySettingsFn = () => {};
-        applyMaskFn = () => {};
-        const failedGpu = gpu;
-        gpu = undefined;
-        failedGpu?.dispose();
-        setReady(false);
-        props.onError?.(error instanceof Error ? error : new Error(String(error)));
-      };
+        if (disposed || failed) return
+        failed = true
+        if (frameId) cancelAnimationFrame(frameId)
+        frameId = 0
+        resizeObserver?.disconnect()
+        visibilityObserver?.disconnect()
+        unsubscribeGpuError?.()
+        applySettingsFn = () => {}
+        applyMaskFn = () => {}
+        const failedGpu = gpu
+        gpu = undefined
+        failedGpu?.dispose()
+        setReady(false)
+        props.onError?.(error instanceof Error ? error : new Error(String(error)))
+      }
 
       const measureSurface = (): [number, number] => {
-        dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-        return [Math.max(1, Math.round(cv.clientWidth * dpr)), Math.max(1, Math.round(cv.clientHeight * dpr))];
-      };
+        dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
+        return [
+          Math.max(1, Math.round(cv.clientWidth * dpr)),
+          Math.max(1, Math.round(cv.clientHeight * dpr)),
+        ]
+      }
 
       void (async () => {
         try {
-          const activeGpu = await init({ powerPreference: 'low-power' });
-          gpu = activeGpu;
-          if (disposed) return activeGpu.dispose();
-          unsubscribeGpuError = activeGpu.onError(reportFailure);
+          const activeGpu = await init({ powerPreference: 'low-power' })
+          gpu = activeGpu
+          if (disposed) return activeGpu.dispose()
+          unsubscribeGpuError = activeGpu.onError(reportFailure)
 
-          const initialSize = measureSurface();
+          const initialSize = measureSurface()
           const outputFormat = (
             navigator as Navigator & { gpu: { getPreferredCanvasFormat(): string } }
-          ).gpu.getPreferredCanvasFormat();
-          const output = surface(activeGpu, cv, { dpr, size: initialSize, autoResize: false, format: outputFormat });
+          ).gpu.getPreferredCanvasFormat()
+          const output = surface(activeGpu, cv, {
+            dpr,
+            size: initialSize,
+            autoResize: false,
+            format: outputFormat,
+          })
 
           const params = uniforms(activeGpu, {
             resolution: [initialSize[0], initialSize[1], 1 / initialSize[0], 1 / initialSize[1]],
@@ -542,357 +553,393 @@ const ShapeWaves = (props: ShapeWavesProps) => {
             motion: [0, 0, 0, 0.25],
             color: [0.573, 0.573, 0.573, 1],
             hover: [1, 1, 1, 0],
-            background: [0, 0, 0, 1]
-          });
+            background: [0, 0, 0, 1],
+          })
           const linearSampler = sampler(activeGpu, {
             minFilter: 'linear',
             magFilter: 'linear',
             addressModeU: 'clamp-to-edge',
-            addressModeV: 'clamp-to-edge'
-          });
+            addressModeV: 'clamp-to-edge',
+          })
           const createMaskTexture = (maskWidth: number, maskHeight: number) =>
             activeGpu.device.createTexture({
               size: [maskWidth, maskHeight],
               format: 'rgba8unorm',
               usage: ['texture_binding', 'copy_dst', 'render_attachment'],
-              label: 'shape-waves-mask'
-            });
-          const initialMaskTexture = createMaskTexture(1, 1);
-          maskTexture = initialMaskTexture;
-          const initialChargeBuffer = storage(activeGpu, 4, 'read') as ChargeBuffer;
-          initialChargeBuffer.write(charges);
-          chargeBuffer = initialChargeBuffer;
+              label: 'shape-waves-mask',
+            })
+          const initialMaskTexture = createMaskTexture(1, 1)
+          maskTexture = initialMaskTexture
+          const initialChargeBuffer = storage(activeGpu, 4, 'read') as ChargeBuffer
+          initialChargeBuffer.write(charges)
+          chargeBuffer = initialChargeBuffer
 
           const scene = effect(activeGpu, SCENE_SHADER, {
             label: 'shape-waves-scene',
-            set: { params, maskTexture: initialMaskTexture, maskSampler: linearSampler, charges: initialChargeBuffer }
-          });
-          const sceneTarget = target(activeGpu, { size: initialSize, format: 'rgba8unorm', label: 'shape-waves-scene' });
+            set: {
+              params,
+              maskTexture: initialMaskTexture,
+              maskSampler: linearSampler,
+              charges: initialChargeBuffer,
+            },
+          })
+          const sceneTarget = target(activeGpu, {
+            size: initialSize,
+            format: 'rgba8unorm',
+            label: 'shape-waves-scene',
+          })
           const glowSize = (size: readonly [number, number]): [number, number] => [
             Math.max(1, Math.ceil(size[0] / 2)),
-            Math.max(1, Math.ceil(size[1] / 2))
-          ];
+            Math.max(1, Math.ceil(size[1] / 2)),
+          ]
           const glowA = target(activeGpu, {
             size: glowSize(initialSize),
             format: 'rgba8unorm',
-            label: 'shape-waves-glow-a'
-          });
+            label: 'shape-waves-glow-a',
+          })
           const glowB = target(activeGpu, {
             size: glowSize(initialSize),
             format: 'rgba8unorm',
-            label: 'shape-waves-glow-b'
-          });
-          const blurParamsX = uniforms(activeGpu, { direction: [0, 0, 4, 1] });
-          const blurParamsY = uniforms(activeGpu, { direction: [0, 0, 4, 0] });
+            label: 'shape-waves-glow-b',
+          })
+          const blurParamsX = uniforms(activeGpu, { direction: [0, 0, 4, 1] })
+          const blurParamsY = uniforms(activeGpu, { direction: [0, 0, 4, 0] })
           const blurX = effect(activeGpu, BLUR_SHADER, {
             label: 'shape-waves-glow-x',
-            set: { blur: blurParamsX, sourceTexture: sceneTarget, sourceSampler: linearSampler }
-          });
+            set: { blur: blurParamsX, sourceTexture: sceneTarget, sourceSampler: linearSampler },
+          })
           const blurY = effect(activeGpu, BLUR_SHADER, {
             label: 'shape-waves-glow-y',
-            set: { blur: blurParamsY, sourceTexture: glowA, sourceSampler: linearSampler }
-          });
-          const compositeParams = uniforms(activeGpu, { strength: [2, 0, 0, 0] });
+            set: { blur: blurParamsY, sourceTexture: glowA, sourceSampler: linearSampler },
+          })
+          const compositeParams = uniforms(activeGpu, { strength: [2, 0, 0, 0] })
           const composite = effect(activeGpu, COMPOSITE_SHADER, {
             label: 'shape-waves-composite',
-            set: { composite: compositeParams, sceneTexture: sceneTarget, glowTexture: glowB, linearSampler }
-          });
+            set: {
+              composite: compositeParams,
+              sceneTexture: sceneTarget,
+              glowTexture: glowB,
+              linearSampler,
+            },
+          })
           await Promise.all([
             scene.compile({ colors: [outputFormat] }),
             scene.compile(sceneTarget),
             blurX.compile(glowA),
             blurY.compile(glowB),
-            composite.compile({ colors: [outputFormat] })
-          ]);
-          if (disposed) return;
+            composite.compile({ colors: [outputFormat] }),
+          ])
+          if (disposed) return
 
-          const glowEnabled = () => settings().glow > 0;
-          let lastIntro = false;
+          const glowEnabled = () => settings().glow > 0
+          let lastIntro = false
 
           const configureGrid = () => {
-            const s = settings();
-            const [width, height] = output.size;
-            const nextCols = Math.max(1, Math.round(width / (s.cellSize * dpr)));
-            cellPx = width / nextCols;
-            const nextRows = Math.max(1, Math.floor(height / cellPx));
-            gridOrigin = [0, (height - nextRows * cellPx) / 2];
-            if (nextCols === cols && nextRows === rows && charges.length === cols * rows) return;
-            cols = nextCols;
-            rows = nextRows;
-            charges = new Float32Array(cols * rows);
-            heights = new Float32Array(cols * rows);
-            previousHeights = new Float32Array(cols * rows);
-            chargesActive = false;
-            const nextBuffer = storage(activeGpu, charges.byteLength, 'read') as ChargeBuffer;
-            nextBuffer.write(charges);
-            scene.set({ charges: nextBuffer });
-            chargeBuffer?.destroy();
-            chargeBuffer = nextBuffer;
-          };
+            const s = settings()
+            const [width, height] = output.size
+            const nextCols = Math.max(1, Math.round(width / (s.cellSize * dpr)))
+            cellPx = width / nextCols
+            const nextRows = Math.max(1, Math.floor(height / cellPx))
+            gridOrigin = [0, (height - nextRows * cellPx) / 2]
+            if (nextCols === cols && nextRows === rows && charges.length === cols * rows) return
+            cols = nextCols
+            rows = nextRows
+            charges = new Float32Array(cols * rows)
+            heights = new Float32Array(cols * rows)
+            previousHeights = new Float32Array(cols * rows)
+            chargesActive = false
+            const nextBuffer = storage(activeGpu, charges.byteLength, 'read') as ChargeBuffer
+            nextBuffer.write(charges)
+            scene.set({ charges: nextBuffer })
+            chargeBuffer?.destroy()
+            chargeBuffer = nextBuffer
+          }
 
           const stepRipples = () => {
-            const lastCol = cols - 1;
-            const lastRow = rows - 1;
-            let peak = 0;
+            const lastCol = cols - 1
+            const lastRow = rows - 1
+            let peak = 0
             for (let row = 0; row < rows; row++) {
-              const up = (row === 0 ? row : row - 1) * cols;
-              const down = (row === lastRow ? row : row + 1) * cols;
-              const base = row * cols;
+              const up = (row === 0 ? row : row - 1) * cols
+              const down = (row === lastRow ? row : row + 1) * cols
+              const base = row * cols
               for (let col = 0; col < cols; col++) {
-                const index = base + col;
-                const left = base + (col === 0 ? col : col - 1);
-                const right = base + (col === lastCol ? col : col + 1);
-                const height = heights[index];
-                const laplacian = heights[left] + heights[right] + heights[up + col] + heights[down + col] - 4 * height;
-                const velocity = (height - previousHeights[index]) * WAVE_FRICTION;
-                const next = (height + velocity + WAVE_SPEED * laplacian) * WAVE_DECAY;
-                previousHeights[index] = next;
-                const charge = Math.min(1, Math.max(0, next));
-                charges[index] = charge;
-                if (charge > peak) peak = charge;
+                const index = base + col
+                const left = base + (col === 0 ? col : col - 1)
+                const right = base + (col === lastCol ? col : col + 1)
+                const height = heights[index]
+                const laplacian =
+                  heights[left] +
+                  heights[right] +
+                  heights[up + col] +
+                  heights[down + col] -
+                  4 * height
+                const velocity = (height - previousHeights[index]) * WAVE_FRICTION
+                const next = (height + velocity + WAVE_SPEED * laplacian) * WAVE_DECAY
+                previousHeights[index] = next
+                const charge = Math.min(1, Math.max(0, next))
+                charges[index] = charge
+                if (charge > peak) peak = charge
               }
             }
-            const swap = heights;
-            heights = previousHeights;
-            previousHeights = swap;
-            return peak;
-          };
+            const swap = heights
+            heights = previousHeights
+            previousHeights = swap
+            return peak
+          }
 
           const updateCharges = (deltaSeconds: number) => {
-            if (!chargesActive) return false;
-            simulationBacklog = Math.min(simulationBacklog + deltaSeconds, SIMULATION_STEP * 4);
-            let peak = 1;
+            if (!chargesActive) return false
+            simulationBacklog = Math.min(simulationBacklog + deltaSeconds, SIMULATION_STEP * 4)
+            let peak = 1
             while (simulationBacklog >= SIMULATION_STEP) {
-              simulationBacklog -= SIMULATION_STEP;
-              peak = stepRipples();
+              simulationBacklog -= SIMULATION_STEP
+              peak = stepRipples()
             }
             if (peak < SETTLED_THRESHOLD) {
-              heights.fill(0);
-              previousHeights.fill(0);
-              charges.fill(0);
-              chargesActive = false;
+              heights.fill(0)
+              previousHeights.fill(0)
+              charges.fill(0)
+              chargesActive = false
             }
-            chargeBuffer?.write(charges);
-            return chargesActive;
-          };
+            chargeBuffer?.write(charges)
+            return chargesActive
+          }
 
           const isAnimating = () => {
-            const s = settings();
-            return visible && !document.hidden && !s.paused && s.speed > 0 && !reduceMotion.matches;
-          };
+            const s = settings()
+            return visible && !document.hidden && !s.paused && s.speed > 0 && !reduceMotion.matches
+          }
 
           const render = (now: number) => {
-            frameId = 0;
-            if (disposed || failed) return;
-            const s = settings();
-            const deltaSeconds = lastFrameTime ? Math.min(0.1, (now - lastFrameTime) / 1000) : 0;
-            lastFrameTime = now;
-            const animating = isAnimating();
+            frameId = 0
+            if (disposed || failed) return
+            const s = settings()
+            const deltaSeconds = lastFrameTime ? Math.min(0.1, (now - lastFrameTime) / 1000) : 0
+            lastFrameTime = now
+            const animating = isAnimating()
             if (animating) {
-              time += deltaSeconds * TIME_RATE * s.speed;
-              const angle = (s.direction * Math.PI) / 180;
-              const distance = s.flow * cellPx * deltaSeconds;
-              drift = [drift[0] + Math.cos(angle) * distance, drift[1] + Math.sin(angle) * distance];
+              time += deltaSeconds * TIME_RATE * s.speed
+              const angle = (s.direction * Math.PI) / 180
+              const distance = s.flow * cellPx * deltaSeconds
+              drift = [drift[0] + Math.cos(angle) * distance, drift[1] + Math.sin(angle) * distance]
             }
-            const hovering = visible && !document.hidden && updateCharges(deltaSeconds);
+            const hovering = visible && !document.hidden && updateCharges(deltaSeconds)
             if (introArmed) {
-              introArmed = false;
-              introStart = now;
-              introProgress = 0;
+              introArmed = false
+              introStart = now
+              introProgress = 0
             }
-            const introPlaying = introProgress < INTRO_END;
+            const introPlaying = introProgress < INTRO_END
             if (introPlaying) {
-              introProgress = Math.min(INTRO_END, ((now - introStart) / 1000 / s.introDuration) * INTRO_END);
+              introProgress = Math.min(
+                INTRO_END,
+                ((now - introStart) / 1000 / s.introDuration) * INTRO_END,
+              )
             }
-            params.set({ placement: [gridOrigin[0], gridOrigin[1], rows, introProgress] });
+            params.set({ placement: [gridOrigin[0], gridOrigin[1], rows, introProgress] })
             params.set({
               field: [
                 NOISE_CELLS * cellPx * s.scale,
                 0.5 - (s.brightness - 0.5) * 0.4,
                 2.8 * s.contrast,
-                time
-              ]
-            });
-            params.set({ motion: [drift[0], drift[1], s.text.trim() ? 1 : 0, s.fade] });
+                time,
+              ],
+            })
+            params.set({ motion: [drift[0], drift[1], s.text.trim() ? 1 : 0, s.fade] })
             try {
               frame(activeGpu, currentFrame => {
                 if (!glowEnabled()) {
-                  currentFrame.pass(output, scene);
-                  return;
+                  currentFrame.pass(output, scene)
+                  return
                 }
-                currentFrame.pass(sceneTarget, scene);
-                currentFrame.pass(glowA, blurX);
-                currentFrame.pass(glowB, blurY);
-                currentFrame.pass(output, composite);
-              });
+                currentFrame.pass(sceneTarget, scene)
+                currentFrame.pass(glowA, blurX)
+                currentFrame.pass(glowB, blurY)
+                currentFrame.pass(output, composite)
+              })
             } catch (error) {
-              reportFailure(error);
-              return;
+              reportFailure(error)
+              return
             }
             if (!presented) {
-              presented = true;
-              setReady(true);
+              presented = true
+              setReady(true)
             }
-            if (animating || hovering || introPlaying) frameId = requestAnimationFrame(render);
-            else lastFrameTime = 0;
-          };
+            if (animating || hovering || introPlaying) frameId = requestAnimationFrame(render)
+            else lastFrameTime = 0
+          }
 
           wakeRenderer = () => {
-            if (disposed || failed || frameId) return;
-            frameId = requestAnimationFrame(render);
-          };
+            if (disposed || failed || frameId) return
+            frameId = requestAnimationFrame(render)
+          }
 
           const drawMask = () => {
-            const s = settings();
-            const content = s.text.trim();
-            const [surfaceWidth, surfaceHeight] = output.size;
-            const hasText = content.length > 0;
-            const maskScale = hasText ? Math.min(1, MAX_MASK_SIZE / Math.max(surfaceWidth, surfaceHeight)) : 0;
-            const maskWidth = hasText ? Math.max(1, Math.round(surfaceWidth * maskScale)) : 1;
-            const maskHeight = hasText ? Math.max(1, Math.round(surfaceHeight * maskScale)) : 1;
+            const s = settings()
+            const content = s.text.trim()
+            const [surfaceWidth, surfaceHeight] = output.size
+            const hasText = content.length > 0
+            const maskScale = hasText
+              ? Math.min(1, MAX_MASK_SIZE / Math.max(surfaceWidth, surfaceHeight))
+              : 0
+            const maskWidth = hasText ? Math.max(1, Math.round(surfaceWidth * maskScale)) : 1
+            const maskHeight = hasText ? Math.max(1, Math.round(surfaceHeight * maskScale)) : 1
 
-            maskCanvas.width = maskWidth;
-            maskCanvas.height = maskHeight;
-            maskContext.fillStyle = '#000';
-            maskContext.fillRect(0, 0, maskWidth, maskHeight);
+            maskCanvas.width = maskWidth
+            maskCanvas.height = maskHeight
+            maskContext.fillStyle = '#000'
+            maskContext.fillRect(0, 0, maskWidth, maskHeight)
 
             if (hasText) {
-              let fontPx = Math.max(1, s.textSize * maskHeight);
-              maskContext.font = `${s.fontWeight} ${fontPx}px ${s.fontFamily}`;
-              const measured = maskContext.measureText(content).width;
-              const maxWidth = maskWidth * 0.9;
+              let fontPx = Math.max(1, s.textSize * maskHeight)
+              maskContext.font = `${s.fontWeight} ${fontPx}px ${s.fontFamily}`
+              const measured = maskContext.measureText(content).width
+              const maxWidth = maskWidth * 0.9
               if (measured > maxWidth) {
-                fontPx = Math.max(1, (fontPx * maxWidth) / measured);
-                maskContext.font = `${s.fontWeight} ${fontPx}px ${s.fontFamily}`;
+                fontPx = Math.max(1, (fontPx * maxWidth) / measured)
+                maskContext.font = `${s.fontWeight} ${fontPx}px ${s.fontFamily}`
               }
-              maskContext.textAlign = 'center';
-              maskContext.textBaseline = 'alphabetic';
-              const metrics = maskContext.measureText(content);
-              const x = (maskWidth + metrics.actualBoundingBoxLeft - metrics.actualBoundingBoxRight) / 2;
-              const y = (maskHeight + metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
-              maskContext.fillStyle = '#fff';
-              maskContext.fillText(content, x, y);
+              maskContext.textAlign = 'center'
+              maskContext.textBaseline = 'alphabetic'
+              const metrics = maskContext.measureText(content)
+              const x =
+                (maskWidth + metrics.actualBoundingBoxLeft - metrics.actualBoundingBoxRight) / 2
+              const y =
+                (maskHeight + metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) /
+                2
+              maskContext.fillStyle = '#fff'
+              maskContext.fillText(content, x, y)
             }
 
-            const nextTexture = createMaskTexture(maskWidth, maskHeight);
-            activeGpu.gpu.queue.copyExternalImageToTexture({ source: maskCanvas }, { texture: nextTexture.gpu }, [
-              maskWidth,
-              maskHeight
-            ]);
-            scene.set({ maskTexture: nextTexture });
-            maskTexture?.destroy();
-            maskTexture = nextTexture;
-          };
+            const nextTexture = createMaskTexture(maskWidth, maskHeight)
+            activeGpu.gpu.queue.copyExternalImageToTexture(
+              { source: maskCanvas },
+              { texture: nextTexture.gpu },
+              [maskWidth, maskHeight],
+            )
+            scene.set({ maskTexture: nextTexture })
+            maskTexture?.destroy()
+            maskTexture = nextTexture
+          }
 
           const applySettings = () => {
-            if (disposed || failed) return;
-            const s = settings();
-            configureGrid();
+            if (disposed || failed) return
+            const s = settings()
+            configureGrid()
             params.set({
               placement: [gridOrigin[0], gridOrigin[1], rows, introProgress],
-              grid: [cellPx, Math.min(1, Math.max(0.1, s.dotSize)), SHAPE_MODES[s.shapes] ?? 0, cols],
+              grid: [
+                cellPx,
+                Math.min(1, Math.max(0.1, s.dotSize)),
+                SHAPE_MODES[s.shapes] ?? 0,
+                cols,
+              ],
               color: [...parseColor(s.color, '#929292'), 1],
               hover: [...parseColor(s.hoverColor, '#ffffff'), glowEnabled() ? 1 : 0],
-              background: [...parseColor(s.backgroundColor, '#000000'), 1]
-            });
-            compositeParams.set({ strength: [2 * s.glow, 0, 0, 0] });
+              background: [...parseColor(s.backgroundColor, '#000000'), 1],
+            })
+            compositeParams.set({ strength: [2 * s.glow, 0, 0, 0] })
             if (s.intro !== lastIntro) {
-              lastIntro = s.intro;
-              if (s.intro && !reduceMotion.matches) introArmed = true;
+              lastIntro = s.intro
+              if (s.intro && !reduceMotion.matches) introArmed = true
             }
             if (!s.interactive && chargesActive) {
-              heights.fill(0);
-              previousHeights.fill(0);
-              charges.fill(0);
-              chargesActive = false;
-              chargeBuffer?.write(charges);
+              heights.fill(0)
+              previousHeights.fill(0)
+              charges.fill(0)
+              chargesActive = false
+              chargeBuffer?.write(charges)
             }
-            wakeRenderer();
-          };
+            wakeRenderer()
+          }
 
           const applyMask = () => {
-            if (disposed || failed) return;
-            drawMask();
-            applySettings();
-            const s = settings();
-            if (!s.text.trim() || !document.fonts?.load) return;
+            if (disposed || failed) return
+            drawMask()
+            applySettings()
+            const s = settings()
+            if (!s.text.trim() || !document.fonts?.load) return
             document.fonts
               .load(`${s.fontWeight} 32px ${s.fontFamily}`)
               .then(() => {
-                if (disposed || failed) return;
-                drawMask();
-                wakeRenderer();
+                if (disposed || failed) return
+                drawMask()
+                wakeRenderer()
               })
-              .catch(() => {});
-          };
+              .catch(() => {})
+          }
 
           const resize = () => {
-            if (disposed || failed) return;
-            invalidateBounds();
-            const nextSize = measureSurface();
-            if (nextSize[0] !== output.size[0] || nextSize[1] !== output.size[1]) output.resize(nextSize);
-            const [width, height] = output.size;
-            sceneTarget.resize([width, height]);
-            const half = glowSize([width, height]);
-            glowA.resize(half);
-            glowB.resize(half);
-            blurParamsX.set({ direction: [1 / half[0], 0, 4, 1] });
-            blurParamsY.set({ direction: [0, 1 / half[1], 4, 0] });
-            params.set({ resolution: [width, height, 1 / width, 1 / height] });
-            drawMask();
-            applySettings();
-          };
+            if (disposed || failed) return
+            invalidateBounds()
+            const nextSize = measureSurface()
+            if (nextSize[0] !== output.size[0] || nextSize[1] !== output.size[1])
+              output.resize(nextSize)
+            const [width, height] = output.size
+            sceneTarget.resize([width, height])
+            const half = glowSize([width, height])
+            glowA.resize(half)
+            glowB.resize(half)
+            blurParamsX.set({ direction: [1 / half[0], 0, 4, 1] })
+            blurParamsY.set({ direction: [0, 1 / half[1], 4, 0] })
+            params.set({ resolution: [width, height, 1 / width, 1 / height] })
+            drawMask()
+            applySettings()
+          }
 
-          applySettingsFn = applySettings;
-          applyMaskFn = applyMask;
+          applySettingsFn = applySettings
+          applyMaskFn = applyMask
           replayFn = () => {
-            if (disposed || failed || !settings().intro || reduceMotion.matches) return;
-            introArmed = true;
-            wakeRenderer();
-          };
+            if (disposed || failed || !settings().intro || reduceMotion.matches) return
+            introArmed = true
+            wakeRenderer()
+          }
 
-          resizeObserver = new ResizeObserver(resize);
-          resizeObserver.observe(r);
+          resizeObserver = new ResizeObserver(resize)
+          resizeObserver.observe(r)
           visibilityObserver = new IntersectionObserver(
             entries => {
-              visible = entries.some(entry => entry.isIntersecting);
-              if (visible) wakeRenderer();
+              visible = entries.some(entry => entry.isIntersecting)
+              if (visible) wakeRenderer()
             },
-            { threshold: 0 }
-          );
-          visibilityObserver.observe(r);
-          document.addEventListener('visibilitychange', handleWake);
-          reduceMotion.addEventListener('change', handleWake);
-          window.addEventListener('pointermove', handlePointerMove, { passive: true });
-          window.addEventListener('scroll', invalidateBounds, { capture: true, passive: true });
+            { threshold: 0 },
+          )
+          visibilityObserver.observe(r)
+          document.addEventListener('visibilitychange', handleWake)
+          reduceMotion.addEventListener('change', handleWake)
+          window.addEventListener('pointermove', handlePointerMove, { passive: true })
+          window.addEventListener('scroll', invalidateBounds, { capture: true, passive: true })
 
-          resize();
-          applyMask();
+          resize()
+          applyMask()
         } catch (error) {
-          reportFailure(error);
+          reportFailure(error)
         }
-      })();
+      })()
 
       onCleanup(() => {
-        disposed = true;
-        wakeRenderer = () => {};
-        applySettingsFn = () => {};
-        applyMaskFn = () => {};
-        replayFn = () => {};
-        document.removeEventListener('visibilitychange', handleWake);
-        reduceMotion.removeEventListener('change', handleWake);
-        window.removeEventListener('pointermove', handlePointerMove);
-        window.removeEventListener('scroll', invalidateBounds, { capture: true } as EventListenerOptions);
-        resizeObserver?.disconnect();
-        visibilityObserver?.disconnect();
-        unsubscribeGpuError?.();
-        if (frameId) cancelAnimationFrame(frameId);
-        maskTexture?.destroy();
-        chargeBuffer?.destroy();
-        gpu?.dispose();
-      });
-    });
-  });
+        disposed = true
+        wakeRenderer = () => {}
+        applySettingsFn = () => {}
+        applyMaskFn = () => {}
+        replayFn = () => {}
+        document.removeEventListener('visibilitychange', handleWake)
+        reduceMotion.removeEventListener('change', handleWake)
+        window.removeEventListener('pointermove', handlePointerMove)
+        window.removeEventListener('scroll', invalidateBounds, {
+          capture: true,
+        } as EventListenerOptions)
+        resizeObserver?.disconnect()
+        visibilityObserver?.disconnect()
+        unsubscribeGpuError?.()
+        if (frameId) cancelAnimationFrame(frameId)
+        maskTexture?.destroy()
+        chargeBuffer?.destroy()
+        gpu?.dispose()
+      })
+    })
+  })
 
   return (
     <div
@@ -907,7 +954,7 @@ const ShapeWaves = (props: ShapeWavesProps) => {
         class={`pointer-events-none absolute inset-0 block h-full w-full transition-opacity duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${ready() ? 'opacity-100' : 'opacity-0'}`}
       />
     </div>
-  );
-};
+  )
+}
 
-export default ShapeWaves;
+export default ShapeWaves

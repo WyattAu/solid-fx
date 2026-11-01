@@ -1,4 +1,4 @@
-import Orb from './Orb';
+import Orb from './Orb'
 
 function OrbDemo() {
   return (
@@ -17,7 +17,7 @@ function OrbDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default OrbDemo;
+export default OrbDemo

@@ -1,4 +1,4 @@
-import HalftoneReveal from './HalftoneReveal';
+import HalftoneReveal from './HalftoneReveal'
 
 function HalftoneRevealDemo() {
   return (
@@ -12,7 +12,7 @@ function HalftoneRevealDemo() {
         wander
       />
     </div>
-  );
+  )
 }
 
-export default HalftoneRevealDemo;
+export default HalftoneRevealDemo

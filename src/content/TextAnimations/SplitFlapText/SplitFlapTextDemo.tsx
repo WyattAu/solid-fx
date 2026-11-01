@@ -1,4 +1,4 @@
-import SplitFlapText from './SplitFlapText';
+import SplitFlapText from './SplitFlapText'
 
 function SplitFlapTextDemo() {
   return (
@@ -12,7 +12,7 @@ function SplitFlapTextDemo() {
         glare={0.25}
       />
     </div>
-  );
+  )
 }
 
-export default SplitFlapTextDemo;
+export default SplitFlapTextDemo

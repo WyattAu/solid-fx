@@ -1,4 +1,4 @@
-import VariableProximity from './VariableProximity';
+import VariableProximity from './VariableProximity'
 
 function VariableProximityDemo() {
   return (
@@ -16,9 +16,11 @@ function VariableProximityDemo() {
           fontSize="clamp(2rem, 6vw, 4rem)"
         />
       </div>
-      <p class="text-xs text-gray-500">Pointer proximity drives the variable font axes; the idle wave keeps it alive.</p>
+      <p class="text-xs text-gray-500">
+        Pointer proximity drives the variable font axes; the idle wave keeps it alive.
+      </p>
     </div>
-  );
+  )
 }
 
-export default VariableProximityDemo;
+export default VariableProximityDemo

@@ -1,8 +1,8 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { animate, motionValue } from 'motion';
-import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon';
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { animate, motionValue } from 'motion'
+import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 import {
   ArrowDown01Icon,
   Attachment01Icon,
@@ -16,97 +16,97 @@ import {
   Mic01Icon,
   PlusSignIcon,
   SparklesIcon,
-  Tick02Icon
-} from '@hugeicons/core-free-icons';
+  Tick02Icon,
+} from '@hugeicons/core-free-icons'
 
 export interface PromptBarSource {
-  key: string;
-  name: string;
-  description?: string;
-  icon?: JSX.Element | IconSvgObject;
-  attach?: boolean;
+  key: string
+  name: string
+  description?: string
+  icon?: JSX.Element | IconSvgObject
+  attach?: boolean
 }
 
 export interface PromptBarCommand {
-  key: string;
-  name: string;
-  description?: string;
+  key: string
+  name: string
+  description?: string
 }
 
 export interface PromptBarModel {
-  key: string;
-  name: string;
-  tag?: string;
+  key: string
+  name: string
+  tag?: string
 }
 
 export interface PromptBarSendDetail {
-  attachments: string[];
-  model?: PromptBarModel;
-  effort?: string;
+  attachments: string[]
+  model?: PromptBarModel
+  effort?: string
 }
 
 export interface PromptBarProps {
-  placeholder?: string;
-  sources?: PromptBarSource[];
-  commands?: PromptBarCommand[];
-  models?: PromptBarModel[];
-  defaultModel?: string;
-  efforts?: string[];
-  defaultEffort?: string;
-  onEffortChange?: (effort: string) => void;
-  busy?: boolean;
-  onSend?: (text: string, detail: PromptBarSendDetail) => void;
-  onStop?: () => void;
-  onAttach?: () => string | string[] | void | Promise<string | string[] | void>;
-  onDictate?: () => string | void | Promise<string | void>;
-  background?: string;
-  color?: string;
-  menuBackground?: string;
-  sparkColor?: string;
-  sparkBoost?: number;
-  width?: number;
-  radius?: number;
-  maxRows?: number;
-  morphDuration?: number;
-  squash?: number;
-  tilt?: number;
-  pressScale?: number;
-  className?: string;
-  class?: string;
+  placeholder?: string
+  sources?: PromptBarSource[]
+  commands?: PromptBarCommand[]
+  models?: PromptBarModel[]
+  defaultModel?: string
+  efforts?: string[]
+  defaultEffort?: string
+  onEffortChange?: (effort: string) => void
+  busy?: boolean
+  onSend?: (text: string, detail: PromptBarSendDetail) => void
+  onStop?: () => void
+  onAttach?: () => string | string[] | undefined | Promise<string | string[] | undefined>
+  onDictate?: () => string | undefined | Promise<string | undefined>
+  background?: string
+  color?: string
+  menuBackground?: string
+  sparkColor?: string
+  sparkBoost?: number
+  width?: number
+  radius?: number
+  maxRows?: number
+  morphDuration?: number
+  squash?: number
+  tilt?: number
+  pressScale?: number
+  className?: string
+  class?: string
 }
 
 type Row = {
-  key: string;
-  name: string;
-  description?: string;
-  tag?: string;
-  icon?: JSX.Element | IconSvgObject;
-  attach?: boolean;
-};
-type Token = { kind: 'at' | 'slash'; query: string; start: number };
+  key: string
+  name: string
+  description?: string
+  tag?: string
+  icon?: JSX.Element | IconSvgObject
+  attach?: boolean
+}
+type Token = { kind: 'at' | 'slash'; query: string; start: number }
 type Spark = {
-  x: number;
-  y: number;
-  r: number;
-  vy: number;
-  sway: number;
-  phase: number;
-  life: number;
-  span: number;
-};
-
-interface SendGlyphProps {
-  busy: boolean;
-  morphDuration: number;
-  squash: number;
-  tilt: number;
+  x: number
+  y: number
+  r: number
+  vy: number
+  sway: number
+  phase: number
+  life: number
+  span: number
 }
 
-const ARROW_UP = [12, 4.5, 18.5, 11, 14.25, 11, 14.25, 19.5, 9.75, 19.5, 9.75, 11, 5.5, 11];
-const SQUARE = [12, 6, 18, 6, 18, 12, 18, 18, 6, 18, 6, 12, 6, 6];
-const EASE_IN_OUT: [number, number, number, number] = [0.77, 0, 0.175, 1];
-const LINE = 22;
-const EDGE = 11;
+interface SendGlyphProps {
+  busy: boolean
+  morphDuration: number
+  squash: number
+  tilt: number
+}
+
+const ARROW_UP = [12, 4.5, 18.5, 11, 14.25, 11, 14.25, 19.5, 9.75, 19.5, 9.75, 11, 5.5, 11]
+const SQUARE = [12, 6, 18, 6, 18, 12, 18, 18, 6, 18, 6, 12, 6, 6]
+const EASE_IN_OUT: [number, number, number, number] = [0.77, 0, 0.175, 1]
+const LINE = 22
+const EDGE = 11
 
 const DEFAULT_SOURCES: PromptBarSource[] = [
   {
@@ -114,88 +114,103 @@ const DEFAULT_SOURCES: PromptBarSource[] = [
     name: 'Photos & files',
     description: 'Upload from this device',
     icon: Attachment01Icon,
-    attach: true
+    attach: true,
   },
   { key: 'web', name: 'Web search', description: 'Live results', icon: Globe02Icon },
   { key: 'sales', name: 'Sales data', description: 'Revenue and churn', icon: ChartLineData01Icon },
   { key: 'docs', name: 'Documents', description: 'Specs, notes, briefs', icon: File02Icon },
   { key: 'mail', name: 'Mail', description: 'Read and draft mail', icon: Mail01Icon },
-  { key: 'calendar', name: 'Calendar', description: 'Events and availability', icon: Calendar03Icon }
-];
+  {
+    key: 'calendar',
+    name: 'Calendar',
+    description: 'Events and availability',
+    icon: Calendar03Icon,
+  },
+]
 const DEFAULT_COMMANDS: PromptBarCommand[] = [
   { key: 'summarize', name: '/summarize', description: 'Digest the thread so far' },
   { key: 'compare', name: '/compare', description: 'Two options side by side' },
   { key: 'draft', name: '/draft', description: 'Write a first version' },
   { key: 'explain', name: '/explain', description: 'A plain-language walkthrough' },
-  { key: 'tasks', name: '/tasks', description: 'Turn this into a to-do list' }
-];
+  { key: 'tasks', name: '/tasks', description: 'Turn this into a to-do list' },
+]
 const DEFAULT_MODELS: PromptBarModel[] = [
   { key: 'nova-3', name: 'Nova 3', tag: 'Flagship' },
   { key: 'nova-mini', name: 'Nova Mini', tag: 'Fast' },
-  { key: 'nova-2', name: 'Nova 2', tag: 'Legacy' }
-];
-const DEFAULT_EFFORTS = ['Low', 'Medium', 'High', 'Extra', 'Max'];
+  { key: 'nova-2', name: 'Nova 2', tag: 'Legacy' },
+]
+const DEFAULT_EFFORTS = ['Low', 'Medium', 'High', 'Extra', 'Max']
 
-const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+const mix = (a: number, b: number, t: number) => a + (b - a) * t
 const pathAt = (a: number[], b: number[], t: number) => {
-  let d = '';
+  let d = ''
   for (let i = 0; i < a.length; i += 2) {
-    d += `${i ? 'L' : 'M'}${mix(a[i], b[i], t).toFixed(2)} ${mix(a[i + 1], b[i + 1], t).toFixed(2)}`;
+    d += `${i ? 'L' : 'M'}${mix(a[i], b[i], t).toFixed(2)} ${mix(a[i + 1], b[i + 1], t).toFixed(2)}`
   }
-  return `${d}Z`;
-};
+  return `${d}Z`
+}
 
 const parseToken = (draft: string): Token | null => {
-  const m = /(^|\s)([@/])([\w-]*)$/.exec(draft);
-  if (!m) return null;
-  return { kind: m[2] === '@' ? 'at' : 'slash', query: m[3].toLowerCase(), start: m.index + m[1].length };
-};
+  const m = /(^|\s)([@/])([\w-]*)$/.exec(draft)
+  if (!m) return null
+  return {
+    kind: m[2] === '@' ? 'at' : 'slash',
+    query: m[3].toLowerCase(),
+    start: m.index + m[1].length,
+  }
+}
 
 // Upstream used React's isValidElement; hugeicons icon data is a tuple array,
 // so the array shape is the discriminator here.
 const isIconData = (icon: unknown): icon is IconSvgObject =>
-  Array.isArray(icon) && (icon.length === 0 || Array.isArray(icon[0]));
+  Array.isArray(icon) && (icon.length === 0 || Array.isArray(icon[0]))
 
 const renderIcon = (icon: JSX.Element | IconSvgObject | undefined, size: number) =>
   icon === undefined ? null : isIconData(icon) ? (
     <HugeiconsIcon icon={icon} size={size} strokeWidth={1.8} />
   ) : (
     icon
-  );
+  )
 
 function SendGlyph(props: SendGlyphProps) {
-  const reduce = usePrefersReducedMotion();
-  const t = motionValue(props.busy ? 1 : 0);
-  let dir = props.busy ? 1 : -1;
-  let svgEl!: SVGSVGElement;
-  let pathEl!: SVGPathElement;
+  const reduce = usePrefersReducedMotion()
+  const t = motionValue(props.busy ? 1 : 0)
+  let dir = props.busy ? 1 : -1
+  let svgEl!: SVGSVGElement
+  let pathEl!: SVGPathElement
 
   createEffect(() => {
-    const busy = props.busy;
-    const morphDuration = props.morphDuration;
-    const reduced = reduce();
-    dir = busy ? 1 : -1;
-    const target = busy ? 1 : 0;
-    if (t.get() === target) return;
-    const controls = animate(t, target, reduced ? { duration: 0 } : { duration: morphDuration / 1000, ease: EASE_IN_OUT });
-    onCleanup(() => controls.stop());
-  });
+    const busy = props.busy
+    const morphDuration = props.morphDuration
+    const reduced = reduce()
+    dir = busy ? 1 : -1
+    const target = busy ? 1 : 0
+    if (t.get() === target) return
+    const controls = animate(
+      t,
+      target,
+      reduced ? { duration: 0 } : { duration: morphDuration / 1000, ease: EASE_IN_OUT },
+    )
+    onCleanup(() => controls.stop())
+  })
 
   onMount(() => {
     const write = (v: number) => {
-      pathEl?.setAttribute('d', pathAt(ARROW_UP, SQUARE, v));
-      const goo = reduce() ? 0 : Math.sin(v * Math.PI);
-      const sx = 1 - props.squash * goo;
+      pathEl?.setAttribute('d', pathAt(ARROW_UP, SQUARE, v))
+      const goo = reduce() ? 0 : Math.sin(v * Math.PI)
+      const sx = 1 - props.squash * goo
       if (svgEl) {
-        svgEl.style.transform = goo ? `rotate(${dir * props.tilt * goo}deg) scale(${sx}, ${1 / sx})` : '';
+        svgEl.style.transform = goo
+          ? `rotate(${dir * props.tilt * goo}deg) scale(${sx}, ${1 / sx})`
+          : ''
       }
-    };
-    const off = t.on('change', write);
+    }
+    const off = t.on('change', write)
     onCleanup(() => {
-      off();
-      t.stop();
-    });
-  });
+      off()
+      t.stop()
+    })
+  })
 
   return (
     <svg
@@ -210,151 +225,152 @@ function SendGlyph(props: SendGlyphProps) {
     >
       <path ref={pathEl} d={pathAt(ARROW_UP, SQUARE, t.get())} />
     </svg>
-  );
+  )
 }
 
 const STYLE = `
 @keyframes prompt-bar-pop { from { opacity: 0; transform: translateY(4px) scale(0.98); } }
 @keyframes prompt-bar-eq { 0%, 100% { transform: scaleY(0.35); } 50% { transform: scaleY(1); } }
-`;
+`
 
 const PromptBar = (props: PromptBarProps) => {
-  const reduce = usePrefersReducedMotion();
-  let rootEl!: HTMLDivElement;
-  let inputEl!: HTMLTextAreaElement;
-  let glowEl!: HTMLSpanElement;
-  let sparkEl!: HTMLCanvasElement;
-  const typing = { energy: 0, strokes: 0 };
-  let rowRefs: (HTMLButtonElement | null)[] = [];
-  let lastOpen: string | null = null;
-  let dictation = 0;
+  const reduce = usePrefersReducedMotion()
+  let rootEl!: HTMLDivElement
+  let inputEl!: HTMLTextAreaElement
+  let glowEl!: HTMLSpanElement
+  let sparkEl!: HTMLCanvasElement
+  const typing = { energy: 0, strokes: 0 }
+  const rowRefs: (HTMLButtonElement | null)[] = []
+  let lastOpen: string | null = null
+  let dictation = 0
 
-  const sources = () => props.sources ?? DEFAULT_SOURCES;
-  const commands = () => props.commands ?? DEFAULT_COMMANDS;
-  const models = () => props.models ?? DEFAULT_MODELS;
-  const efforts = () => props.efforts ?? DEFAULT_EFFORTS;
+  const sources = () => props.sources ?? DEFAULT_SOURCES
+  const commands = () => props.commands ?? DEFAULT_COMMANDS
+  const models = () => props.models ?? DEFAULT_MODELS
+  const efforts = () => props.efforts ?? DEFAULT_EFFORTS
 
-  const [draft, setDraft] = createSignal('');
-  const [attachments, setAttachments] = createSignal<string[]>([]);
-  const [modelKey, setModelKey] = createSignal(props.defaultModel ?? '');
-  const [plusOpen, setPlusOpen] = createSignal(false);
-  const [modelOpen, setModelOpen] = createSignal(false);
-  const [effortOpen, setEffortOpen] = createSignal(false);
+  const [draft, setDraft] = createSignal('')
+  const [attachments, setAttachments] = createSignal<string[]>([])
+  const [modelKey, setModelKey] = createSignal(props.defaultModel ?? '')
+  const [plusOpen, setPlusOpen] = createSignal(false)
+  const [modelOpen, setModelOpen] = createSignal(false)
+  const [effortOpen, setEffortOpen] = createSignal(false)
   const initEffort = () => {
-    const list = props.efforts ?? DEFAULT_EFFORTS;
-    const i = list.indexOf(props.defaultEffort ?? '');
-    return i >= 0 ? i : Math.max(0, Math.floor((list.length - 1) / 2));
-  };
-  const [effortIndex, setEffortIndex] = createSignal(initEffort());
-  const [dismissed, setDismissed] = createSignal(false);
-  const [active, setActive] = createSignal(0);
-  const [listening, setListening] = createSignal(false);
-  const [pressed, setPressed] = createSignal(false);
+    const list = props.efforts ?? DEFAULT_EFFORTS
+    const i = list.indexOf(props.defaultEffort ?? '')
+    return i >= 0 ? i : Math.max(0, Math.floor((list.length - 1) / 2))
+  }
+  const [effortIndex, setEffortIndex] = createSignal(initEffort())
+  const [dismissed, setDismissed] = createSignal(false)
+  const [active, setActive] = createSignal(0)
+  const [listening, setListening] = createSignal(false)
+  const [pressed, setPressed] = createSignal(false)
 
-  const model = createMemo(() => models().find(m => m.key === modelKey()) ?? models()[0]);
-  const token = createMemo(() => (dismissed() ? null : parseToken(draft())));
+  const model = createMemo(() => models().find(m => m.key === modelKey()) ?? models()[0])
+  const token = createMemo(() => (dismissed() ? null : parseToken(draft())))
   const open = (): 'at' | 'slash' | 'model' | 'effort' | null =>
-    plusOpen() ? 'at' : (token()?.kind ?? (modelOpen() ? 'model' : effortOpen() ? 'effort' : null));
-  const query = () => (plusOpen() ? '' : (token()?.query ?? ''));
+    plusOpen() ? 'at' : (token()?.kind ?? (modelOpen() ? 'model' : effortOpen() ? 'effort' : null))
+  const query = () => (plusOpen() ? '' : (token()?.query ?? ''))
   const list = createMemo<Row[]>(() => {
-    const o = open();
-    const q = query();
-    if (o === 'at') return sources().filter(s => s.name.toLowerCase().includes(q));
-    if (o === 'slash') return commands().filter(c => c.name.replace(/^\//, '').toLowerCase().startsWith(q));
-    if (o === 'model') return models();
-    return [];
-  });
-  const cursor = () => Math.min(active(), Math.max(0, list().length - 1));
-  const canSend = () => draft().trim().length > 0 || attachments().length > 0;
-  const busy = () => props.busy ?? false;
-  const armed = () => busy() || canSend();
-  const level = () => efforts()[effortIndex()] ?? '';
-  const maxed = () => efforts().length > 1 && effortIndex() === efforts().length - 1;
+    const o = open()
+    const q = query()
+    if (o === 'at') return sources().filter(s => s.name.toLowerCase().includes(q))
+    if (o === 'slash')
+      return commands().filter(c => c.name.replace(/^\//, '').toLowerCase().startsWith(q))
+    if (o === 'model') return models()
+    return []
+  })
+  const cursor = () => Math.min(active(), Math.max(0, list().length - 1))
+  const canSend = () => draft().trim().length > 0 || attachments().length > 0
+  const busy = () => props.busy ?? false
+  const armed = () => busy() || canSend()
+  const level = () => efforts()[effortIndex()] ?? ''
+  const maxed = () => efforts().length > 1 && effortIndex() === efforts().length - 1
 
-  const focusInput = () => inputEl?.focus({ preventScroll: true });
+  const focusInput = () => inputEl?.focus({ preventScroll: true })
   const closeMenus = () => {
-    setPlusOpen(false);
-    setModelOpen(false);
-    setEffortOpen(false);
-  };
+    setPlusOpen(false)
+    setModelOpen(false)
+    setEffortOpen(false)
+  }
 
   // Upstream useLayoutEffect on [open, cursor, list]: position the glow row.
   createEffect(() => {
-    const o = open();
-    const cur = cursor();
-    void list();
-    const glow = glowEl;
-    if (!glow || !o) return;
-    const row = rowRefs[cur];
+    const o = open()
+    const cur = cursor()
+    void list()
+    const glow = glowEl
+    if (!glow || !o) return
+    const row = rowRefs[cur]
     if (!row) {
-      glow.style.opacity = '0';
-      return;
+      glow.style.opacity = '0'
+      return
     }
-    const fresh = lastOpen !== o;
-    lastOpen = o;
-    if (fresh) glow.style.transition = 'none';
-    glow.style.top = `${row.offsetTop}px`;
-    glow.style.height = `${row.offsetHeight}px`;
-    glow.style.opacity = '1';
+    const fresh = lastOpen !== o
+    lastOpen = o
+    if (fresh) glow.style.transition = 'none'
+    glow.style.top = `${row.offsetTop}px`
+    glow.style.height = `${row.offsetHeight}px`
+    glow.style.opacity = '1'
     if (fresh) {
-      void glow.offsetHeight;
-      glow.style.transition = '';
+      void glow.offsetHeight
+      glow.style.transition = ''
     }
-  });
+  })
   createEffect(() => {
-    if (!open()) lastOpen = null;
-  });
+    if (!open()) lastOpen = null
+  })
 
   createEffect(() => {
-    if (!plusOpen() && !modelOpen() && !effortOpen()) return;
+    if (!plusOpen() && !modelOpen() && !effortOpen()) return
     const onDown = (e: PointerEvent) => {
-      if (!rootEl?.contains(e.target as Node)) closeMenus();
-    };
-    document.addEventListener('pointerdown', onDown);
-    onCleanup(() => document.removeEventListener('pointerdown', onDown));
-  });
+      if (!rootEl?.contains(e.target as Node)) closeMenus()
+    }
+    document.addEventListener('pointerdown', onDown)
+    onCleanup(() => document.removeEventListener('pointerdown', onDown))
+  })
 
   createEffect(() => {
-    void draft();
-    const maxRows = props.maxRows ?? 5;
-    const el = inputEl;
-    if (!el) return;
-    el.style.height = '0px';
-    const max = LINE * maxRows;
-    el.style.height = `${Math.min(el.scrollHeight, max)}px`;
-    el.style.overflowY = el.scrollHeight > max ? 'auto' : 'hidden';
-  });
+    void draft()
+    const maxRows = props.maxRows ?? 5
+    const el = inputEl
+    if (!el) return
+    el.style.height = '0px'
+    const max = LINE * maxRows
+    el.style.height = `${Math.min(el.scrollHeight, max)}px`
+    el.style.overflowY = el.scrollHeight > max ? 'auto' : 'hidden'
+  })
 
   onMount(() => {
     onCleanup(() => {
-      dictation += 1;
-    });
-  });
+      dictation += 1
+    })
+  })
 
   createEffect(() => {
-    const canvas = sparkEl;
-    if (!(maxed() && !reduce()) || !canvas) return;
-    const sparkColor = props.sparkColor ?? '#b39dff';
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    typing.strokes = 0;
-    let raf = 0;
-    let last = performance.now();
-    let w = 0;
-    let h = 0;
-    let due = 0;
-    let speed = 1;
-    let pulse = 0;
-    const parts: Spark[] = [];
+    const canvas = sparkEl
+    if (!(maxed() && !reduce()) || !canvas) return
+    const sparkColor = props.sparkColor ?? '#b39dff'
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    typing.strokes = 0
+    let raf = 0
+    let last = performance.now()
+    let w = 0
+    let h = 0
+    let due = 0
+    let speed = 1
+    let pulse = 0
+    const parts: Spark[] = []
     const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      w = rect.width;
-      h = rect.height;
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
+      const rect = canvas.getBoundingClientRect()
+      const dpr = Math.min(2, window.devicePixelRatio || 1)
+      w = rect.width
+      h = rect.height
+      canvas.width = Math.round(w * dpr)
+      canvas.height = Math.round(h * dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
     const spawn = (burst: boolean) => {
       parts.push({
         x: Math.random() * w,
@@ -364,192 +380,201 @@ const PromptBar = (props: PromptBarProps) => {
         sway: (Math.random() - 0.5) * 10,
         phase: Math.random() * Math.PI * 2,
         life: burst ? Math.random() * 1.2 : 0,
-        span: 2.4 + Math.random() * 2.4
-      });
-    };
+        span: 2.4 + Math.random() * 2.4,
+      })
+    }
     const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      const gain = props.sparkBoost ?? 1;
-      typing.energy *= Math.exp(-dt / 0.8);
-      pulse *= Math.exp(-dt / 0.16);
+      const dt = Math.min(0.05, (now - last) / 1000)
+      last = now
+      const gain = props.sparkBoost ?? 1
+      typing.energy *= Math.exp(-dt / 0.8)
+      pulse *= Math.exp(-dt / 0.16)
       if (typing.strokes > 0) {
-        typing.strokes = 0;
-        if (gain > 0) pulse = 1;
+        typing.strokes = 0
+        if (gain > 0) pulse = 1
       }
-      const energy = typing.energy * gain;
-      speed += (1 + energy * 6 - speed) * (1 - Math.exp(-dt / 0.15));
-      due += dt;
+      const energy = typing.energy * gain
+      speed += (1 + energy * 6 - speed) * (1 - Math.exp(-dt / 0.15))
+      due += dt
       while (due > 0.14) {
-        due -= 0.14;
-        if (parts.length < 30) spawn(false);
+        due -= 0.14
+        if (parts.length < 30) spawn(false)
       }
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = sparkColor;
-      ctx.shadowColor = sparkColor;
-      ctx.shadowBlur = 6 + energy * 10 + pulse * 6;
+      ctx.clearRect(0, 0, w, h)
+      ctx.fillStyle = sparkColor
+      ctx.shadowColor = sparkColor
+      ctx.shadowBlur = 6 + energy * 10 + pulse * 6
       for (let i = parts.length - 1; i >= 0; i -= 1) {
-        const p = parts[i];
-        p.life += dt;
+        const p = parts[i]
+        p.life += dt
         if (p.life > p.span) {
-          parts.splice(i, 1);
-          continue;
+          parts.splice(i, 1)
+          continue
         }
-        const k = p.life / p.span;
-        const twinkle = 0.7 + 0.3 * Math.sin((now / 160) * (1 + energy) + p.phase);
-        p.y += p.vy * dt * speed;
+        const k = p.life / p.span
+        const twinkle = 0.7 + 0.3 * Math.sin((now / 160) * (1 + energy) + p.phase)
+        p.y += p.vy * dt * speed
         if (p.y < -4) {
-          p.y = h + 3;
-          p.x = Math.random() * w;
+          p.y = h + 3
+          p.x = Math.random() * w
         }
-        const edge = Math.min(1, Math.max(0, p.y / 14), Math.max(0, (h - p.y) / 14));
-        ctx.globalAlpha = Math.min(1, Math.sin(k * Math.PI) * (0.9 + energy * 0.25) * twinkle) * edge;
-        ctx.beginPath();
+        const edge = Math.min(1, Math.max(0, p.y / 14), Math.max(0, (h - p.y) / 14))
+        ctx.globalAlpha =
+          Math.min(1, Math.sin(k * Math.PI) * (0.9 + energy * 0.25) * twinkle) * edge
+        ctx.beginPath()
         ctx.arc(
           p.x + Math.sin((now / 900) * (1 + energy * 0.8) + p.phase) * p.sway,
           p.y,
           p.r * twinkle * (1 + energy * 0.35),
           0,
-          Math.PI * 2
-        );
-        ctx.fill();
+          Math.PI * 2,
+        )
+        ctx.fill()
       }
-      raf = requestAnimationFrame(tick);
-    };
-    resize();
-    for (let i = 0; i < 26; i += 1) spawn(true);
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-    raf = requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick)
+    }
+    resize()
+    for (let i = 0; i < 26; i += 1) spawn(true)
+    const ro = new ResizeObserver(resize)
+    ro.observe(canvas)
+    raf = requestAnimationFrame(tick)
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      ctx.clearRect(0, 0, w, h);
-    });
-  });
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+      ctx.clearRect(0, 0, w, h)
+    })
+  })
 
   const setEffort = (i: number) => {
-    const next = Math.max(0, Math.min(efforts().length - 1, i));
-    if (next === effortIndex()) return;
-    setEffortIndex(next);
-    untrack(() => props.onEffortChange?.(efforts()[next]));
-  };
+    const next = Math.max(0, Math.min(efforts().length - 1, i))
+    if (next === effortIndex()) return
+    setEffortIndex(next)
+    untrack(() => props.onEffortChange?.(efforts()[next]))
+  }
   const effortFromPointer = (e: PointerEvent) => {
-    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-    const k = (e.clientX - rect.left - EDGE) / Math.max(1, rect.width - 2 * EDGE);
-    setEffort(Math.round(k * (efforts().length - 1)));
-  };
+    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect()
+    const k = (e.clientX - rect.left - EDGE) / Math.max(1, rect.width - 2 * EDGE)
+    setEffort(Math.round(k * (efforts().length - 1)))
+  }
   const onEffortKey = (e: KeyboardEvent) => {
     const step =
-      e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0;
+      e.key === 'ArrowRight' || e.key === 'ArrowUp'
+        ? 1
+        : e.key === 'ArrowLeft' || e.key === 'ArrowDown'
+          ? -1
+          : 0
     if (step) {
-      e.preventDefault();
-      setEffort(effortIndex() + step);
+      e.preventDefault()
+      setEffort(effortIndex() + step)
     } else if (e.key === 'Home') {
-      e.preventDefault();
-      setEffort(0);
+      e.preventDefault()
+      setEffort(0)
     } else if (e.key === 'End') {
-      e.preventDefault();
-      setEffort(efforts().length - 1);
+      e.preventDefault()
+      setEffort(efforts().length - 1)
     } else if (e.key === 'Escape') {
-      setEffortOpen(false);
-      focusInput();
+      setEffortOpen(false)
+      focusInput()
     }
-  };
+  }
   const stepAt = (i: number) =>
-    `calc(${EDGE}px + (100% - ${EDGE * 2}px) * ${i / Math.max(1, efforts().length - 1)})`;
-  const fillAt = (i: number) => (i === efforts().length - 1 ? '100%' : `calc(${stepAt(i)} + 7px)`);
+    `calc(${EDGE}px + (100% - ${EDGE * 2}px) * ${i / Math.max(1, efforts().length - 1)})`
+  const fillAt = (i: number) => (i === efforts().length - 1 ? '100%' : `calc(${stepAt(i)} + 7px)`)
 
   const pick = (row: Row) => {
     if (open() === 'model') {
-      setModelKey(row.key);
-      setModelOpen(false);
-      focusInput();
-      return;
+      setModelKey(row.key)
+      setModelOpen(false)
+      focusInput()
+      return
     }
-    const tokenNow = token();
-    const head = tokenNow ? draft().slice(0, tokenNow.start) : draft();
+    const tokenNow = token()
+    const head = tokenNow ? draft().slice(0, tokenNow.start) : draft()
     if (row.attach) {
-      setDraft(head);
+      setDraft(head)
       Promise.resolve(untrack(() => props.onAttach?.())).then(files => {
-        if (!files) return;
-        setAttachments(a => [...a, ...(Array.isArray(files) ? files : [files])]);
-      });
+        if (!files) return
+        setAttachments(a => [...a, ...(Array.isArray(files) ? files : [files])])
+      })
     } else if (open() === 'at') {
-      setDraft(`${head}@${row.name} `);
+      setDraft(`${head}@${row.name} `)
     } else {
-      setDraft(`${head}${row.name} `);
+      setDraft(`${head}${row.name} `)
     }
-    setPlusOpen(false);
-    setDismissed(false);
-    focusInput();
-  };
+    setPlusOpen(false)
+    setDismissed(false)
+    focusInput()
+  }
 
   const send = () => {
-    if (!canSend() || busy()) return;
+    if (!canSend() || busy()) return
     untrack(() =>
-      props.onSend?.(draft().trim(), { attachments: attachments(), model: model(), effort: level() })
-    );
-    setDraft('');
-    setAttachments([]);
-    setDismissed(false);
-    closeMenus();
-    focusInput();
-  };
+      props.onSend?.(draft().trim(), {
+        attachments: attachments(),
+        model: model(),
+        effort: level(),
+      }),
+    )
+    setDraft('')
+    setAttachments([])
+    setDismissed(false)
+    closeMenus()
+    focusInput()
+  }
 
   const toggleListen = () => {
     if (listening()) {
-      dictation += 1;
-      setListening(false);
-      return;
+      dictation += 1
+      setListening(false)
+      return
     }
-    const seq = ++dictation;
-    setListening(true);
+    const seq = ++dictation
+    setListening(true)
     Promise.resolve(untrack(() => props.onDictate?.())).then(
       text => {
-        if (seq !== dictation) return;
-        setListening(false);
-        if (text) setDraft(d => (d.trim() ? `${d.trimEnd()} ${text}` : text));
-        focusInput();
+        if (seq !== dictation) return
+        setListening(false)
+        if (text) setDraft(d => (d.trim() ? `${d.trimEnd()} ${text}` : text))
+        focusInput()
       },
       () => {
-        if (seq === dictation) setListening(false);
-      }
-    );
-  };
+        if (seq === dictation) setListening(false)
+      },
+    )
+  }
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (open() && list().length) {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        setActive((cursor() + (e.key === 'ArrowDown' ? 1 : list().length - 1)) % list().length);
-        return;
+        e.preventDefault()
+        setActive((cursor() + (e.key === 'ArrowDown' ? 1 : list().length - 1)) % list().length)
+        return
       }
       if ((e.key === 'Enter' && !e.shiftKey) || e.key === 'Tab') {
-        e.preventDefault();
-        pick(list()[cursor()]);
-        return;
+        e.preventDefault()
+        pick(list()[cursor()])
+        return
       }
     }
     if (e.key === 'Escape') {
       if (open()) {
-        e.preventDefault();
-        setDismissed(true);
-        closeMenus();
+        e.preventDefault()
+        setDismissed(true)
+        closeMenus()
       }
-      return;
+      return
     }
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
-      e.preventDefault();
-      send();
+      e.preventDefault()
+      send()
     }
-  };
+  }
 
   const down = (e: PointerEvent) => {
-    if (e.button !== 0 || !armed()) return;
-    setPressed(true);
-  };
-  const up = () => setPressed(false);
+    if (e.button !== 0 || !armed()) return
+    setPressed(true)
+  }
+  const up = () => setPressed(false)
 
   return (
     <div
@@ -564,7 +589,7 @@ const PromptBar = (props: PromptBarProps) => {
         '--pb-w': `${props.width ?? 400}px`,
         '--pb-radius': `${props.radius ?? 16}px`,
         '--pb-spark': props.sparkColor ?? '#b39dff',
-        '--pb-press': props.pressScale ?? 0.96
+        '--pb-press': props.pressScale ?? 0.96,
       }}
     >
       <style>{STYLE}</style>
@@ -573,7 +598,13 @@ const PromptBar = (props: PromptBarProps) => {
           class="absolute inset-x-0 bottom-[calc(100%+8px)] z-[2] origin-bottom rounded-xl p-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.35),0_1px_2px_rgba(0,0,0,0.08)] [animation:prompt-bar-pop_180ms_cubic-bezier(0.23,1,0.32,1)_both] [background:var(--pb-menu)] data-[kind=model]:right-auto data-[kind=model]:w-[200px] data-[kind=model]:origin-bottom-left data-[kind=effort]:right-auto data-[kind=effort]:w-[248px] data-[kind=effort]:origin-bottom-left data-[kind=effort]:px-3.5 data-[kind=effort]:pt-3 data-[kind=effort]:pb-3.5 motion-reduce:[animation:none]"
           role={open() === 'effort' ? 'dialog' : 'listbox'}
           aria-label={
-            open() === 'at' ? 'Sources' : open() === 'slash' ? 'Commands' : open() === 'model' ? 'Models' : 'Effort'
+            open() === 'at'
+              ? 'Sources'
+              : open() === 'slash'
+                ? 'Commands'
+                : open() === 'model'
+                  ? 'Models'
+                  : 'Effort'
           }
           data-kind={open()}
         >
@@ -602,18 +633,21 @@ const PromptBar = (props: PromptBarProps) => {
                 aria-valuemax={efforts().length - 1}
                 aria-valuenow={effortIndex()}
                 aria-valuetext={level()}
-                style={{ '--pb-effort-x': stepAt(effortIndex()), '--pb-effort-fill': fillAt(effortIndex()) }}
+                style={{
+                  '--pb-effort-x': stepAt(effortIndex()),
+                  '--pb-effort-fill': fillAt(effortIndex()),
+                }}
                 onPointerDown={e => {
-                  if (e.button !== 0) return;
-                  const el = e.currentTarget as HTMLDivElement;
+                  if (e.button !== 0) return
+                  const el = e.currentTarget as HTMLDivElement
                   try {
-                    el.setPointerCapture(e.pointerId);
+                    el.setPointerCapture(e.pointerId)
                   } catch {}
-                  el.focus({ preventScroll: true });
-                  effortFromPointer(e);
+                  el.focus({ preventScroll: true })
+                  effortFromPointer(e)
                 }}
                 onPointerMove={e => {
-                  if (e.buttons & 1) effortFromPointer(e);
+                  if (e.buttons & 1) effortFromPointer(e)
                 }}
                 onKeyDown={onEffortKey}
               >
@@ -640,7 +674,7 @@ const PromptBar = (props: PromptBarProps) => {
                 {(row, i) => (
                   <button
                     ref={el => {
-                      rowRefs[i()] = el;
+                      rowRefs[i()] = el
                     }}
                     type="button"
                     role="option"
@@ -692,14 +726,13 @@ const PromptBar = (props: PromptBarProps) => {
         role="presentation"
         data-max={maxed() ? '' : undefined}
         onPointerDown={e => {
-          if (e.target === (e.currentTarget as HTMLDivElement) || e.target === inputEl) closeMenus();
+          if (e.target === (e.currentTarget as HTMLDivElement) || e.target === inputEl) closeMenus()
         }}
         onClick={focusInput}
       >
         <canvas
           ref={sparkEl}
           class="pointer-events-none absolute inset-0 -z-10 h-full w-full rounded-[inherit]"
-          aria-hidden="true"
         />
         {attachments().length > 0 ? (
           <div class="flex flex-wrap gap-1.5">
@@ -730,12 +763,12 @@ const PromptBar = (props: PromptBarProps) => {
           placeholder={listening() ? 'Listening…' : (props.placeholder ?? 'Ask anything')}
           aria-label="Prompt"
           onInput={e => {
-            setDraft((e.currentTarget as HTMLTextAreaElement).value);
-            typing.energy = Math.min(1.6, typing.energy + 0.22);
-            typing.strokes = Math.min(4, typing.strokes + 1);
-            setDismissed(false);
-            closeMenus();
-            setActive(0);
+            setDraft((e.currentTarget as HTMLTextAreaElement).value)
+            typing.energy = Math.min(1.6, typing.energy + 0.22)
+            typing.strokes = Math.min(4, typing.strokes + 1)
+            setDismissed(false)
+            closeMenus()
+            setActive(0)
           }}
           onFocus={closeMenus}
           onKeyDown={onKeyDown}
@@ -750,11 +783,11 @@ const PromptBar = (props: PromptBarProps) => {
             data-on={plusOpen() ? '' : undefined}
             onMouseDown={e => e.preventDefault()}
             onClick={() => {
-              setModelOpen(false);
-              setEffortOpen(false);
-              setActive(0);
-              setPlusOpen(v => !v);
-              focusInput();
+              setModelOpen(false)
+              setEffortOpen(false)
+              setActive(0)
+              setPlusOpen(v => !v)
+              focusInput()
             }}
           >
             <HugeiconsIcon icon={PlusSignIcon} size={16} strokeWidth={2} />
@@ -768,11 +801,11 @@ const PromptBar = (props: PromptBarProps) => {
               data-on={modelOpen() ? '' : undefined}
               onMouseDown={e => e.preventDefault()}
               onClick={() => {
-                setPlusOpen(false);
-                setEffortOpen(false);
-                setActive(Math.max(0, models().indexOf(model() as PromptBarModel)));
-                setModelOpen(v => !v);
-                focusInput();
+                setPlusOpen(false)
+                setEffortOpen(false)
+                setActive(Math.max(0, models().indexOf(model() as PromptBarModel)))
+                setModelOpen(v => !v)
+                focusInput()
               }}
             >
               <span>{model()?.name}</span>
@@ -789,10 +822,10 @@ const PromptBar = (props: PromptBarProps) => {
               data-max={maxed() ? '' : undefined}
               onMouseDown={e => e.preventDefault()}
               onClick={() => {
-                setPlusOpen(false);
-                setModelOpen(false);
-                setEffortOpen(v => !v);
-                focusInput();
+                setPlusOpen(false)
+                setModelOpen(false)
+                setEffortOpen(v => !v)
+                focusInput()
               }}
             >
               <HugeiconsIcon icon={SparklesIcon} size={13} strokeWidth={2} />
@@ -837,8 +870,8 @@ const PromptBar = (props: PromptBarProps) => {
             onPointerCancel={up}
             onPointerLeave={up}
             onClick={() => {
-              if (busy()) untrack(() => props.onStop?.());
-              else send();
+              if (busy()) untrack(() => props.onStop?.())
+              else send()
             }}
           >
             <SendGlyph
@@ -851,7 +884,7 @@ const PromptBar = (props: PromptBarProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PromptBar;
+export default PromptBar

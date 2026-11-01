@@ -1,4 +1,4 @@
-import CircularText from './CircularText';
+import CircularText from './CircularText'
 
 function CircularTextDemo() {
   return (
@@ -14,7 +14,7 @@ function CircularTextDemo() {
         <span class="text-4xl">✳</span>
       </CircularText>
     </div>
-  );
+  )
 }
 
-export default CircularTextDemo;
+export default CircularTextDemo

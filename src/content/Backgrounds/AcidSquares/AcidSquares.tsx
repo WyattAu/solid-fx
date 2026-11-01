@@ -1,131 +1,137 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type AcidSquaresShape = 'square' | 'round';
+export type AcidSquaresShape = 'square' | 'round'
 
-export type AcidSquaresDetail = 'low' | 'medium' | 'high';
+export type AcidSquaresDetail = 'low' | 'medium' | 'high'
 
-export type AcidSquaresLighting = 'split' | 'backlit' | 'overhead';
+export type AcidSquaresLighting = 'split' | 'backlit' | 'overhead'
 
-export type AcidSquaresHoverEffect = 'press' | 'lift' | 'none';
+export type AcidSquaresHoverEffect = 'press' | 'lift' | 'none'
 
-export type AcidSquaresPulseOrigin = 'center' | 'random';
+export type AcidSquaresPulseOrigin = 'center' | 'random'
 
 export interface AcidSquaresProps
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'ref' | 'children'> {
-  color?: string;
-  accentColor?: string;
-  secondaryColor?: string;
-  tileSize?: number;
-  gap?: number;
-  roundness?: number;
-  softness?: number;
-  bulge?: number;
-  rotation?: number;
-  gloss?: number;
-  waves?: number;
-  waveScale?: number;
-  speed?: number;
-  shape?: AcidSquaresShape;
-  pulse?: number;
-  pulseSpeed?: number;
-  pulseSpacing?: number;
-  pulseWidth?: number;
-  pulseOrigin?: AcidSquaresPulseOrigin;
-  brightness?: number;
-  lighting?: AcidSquaresLighting;
-  tilt?: number;
-  zoom?: number;
-  depth?: number;
-  grain?: number;
-  fade?: number;
-  opacity?: number;
-  intro?: boolean;
-  mouseInteraction?: boolean;
-  hoverEffect?: AcidSquaresHoverEffect;
-  mouseStrength?: number;
-  mouseRadius?: number;
-  pulseOnClick?: boolean;
-  detail?: AcidSquaresDetail;
-  lightMode?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
+  color?: string
+  accentColor?: string
+  secondaryColor?: string
+  tileSize?: number
+  gap?: number
+  roundness?: number
+  softness?: number
+  bulge?: number
+  rotation?: number
+  gloss?: number
+  waves?: number
+  waveScale?: number
+  speed?: number
+  shape?: AcidSquaresShape
+  pulse?: number
+  pulseSpeed?: number
+  pulseSpacing?: number
+  pulseWidth?: number
+  pulseOrigin?: AcidSquaresPulseOrigin
+  brightness?: number
+  lighting?: AcidSquaresLighting
+  tilt?: number
+  zoom?: number
+  depth?: number
+  grain?: number
+  fade?: number
+  opacity?: number
+  intro?: boolean
+  mouseInteraction?: boolean
+  hoverEffect?: AcidSquaresHoverEffect
+  mouseStrength?: number
+  mouseRadius?: number
+  pulseOnClick?: boolean
+  detail?: AcidSquaresDetail
+  lightMode?: boolean
+  paused?: boolean
+  dpr?: number
+  className?: string
+  class?: string
 }
 
-type Light = [number, number, number, number, number];
+type Light = [number, number, number, number, number]
 
 type Settings = {
-  color: string;
-  accentColor: string;
-  secondaryColor: string;
-  tileSize: number;
-  gap: number;
-  roundness: number;
-  softness: number;
-  bulge: number;
-  rotation: number;
-  gloss: number;
-  waves: number;
-  waveScale: number;
-  speed: number;
-  square: number;
-  pulse: number;
-  pulseSpeed: number;
-  pulseSpacing: number;
-  pulseWidth: number;
-  randomOrigin: boolean;
-  brightness: number;
-  lights: Light[];
-  tilt: number;
-  zoom: number;
-  depth: number;
-  grain: number;
-  fade: number;
-  opacity: number;
-  intro: boolean;
-  mouseInteraction: boolean;
-  hover: number;
-  mouseStrength: number;
-  mouseRadius: number;
-  pulseOnClick: boolean;
-  mesh: number;
-  lightMode: boolean;
-  paused: boolean;
-  dpr?: number;
-};
+  color: string
+  accentColor: string
+  secondaryColor: string
+  tileSize: number
+  gap: number
+  roundness: number
+  softness: number
+  bulge: number
+  rotation: number
+  gloss: number
+  waves: number
+  waveScale: number
+  speed: number
+  square: number
+  pulse: number
+  pulseSpeed: number
+  pulseSpacing: number
+  pulseWidth: number
+  randomOrigin: boolean
+  brightness: number
+  lights: Light[]
+  tilt: number
+  zoom: number
+  depth: number
+  grain: number
+  fade: number
+  opacity: number
+  intro: boolean
+  mouseInteraction: boolean
+  hover: number
+  mouseStrength: number
+  mouseRadius: number
+  pulseOnClick: boolean
+  mesh: number
+  lightMode: boolean
+  paused: boolean
+  dpr?: number
+}
 
-type Surface = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Surface = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-type Ripple = { x: number; z: number; start: number; strength: number };
+type Ripple = { x: number; z: number; start: number; strength: number }
 
-type Camera = { eye: number[]; target: number[]; viewProj: number[]; inverse: number[]; distance: number };
+type Camera = {
+  eye: number[]
+  target: number[]
+  viewProj: number[]
+  inverse: number[]
+  distance: number
+}
 
-const MAX_RIPPLES = 8;
-const MESH: Record<AcidSquaresDetail, number> = { low: 150, medium: 210, high: 280 };
-const AREA = [-42, -76, 84, 94];
-const MAX_RENDER_DIM = 2400;
-const INTRO_SECONDS = 3;
-const REVEAL_SECONDS = 2.6;
-const REVEAL_REACH = 19;
-const ORIGIN = [0, -3];
-const HOVER_EFFECTS: Record<AcidSquaresHoverEffect, number> = { press: 1, lift: -1, none: 0 };
+const MAX_RIPPLES = 8
+const MESH: Record<AcidSquaresDetail, number> = { low: 150, medium: 210, high: 280 }
+const AREA = [-42, -76, 84, 94]
+const MAX_RENDER_DIM = 2400
+const INTRO_SECONDS = 3
+const REVEAL_SECONDS = 2.6
+const REVEAL_REACH = 19
+const ORIGIN = [0, -3]
+const HOVER_EFFECTS: Record<AcidSquaresHoverEffect, number> = { press: 1, lift: -1, none: 0 }
 const LIGHTING: Record<AcidSquaresLighting, Light[]> = {
   split: [
     [7, 4.2, -4, 4, 4],
-    [-8, 3.6, 3, 4, 4]
+    [-8, 3.6, 3, 4, 4],
   ],
   backlit: [
     [6, 1.6, -15, 5, 3],
-    [-7, 1.4, -13, 5, 3]
+    [-7, 1.4, -13, 5, 3],
   ],
   overhead: [
     [3, 7.5, -4, 3, 3],
-    [-3, 7, -1, 3, 3]
-  ]
-};
-const DEG = Math.PI / 180;
+    [-3, 7, -1, 3, 3],
+  ],
+}
+const DEG = Math.PI / 180
 
 const FIELD = `
 uniform vec4 uRipples[${MAX_RIPPLES}];
@@ -197,7 +203,7 @@ vec3 field(vec2 p) {
   g += 2.0 * hd / (hr * hr) * hover;
   return vec3(h, g);
 }
-`;
+`
 
 const VERTEX = `#version 300 es
 precision highp float;
@@ -213,7 +219,7 @@ void main() {
   vWorld = vec3(ground.x, f.x, ground.y);
   vGround = ground;
   gl_Position = uViewProj * vec4(vWorld, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -374,7 +380,7 @@ void main() {
   float mask = uFade > 0.0 ? smoother(uv.x / edgeFade) * smoother((1.0 - uv.x) / edgeFade) * smoother(uv.y / edgeFade) * smoother((1.0 - uv.y) / edgeFade) : 1.0;
   alpha *= mask;
   outColor = vec4(color * alpha, alpha);
-}`;
+}`
 
 const UNIFORMS = [
   'uRipples',
@@ -408,77 +414,98 @@ const UNIFORMS = [
   'uReveal',
   'uView',
   'uFade',
-  'uFrame'
-];
+  'uFrame',
+]
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const ease = (x: number) => {
-  const t = clamp(x, 0, 1);
-  return 1 - (1 - t) * (1 - t) * (1 - t);
-};
+  const t = clamp(x, 0, 1)
+  return 1 - (1 - t) * (1 - t) * (1 - t)
+}
 
 const glide = (x: number) => {
-  const t = clamp(x, 0, 1);
-  return t * t * t * (t * (t * 6 - 15) + 10);
-};
+  const t = clamp(x, 0, 1)
+  return t * t * t * (t * (t * 6 - 15) + 10)
+}
 
 const smoothstep = (a: number, b: number, x: number) => {
-  const t = clamp((x - a) / (b - a), 0, 1);
-  return t * t * (3 - 2 * t);
-};
+  const t = clamp((x - a) / (b - a), 0, 1)
+  return t * t * (3 - 2 * t)
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
-const link = (gl: WebGL2RenderingContext, vertexSource: string, fragmentSource: string): Surface | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+const link = (
+  gl: WebGL2RenderingContext,
+  vertexSource: string,
+  fragmentSource: string,
+): Surface | null => {
+  const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name);
-  return { program, uniforms };
-};
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name)
+  return { program, uniforms }
+}
 
 const perspective = (fov: number, aspect: number, near: number, far: number) => {
-  const f = 1 / Math.tan(fov / 2);
-  const nf = 1 / (near - far);
-  return [f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0];
-};
+  const f = 1 / Math.tan(fov / 2)
+  const nf = 1 / (near - far)
+  return [
+    f / aspect,
+    0,
+    0,
+    0,
+    0,
+    f,
+    0,
+    0,
+    0,
+    0,
+    (far + near) * nf,
+    -1,
+    0,
+    0,
+    2 * far * near * nf,
+    0,
+  ]
+}
 
 const lookAt = (eye: number[], target: number[]) => {
-  let zx = eye[0] - target[0];
-  let zy = eye[1] - target[1];
-  let zz = eye[2] - target[2];
-  let len = Math.hypot(zx, zy, zz) || 1;
-  zx /= len;
-  zy /= len;
-  zz /= len;
-  let xx = zz;
-  let xz = -zx;
-  len = Math.hypot(xx, xz) || 1;
-  xx /= len;
-  xz /= len;
-  const yx = zy * xz;
-  const yy = zz * xx - zx * xz;
-  const yz = -zy * xx;
+  let zx = eye[0] - target[0]
+  let zy = eye[1] - target[1]
+  let zz = eye[2] - target[2]
+  let len = Math.hypot(zx, zy, zz) || 1
+  zx /= len
+  zy /= len
+  zz /= len
+  let xx = zz
+  let xz = -zx
+  len = Math.hypot(xx, xz) || 1
+  xx /= len
+  xz /= len
+  const yx = zy * xz
+  const yy = zz * xx - zx * xz
+  const yz = -zy * xx
   return [
     xx,
     yx,
@@ -495,36 +522,39 @@ const lookAt = (eye: number[], target: number[]) => {
     -(xx * eye[0] + xz * eye[2]),
     -(yx * eye[0] + yy * eye[1] + yz * eye[2]),
     -(zx * eye[0] + zy * eye[1] + zz * eye[2]),
-    1
-  ];
-};
+    1,
+  ]
+}
 
 const multiply = (a: number[], b: number[]) => {
-  const out: number[] = new Array(16);
+  const out: number[] = new Array(16)
   for (let col = 0; col < 4; col += 1) {
     for (let row = 0; row < 4; row += 1) {
       out[col * 4 + row] =
-        a[row] * b[col * 4] + a[4 + row] * b[col * 4 + 1] + a[8 + row] * b[col * 4 + 2] + a[12 + row] * b[col * 4 + 3];
+        a[row] * b[col * 4] +
+        a[4 + row] * b[col * 4 + 1] +
+        a[8 + row] * b[col * 4 + 2] +
+        a[12 + row] * b[col * 4 + 3]
     }
   }
-  return out;
-};
+  return out
+}
 
 const invert = (a: number[]) => {
-  const b00 = a[0] * a[5] - a[1] * a[4];
-  const b01 = a[0] * a[6] - a[2] * a[4];
-  const b02 = a[0] * a[7] - a[3] * a[4];
-  const b03 = a[1] * a[6] - a[2] * a[5];
-  const b04 = a[1] * a[7] - a[3] * a[5];
-  const b05 = a[2] * a[7] - a[3] * a[6];
-  const b06 = a[8] * a[13] - a[9] * a[12];
-  const b07 = a[8] * a[14] - a[10] * a[12];
-  const b08 = a[8] * a[15] - a[11] * a[12];
-  const b09 = a[9] * a[14] - a[10] * a[13];
-  const b10 = a[9] * a[15] - a[11] * a[13];
-  const b11 = a[10] * a[15] - a[11] * a[14];
-  const det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
-  const k = det ? 1 / det : 0;
+  const b00 = a[0] * a[5] - a[1] * a[4]
+  const b01 = a[0] * a[6] - a[2] * a[4]
+  const b02 = a[0] * a[7] - a[3] * a[4]
+  const b03 = a[1] * a[6] - a[2] * a[5]
+  const b04 = a[1] * a[7] - a[3] * a[5]
+  const b05 = a[2] * a[7] - a[3] * a[6]
+  const b06 = a[8] * a[13] - a[9] * a[12]
+  const b07 = a[8] * a[14] - a[10] * a[12]
+  const b08 = a[8] * a[15] - a[11] * a[12]
+  const b09 = a[9] * a[14] - a[10] * a[13]
+  const b10 = a[9] * a[15] - a[11] * a[13]
+  const b11 = a[10] * a[15] - a[11] * a[14]
+  const det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06
+  const k = det ? 1 / det : 0
   return [
     (a[5] * b11 - a[6] * b10 + a[7] * b09) * k,
     (a[2] * b10 - a[1] * b11 - a[3] * b09) * k,
@@ -541,15 +571,15 @@ const invert = (a: number[]) => {
     (a[5] * b07 - a[4] * b09 - a[6] * b06) * k,
     (a[0] * b09 - a[1] * b07 + a[2] * b06) * k,
     (a[13] * b01 - a[12] * b03 - a[14] * b00) * k,
-    (a[8] * b03 - a[9] * b01 + a[10] * b00) * k
-  ];
-};
+    (a[8] * b03 - a[9] * b01 + a[10] * b00) * k,
+  ]
+}
 
 const AcidSquares = (props: AcidSquaresProps) => {
-  const [own, rest] = splitProps(props, ['class', 'className']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, ['class', 'className'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = createMemo(
     (): Settings => ({
@@ -589,75 +619,75 @@ const AcidSquares = (props: AcidSquaresProps) => {
       mesh: MESH[props.detail ?? 'medium'] || MESH.medium,
       lightMode: props.lightMode ?? false,
       paused: props.paused ?? false,
-      dpr: props.dpr
-    })
-  );
+      dpr: props.dpr,
+    }),
+  )
 
   onMount(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
+    const container = containerRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: true,
       depth: true,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return;
+      stencil: false,
+    })
+    if (!container || !canvas || !gl) return
 
-    const surface = link(gl, VERTEX, FRAGMENT);
-    if (!surface) return;
+    const surface = link(gl, VERTEX, FRAGMENT)
+    if (!surface) return
 
-    const vao = gl.createVertexArray();
-    const gridBuffer = gl.createBuffer();
-    const indexBuffer = gl.createBuffer();
-    let meshSize = 0;
-    let indexCount = 0;
+    const vao = gl.createVertexArray()
+    const gridBuffer = gl.createBuffer()
+    const indexBuffer = gl.createBuffer()
+    let meshSize = 0
+    let indexCount = 0
     const buildMesh = (size: number) => {
-      if (size === meshSize) return;
-      meshSize = size;
-      const points = new Float32Array((size + 1) * (size + 1) * 2);
-      let o = 0;
+      if (size === meshSize) return
+      meshSize = size
+      const points = new Float32Array((size + 1) * (size + 1) * 2)
+      let o = 0
       for (let j = 0; j <= size; j += 1) {
         for (let i = 0; i <= size; i += 1) {
-          points[o] = i / size;
-          points[o + 1] = j / size;
-          o += 2;
+          points[o] = i / size
+          points[o + 1] = j / size
+          o += 2
         }
       }
-      const indices = new Uint32Array(size * size * 6);
-      o = 0;
+      const indices = new Uint32Array(size * size * 6)
+      o = 0
       for (let j = 0; j < size; j += 1) {
         for (let i = 0; i < size; i += 1) {
-          const a = j * (size + 1) + i;
-          const b = a + 1;
-          const c = a + size + 1;
-          const d = c + 1;
-          indices[o] = a;
-          indices[o + 1] = c;
-          indices[o + 2] = b;
-          indices[o + 3] = b;
-          indices[o + 4] = c;
-          indices[o + 5] = d;
-          o += 6;
+          const a = j * (size + 1) + i
+          const b = a + 1
+          const c = a + size + 1
+          const d = c + 1
+          indices[o] = a
+          indices[o + 1] = c
+          indices[o + 2] = b
+          indices[o + 3] = b
+          indices[o + 4] = c
+          indices[o + 5] = d
+          o += 6
         }
       }
-      indexCount = indices.length;
-      gl.bindVertexArray(vao);
-      gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-      gl.bindVertexArray(null);
-    };
+      indexCount = indices.length
+      gl.bindVertexArray(vao)
+      gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer)
+      gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW)
+      gl.enableVertexAttribArray(0)
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW)
+      gl.bindVertexArray(null)
+    }
 
-    const probe = document.createElement('canvas');
-    probe.width = 1;
-    probe.height = 1;
-    const probeContext = probe.getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const probe = document.createElement('canvas')
+    probe.width = 1
+    probe.height = 1
+    const probeContext = probe.getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     const state = {
       clock: 0,
       swell: 0,
@@ -676,350 +706,368 @@ const AcidSquares = (props: AcidSquaresProps) => {
       hover: { x: 0, z: 0, vx: 0, vz: 0, presence: 0, placed: false },
       look: { x: 0, y: 0, vx: 0, vy: 0 },
       seed: 1,
-      camera: null as Camera | null
-    };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let alive = true;
+      camera: null as Camera | null,
+    }
+    let raf = 0
+    let last = 0
+    let visible = true
+    let alive = true
 
     const toRgb = (value: string, fallback: number[]): number[] => {
-      if (!probeContext || !value) return fallback;
-      const css = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value;
-      probeContext.clearRect(0, 0, 1, 1);
-      probeContext.fillStyle = '#000000';
-      probeContext.fillStyle = css;
-      probeContext.fillRect(0, 0, 1, 1);
-      const [r, g, b] = probeContext.getImageData(0, 0, 1, 1).data;
-      return [r / 255, g / 255, b / 255];
-    };
+      if (!probeContext || !value) return fallback
+      const css = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value
+      probeContext.clearRect(0, 0, 1, 1)
+      probeContext.fillStyle = '#000000'
+      probeContext.fillStyle = css
+      probeContext.fillRect(0, 0, 1, 1)
+      const [r, g, b] = probeContext.getImageData(0, 0, 1, 1).data
+      return [r / 255, g / 255, b / 255]
+    }
 
     const resolveColors = (s: Settings) => {
-      const key = `${s.color}|${s.accentColor}|${s.secondaryColor}`;
-      if (key === state.colorKey) return;
-      state.colorKey = key;
-      state.color = toRgb(s.color, [0.07, 0.06, 0.09]);
-      state.accent = toRgb(s.accentColor, [1, 0.31, 0.72]);
-      state.second = toRgb(s.secondaryColor, [0.23, 0.42, 1]);
-    };
+      const key = `${s.color}|${s.accentColor}|${s.secondaryColor}`
+      if (key === state.colorKey) return
+      state.colorKey = key
+      state.color = toRgb(s.color, [0.07, 0.06, 0.09])
+      state.accent = toRgb(s.accentColor, [1, 0.31, 0.72])
+      state.second = toRgb(s.secondaryColor, [0.23, 0.42, 1])
+    }
 
     const random = () => {
-      state.seed = (state.seed * 16807) % 2147483647;
-      return (state.seed - 1) / 2147483646;
-    };
+      state.seed = (state.seed * 16807) % 2147483647
+      return (state.seed - 1) / 2147483646
+    }
 
     const cameraFor = (s: Settings): Camera => {
-      const aspect = state.width / Math.max(state.height, 1);
-      const distance = 8 / s.zoom;
-      const yaw = state.look.x * 0.16;
-      const pitch = 1.5 - s.tilt * 1.26 + state.look.y * 0.05;
-      const target = [ORIGIN[0], 0, ORIGIN[1]];
+      const aspect = state.width / Math.max(state.height, 1)
+      const distance = 8 / s.zoom
+      const yaw = state.look.x * 0.16
+      const pitch = 1.5 - s.tilt * 1.26 + state.look.y * 0.05
+      const target = [ORIGIN[0], 0, ORIGIN[1]]
       const eye = [
         target[0] + Math.sin(yaw) * Math.cos(pitch) * distance,
         target[1] + Math.sin(pitch) * distance,
-        target[2] + Math.cos(yaw) * Math.cos(pitch) * distance
-      ];
-      const projection = perspective(0.8, aspect, 0.1, 400);
-      const view = lookAt(eye, target);
-      const viewProj = multiply(projection, view);
-      return { eye, target, viewProj, inverse: invert(viewProj), distance };
-    };
+        target[2] + Math.cos(yaw) * Math.cos(pitch) * distance,
+      ]
+      const projection = perspective(0.8, aspect, 0.1, 400)
+      const view = lookAt(eye, target)
+      const viewProj = multiply(projection, view)
+      return { eye, target, viewProj, inverse: invert(viewProj), distance }
+    }
 
-    const rippleData = new Float32Array(MAX_RIPPLES * 4);
+    const rippleData = new Float32Array(MAX_RIPPLES * 4)
 
     const render = () => {
-      const s = settings();
-      buildMesh(s.mesh);
-      resolveColors(s);
-      const camera = cameraFor(s);
-      state.camera = camera;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clearDepth(1);
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-      gl.enable(gl.DEPTH_TEST);
-      gl.depthFunc(gl.LEQUAL);
-      gl.useProgram(surface.program);
-      const u = surface.uniforms;
-      rippleData.fill(0);
+      const s = settings()
+      buildMesh(s.mesh)
+      resolveColors(s)
+      const camera = cameraFor(s)
+      state.camera = camera
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clearDepth(1)
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+      gl.enable(gl.DEPTH_TEST)
+      gl.depthFunc(gl.LEQUAL)
+      gl.useProgram(surface.program)
+      const u = surface.uniforms
+      rippleData.fill(0)
       state.ripples.forEach((ripple, index) => {
-        rippleData[index * 4] = ripple.x;
-        rippleData[index * 4 + 1] = ripple.z;
-        rippleData[index * 4 + 2] = ripple.start;
-        rippleData[index * 4 + 3] = ripple.strength;
-      });
-      const introAge = state.intro;
-      const revealing = introAge < INTRO_SECONDS;
-      const revealRadius = glide(introAge / REVEAL_SECONDS) * REVEAL_REACH;
-      const settle = ease(introAge / INTRO_SECONDS);
-      gl.uniform4fv(u.uRipples, rippleData);
-      gl.uniform4f(u.uWave, 0.55 * s.pulse, 3 * Math.max(s.pulseSpeed, 0.05) + 1.2, 1.6 * s.pulseWidth, 46);
-      gl.uniform1f(u.uSquare, s.square);
-      gl.uniform1f(u.uClock, state.clock);
-      gl.uniform4f(u.uSwell, 1.3 * s.waves * (0.25 + 0.75 * settle), 1.9 / s.waveScale, 0, state.swell);
+        rippleData[index * 4] = ripple.x
+        rippleData[index * 4 + 1] = ripple.z
+        rippleData[index * 4 + 2] = ripple.start
+        rippleData[index * 4 + 3] = ripple.strength
+      })
+      const introAge = state.intro
+      const revealing = introAge < INTRO_SECONDS
+      const revealRadius = glide(introAge / REVEAL_SECONDS) * REVEAL_REACH
+      const settle = ease(introAge / INTRO_SECONDS)
+      gl.uniform4fv(u.uRipples, rippleData)
+      gl.uniform4f(
+        u.uWave,
+        0.55 * s.pulse,
+        3 * Math.max(s.pulseSpeed, 0.05) + 1.2,
+        1.6 * s.pulseWidth,
+        46,
+      )
+      gl.uniform1f(u.uSquare, s.square)
+      gl.uniform1f(u.uClock, state.clock)
+      gl.uniform4f(
+        u.uSwell,
+        1.3 * s.waves * (0.25 + 0.75 * settle),
+        1.9 / s.waveScale,
+        0,
+        state.swell,
+      )
       gl.uniform4f(
         u.uHover,
         state.hover.x,
         state.hover.z,
         (3 * s.mouseRadius) / 0.35,
-        0.7 * state.hover.presence * s.mouseStrength * s.hover
-      );
+        0.7 * state.hover.presence * s.mouseStrength * s.hover,
+      )
       gl.uniform4f(
         u.uIntro,
         ORIGIN[0],
         ORIGIN[1],
         revealRadius,
-        revealing ? 0.9 * (1 - smoothstep(0.55, 1, introAge / INTRO_SECONDS)) : 0
-      );
-      gl.uniformMatrix4fv(u.uViewProj, false, camera.viewProj);
-      gl.uniform4f(u.uArea, AREA[0] + ORIGIN[0], AREA[1] + ORIGIN[1], AREA[2], AREA[3]);
-      gl.uniform3f(u.uEye, camera.eye[0], camera.eye[1], camera.eye[2]);
-      gl.uniform3f(u.uColor, state.color[0], state.color[1], state.color[2]);
-      gl.uniform3f(u.uAccent, state.accent[0], state.accent[1], state.accent[2]);
-      gl.uniform3f(u.uSecond, state.second[0], state.second[1], state.second[2]);
-      const orbit = state.lights;
-      const reach = camera.distance / 8;
-      const lightLevel = 0.35 + 0.65 * settle;
-      const [first, second] = s.lights;
+        revealing ? 0.9 * (1 - smoothstep(0.55, 1, introAge / INTRO_SECONDS)) : 0,
+      )
+      gl.uniformMatrix4fv(u.uViewProj, false, camera.viewProj)
+      gl.uniform4f(u.uArea, AREA[0] + ORIGIN[0], AREA[1] + ORIGIN[1], AREA[2], AREA[3])
+      gl.uniform3f(u.uEye, camera.eye[0], camera.eye[1], camera.eye[2])
+      gl.uniform3f(u.uColor, state.color[0], state.color[1], state.color[2])
+      gl.uniform3f(u.uAccent, state.accent[0], state.accent[1], state.accent[2])
+      gl.uniform3f(u.uSecond, state.second[0], state.second[1], state.second[2])
+      const orbit = state.lights
+      const reach = camera.distance / 8
+      const lightLevel = 0.35 + 0.65 * settle
+      const [first, second] = s.lights
       gl.uniform3f(
         u.uLightA,
         camera.target[0] + (first[0] + Math.sin(orbit * 0.7) * first[3]) * reach,
         first[1] * reach * lightLevel + 0.6,
-        camera.target[2] + (first[2] + Math.cos(orbit * 0.5) * first[4]) * reach
-      );
+        camera.target[2] + (first[2] + Math.cos(orbit * 0.5) * first[4]) * reach,
+      )
       gl.uniform3f(
         u.uLightB,
         camera.target[0] + (second[0] + Math.cos(orbit * 0.6) * second[3]) * reach,
         second[1] * reach * lightLevel + 0.6,
-        camera.target[2] + (second[2] + Math.sin(orbit * 0.45) * second[4]) * reach
-      );
-      gl.uniform1f(u.uTile, 1.2 * s.tileSize);
-      gl.uniform1f(u.uAngle, s.rotation);
-      gl.uniform1f(u.uGap, s.gap);
-      gl.uniform1f(u.uRound, s.roundness);
-      gl.uniform1f(u.uSoftness, s.softness);
-      gl.uniform1f(u.uBulge, s.bulge);
-      gl.uniform1f(u.uGloss, s.gloss);
-      const far = Math.min(s.depth * 3.2 * reach, AREA[3] * 0.62);
-      gl.uniform2f(u.uRange, far * 0.5, far);
-      gl.uniform1f(u.uBrightness, s.brightness);
-      const pixelRatio = canvas.height / Math.max(state.height, 1);
-      gl.uniform1f(u.uGrain, s.grain);
-      gl.uniform1f(u.uGrainScale, Math.max(1, pixelRatio));
-      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.uniform4f(u.uReveal, ORIGIN[0], ORIGIN[1], revealRadius, revealing ? 0 : 1);
-      gl.uniform2f(u.uView, canvas.width, canvas.height);
-      gl.uniform1f(u.uFade, s.fade);
-      gl.uniform1f(u.uFrame, state.frame % 977);
-      gl.bindVertexArray(vao);
-      gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_INT, 0);
-      gl.bindVertexArray(null);
-      gl.disable(gl.DEPTH_TEST);
-    };
+        camera.target[2] + (second[2] + Math.sin(orbit * 0.45) * second[4]) * reach,
+      )
+      gl.uniform1f(u.uTile, 1.2 * s.tileSize)
+      gl.uniform1f(u.uAngle, s.rotation)
+      gl.uniform1f(u.uGap, s.gap)
+      gl.uniform1f(u.uRound, s.roundness)
+      gl.uniform1f(u.uSoftness, s.softness)
+      gl.uniform1f(u.uBulge, s.bulge)
+      gl.uniform1f(u.uGloss, s.gloss)
+      const far = Math.min(s.depth * 3.2 * reach, AREA[3] * 0.62)
+      gl.uniform2f(u.uRange, far * 0.5, far)
+      gl.uniform1f(u.uBrightness, s.brightness)
+      const pixelRatio = canvas.height / Math.max(state.height, 1)
+      gl.uniform1f(u.uGrain, s.grain)
+      gl.uniform1f(u.uGrainScale, Math.max(1, pixelRatio))
+      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0)
+      gl.uniform1f(u.uOpacity, s.opacity)
+      gl.uniform4f(u.uReveal, ORIGIN[0], ORIGIN[1], revealRadius, revealing ? 0 : 1)
+      gl.uniform2f(u.uView, canvas.width, canvas.height)
+      gl.uniform1f(u.uFade, s.fade)
+      gl.uniform1f(u.uFrame, state.frame % 977)
+      gl.bindVertexArray(vao)
+      gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_INT, 0)
+      gl.bindVertexArray(null)
+      gl.disable(gl.DEPTH_TEST)
+    }
 
     const resize = () => {
-      const s = settings();
-      const width = Math.max(1, container.clientWidth);
-      const height = Math.max(1, container.clientHeight);
-      const baseDpr = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      const longest = Math.max(width, height) * baseDpr;
-      const ratio = longest > MAX_RENDER_DIM ? (baseDpr * MAX_RENDER_DIM) / longest : baseDpr;
-      const pixelWidth = Math.max(1, Math.round(width * ratio));
-      const pixelHeight = Math.max(1, Math.round(height * ratio));
+      const s = settings()
+      const width = Math.max(1, container.clientWidth)
+      const height = Math.max(1, container.clientHeight)
+      const baseDpr = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      const longest = Math.max(width, height) * baseDpr
+      const ratio = longest > MAX_RENDER_DIM ? (baseDpr * MAX_RENDER_DIM) / longest : baseDpr
+      const pixelWidth = Math.max(1, Math.round(width * ratio))
+      const pixelHeight = Math.max(1, Math.round(height * ratio))
       if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-        canvas.width = pixelWidth;
-        canvas.height = pixelHeight;
+        canvas.width = pixelWidth
+        canvas.height = pixelHeight
       }
-      state.width = width;
-      state.height = height;
-      render();
-    };
+      state.width = width
+      state.height = height
+      render()
+    }
 
     const groundPoint = (px: number, py: number) => {
-      const camera = state.camera;
-      if (!camera) return null;
-      const nx = (px / state.width) * 2 - 1;
-      const ny = 1 - (py / state.height) * 2;
-      const m = camera.inverse;
-      const fx = m[0] * nx + m[4] * ny + m[8] + m[12];
-      const fy = m[1] * nx + m[5] * ny + m[9] + m[13];
-      const fz = m[2] * nx + m[6] * ny + m[10] + m[14];
-      const fw = m[3] * nx + m[7] * ny + m[11] + m[15];
-      const dx = fx / fw - camera.eye[0];
-      const dy = fy / fw - camera.eye[1];
-      const dz = fz / fw - camera.eye[2];
-      if (dy >= -1e-4) return null;
-      const t = -camera.eye[1] / dy;
-      return { x: camera.eye[0] + dx * t, z: camera.eye[2] + dz * t };
-    };
+      const camera = state.camera
+      if (!camera) return null
+      const nx = (px / state.width) * 2 - 1
+      const ny = 1 - (py / state.height) * 2
+      const m = camera.inverse
+      const fx = m[0] * nx + m[4] * ny + m[8] + m[12]
+      const fy = m[1] * nx + m[5] * ny + m[9] + m[13]
+      const fz = m[2] * nx + m[6] * ny + m[10] + m[14]
+      const fw = m[3] * nx + m[7] * ny + m[11] + m[15]
+      const dx = fx / fw - camera.eye[0]
+      const dy = fy / fw - camera.eye[1]
+      const dz = fz / fw - camera.eye[2]
+      if (dy >= -1e-4) return null
+      const t = -camera.eye[1] / dy
+      return { x: camera.eye[0] + dx * t, z: camera.eye[2] + dz * t }
+    }
 
     const spawn = (x: number, z: number, strength: number) => {
-      state.ripples.push({ x, z, start: state.clock, strength });
-      while (state.ripples.length > MAX_RIPPLES) state.ripples.shift();
-    };
+      state.ripples.push({ x, z, start: state.clock, strength })
+      while (state.ripples.length > MAX_RIPPLES) state.ripples.shift()
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive || !visible || document.hidden) return;
-      const s = settings();
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
-      const moving = !s.paused && !reduce;
+      raf = 0
+      if (!alive || !visible || document.hidden) return
+      const s = settings()
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      const moving = !s.paused && !reduce
       if (moving) {
-        state.frame += 1;
-        state.clock += dt;
-        state.intro += dt;
-        state.swell += dt * s.speed;
-        state.lights += dt * s.speed * 0.6;
-        const travel = 3 * Math.max(s.pulseSpeed, 0.05) + 1.2;
-        const interval = (10 * s.pulseSpacing) / travel;
+        state.frame += 1
+        state.clock += dt
+        state.intro += dt
+        state.swell += dt * s.speed
+        state.lights += dt * s.speed * 0.6
+        const travel = 3 * Math.max(s.pulseSpeed, 0.05) + 1.2
+        const interval = (10 * s.pulseSpacing) / travel
         if (s.pulse > 0 && state.clock >= state.nextRipple) {
           if (s.randomOrigin) {
-            const spot = groundPoint((0.15 + random() * 0.7) * state.width, (0.25 + random() * 0.6) * state.height);
-            if (spot) spawn(spot.x, spot.z, 1);
+            const spot = groundPoint(
+              (0.15 + random() * 0.7) * state.width,
+              (0.25 + random() * 0.6) * state.height,
+            )
+            if (spot) spawn(spot.x, spot.z, 1)
           } else {
-            spawn(ORIGIN[0], ORIGIN[1], 1);
+            spawn(ORIGIN[0], ORIGIN[1], 1)
           }
-          state.nextRipple = state.clock + interval * (s.randomOrigin ? 0.6 : 1);
+          state.nextRipple = state.clock + interval * (s.randomOrigin ? 0.6 : 1)
         }
-        const lifetime = 46 / travel + 1;
-        state.ripples = state.ripples.filter(ripple => state.clock - ripple.start < lifetime);
+        const lifetime = 46 / travel + 1
+        state.ripples = state.ripples.filter(ripple => state.clock - ripple.start < lifetime)
       } else if (state.intro < INTRO_SECONDS) {
-        state.intro = INTRO_SECONDS;
+        state.intro = INTRO_SECONDS
       }
 
-      const { pointer, hover, look } = state;
-      const active = s.mouseInteraction && pointer.inside && !reduce;
-      const spot = active && s.hover !== 0 ? groundPoint(pointer.x, pointer.y) : null;
+      const { pointer, hover, look } = state
+      const active = s.mouseInteraction && pointer.inside && !reduce
+      const spot = active && s.hover !== 0 ? groundPoint(pointer.x, pointer.y) : null
       if (spot) {
         if (!hover.placed) {
-          hover.x = spot.x;
-          hover.z = spot.z;
-          hover.vx = 0;
-          hover.vz = 0;
-          hover.placed = true;
+          hover.x = spot.x
+          hover.z = spot.z
+          hover.vx = 0
+          hover.vz = 0
+          hover.placed = true
         }
-        hover.vx += (90 * (spot.x - hover.x) - 19 * hover.vx) * dt;
-        hover.vz += (90 * (spot.z - hover.z) - 19 * hover.vz) * dt;
-        hover.x += hover.vx * dt;
-        hover.z += hover.vz * dt;
+        hover.vx += (90 * (spot.x - hover.x) - 19 * hover.vx) * dt
+        hover.vz += (90 * (spot.z - hover.z) - 19 * hover.vz) * dt
+        hover.x += hover.vx * dt
+        hover.z += hover.vz * dt
       }
-      const goal = spot ? 1 : 0;
-      hover.presence += (goal - hover.presence) * (1 - Math.exp(-dt / (goal > hover.presence ? 0.35 : 0.6)));
-      if (!spot && hover.presence < 0.001) hover.placed = false;
-      const lookX = active ? (pointer.x / state.width - 0.5) * 0.5 : 0;
-      const lookY = active ? (0.5 - pointer.y / state.height) * 0.5 : 0;
-      look.vx += (30 * (lookX - look.x) - 11 * look.vx) * dt;
-      look.vy += (30 * (lookY - look.y) - 11 * look.vy) * dt;
-      look.x += look.vx * dt;
-      look.y += look.vy * dt;
+      const goal = spot ? 1 : 0
+      hover.presence +=
+        (goal - hover.presence) * (1 - Math.exp(-dt / (goal > hover.presence ? 0.35 : 0.6)))
+      if (!spot && hover.presence < 0.001) hover.placed = false
+      const lookX = active ? (pointer.x / state.width - 0.5) * 0.5 : 0
+      const lookY = active ? (0.5 - pointer.y / state.height) * 0.5 : 0
+      look.vx += (30 * (lookX - look.x) - 11 * look.vx) * dt
+      look.vy += (30 * (lookY - look.y) - 11 * look.vy) * dt
+      look.x += look.vx * dt
+      look.y += look.vy * dt
 
-      render();
+      render()
       const settling =
         Math.abs(goal - hover.presence) > 0.002 ||
         Math.hypot(hover.vx, hover.vz) > 0.01 ||
         Math.abs(lookX - look.x) > 0.0002 ||
-        Math.abs(lookY - look.y) > 0.0002;
-      if (moving || settling) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+        Math.abs(lookY - look.y) > 0.0002
+      if (moving || settling) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (!raf && alive && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    };
+      if (!raf && alive && visible && !document.hidden) raf = requestAnimationFrame(frame)
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      state.pointer.x = x;
-      state.pointer.y = y;
-      state.pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
-      wake();
-    };
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      state.pointer.x = x
+      state.pointer.y = y
+      state.pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+      wake()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.mouseInteraction || !s.pulseOnClick || event.button !== 0 || reduce) return;
+      const s = settings()
+      if (!s.mouseInteraction || !s.pulseOnClick || event.button !== 0 || reduce) return
       if (
         event.target instanceof Element &&
         event.target.closest('a, button, input, textarea, select, label, [role="button"]')
       )
-        return;
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
-      const spot = groundPoint(x, y);
-      if (spot) spawn(spot.x, spot.z, 1.15);
-      wake();
-    };
+        return
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return
+      const spot = groundPoint(x, y)
+      if (spot) spawn(spot.x, spot.z, 1.15)
+      wake()
+    }
 
     const onPointerLeave = () => {
-      state.pointer.inside = false;
-      wake();
-    };
+      state.pointer.inside = false
+      wake()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wake();
-    };
+      last = 0
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown);
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
-    wake();
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown)
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
+    wake()
 
     wakeRef = () => {
-      if (!raf) render();
-      wake();
-    };
+      if (!raf) render()
+      wake()
+    }
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteBuffer(gridBuffer);
-      gl.deleteBuffer(indexBuffer);
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(surface.program);
-    });
-  });
+      alive = false
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteBuffer(gridBuffer)
+      gl.deleteBuffer(indexBuffer)
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(surface.program)
+    })
+  })
 
   // Upstream woke the renderer after every render.
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       {...rest}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default AcidSquares;
+export default AcidSquares

@@ -1,4 +1,4 @@
-import LetterGlitch from './LetterGlitch';
+import LetterGlitch from './LetterGlitch'
 
 const LetterGlitchDemo = () => (
   <div class="h-96 w-full">
@@ -9,6 +9,6 @@ const LetterGlitchDemo = () => (
       speed={1}
     />
   </div>
-);
+)
 
-export default LetterGlitchDemo;
+export default LetterGlitchDemo

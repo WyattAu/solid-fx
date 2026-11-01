@@ -1,4 +1,4 @@
-import TiltedCard from './TiltedCard';
+import TiltedCard from './TiltedCard'
 
 function TiltedCardDemo() {
   return (
@@ -15,7 +15,7 @@ function TiltedCardDemo() {
         showTooltip
       />
     </div>
-  );
+  )
 }
 
-export default TiltedCardDemo;
+export default TiltedCardDemo

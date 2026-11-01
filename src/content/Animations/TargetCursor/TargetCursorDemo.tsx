@@ -1,12 +1,12 @@
-import { For } from 'solid-js';
-import TargetCursor from './TargetCursor';
+import { For } from 'solid-js'
+import TargetCursor from './TargetCursor'
 
 const ITEMS = [
   { label: 'Get started', hint: 'Primary action' },
   { label: 'Docs', hint: 'Read the manual' },
   { label: 'GitHub', hint: 'Star us' },
-  { label: 'Contact', hint: 'Say hello' }
-];
+  { label: 'Contact', hint: 'Say hello' },
+]
 
 function TargetCursorDemo() {
   return (
@@ -27,7 +27,7 @@ function TargetCursorDemo() {
       </div>
       <TargetCursor />
     </div>
-  );
+  )
 }
 
-export default TargetCursorDemo;
+export default TargetCursorDemo

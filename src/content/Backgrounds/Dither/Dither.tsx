@@ -1,66 +1,74 @@
-import { createEffect, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type DitherColor = string | [number, number, number];
-export type DitherMode = 'bayer' | 'bayer4' | 'bayer2' | 'halftone' | 'lines' | 'crosshatch' | 'noise' | 'none';
-export type DitherMouseEffect = 'erase' | 'reveal' | 'ripple';
+export type DitherColor = string | [number, number, number]
+export type DitherMode =
+  | 'bayer'
+  | 'bayer4'
+  | 'bayer2'
+  | 'halftone'
+  | 'lines'
+  | 'crosshatch'
+  | 'noise'
+  | 'none'
+export type DitherMouseEffect = 'erase' | 'reveal' | 'ripple'
 
 export interface DitherProps {
-  waveSpeed?: number;
-  waveFrequency?: number;
-  waveAmplitude?: number;
-  waveColor?: DitherColor;
-  backgroundColor?: DitherColor;
-  colorNum?: number;
-  pixelSize?: number;
-  disableAnimation?: boolean;
-  enableMouseInteraction?: boolean;
-  mouseRadius?: number;
-  ditherMode?: DitherMode;
-  palette?: string[];
-  scale?: number;
-  contrast?: number;
-  brightness?: number;
-  mouseEffect?: DitherMouseEffect;
-  mouseStrength?: number;
-  trail?: number;
-  clickRipple?: boolean;
-  intro?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  waveSpeed?: number
+  waveFrequency?: number
+  waveAmplitude?: number
+  waveColor?: DitherColor
+  backgroundColor?: DitherColor
+  colorNum?: number
+  pixelSize?: number
+  disableAnimation?: boolean
+  enableMouseInteraction?: boolean
+  mouseRadius?: number
+  ditherMode?: DitherMode
+  palette?: string[]
+  scale?: number
+  contrast?: number
+  brightness?: number
+  mouseEffect?: DitherMouseEffect
+  mouseStrength?: number
+  trail?: number
+  clickRipple?: boolean
+  intro?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  waveSpeed: number;
-  waveFrequency: number;
-  waveAmplitude: number;
-  waveColor: DitherColor;
-  backgroundColor: DitherColor;
-  colorNum: number;
-  pixelSize: number;
-  disableAnimation: boolean;
-  enableMouseInteraction: boolean;
-  mouseRadius: number;
-  mode: number;
-  palette: string[];
-  scale: number;
-  contrast: number;
-  brightness: number;
-  effect: number;
-  mouseStrength: number;
-  trail: number;
-  clickRipple: boolean;
-  intro: boolean;
-  dpr?: number;
-};
+  waveSpeed: number
+  waveFrequency: number
+  waveAmplitude: number
+  waveColor: DitherColor
+  backgroundColor: DitherColor
+  colorNum: number
+  pixelSize: number
+  disableAnimation: boolean
+  enableMouseInteraction: boolean
+  mouseRadius: number
+  mode: number
+  palette: string[]
+  scale: number
+  contrast: number
+  brightness: number
+  effect: number
+  mouseStrength: number
+  trail: number
+  clickRipple: boolean
+  intro: boolean
+  dpr?: number
+}
 
-type TrailPoint = { x: number; y: number; weight: number };
+type TrailPoint = { x: number; y: number; weight: number }
 
-type Ripple = { x: number; y: number; age: number };
+type Ripple = { x: number; y: number; age: number }
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
 const MODES: Record<string, number> = {
   bayer: 0,
@@ -70,20 +78,20 @@ const MODES: Record<string, number> = {
   lines: 4,
   crosshatch: 5,
   noise: 6,
-  none: 7
-};
-const EFFECTS: Record<string, number> = { erase: 0, reveal: 1, ripple: 2 };
-const MAX_TRAIL = 16;
-const MAX_RIPPLES = 4;
-const MAX_PALETTE = 8;
-const INTRO_SECONDS = 1.8;
-const RIPPLE_SECONDS = 1.6;
+  none: 7,
+}
+const EFFECTS: Record<string, number> = { erase: 0, reveal: 1, ripple: 2 }
+const MAX_TRAIL = 16
+const MAX_RIPPLES = 4
+const MAX_PALETTE = 8
+const INTRO_SECONDS = 1.8
+const RIPPLE_SECONDS = 1.6
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const WAVE_FRAGMENT = `#version 300 es
 precision highp float;
@@ -201,7 +209,7 @@ void main() {
   float show = clamp((uIntro * uReach - length(uv)) / 0.45, 0.0, 1.0);
   float v = clamp(f, 0.0, 1.0) * show * show * (3.0 - 2.0 * show);
   outColor = vec4(floor(v * 255.0) / 255.0, fract(v * 255.0), 0.0, 1.0);
-}`;
+}`
 
 const DITHER_FRAGMENT = `#version 300 es
 precision highp float;
@@ -307,50 +315,51 @@ void main() {
   float upper = rising ? 1.0 - min(uBackground.r, min(uBackground.g, uBackground.b)) : 0.0;
   offset = floor(clamp(offset, lower, upper) * levels + 0.5) / levels;
   outColor = vec4(toSrgb(uBackground + offset), 1.0);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
-const toLinear = (value: number) => (value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
+const toLinear = (value: number) =>
+  value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
 
 const Dither = (props: DitherProps) => {
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = (): Settings => ({
     waveSpeed: props.waveSpeed ?? 0.05,
@@ -364,7 +373,9 @@ const Dither = (props: DitherProps) => {
     enableMouseInteraction: props.enableMouseInteraction ?? true,
     mouseRadius: Math.max(0.001, props.mouseRadius ?? 1),
     mode: MODES[props.ditherMode ?? 'bayer'] ?? 0,
-    palette: Array.isArray(props.palette) ? props.palette.filter(Boolean).slice(0, MAX_PALETTE) : [],
+    palette: Array.isArray(props.palette)
+      ? props.palette.filter(Boolean).slice(0, MAX_PALETTE)
+      : [],
     scale: Math.max(0.05, props.scale ?? 1),
     contrast: props.contrast ?? 1,
     brightness: props.brightness ?? 0,
@@ -373,339 +384,351 @@ const Dither = (props: DitherProps) => {
     trail: clamp(props.trail ?? 0.5, 0, 1),
     clickRipple: props.clickRipple ?? true,
     intro: props.intro ?? true,
-    dpr: props.dpr
-  });
+    dpr: props.dpr,
+  })
 
   onMount(() =>
     untrack(() => {
-      const container = containerRef;
-      const canvas = canvasRef;
+      const container = containerRef
+      const canvas = canvasRef
       const gl = canvas?.getContext('webgl2', {
         alpha: true,
         premultipliedAlpha: true,
         antialias: false,
         depth: false,
-        stencil: false
-      });
-      if (!container || !canvas || !gl) return;
+        stencil: false,
+      })
+      if (!container || !canvas || !gl) return
 
-      const wave = link(gl, WAVE_FRAGMENT);
-      const dither = link(gl, DITHER_FRAGMENT);
-      if (!wave || !dither) return;
+      const wave = link(gl, WAVE_FRAGMENT)
+      const dither = link(gl, DITHER_FRAGMENT)
+      if (!wave || !dither) return
 
-      const buffer = gl.createBuffer();
-      const vao = gl.createVertexArray();
-      gl.bindVertexArray(vao);
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      const buffer = gl.createBuffer()
+      const vao = gl.createVertexArray()
+      gl.bindVertexArray(vao)
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+      gl.enableVertexAttribArray(0)
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-      const field = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, field);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      const framebuffer = gl.createFramebuffer();
+      const field = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, field)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      const framebuffer = gl.createFramebuffer()
 
-      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-      const cache = new Map<string, number[]>();
+      const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+      const cache = new Map<string, number[]>()
       const toColor = (value: DitherColor): number[] => {
-        if (Array.isArray(value)) return [0, 1, 2].map(i => clamp(Number(value[i]) || 0, 0, 1));
-        const key = String(value);
-        const cached = cache.get(key);
-        if (cached) return cached;
-        let rgb = [0, 0, 0];
+        if (Array.isArray(value)) return [0, 1, 2].map(i => clamp(Number(value[i]) || 0, 0, 1))
+        const key = String(value)
+        const cached = cache.get(key)
+        if (cached) return cached
+        let rgb = [0, 0, 0]
         if (probe) {
-          probe.clearRect(0, 0, 1, 1);
-          probe.fillStyle = '#000000';
-          probe.fillStyle = key;
-          probe.fillRect(0, 0, 1, 1);
-          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-          rgb = [r, g, b].map(channel => toLinear(channel / 255));
+          probe.clearRect(0, 0, 1, 1)
+          probe.fillStyle = '#000000'
+          probe.fillStyle = key
+          probe.fillRect(0, 0, 1, 1)
+          const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+          rgb = [r, g, b].map(channel => toLinear(channel / 255))
         }
-        cache.set(key, rgb);
-        return rgb;
-      };
+        cache.set(key, rgb)
+        return rgb
+      }
 
-      const view = { width: 1, height: 1, ratio: 1, cell: 1, cellCss: 1, cols: 1, rows: 1 };
-      const pointer = { x: 0, y: 0, inside: false, set: false };
-      const trailPoints: TrailPoint[] = [];
-      const ripples: Ripple[] = [];
-      const trailData = new Float32Array(MAX_TRAIL * 3);
-      const rippleData = new Float32Array(MAX_RIPPLES * 4);
-      const paletteData = new Float32Array(MAX_PALETTE * 3);
+      const view = { width: 1, height: 1, ratio: 1, cell: 1, cellCss: 1, cols: 1, rows: 1 }
+      const pointer = { x: 0, y: 0, inside: false, set: false }
+      const trailPoints: TrailPoint[] = []
+      const ripples: Ripple[] = []
+      const trailData = new Float32Array(MAX_TRAIL * 3)
+      const rippleData = new Float32Array(MAX_RIPPLES * 4)
+      const paletteData = new Float32Array(MAX_PALETTE * 3)
       const state = {
         time: 0,
         hx: 0,
         hy: 0,
         presence: 0,
-        reveal: settings().intro && !reduce ? 0 : 1
-      };
-      let raf = 0;
-      let last = 0;
-      let visible = true;
+        reveal: settings().intro && !reduce ? 0 : 1,
+      }
+      let raf = 0
+      let last = 0
+      let visible = true
 
       const allocate = () => {
-        const s = settings();
-        view.cell = Math.max(1, Math.round(s.pixelSize * view.ratio));
-        view.cellCss = view.cell / view.ratio;
-        view.cols = Math.max(1, Math.ceil(canvas.width / view.cell));
-        view.rows = Math.max(1, Math.ceil(canvas.height / view.cell));
-        gl.bindTexture(gl.TEXTURE_2D, field);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, view.cols, view.rows, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, field, 0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      };
+        const s = settings()
+        view.cell = Math.max(1, Math.round(s.pixelSize * view.ratio))
+        view.cellCss = view.cell / view.ratio
+        view.cols = Math.max(1, Math.ceil(canvas.width / view.cell))
+        view.rows = Math.max(1, Math.ceil(canvas.height / view.cell))
+        gl.bindTexture(gl.TEXTURE_2D, field)
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA8,
+          view.cols,
+          view.rows,
+          0,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          null,
+        )
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, field, 0)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      }
 
       const toUv = (x: number, y: number): [number, number] => {
-        const aspect = view.width / view.height;
-        return [(x / view.width - 0.5) * aspect, -(y / view.height - 0.5)];
-      };
+        const aspect = view.width / view.height
+        return [(x / view.width - 0.5) * aspect, -(y / view.height - 0.5)]
+      }
 
       const render = () => {
-        const s = settings();
-        const expected = Math.max(1, Math.round(s.pixelSize * view.ratio));
-        if (expected !== view.cell) allocate();
+        const s = settings()
+        const expected = Math.max(1, Math.round(s.pixelSize * view.ratio))
+        if (expected !== view.cell) allocate()
 
-        let trailCount = 0;
+        let trailCount = 0
         for (let i = 0; i < trailPoints.length && trailCount < MAX_TRAIL; i++) {
-          const point = trailPoints[i];
-          if (point.weight <= 0.01) continue;
-          trailData.set([point.x, point.y, point.weight], trailCount * 3);
-          trailCount++;
+          const point = trailPoints[i]
+          if (point.weight <= 0.01) continue
+          trailData.set([point.x, point.y, point.weight], trailCount * 3)
+          trailCount++
         }
-        let rippleCount = 0;
+        let rippleCount = 0
         for (let i = ripples.length - 1; i >= 0 && rippleCount < MAX_RIPPLES; i--) {
-          rippleData.set([ripples[i].x, ripples[i].y, ripples[i].age, 1], rippleCount * 4);
-          rippleCount++;
+          rippleData.set([ripples[i].x, ripples[i].y, ripples[i].age, 1], rippleCount * 4)
+          rippleCount++
         }
 
-        const eased = s.intro && !reduce ? state.reveal * state.reveal * (3 - 2 * state.reveal) : 1;
+        const eased = s.intro && !reduce ? state.reveal * state.reveal * (3 - 2 * state.reveal) : 1
 
-        gl.bindVertexArray(vao);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        gl.viewport(0, 0, view.cols, view.rows);
-        gl.useProgram(wave.program);
-        const w = wave.uniforms;
-        gl.uniform2f(w.uResolution, canvas.width / view.ratio, canvas.height / view.ratio);
-        gl.uniform1f(w.uCell, view.cellCss);
-        gl.uniform1f(w.uTime, state.time);
-        gl.uniform1f(w.uWaveSpeed, s.waveSpeed);
-        gl.uniform1f(w.uWaveFrequency, s.waveFrequency);
-        gl.uniform1f(w.uWaveAmplitude, s.waveAmplitude);
-        gl.uniform1f(w.uScale, s.scale);
-        gl.uniform1f(w.uContrast, s.contrast);
-        gl.uniform1f(w.uBrightness, s.brightness);
-        gl.uniform1i(w.uEffect, s.effect);
-        gl.uniform1f(w.uRadius, s.mouseRadius);
-        gl.uniform1f(w.uStrength, s.mouseStrength);
-        gl.uniform3fv(w.uTrail, trailData);
-        gl.uniform1i(w.uTrailCount, trailCount);
-        gl.uniform4fv(w.uRipples, rippleData);
-        gl.uniform1i(w.uRippleCount, rippleCount);
-        gl.uniform1f(w.uIntro, eased);
-        gl.uniform1f(w.uReach, 0.5 * Math.hypot(view.width / view.height, 1) + 0.45);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.bindVertexArray(vao)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+        gl.viewport(0, 0, view.cols, view.rows)
+        gl.useProgram(wave.program)
+        const w = wave.uniforms
+        gl.uniform2f(w.uResolution, canvas.width / view.ratio, canvas.height / view.ratio)
+        gl.uniform1f(w.uCell, view.cellCss)
+        gl.uniform1f(w.uTime, state.time)
+        gl.uniform1f(w.uWaveSpeed, s.waveSpeed)
+        gl.uniform1f(w.uWaveFrequency, s.waveFrequency)
+        gl.uniform1f(w.uWaveAmplitude, s.waveAmplitude)
+        gl.uniform1f(w.uScale, s.scale)
+        gl.uniform1f(w.uContrast, s.contrast)
+        gl.uniform1f(w.uBrightness, s.brightness)
+        gl.uniform1i(w.uEffect, s.effect)
+        gl.uniform1f(w.uRadius, s.mouseRadius)
+        gl.uniform1f(w.uStrength, s.mouseStrength)
+        gl.uniform3fv(w.uTrail, trailData)
+        gl.uniform1i(w.uTrailCount, trailCount)
+        gl.uniform4fv(w.uRipples, rippleData)
+        gl.uniform1i(w.uRippleCount, rippleCount)
+        gl.uniform1f(w.uIntro, eased)
+        gl.uniform1f(w.uReach, 0.5 * Math.hypot(view.width / view.height, 1) + 0.45)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(dither.program);
-        const d = dither.uniforms;
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, field);
-        gl.uniform1i(d.uField, 0);
-        gl.uniform2i(d.uFieldSize, view.cols, view.rows);
-        gl.uniform1f(d.uCellDevice, view.cell);
-        gl.uniform1i(d.uMode, s.mode);
-        gl.uniform1f(d.uColorNum, s.colorNum);
-        gl.uniform3fv(d.uWave, toColor(s.waveColor));
-        const transparent = s.backgroundColor === 'transparent';
-        gl.uniform3fv(d.uBackground, transparent ? [0, 0, 0] : toColor(s.backgroundColor));
-        gl.uniform1f(d.uTransparent, transparent ? 1 : 0);
-        s.palette.forEach((value, index) => paletteData.set(toColor(value), index * 3));
-        gl.uniform3fv(d.uPalette, paletteData);
-        gl.uniform1i(d.uPaletteCount, s.palette.length);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      };
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.useProgram(dither.program)
+        const d = dither.uniforms
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, field)
+        gl.uniform1i(d.uField, 0)
+        gl.uniform2i(d.uFieldSize, view.cols, view.rows)
+        gl.uniform1f(d.uCellDevice, view.cell)
+        gl.uniform1i(d.uMode, s.mode)
+        gl.uniform1f(d.uColorNum, s.colorNum)
+        gl.uniform3fv(d.uWave, toColor(s.waveColor))
+        const transparent = s.backgroundColor === 'transparent'
+        gl.uniform3fv(d.uBackground, transparent ? [0, 0, 0] : toColor(s.backgroundColor))
+        gl.uniform1f(d.uTransparent, transparent ? 1 : 0)
+        s.palette.forEach((value, index) => paletteData.set(toColor(value), index * 3))
+        gl.uniform3fv(d.uPalette, paletteData)
+        gl.uniform1i(d.uPaletteCount, s.palette.length)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+      }
 
       const frame = (now: number) => {
-        raf = 0;
-        if (!visible || document.hidden) return;
-        const s = settings();
-        const dt = last ? clamp((now - last) / 1000, 0.0005, 0.05) : 1 / 60;
-        last = now;
-        if (!s.disableAnimation && !reduce) state.time += dt;
+        raf = 0
+        if (!visible || document.hidden) return
+        const s = settings()
+        const dt = last ? clamp((now - last) / 1000, 0.0005, 0.05) : 1 / 60
+        last = now
+        if (!s.disableAnimation && !reduce) state.time += dt
 
-        const engaged = s.enableMouseInteraction && pointer.inside && !reduce;
-        state.presence += ((engaged ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / (engaged ? 0.12 : 0.35)));
+        const engaged = s.enableMouseInteraction && pointer.inside && !reduce
+        state.presence +=
+          ((engaged ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / (engaged ? 0.12 : 0.35)))
         if (pointer.set) {
-          const [tx, ty] = toUv(pointer.x, pointer.y);
-          const follow = 1 - Math.exp(-dt / 0.06);
-          const moved = Math.hypot(tx - state.hx, ty - state.hy);
-          state.hx += (tx - state.hx) * follow;
-          state.hy += (ty - state.hy) * follow;
-          const decay = Math.exp(-dt / (0.08 + s.trail * 0.7));
+          const [tx, ty] = toUv(pointer.x, pointer.y)
+          const follow = 1 - Math.exp(-dt / 0.06)
+          const moved = Math.hypot(tx - state.hx, ty - state.hy)
+          state.hx += (tx - state.hx) * follow
+          state.hy += (ty - state.hy) * follow
+          const decay = Math.exp(-dt / (0.08 + s.trail * 0.7))
           trailPoints.forEach(point => {
-            point.weight *= decay;
-          });
-          const head = trailPoints[0];
+            point.weight *= decay
+          })
+          const head = trailPoints[0]
           if (!head || Math.hypot(head.x - state.hx, head.y - state.hy) > 0.012 || moved > 0.012) {
-            trailPoints.unshift({ x: state.hx, y: state.hy, weight: state.presence });
+            trailPoints.unshift({ x: state.hx, y: state.hy, weight: state.presence })
           } else {
-            head.x = state.hx;
-            head.y = state.hy;
-            head.weight = state.presence;
+            head.x = state.hx
+            head.y = state.hy
+            head.weight = state.presence
           }
-          if (s.trail <= 0.001) trailPoints.length = Math.min(trailPoints.length, 1);
+          if (s.trail <= 0.001) trailPoints.length = Math.min(trailPoints.length, 1)
           while (
             trailPoints.length > MAX_TRAIL ||
             (trailPoints.length > 1 && trailPoints[trailPoints.length - 1].weight < 0.01)
           ) {
-            trailPoints.pop();
+            trailPoints.pop()
           }
         }
 
         for (let i = ripples.length - 1; i >= 0; i--) {
-          ripples[i].age += dt;
-          if (ripples[i].age >= RIPPLE_SECONDS) ripples.splice(i, 1);
+          ripples[i].age += dt
+          if (ripples[i].age >= RIPPLE_SECONDS) ripples.splice(i, 1)
         }
 
-        if (!s.intro || reduce) state.reveal = 1;
-        else if (state.reveal < 1) state.reveal = Math.min(1, state.reveal + dt / INTRO_SECONDS);
+        if (!s.intro || reduce) state.reveal = 1
+        else if (state.reveal < 1) state.reveal = Math.min(1, state.reveal + dt / INTRO_SECONDS)
 
-        render();
+        render()
         const busy =
           !s.disableAnimation ||
           state.reveal < 1 ||
           ripples.length > 0 ||
           state.presence > 0.002 ||
-          trailPoints.some(point => point.weight > 0.01);
-        if (busy && !reduce) raf = requestAnimationFrame(frame);
-        else last = 0;
-      };
+          trailPoints.some(point => point.weight > 0.01)
+        if (busy && !reduce) raf = requestAnimationFrame(frame)
+        else last = 0
+      }
 
       const wake = () => {
-        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
-      };
+        if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
+      }
 
       const resize = () => {
-        const s = settings();
-        const width = Math.max(1, container.clientWidth);
-        const height = Math.max(1, container.clientHeight);
-        const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-        view.width = width;
-        view.height = height;
-        canvas.width = Math.max(1, Math.round(width * ratio));
-        canvas.height = Math.max(1, Math.round(height * ratio));
-        view.ratio = canvas.width / width;
-        allocate();
-        render();
-        wake();
-      };
+        const s = settings()
+        const width = Math.max(1, container.clientWidth)
+        const height = Math.max(1, container.clientHeight)
+        const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+        view.width = width
+        view.height = height
+        canvas.width = Math.max(1, Math.round(width * ratio))
+        canvas.height = Math.max(1, Math.round(height * ratio))
+        view.ratio = canvas.width / width
+        allocate()
+        render()
+        wake()
+      }
 
       const locate = (event: PointerEvent) => {
-        const rect = container.getBoundingClientRect();
-        pointer.x = event.clientX - rect.left;
-        pointer.y = event.clientY - rect.top;
-        pointer.inside = pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height;
+        const rect = container.getBoundingClientRect()
+        pointer.x = event.clientX - rect.left
+        pointer.y = event.clientY - rect.top
+        pointer.inside =
+          pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height
         if (pointer.inside && !pointer.set) {
-          const [x, y] = toUv(pointer.x, pointer.y);
-          state.hx = x;
-          state.hy = y;
-          pointer.set = true;
+          const [x, y] = toUv(pointer.x, pointer.y)
+          state.hx = x
+          state.hy = y
+          pointer.set = true
         }
-      };
+      }
 
       const onPointerMove = (event: PointerEvent) => {
-        locate(event);
-        wake();
-      };
+        locate(event)
+        wake()
+      }
 
       const onPointerDown = (event: PointerEvent) => {
-        const s = settings();
-        locate(event);
-        if (!pointer.inside || !s.clickRipple || reduce) return;
-        const [x, y] = toUv(pointer.x, pointer.y);
-        ripples.push({ x, y, age: 0 });
-        if (ripples.length > MAX_RIPPLES) ripples.shift();
-        wake();
-      };
+        const s = settings()
+        locate(event)
+        if (!pointer.inside || !s.clickRipple || reduce) return
+        const [x, y] = toUv(pointer.x, pointer.y)
+        ripples.push({ x, y, age: 0 })
+        if (ripples.length > MAX_RIPPLES) ripples.shift()
+        wake()
+      }
 
       const onPointerUp = (event: PointerEvent) => {
-        if (event.pointerType !== 'mouse') pointer.inside = false;
-      };
+        if (event.pointerType !== 'mouse') pointer.inside = false
+      }
 
       const onPointerLeave = () => {
-        pointer.inside = false;
-      };
+        pointer.inside = false
+      }
 
       const onVisibility = () => {
-        last = 0;
-        wake();
-      };
+        last = 0
+        wake()
+      }
 
-      const resizeObserver = new ResizeObserver(resize);
-      resizeObserver.observe(container);
+      const resizeObserver = new ResizeObserver(resize)
+      resizeObserver.observe(container)
       const intersection = new IntersectionObserver(entries => {
-        visible = entries.some(entry => entry.isIntersecting);
+        visible = entries.some(entry => entry.isIntersecting)
         if (visible) {
-          last = 0;
-          wake();
+          last = 0
+          wake()
         }
-      });
-      intersection.observe(container);
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerdown', onPointerDown, { passive: true });
-      window.addEventListener('pointerup', onPointerUp, { passive: true });
-      window.addEventListener('pointercancel', onPointerUp, { passive: true });
-      document.documentElement.addEventListener('pointerleave', onPointerLeave);
-      document.addEventListener('visibilitychange', onVisibility);
-      resize();
+      })
+      intersection.observe(container)
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { passive: true })
+      window.addEventListener('pointercancel', onPointerUp, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onPointerLeave)
+      document.addEventListener('visibilitychange', onVisibility)
+      resize()
 
-      let lastDpr = settings().dpr;
+      let lastDpr = settings().dpr
       wakeRef = () => {
-        const s = settings();
+        const s = settings()
         if (s.dpr !== lastDpr) {
-          lastDpr = s.dpr;
-          resize();
-          return;
+          lastDpr = s.dpr
+          resize()
+          return
         }
-        if (!raf) render();
-        wake();
-      };
+        if (!raf) render()
+        wake()
+      }
 
       onCleanup(() => {
-        cancelAnimationFrame(raf);
-        wakeRef = null;
-        resizeObserver.disconnect();
-        intersection.disconnect();
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerdown', onPointerDown);
-        window.removeEventListener('pointerup', onPointerUp);
-        window.removeEventListener('pointercancel', onPointerUp);
-        document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-        document.removeEventListener('visibilitychange', onVisibility);
-        gl.deleteProgram(wave.program);
-        gl.deleteProgram(dither.program);
-        gl.deleteBuffer(buffer);
-        gl.deleteVertexArray(vao);
-        gl.deleteTexture(field);
-        gl.deleteFramebuffer(framebuffer);
-        gl.getExtension('WEBGL_lose_context')?.loseContext();
-      });
-    })
-  );
+        cancelAnimationFrame(raf)
+        wakeRef = null
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointerup', onPointerUp)
+        window.removeEventListener('pointercancel', onPointerUp)
+        document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        gl.deleteProgram(wave.program)
+        gl.deleteProgram(dither.program)
+        gl.deleteBuffer(buffer)
+        gl.deleteVertexArray(vao)
+        gl.deleteTexture(field)
+        gl.deleteFramebuffer(framebuffer)
+        gl.getExtension('WEBGL_lose_context')?.loseContext()
+      })
+    }),
+  )
 
   // Upstream's dependency-free effect nudged the renderer after every render;
   // tracking every prop read reproduces that wake-on-any-change behavior.
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
@@ -713,9 +736,9 @@ const Dither = (props: DitherProps) => {
       class={`relative h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default Dither;
+export default Dither

@@ -1,70 +1,70 @@
-import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-type Origin = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'right' | 'left';
+type Origin = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'right' | 'left'
 
 export interface SideRaysProps {
-  rayColor1?: string;
-  rayColor2?: string;
-  blend?: number;
-  origin?: Origin;
-  speed?: number;
-  intensity?: number;
-  spread?: number;
-  density?: number;
-  sharpness?: number;
-  tilt?: number;
-  falloff?: number;
-  glow?: number;
-  saturation?: number;
-  dust?: number;
-  followMouse?: boolean;
-  mouseInfluence?: number;
-  intro?: boolean;
-  lightMode?: boolean;
-  opacity?: number;
-  maxDevicePixelRatio?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  rayColor1?: string
+  rayColor2?: string
+  blend?: number
+  origin?: Origin
+  speed?: number
+  intensity?: number
+  spread?: number
+  density?: number
+  sharpness?: number
+  tilt?: number
+  falloff?: number
+  glow?: number
+  saturation?: number
+  dust?: number
+  followMouse?: boolean
+  mouseInfluence?: number
+  intro?: boolean
+  lightMode?: boolean
+  opacity?: number
+  maxDevicePixelRatio?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface Frame {
-  flipX: number;
-  flipY: number;
-  side: number;
+  flipX: number
+  flipY: number
+  side: number
 }
 
 interface Settings {
-  colorA: number[];
-  colorB: number[];
-  blend: number;
-  frame: Frame;
-  speed: number;
-  intensity: number;
-  spread: number;
-  density: number;
-  sharpness: number;
-  tilt: number;
-  falloff: number;
-  glow: number;
-  saturation: number;
-  dust: number;
-  followMouse: boolean;
-  mouseInfluence: number;
-  intro: boolean;
-  light: boolean;
-  opacity: number;
-  maxRatio: number;
+  colorA: number[]
+  colorB: number[]
+  blend: number
+  frame: Frame
+  speed: number
+  intensity: number
+  spread: number
+  density: number
+  sharpness: number
+  tilt: number
+  falloff: number
+  glow: number
+  saturation: number
+  dust: number
+  followMouse: boolean
+  mouseInfluence: number
+  intro: boolean
+  light: boolean
+  opacity: number
+  maxRatio: number
 }
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
+  program: WebGLProgram
+  uniforms: Record<string, WebGLUniformLocation | null>
 }
 
-const PIXEL_BUDGET = 2.4e6;
-const TAU = Math.PI * 2;
+const PIXEL_BUDGET = 2.4e6
+const TAU = Math.PI * 2
 
 const ORIGINS: Record<Origin, Frame> = {
   'top-right': { flipX: 0, flipY: 0, side: 0 },
@@ -72,14 +72,14 @@ const ORIGINS: Record<Origin, Frame> = {
   'bottom-right': { flipX: 0, flipY: 1, side: 0 },
   'bottom-left': { flipX: 1, flipY: 1, side: 0 },
   right: { flipX: 0, flipY: 0, side: 1 },
-  left: { flipX: 1, flipY: 0, side: 1 }
-};
+  left: { flipX: 1, flipY: 0, side: 1 },
+}
 
 const VERTEX = `#version 300 es
 const vec2 corners[3] = vec2[3](vec2(-1.0, -1.0), vec2(3.0, -1.0), vec2(-1.0, 3.0));
 void main() {
   gl_Position = vec4(corners[gl_VertexID], 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -190,75 +190,75 @@ void main() {
   float alpha = max(shown.r, max(shown.g, shown.b));
   vec3 color = clamp(shown * alpha + grain, 0.0, 1.0);
   fragColor = vec4(min(color, vec3(alpha)), alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const wrapAngle = (angle: number) => ((((angle + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
+const wrapAngle = (angle: number) => ((((angle + Math.PI) % TAU) + TAU) % TAU) - Math.PI
 
 const parseColor = (value: string): number[] => {
-  const text = String(value || '').trim();
-  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
+  const text = String(value || '').trim()
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text)
   if (hex) {
-    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1];
-    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255);
+    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1]
+    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255)
   }
-  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
-  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1));
-  return [1, 1, 1];
-};
+  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text)
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1))
+  return [1, 1, 1]
+}
 
 const geometryFor = (frame: Frame, aspect: number) => ({
   source: frame.side ? [aspect * 0.5 + 0.42, 0.3] : [aspect * 0.5 + 0.1, 0.62],
-  heading: frame.side ? 3.42 : -2.48
-});
+  heading: frame.side ? 3.42 : -2.48,
+})
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+    console.error(gl.getShaderInfoLog(shader))
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = vertex && fragment ? gl.createProgram() : null;
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = vertex && fragment ? gl.createProgram() : null
   if (!vertex || !fragment || !program) {
-    if (vertex) gl.deleteShader(vertex);
-    if (fragment) gl.deleteShader(fragment);
-    return null;
+    if (vertex) gl.deleteShader(vertex)
+    if (fragment) gl.deleteShader(fragment)
+    return null
   }
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
+    console.error(gl.getProgramInfoLog(program))
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Program['uniforms'] = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Program['uniforms'] = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let index = 0; index < count; index++) {
-    const info = gl.getActiveUniform(program, index);
-    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, index)
+    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const SideRays = (props: SideRaysProps) => {
-  let container!: HTMLDivElement;
-  let canvas!: HTMLCanvasElement;
-  let wake: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  let container!: HTMLDivElement
+  let canvas!: HTMLCanvasElement
+  let wake: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
   // Upstream rebuilt a settings object each render; the memo tracks the same props.
   const settings = createMemo(
@@ -282,24 +282,24 @@ const SideRays = (props: SideRaysProps) => {
       intro: props.intro ?? true,
       light: props.lightMode ?? false,
       opacity: clamp(props.opacity ?? 1, 0, 1),
-      maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3)
-    })
-  );
+      maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3),
+    }),
+  )
   // Imperative closures (rAF, events) read settings without subscribing.
-  const current = () => untrack(settings);
+  const current = () => untrack(settings)
 
   // Upstream woke the render loop on every re-render so prop changes redraw.
   createEffect(() => {
-    settings();
-    wake?.();
-  });
+    settings()
+    wake?.()
+  })
 
   // React keyed this effect on `generation` so a restored context rebuilds everything.
   createEffect(() => {
-    const gen = generation();
-    const c = container;
-    const cv = canvas;
-    if (!c || !cv) return;
+    const gen = generation()
+    const c = container
+    const cv = canvas
+    if (!c || !cv) return
 
     const gl = cv.getContext('webgl2', {
       alpha: true,
@@ -307,191 +307,193 @@ const SideRays = (props: SideRaysProps) => {
       antialias: false,
       depth: false,
       stencil: false,
-      powerPreference: 'high-performance'
-    });
-    const shader = gl ? link(gl) : null;
-    if (!gl || !shader) return;
+      powerPreference: 'high-performance',
+    })
+    const shader = gl ? link(gl) : null
+    if (!gl || !shader) return
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const vao = gl.createVertexArray();
-    const size = { width: 1, height: 1 };
-    const pointer = { x: 0, y: 0, inside: false };
-    const aim = { value: 0, velocity: 0 };
-    const focus = { angle: 0, strength: 0 };
-    let time = Math.random() * 100;
-    let reveal = untrack(settings).intro && !reduced && gen === 0 ? 0 : 1;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let pageVisible = document.visibilityState !== 'hidden';
-    let lost = false;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const vao = gl.createVertexArray()
+    const size = { width: 1, height: 1 }
+    const pointer = { x: 0, y: 0, inside: false }
+    const aim = { value: 0, velocity: 0 }
+    const focus = { angle: 0, strength: 0 }
+    let time = Math.random() * 100
+    let reveal = untrack(settings).intro && !reduced && gen === 0 ? 0 : 1
+    let raf = 0
+    let last = 0
+    let visible = true
+    let pageVisible = document.visibilityState !== 'hidden'
+    let lost = false
 
     const resize = () => {
-      const s = current();
-      const rect = c.getBoundingClientRect();
-      const cssWidth = Math.max(1, rect.width);
-      const cssHeight = Math.max(1, rect.height);
+      const s = current()
+      const rect = c.getBoundingClientRect()
+      const cssWidth = Math.max(1, rect.width)
+      const cssHeight = Math.max(1, rect.height)
       const ratio = Math.min(
         window.devicePixelRatio || 1,
         s.maxRatio,
-        Math.sqrt(PIXEL_BUDGET / (cssWidth * cssHeight))
-      );
-      const width = Math.max(1, Math.round(cssWidth * ratio));
-      const height = Math.max(1, Math.round(cssHeight * ratio));
+        Math.sqrt(PIXEL_BUDGET / (cssWidth * cssHeight)),
+      )
+      const width = Math.max(1, Math.round(cssWidth * ratio))
+      const height = Math.max(1, Math.round(cssHeight * ratio))
       if (cv.width !== width || cv.height !== height) {
-        cv.width = width;
-        cv.height = height;
+        cv.width = width
+        cv.height = height
       }
-      size.width = cssWidth;
-      size.height = cssHeight;
-    };
+      size.width = cssWidth
+      size.height = cssHeight
+    }
 
     const pointerAngle = (s: Settings) => {
-      let x = (pointer.x - size.width / 2) / size.height;
-      let y = (size.height / 2 - pointer.y) / size.height;
-      if (s.frame.flipX) x = -x;
-      if (s.frame.flipY) y = -y;
-      const { source, heading } = geometryFor(s.frame, size.width / size.height);
-      return wrapAngle(Math.atan2(y - source[1], x - source[0]) - heading - s.tilt);
-    };
+      let x = (pointer.x - size.width / 2) / size.height
+      let y = (size.height / 2 - pointer.y) / size.height
+      if (s.frame.flipX) x = -x
+      if (s.frame.flipY) y = -y
+      const { source, heading } = geometryFor(s.frame, size.width / size.height)
+      return wrapAngle(Math.atan2(y - source[1], x - source[0]) - heading - s.tilt)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (lost) return;
-      const s = current();
-      const dt = clamp((now - last) / 1000 || 0, 0, 0.05);
-      last = Math.max(last, now);
-      time += dt * s.speed * (reduced ? 0.3 : 1);
-      if (reveal < 1) reveal = Math.min(1, reveal + dt / 1.6);
+      raf = 0
+      if (lost) return
+      const s = current()
+      const dt = clamp((now - last) / 1000 || 0, 0, 0.05)
+      last = Math.max(last, now)
+      time += dt * s.speed * (reduced ? 0.3 : 1)
+      if (reveal < 1) reveal = Math.min(1, reveal + dt / 1.6)
 
-      const tracking = s.followMouse && pointer.inside && !reduced;
-      const pointed = tracking ? pointerAngle(s) : 0;
-      const target = tracking ? clamp(pointed, -s.spread, s.spread) * s.mouseInfluence : 0;
-      const focusTarget = tracking ? s.mouseInfluence : 0;
-      const ease = 1 - Math.exp(-dt * 6);
-      if (tracking) focus.angle += (clamp(pointed - aim.value, -s.spread * 1.5, s.spread * 1.5) - focus.angle) * ease;
-      focus.strength += (focusTarget - focus.strength) * ease;
-      const stiffness = 18;
-      const damping = 2 * Math.sqrt(stiffness);
-      aim.velocity += ((target - aim.value) * stiffness - aim.velocity * damping) * dt;
-      aim.value += aim.velocity * dt;
+      const tracking = s.followMouse && pointer.inside && !reduced
+      const pointed = tracking ? pointerAngle(s) : 0
+      const target = tracking ? clamp(pointed, -s.spread, s.spread) * s.mouseInfluence : 0
+      const focusTarget = tracking ? s.mouseInfluence : 0
+      const ease = 1 - Math.exp(-dt * 6)
+      if (tracking)
+        focus.angle +=
+          (clamp(pointed - aim.value, -s.spread * 1.5, s.spread * 1.5) - focus.angle) * ease
+      focus.strength += (focusTarget - focus.strength) * ease
+      const stiffness = 18
+      const damping = 2 * Math.sqrt(stiffness)
+      aim.velocity += ((target - aim.value) * stiffness - aim.velocity * damping) * dt
+      aim.value += aim.velocity * dt
 
-      gl.viewport(0, 0, cv.width, cv.height);
-      gl.useProgram(shader.program);
-      gl.bindVertexArray(vao);
-      const u = shader.uniforms;
-      gl.uniform2f(u.uResolution, cv.width, cv.height);
-      gl.uniform1f(u.uTime, time);
-      gl.uniform3f(u.uColorA, s.colorA[0], s.colorA[1], s.colorA[2]);
-      gl.uniform3f(u.uColorB, s.colorB[0], s.colorB[1], s.colorB[2]);
-      gl.uniform1f(u.uBlend, s.blend);
-      gl.uniform1f(u.uIntensity, s.intensity);
-      gl.uniform1f(u.uSpread, s.spread);
-      gl.uniform1f(u.uDensity, s.density);
-      gl.uniform1f(u.uSharpness, s.sharpness);
-      gl.uniform1f(u.uFalloff, s.falloff);
-      gl.uniform1f(u.uGlow, s.glow);
-      gl.uniform1f(u.uSaturation, s.saturation);
-      gl.uniform1f(u.uDust, s.dust);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.uniform1f(u.uReveal, 1 - Math.pow(1 - reveal, 3));
-      gl.uniform1f(u.uLight, s.light ? 1 : 0);
-      gl.uniform3f(u.uFrame, s.frame.flipX, s.frame.flipY, s.frame.side);
-      gl.uniform1f(u.uAim, s.tilt + aim.value);
-      gl.uniform3f(u.uFocus, focus.angle, Math.max(0.06, s.spread * 0.25), focus.strength * 1.4);
-      gl.uniform1f(u.uSway, reduced ? 0 : 1);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.viewport(0, 0, cv.width, cv.height)
+      gl.useProgram(shader.program)
+      gl.bindVertexArray(vao)
+      const u = shader.uniforms
+      gl.uniform2f(u.uResolution, cv.width, cv.height)
+      gl.uniform1f(u.uTime, time)
+      gl.uniform3f(u.uColorA, s.colorA[0], s.colorA[1], s.colorA[2])
+      gl.uniform3f(u.uColorB, s.colorB[0], s.colorB[1], s.colorB[2])
+      gl.uniform1f(u.uBlend, s.blend)
+      gl.uniform1f(u.uIntensity, s.intensity)
+      gl.uniform1f(u.uSpread, s.spread)
+      gl.uniform1f(u.uDensity, s.density)
+      gl.uniform1f(u.uSharpness, s.sharpness)
+      gl.uniform1f(u.uFalloff, s.falloff)
+      gl.uniform1f(u.uGlow, s.glow)
+      gl.uniform1f(u.uSaturation, s.saturation)
+      gl.uniform1f(u.uDust, s.dust)
+      gl.uniform1f(u.uOpacity, s.opacity)
+      gl.uniform1f(u.uReveal, 1 - (1 - reveal) ** 3)
+      gl.uniform1f(u.uLight, s.light ? 1 : 0)
+      gl.uniform3f(u.uFrame, s.frame.flipX, s.frame.flipY, s.frame.side)
+      gl.uniform1f(u.uAim, s.tilt + aim.value)
+      gl.uniform3f(u.uFocus, focus.angle, Math.max(0.06, s.spread * 0.25), focus.strength * 1.4)
+      gl.uniform1f(u.uSway, reduced ? 0 : 1)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
       const settling =
         Math.abs(target - aim.value) > 1e-4 ||
         Math.abs(aim.velocity) > 1e-4 ||
-        Math.abs(focusTarget - focus.strength) > 1e-3;
-      const busy = (s.speed > 0 && !reduced) || reveal < 1 || settling;
-      if (busy && visible && pageVisible) raf = requestAnimationFrame(frame);
-    };
+        Math.abs(focusTarget - focus.strength) > 1e-3
+      const busy = (s.speed > 0 && !reduced) || reveal < 1 || settling
+      if (busy && visible && pageVisible) raf = requestAnimationFrame(frame)
+    }
 
     const doWake = () => {
-      if (raf || lost || !visible || !pageVisible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || lost || !visible || !pageVisible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
     wake = () => {
-      resize();
-      doWake();
-    };
+      resize()
+      doWake()
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = c.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
+      const rect = c.getBoundingClientRect()
+      pointer.x = event.clientX - rect.left
+      pointer.y = event.clientY - rect.top
       pointer.inside =
         event.clientX >= rect.left &&
         event.clientX <= rect.right &&
         event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-      doWake();
-    };
+        event.clientY <= rect.bottom
+      doWake()
+    }
     const onLeave = () => {
-      pointer.inside = false;
-      doWake();
-    };
+      pointer.inside = false
+      doWake()
+    }
     const onPointerUp = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') onLeave();
-    };
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerup', onPointerUp, { passive: true });
-    window.addEventListener('pointercancel', onPointerUp, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onLeave);
+      if (event.pointerType !== 'mouse') onLeave()
+    }
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerup', onPointerUp, { passive: true })
+    window.addEventListener('pointercancel', onPointerUp, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onLeave)
 
     const onLost = (event: Event) => {
-      event.preventDefault();
-      lost = true;
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-    const onRestored = () => setGeneration(value => value + 1);
-    cv.addEventListener('webglcontextlost', onLost);
-    cv.addEventListener('webglcontextrestored', onRestored);
+      event.preventDefault()
+      lost = true
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const onRestored = () => setGeneration(value => value + 1)
+    cv.addEventListener('webglcontextlost', onLost)
+    cv.addEventListener('webglcontextrestored', onRestored)
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      doWake();
-    });
-    resizeObserver.observe(c);
+      resize()
+      doWake()
+    })
+    resizeObserver.observe(c)
 
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      doWake();
-    });
-    intersection.observe(c);
+      visible = entries.some(entry => entry.isIntersecting)
+      doWake()
+    })
+    intersection.observe(c)
 
     const onVisibility = () => {
-      pageVisible = document.visibilityState !== 'hidden';
-      doWake();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+      pageVisible = document.visibilityState !== 'hidden'
+      doWake()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
 
-    resize();
-    doWake();
+    resize()
+    doWake()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wake = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      cv.removeEventListener('webglcontextlost', onLost);
-      cv.removeEventListener('webglcontextrestored', onRestored);
+      cancelAnimationFrame(raf)
+      wake = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      cv.removeEventListener('webglcontextlost', onLost)
+      cv.removeEventListener('webglcontextrestored', onRestored)
       if (!gl.isContextLost()) {
-        gl.deleteVertexArray(vao);
-        gl.deleteProgram(shader.program);
+        gl.deleteVertexArray(vao)
+        gl.deleteProgram(shader.program)
       }
-    });
-  });
+    })
+  })
 
   return (
     <div
@@ -499,9 +501,9 @@ const SideRays = (props: SideRaysProps) => {
       class={`pointer-events-none relative h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     >
-      <canvas ref={canvas} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvas} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default SideRays;
+export default SideRays

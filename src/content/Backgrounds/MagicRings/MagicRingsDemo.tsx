@@ -1,4 +1,4 @@
-import MagicRings from './MagicRings';
+import MagicRings from './MagicRings'
 
 function MagicRingsDemo() {
   return (
@@ -19,7 +19,7 @@ function MagicRingsDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default MagicRingsDemo;
+export default MagicRingsDemo

@@ -1,84 +1,84 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { For, Show } from 'solid-js'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 type TileState = {
-  current: string;
-  next: string;
-  flipping: boolean;
-  tick: number;
-};
+  current: string
+  next: string
+  flipping: boolean
+  tick: number
+}
 
 type AnimationPlan = {
-  index: number;
-  from: string;
-  target: string;
-  sequence: string[];
-  start: number;
-  step: number;
-  done: boolean;
-};
+  index: number
+  from: string
+  target: string
+  sequence: string[]
+  start: number
+  step: number
+  done: boolean
+}
 
 type TileUpdate = {
-  index: number;
-  current: string;
-  next: string;
-  done: boolean;
-};
+  index: number
+  current: string
+  next: string
+  done: boolean
+}
 
 type Timing = {
-  flipMs: number;
-  staggerMs: number;
-  holdMs: number;
-  flips: number;
-  glyphs: string;
-  order: SplitFlapOrder;
-};
+  flipMs: number
+  staggerMs: number
+  holdMs: number
+  flips: number
+  glyphs: string
+  order: SplitFlapOrder
+}
 
-export type SplitFlapAlign = 'left' | 'center' | 'right';
+export type SplitFlapAlign = 'left' | 'center' | 'right'
 
-export type SplitFlapOrder = 'left' | 'right' | 'center' | 'random';
+export type SplitFlapOrder = 'left' | 'right' | 'center' | 'random'
 
-export type SplitFlapTileStyle = 'board' | 'minimal';
+export type SplitFlapTileStyle = 'board' | 'minimal'
 
 export interface SplitFlapTextProps
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'style'> {
-  words?: string[];
-  text?: string;
-  flipDuration?: number;
-  stagger?: number;
-  cycleDelay?: number;
-  charset?: 'alpha' | 'alphanumeric' | 'numeric' | (string & {});
-  flipsPerChar?: number;
-  tileColor?: string;
-  textColor?: string;
-  tileRadius?: number | string;
-  gap?: number | string;
-  fontSize?: number | string;
-  loop?: boolean;
-  padTo?: number;
-  align?: SplitFlapAlign;
-  intro?: boolean;
-  glare?: number;
-  depth?: number;
-  order?: SplitFlapOrder;
-  tileStyle?: SplitFlapTileStyle;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  words?: string[]
+  text?: string
+  flipDuration?: number
+  stagger?: number
+  cycleDelay?: number
+  charset?: 'alpha' | 'alphanumeric' | 'numeric' | (string & {})
+  flipsPerChar?: number
+  tileColor?: string
+  textColor?: string
+  tileRadius?: number | string
+  gap?: number | string
+  fontSize?: number | string
+  loop?: boolean
+  padTo?: number
+  align?: SplitFlapAlign
+  intro?: boolean
+  glare?: number
+  depth?: number
+  order?: SplitFlapOrder
+  tileStyle?: SplitFlapTileStyle
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-const DEFAULT_WORDS = ['LAUNCH READY', 'SYNC ONLINE', 'SIGNAL LIVE'];
+const DEFAULT_WORDS = ['LAUNCH READY', 'SYNC ONLINE', 'SIGNAL LIVE']
 
 const CHARSETS: Record<string, string> = {
   alpha: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
   alphanumeric: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-  numeric: '0123456789'
-};
+  numeric: '0123456789',
+}
 
 const styles = `
 .split-flap-text{gap:var(--split-flap-gap,6px);font-family:'SFMono-Regular','Roboto Mono','Cascadia Code','Liberation Mono',Menlo,monospace;font-size:var(--split-flap-font-size,52px);font-weight:760;line-height:1;letter-spacing:.035em;font-variant-numeric:tabular-nums}
@@ -115,65 +115,73 @@ const styles = `
 @keyframes split-flap-reveal{0%{clip-path:inset(0 0 100% 0)}23.14%{clip-path:inset(0 0 99.21% 0)}29.67%{clip-path:inset(0 0 95.55% 0)}33.95%{clip-path:inset(0 0 89.09% 0)}37.41%{clip-path:inset(0 0 79.46% 0)}40.56%{clip-path:inset(0 0 66.05% 0)}43.73%{clip-path:inset(0 0 47.69% 0)}47.38%{clip-path:inset(0 0 21.22% 0)}50%,100%{clip-path:inset(0 0 0 0)}}
 @keyframes split-flap-cover{0%,50%{clip-path:inset(0 0 0 0)}54.42%{clip-path:inset(35.75% 0 0 0)}57.44%{clip-path:inset(55.86% 0 0 0)}60.39%{clip-path:inset(70.63% 0 0 0)}63.65%{clip-path:inset(81.86% 0 0 0)}67.65%{clip-path:inset(90.23% 0 0 0)}73.17%{clip-path:inset(96% 0 0 0)}82.62%{clip-path:inset(99.25% 0 0 0)}100%{clip-path:inset(100% 0 0 0)}}
 @media (prefers-reduced-motion: reduce){.split-flap-text__flap,.split-flap-text__flap::after,.split-flap-text__shade,.split-flap-text__half{animation:none !important}}
-`;
+`
 
-const toCssUnit = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
+const toCssUnit = (value: number | string) => (typeof value === 'number' ? `${value}px` : value)
 
 const resolveCharset = (charset: SplitFlapTextProps['charset']) => {
-  if (charset && CHARSETS[charset]) return CHARSETS[charset];
-  return typeof charset === 'string' && charset.length > 0 ? charset : CHARSETS.alphanumeric;
-};
+  if (charset && CHARSETS[charset]) return CHARSETS[charset]
+  return typeof charset === 'string' && charset.length > 0 ? charset : CHARSETS.alphanumeric
+}
 
 const normalizePhrase = (phrase: string, width: number, align: SplitFlapAlign = 'left') => {
-  const safe = String(phrase ?? '').slice(0, width);
-  if (align === 'right') return safe.padStart(width, ' ');
+  const safe = String(phrase ?? '').slice(0, width)
+  if (align === 'right') return safe.padStart(width, ' ')
   if (align === 'center') {
-    return safe.padStart(safe.length + Math.floor((width - safe.length) / 2), ' ').padEnd(width, ' ');
+    return safe
+      .padStart(safe.length + Math.floor((width - safe.length) / 2), ' ')
+      .padEnd(width, ' ')
   }
-  return safe.padEnd(width, ' ');
-};
+  return safe.padEnd(width, ' ')
+}
 
 const createTiles = (phrase: string): TileState[] =>
   phrase.split('').map(char => ({
     current: char,
     next: char,
     flipping: false,
-    tick: 0
-  }));
+    tick: 0,
+  }))
 
-const sampleChar = (charset: string) => charset.charAt(Math.floor(Math.random() * charset.length)) || ' ';
+const sampleChar = (charset: string) =>
+  charset.charAt(Math.floor(Math.random() * charset.length)) || ' '
 
 const buildSequence = (target: string, flips: number, charset: string) => {
-  const steps: string[] = [];
+  const steps: string[] = []
   for (let i = 0; i < flips; i += 1) {
-    steps.push(sampleChar(charset));
+    steps.push(sampleChar(charset))
   }
-  steps.push(target);
-  return steps;
-};
+  steps.push(target)
+  return steps
+}
 
-const toGlyph = (char: string) => (char === ' ' ? ' ' : char);
+const toGlyph = (char: string) => (char === ' ' ? ' ' : char)
 
 const shuffleIndices = (count: number) => {
-  const list: number[] = [];
-  for (let i = 0; i < count; i++) list.push(i);
+  const list: number[] = []
+  for (let i = 0; i < count; i++) list.push(i)
   for (let i = count - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[list[i], list[j]] = [list[j], list[i]]
   }
-  return list;
-};
+  return list
+}
 
-const cascadeStep = (index: number, width: number, order: SplitFlapOrder, randomOrder: number[] | null) => {
-  if (order === 'right') return width - 1 - index;
-  if (order === 'center') return Math.floor(Math.abs(index - (width - 1) / 2));
-  if (order === 'random' && randomOrder) return randomOrder[index];
-  return index;
-};
+const cascadeStep = (
+  index: number,
+  width: number,
+  order: SplitFlapOrder,
+  randomOrder: number[] | null,
+) => {
+  if (order === 'right') return width - 1 - index
+  if (order === 'center') return Math.floor(Math.abs(index - (width - 1) / 2))
+  if (order === 'random' && randomOrder) return randomOrder[index]
+  return index
+}
 
-const clampUnit = (value: number) => Math.min(1, Math.max(0, Number(value) || 0));
+const clampUnit = (value: number) => Math.min(1, Math.max(0, Number(value) || 0))
 
-const round = (value: number) => Number(value.toFixed(3));
+const round = (value: number) => Number(value.toFixed(3))
 
 const SplitFlapText = (props: SplitFlapTextProps) => {
   const [own, rest] = splitProps(props, [
@@ -199,33 +207,39 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
     'tileStyle',
     'class',
     'className',
-    'style'
-  ]);
+    'style',
+  ])
 
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   // Mutable run-state that upstream kept in refs.
-  let rafId: number | null = null;
-  let shown: string | null = null;
-  let from: string | null = null;
-  let index = 0;
-  let lastPhrases: string[] | null = null;
+  let rafId: number | null = null
+  let shown: string | null = null
+  let from: string | null = null
+  let index = 0
+  let lastPhrases: string[] | null = null
 
   const sourceWords = () =>
-    Array.isArray(own.words) && own.words.length > 0 ? own.words : DEFAULT_WORDS;
+    Array.isArray(own.words) && own.words.length > 0 ? own.words : DEFAULT_WORDS
   const phrasesKey = createMemo(() =>
-    typeof own.text === 'string' ? own.text : sourceWords().map(word => String(word ?? '')).join('\u001f')
-  );
-  const phrases = createMemo(() => phrasesKey().split('\u001f'));
+    typeof own.text === 'string'
+      ? own.text
+      : sourceWords()
+          .map(word => String(word ?? ''))
+          .join('\u001f'),
+  )
+  const phrases = createMemo(() => phrasesKey().split('\u001f'))
 
   const width = createMemo(() => {
-    const longest = phrases().reduce((max, phrase) => Math.max(max, phrase.length), 1);
-    return Math.max(1, Math.ceil(Number(own.padTo) || 0), longest);
-  });
+    const longest = phrases().reduce((max, phrase) => Math.max(max, phrase.length), 1)
+    return Math.max(1, Math.ceil(Number(own.padTo) || 0), longest)
+  })
 
-  const align = () => own.align ?? 'left';
+  const align = () => own.align ?? 'left'
 
-  const normalizedPhrases = createMemo(() => phrases().map(phrase => normalizePhrase(phrase, width(), align())));
+  const normalizedPhrases = createMemo(() =>
+    phrases().map(phrase => normalizePhrase(phrase, width(), align())),
+  )
 
   const timing = createMemo<Timing>(() => ({
     flipMs: Math.max(40, (Number(own.flipDuration) || 0.12) * 1000),
@@ -233,42 +247,42 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
     holdMs: Math.max(400, Number(own.cycleDelay) || 2400),
     flips: Math.max(0, Math.floor(Number(own.flipsPerChar) || 0)),
     glyphs: resolveCharset(own.charset),
-    order: own.order ?? 'left'
-  }));
+    order: own.order ?? 'left',
+  }))
 
   const [tiles, setTiles] = createSignal<TileState[]>(
-    createTiles(own.intro === false ? normalizedPhrases()[0] : ' '.repeat(width()))
-  );
-  const [activeIndex, setActiveIndex] = createSignal(0);
+    createTiles(own.intro === false ? normalizedPhrases()[0] : ' '.repeat(width())),
+  )
+  const [activeIndex, setActiveIndex] = createSignal(0)
 
   createEffect(() => {
-    const phrasesNow = normalizedPhrases();
-    const widthNow = width();
-    const loop = own.loop ?? true;
-    const intro = own.intro ?? true;
-    const reduced = prefersReducedMotion();
+    const phrasesNow = normalizedPhrases()
+    const widthNow = width()
+    const loop = own.loop ?? true
+    const intro = own.intro ?? true
+    const reduced = prefersReducedMotion()
 
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | undefined
 
     const stopFrame = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = null;
-    };
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = null
+    }
 
     const animateTo = (target: string): number => {
-      const { flipMs, staggerMs, flips, glyphs, order: cascade } = untrack(timing);
-      const fromPhrase = normalizePhrase(shown ?? target, target.length);
-      const randomOrder = cascade === 'random' ? shuffleIndices(target.length) : null;
+      const { flipMs, staggerMs, flips, glyphs, order: cascade } = untrack(timing)
+      const fromPhrase = normalizePhrase(shown ?? target, target.length)
+      const randomOrder = cascade === 'random' ? shuffleIndices(target.length) : null
 
-      stopFrame();
-      shown = target;
-      from = null;
+      stopFrame()
+      shown = target
+      from = null
 
-      const plans: AnimationPlan[] = [];
+      const plans: AnimationPlan[] = []
       if (!reduced) {
         for (let i = 0; i < target.length; i += 1) {
-          if (fromPhrase[i] === target[i]) continue;
+          if (fromPhrase[i] === target[i]) continue
           plans.push({
             index: i,
             from: fromPhrase[i],
@@ -276,156 +290,159 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
             sequence: buildSequence(target[i], flips, glyphs),
             start: cascadeStep(i, target.length, cascade, randomOrder) * staggerMs,
             step: -1,
-            done: false
-          });
+            done: false,
+          })
         }
       }
 
       if (!plans.length) {
-        setTiles(createTiles(target));
-        return 0;
+        setTiles(createTiles(target))
+        return 0
       }
 
-      from = fromPhrase;
-      setTiles(createTiles(fromPhrase));
+      from = fromPhrase
+      setTiles(createTiles(fromPhrase))
 
-      const totalDuration = plans.reduce((max, plan) => Math.max(max, plan.start + plan.sequence.length * flipMs), 0);
-      const startedAt = performance.now();
+      const totalDuration = plans.reduce(
+        (max, plan) => Math.max(max, plan.start + plan.sequence.length * flipMs),
+        0,
+      )
+      const startedAt = performance.now()
 
       const tick = (now: number) => {
-        if (cancelled) return;
+        if (cancelled) return
 
-        const elapsed = now - startedAt;
-        const updates: TileUpdate[] = [];
-        let running = false;
+        const elapsed = now - startedAt
+        const updates: TileUpdate[] = []
+        let running = false
 
         plans.forEach(plan => {
-          const localElapsed = elapsed - plan.start;
+          const localElapsed = elapsed - plan.start
 
           if (localElapsed < 0) {
-            running = true;
-            return;
+            running = true
+            return
           }
 
-          const step = Math.floor(localElapsed / flipMs);
+          const step = Math.floor(localElapsed / flipMs)
 
           if (step < plan.sequence.length) {
-            running = true;
+            running = true
 
             if (step !== plan.step) {
-              plan.step = step;
+              plan.step = step
               updates.push({
                 index: plan.index,
                 current: step === 0 ? plan.from : plan.sequence[step - 1],
                 next: plan.sequence[step],
-                done: false
-              });
+                done: false,
+              })
             }
           } else if (!plan.done) {
-            plan.done = true;
+            plan.done = true
             updates.push({
               index: plan.index,
               current: plan.target,
               next: plan.target,
-              done: true
-            });
+              done: true,
+            })
           }
-        });
+        })
 
         if (updates.length > 0) {
           setTiles(previous => {
-            const nextTiles = previous.slice();
+            const nextTiles = previous.slice()
             updates.forEach(update => {
-              const tile = nextTiles[update.index];
-              if (!tile) return;
+              const tile = nextTiles[update.index]
+              if (!tile) return
 
               nextTiles[update.index] = {
                 current: update.current,
                 next: update.next,
                 flipping: !update.done,
-                tick: tile.tick + 1
-              };
-            });
-            return nextTiles;
-          });
+                tick: tile.tick + 1,
+              }
+            })
+            return nextTiles
+          })
         }
 
         if (running) {
-          rafId = requestAnimationFrame(tick);
+          rafId = requestAnimationFrame(tick)
         } else {
-          rafId = null;
-          from = null;
+          rafId = null
+          from = null
         }
-      };
+      }
 
-      rafId = requestAnimationFrame(tick);
-      return totalDuration;
-    };
+      rafId = requestAnimationFrame(tick)
+      return totalDuration
+    }
 
     const show = (i: number) => {
-      index = i;
-      setActiveIndex(i);
-      return animateTo(phrasesNow[i]);
-    };
+      index = i
+      setActiveIndex(i)
+      return animateTo(phrasesNow[i])
+    }
 
     const scheduleNext = (delay: number) => {
       timer = setTimeout(() => {
-        if (cancelled) return;
+        if (cancelled) return
 
         if (document.hidden) {
-          scheduleNext(untrack(timing).holdMs);
-          return;
+          scheduleNext(untrack(timing).holdMs)
+          return
         }
 
-        const nextIndex = index + 1;
-        if (nextIndex >= phrasesNow.length && !loop) return;
+        const nextIndex = index + 1
+        if (nextIndex >= phrasesNow.length && !loop) return
 
-        const duration = show(nextIndex % phrasesNow.length);
-        scheduleNext(untrack(timing).holdMs + duration);
-      }, delay);
-    };
+        const duration = show(nextIndex % phrasesNow.length)
+        scheduleNext(untrack(timing).holdMs + duration)
+      }, delay)
+    }
 
-    const samePhrases = lastPhrases === phrasesNow;
-    lastPhrases = phrasesNow;
+    const samePhrases = lastPhrases === phrasesNow
+    lastPhrases = phrasesNow
 
     if (shown === null) {
-      shown = intro ? ' '.repeat(widthNow) : phrasesNow[0];
+      shown = intro ? ' '.repeat(widthNow) : phrasesNow[0]
     }
 
     if (!samePhrases || index >= phrasesNow.length) {
-      index = 0;
+      index = 0
     } else if (from !== null) {
-      shown = from;
+      shown = from
     }
 
-    let startDuration = 0;
+    let startDuration = 0
     if (shown === phrasesNow[index]) {
-      stopFrame();
-      from = null;
-      setActiveIndex(index);
-      setTiles(createTiles(shown));
+      stopFrame()
+      from = null
+      setActiveIndex(index)
+      setTiles(createTiles(shown))
     } else {
-      startDuration = show(index);
+      startDuration = show(index)
     }
 
     if (phrasesNow.length > 1) {
-      scheduleNext(untrack(timing).holdMs + startDuration);
+      scheduleNext(untrack(timing).holdMs + startDuration)
     }
 
     onCleanup(() => {
-      cancelled = true;
-      clearTimeout(timer);
-      stopFrame();
-    });
-  });
+      cancelled = true
+      clearTimeout(timer)
+      stopFrame()
+    })
+  })
 
-  const label = () => String(phrases()[activeIndex()] ?? phrases()[0] ?? '').trim();
-  const minimal = () => own.tileStyle === 'minimal';
-  const level = () => clampUnit(own.depth ?? 0.5);
-  const flat = () => Math.min(1, level() * 2);
-  const deep = () => Math.max(0, level() - 0.5) * 2;
-  const sheen = () => (minimal() ? 0 : clampUnit(own.glare ?? 0));
-  const shaded = () => !minimal() && deep() > 0;
+  const label = () => String(phrases()[activeIndex()] ?? phrases()[0] ?? '').trim()
+  const minimal = () => own.tileStyle === 'minimal'
+  const level = () => clampUnit(own.depth ?? 0.5)
+  const flat = () => Math.min(1, level() * 2)
+  const deep = () => Math.max(0, level() - 0.5) * 2
+  const sheen = () => (minimal() ? 0 : clampUnit(own.glare ?? 0))
+  const shaded = () => !minimal() && deep() > 0
   const rootClass = () =>
     [
       'split-flap-text',
@@ -433,10 +450,10 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
       sheen() > 0 && 'split-flap-text--glare',
       'relative inline-flex items-center whitespace-pre select-none',
       own.class,
-      own.className
+      own.className,
     ]
       .filter(Boolean)
-      .join(' ');
+      .join(' ')
   const componentStyle = (): JSX.CSSProperties & Record<string, string | number | undefined> => ({
     '--split-flap-tile-color': own.tileColor ?? '#111827',
     '--split-flap-text-color': own.textColor ?? '#f8fafc',
@@ -455,8 +472,8 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
     '--split-flap-edge': `${round(deep() * 0.035)}em`,
     '--split-flap-split': `${round(0.015 + level() * 0.06)}em`,
     '--split-flap-glare': round(sheen() * 0.55),
-    ...own.style
-  });
+    ...own.style,
+  })
 
   return (
     <>
@@ -470,7 +487,9 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
               aria-hidden="true"
             >
               <span class="split-flap-text__half split-flap-text__half--top">
-                <span class="split-flap-text__char">{toGlyph(tile.flipping ? tile.next : tile.current)}</span>
+                <span class="split-flap-text__char">
+                  {toGlyph(tile.flipping ? tile.next : tile.current)}
+                </span>
               </span>
               <span class="split-flap-text__half split-flap-text__half--bottom">
                 <span class="split-flap-text__char">{toGlyph(tile.current)}</span>
@@ -497,7 +516,7 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
         </For>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default SplitFlapText;
+export default SplitFlapText

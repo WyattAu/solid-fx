@@ -1,4 +1,4 @@
-import AeroShards from './AeroShards';
+import AeroShards from './AeroShards'
 
 const AeroShardsDemo = () => (
   <div class="h-96 w-full">
@@ -11,6 +11,6 @@ const AeroShardsDemo = () => (
       glow={0.35}
     />
   </div>
-);
+)
 
-export default AeroShardsDemo;
+export default AeroShardsDemo

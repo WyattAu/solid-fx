@@ -1,34 +1,34 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { For, Show } from 'solid-js';
-import { gsap } from 'gsap';
+import { createEffect, createSignal, onCleanup } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { For, Show } from 'solid-js'
+import { gsap } from 'gsap'
 
 type MenuItem = {
-  label: string;
-  href: string;
-  ariaLabel?: string;
-  rotation?: number;
+  label: string
+  href: string
+  ariaLabel?: string
+  rotation?: number
   hoverStyles?: {
-    bgColor?: string;
-    textColor?: string;
-  };
-};
+    bgColor?: string
+    textColor?: string
+  }
+}
 
 export type BubbleMenuProps = {
-  logo: JSX.Element | string;
-  onMenuClick?: (open: boolean) => void;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
-  menuAriaLabel?: string;
-  menuBg?: string;
-  menuContentColor?: string;
-  useFixedPosition?: boolean;
-  items?: MenuItem[];
-  animationEase?: string;
-  animationDuration?: number;
-  staggerDelay?: number;
-};
+  logo: JSX.Element | string
+  onMenuClick?: (open: boolean) => void
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
+  menuAriaLabel?: string
+  menuBg?: string
+  menuContentColor?: string
+  useFixedPosition?: boolean
+  items?: MenuItem[]
+  animationEase?: string
+  animationDuration?: number
+  staggerDelay?: number
+}
 
 const DEFAULT_ITEMS: MenuItem[] = [
   {
@@ -36,81 +36,81 @@ const DEFAULT_ITEMS: MenuItem[] = [
     href: '#',
     ariaLabel: 'Home',
     rotation: -8,
-    hoverStyles: { bgColor: '#3b82f6', textColor: '#ffffff' }
+    hoverStyles: { bgColor: '#3b82f6', textColor: '#ffffff' },
   },
   {
     label: 'about',
     href: '#',
     ariaLabel: 'About',
     rotation: 8,
-    hoverStyles: { bgColor: '#10b981', textColor: '#ffffff' }
+    hoverStyles: { bgColor: '#10b981', textColor: '#ffffff' },
   },
   {
     label: 'projects',
     href: '#',
     ariaLabel: 'Documentation',
     rotation: 8,
-    hoverStyles: { bgColor: '#f59e0b', textColor: '#ffffff' }
+    hoverStyles: { bgColor: '#f59e0b', textColor: '#ffffff' },
   },
   {
     label: 'blog',
     href: '#',
     ariaLabel: 'Blog',
     rotation: 8,
-    hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
+    hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' },
   },
   {
     label: 'contact',
     href: '#',
     ariaLabel: 'Contact',
     rotation: -8,
-    hoverStyles: { bgColor: '#8b5cf6', textColor: '#ffffff' }
-  }
-];
+    hoverStyles: { bgColor: '#8b5cf6', textColor: '#ffffff' },
+  },
+]
 
 export default function BubbleMenu(props: BubbleMenuProps) {
-  const [isMenuOpen, setIsMenuOpen] = createSignal(false);
-  const [showOverlay, setShowOverlay] = createSignal(false);
+  const [isMenuOpen, setIsMenuOpen] = createSignal(false)
+  const [showOverlay, setShowOverlay] = createSignal(false)
 
-  let overlay!: HTMLDivElement;
-  const bubbleEls: HTMLAnchorElement[] = [];
-  const labelEls: HTMLSpanElement[] = [];
+  let overlay!: HTMLDivElement
+  const bubbleEls: HTMLAnchorElement[] = []
+  const labelEls: HTMLSpanElement[] = []
 
-  const menuItems = () => (props.items?.length ? props.items : DEFAULT_ITEMS);
+  const menuItems = () => (props.items?.length ? props.items : DEFAULT_ITEMS)
 
   const handleToggle = () => {
-    const nextState = !isMenuOpen();
-    if (nextState) setShowOverlay(true);
-    setIsMenuOpen(nextState);
-    props.onMenuClick?.(nextState);
-  };
+    const nextState = !isMenuOpen()
+    if (nextState) setShowOverlay(true)
+    setIsMenuOpen(nextState)
+    props.onMenuClick?.(nextState)
+  }
 
   // Upstream deps: [isMenuOpen, showOverlay, animationEase, animationDuration, staggerDelay]
   createEffect(() => {
-    const open = isMenuOpen();
-    const overlayShown = showOverlay();
-    const animationEase = props.animationEase ?? 'back.out(1.5)';
-    const animationDuration = props.animationDuration ?? 0.5;
-    const staggerDelay = props.staggerDelay ?? 0.12;
-    const ov = overlay;
-    const bubbles = bubbleEls.filter(Boolean);
-    const labels = labelEls.filter(Boolean);
-    if (!ov || !bubbles.length) return;
+    const open = isMenuOpen()
+    const overlayShown = showOverlay()
+    const animationEase = props.animationEase ?? 'back.out(1.5)'
+    const animationDuration = props.animationDuration ?? 0.5
+    const staggerDelay = props.staggerDelay ?? 0.12
+    const ov = overlay
+    const bubbles = bubbleEls.filter(Boolean)
+    const labels = labelEls.filter(Boolean)
+    if (!ov || !bubbles.length) return
 
     if (open) {
-      gsap.set(ov, { display: 'flex' });
-      gsap.killTweensOf([...bubbles, ...labels]);
-      gsap.set(bubbles, { scale: 0, transformOrigin: '50% 50%' });
-      gsap.set(labels, { y: 24, autoAlpha: 0 });
+      gsap.set(ov, { display: 'flex' })
+      gsap.killTweensOf([...bubbles, ...labels])
+      gsap.set(bubbles, { scale: 0, transformOrigin: '50% 50%' })
+      gsap.set(labels, { y: 24, autoAlpha: 0 })
 
       bubbles.forEach((bubble, i) => {
-        const delay = i * staggerDelay + gsap.utils.random(-0.05, 0.05);
-        const tl = gsap.timeline({ delay });
+        const delay = i * staggerDelay + gsap.utils.random(-0.05, 0.05)
+        const tl = gsap.timeline({ delay })
         tl.to(bubble, {
           scale: 1,
           duration: animationDuration,
-          ease: animationEase
-        });
+          ease: animationEase,
+        })
         if (labels[i]) {
           tl.to(
             labels[i],
@@ -118,52 +118,52 @@ export default function BubbleMenu(props: BubbleMenuProps) {
               y: 0,
               autoAlpha: 1,
               duration: animationDuration,
-              ease: 'power3.out'
+              ease: 'power3.out',
             },
-            '-=' + animationDuration * 0.9
-          );
+            `-=${animationDuration * 0.9}`,
+          )
         }
-      });
+      })
     } else if (overlayShown) {
-      gsap.killTweensOf([...bubbles, ...labels]);
+      gsap.killTweensOf([...bubbles, ...labels])
       gsap.to(labels, {
         y: 24,
         autoAlpha: 0,
         duration: 0.2,
-        ease: 'power3.in'
-      });
+        ease: 'power3.in',
+      })
       gsap.to(bubbles, {
         scale: 0,
         duration: 0.2,
         ease: 'power3.in',
         onComplete: () => {
-          gsap.set(ov, { display: 'none' });
-          setShowOverlay(false);
-        }
-      });
+          gsap.set(ov, { display: 'none' })
+          setShowOverlay(false)
+        },
+      })
     }
-  });
+  })
 
   // Upstream deps: [isMenuOpen, menuItems]
   createEffect(() => {
-    const open = isMenuOpen();
-    const items = menuItems();
+    const open = isMenuOpen()
+    const items = menuItems()
     const handleResize = () => {
       if (open) {
-        const bubbles = bubbleEls.filter(Boolean);
-        const isDesktop = window.innerWidth >= 900;
+        const bubbles = bubbleEls.filter(Boolean)
+        const isDesktop = window.innerWidth >= 900
         bubbles.forEach((bubble, i) => {
-          const item = items[i];
+          const item = items[i]
           if (bubble && item) {
-            const rotation = isDesktop ? (item.rotation ?? 0) : 0;
-            gsap.set(bubble, { rotation });
+            const rotation = isDesktop ? (item.rotation ?? 0) : 0
+            gsap.set(bubble, { rotation })
           }
-        });
+        })
       }
-    };
-    window.addEventListener('resize', handleResize);
-    onCleanup(() => window.removeEventListener('resize', handleResize));
-  });
+    }
+    window.addEventListener('resize', handleResize)
+    onCleanup(() => window.removeEventListener('resize', handleResize))
+  })
 
   return (
     <>
@@ -231,7 +231,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
           'pointer-events-none',
           'z-[1001]',
           props.class,
-          props.className
+          props.className,
         ]
           .filter(Boolean)
           .join(' ')}
@@ -249,26 +249,34 @@ export default function BubbleMenu(props: BubbleMenuProps) {
             'h-12 md:h-14',
             'px-4 md:px-8',
             'gap-2',
-            'will-change-transform'
+            'will-change-transform',
           ].join(' ')}
           aria-label="Logo"
           style={{
             background: props.menuBg ?? '#fff',
             'min-height': '48px',
-            'border-radius': '9999px'
+            'border-radius': '9999px',
           }}
         >
           <span
-            class={['logo-content', 'inline-flex items-center justify-center', 'w-[120px] h-full'].join(' ')}
+            class={[
+              'logo-content',
+              'inline-flex items-center justify-center',
+              'w-[120px] h-full',
+            ].join(' ')}
             style={
               {
                 '--logo-max-height': '60%',
-                '--logo-max-width': '100%'
+                '--logo-max-width': '100%',
               } as JSX.CSSProperties
             }
           >
             {typeof props.logo === 'string' ? (
-              <img src={props.logo} alt="Logo" class="bubble-logo max-h-[60%] max-w-full object-contain block" />
+              <img
+                src={props.logo}
+                alt="Logo"
+                class="bubble-logo max-h-[60%] max-w-full object-contain block"
+              />
             ) : (
               props.logo
             )}
@@ -287,7 +295,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
             'pointer-events-auto',
             'w-12 h-12 md:w-14 md:h-14',
             'border-0 cursor-pointer p-0',
-            'will-change-transform'
+            'will-change-transform',
           ].join(' ')}
           onClick={handleToggle}
           aria-label={props.menuAriaLabel ?? 'Toggle menu'}
@@ -300,7 +308,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
               width: '26px',
               height: '2px',
               background: props.menuContentColor ?? '#111',
-              transform: isMenuOpen() ? 'translateY(4px) rotate(45deg)' : 'none'
+              transform: isMenuOpen() ? 'translateY(4px) rotate(45deg)' : 'none',
             }}
           />
           <span
@@ -310,7 +318,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
               width: '26px',
               height: '2px',
               background: props.menuContentColor ?? '#111',
-              transform: isMenuOpen() ? 'translateY(-4px) rotate(-45deg)' : 'none'
+              transform: isMenuOpen() ? 'translateY(-4px) rotate(-45deg)' : 'none',
             }}
           />
         </button>
@@ -325,7 +333,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
             'inset-0',
             'flex items-center justify-center',
             'pointer-events-none',
-            'z-[1000]'
+            'z-[1000]',
           ].join(' ')}
           aria-hidden={!isMenuOpen()}
         >
@@ -336,9 +344,8 @@ export default function BubbleMenu(props: BubbleMenuProps) {
               'w-full max-w-[1600px] mx-auto',
               'flex flex-wrap',
               'gap-x-0 gap-y-1',
-              'pointer-events-auto'
+              'pointer-events-auto',
             ].join(' ')}
-            role="menu"
             aria-label="Menu links"
           >
             <For each={menuItems()}>
@@ -349,7 +356,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
                     'pill-col',
                     'flex justify-center items-stretch',
                     '[flex:0_0_calc(100%/3)]',
-                    'box-border'
+                    'box-border',
                   ].join(' ')}
                 >
                   <a
@@ -368,7 +375,7 @@ export default function BubbleMenu(props: BubbleMenuProps) {
                       'relative',
                       'transition-[background,color] duration-300 ease-in-out',
                       'box-border',
-                      'whitespace-nowrap overflow-hidden'
+                      'whitespace-nowrap overflow-hidden',
                     ].join(' ')}
                     style={
                       {
@@ -376,7 +383,8 @@ export default function BubbleMenu(props: BubbleMenuProps) {
                         '--pill-bg': props.menuBg ?? '#fff',
                         '--pill-color': props.menuContentColor ?? '#111',
                         '--hover-bg': item.hoverStyles?.bgColor || '#f3f4f6',
-                        '--hover-color': item.hoverStyles?.textColor || props.menuContentColor || '#111',
+                        '--hover-color':
+                          item.hoverStyles?.textColor || props.menuContentColor || '#111',
                         background: 'var(--pill-bg)',
                         color: 'var(--pill-color)',
                         'min-height': 'var(--pill-min-h, 160px)',
@@ -385,11 +393,11 @@ export default function BubbleMenu(props: BubbleMenuProps) {
                         'font-weight': '400',
                         'line-height': '0',
                         'will-change': 'transform',
-                        height: '10px'
+                        height: '10px',
                       } as JSX.CSSProperties
                     }
                     ref={el => {
-                      bubbleEls[idx()] = el;
+                      bubbleEls[idx()] = el
                     }}
                   >
                     <span
@@ -397,10 +405,10 @@ export default function BubbleMenu(props: BubbleMenuProps) {
                       style={{
                         'will-change': 'transform, opacity',
                         height: '1.2em',
-                        'line-height': '1.2'
+                        'line-height': '1.2',
                       }}
                       ref={el => {
-                        labelEls[idx()] = el;
+                        labelEls[idx()] = el
                       }}
                     >
                       {item.label}
@@ -413,5 +421,5 @@ export default function BubbleMenu(props: BubbleMenuProps) {
         </div>
       </Show>
     </>
-  );
+  )
 }

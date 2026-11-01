@@ -1,128 +1,133 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-const FOV = 0.32;
-const ORBIT = 9;
-const NEAR = 0.05;
-const FAR = 160;
-const HEIGHT = 1.7;
-const FREQUENCY = 0.45;
-const INTRO_SECONDS = 2.8;
-const MAX_PULSES = 4;
-const BLOOM_LEVELS = 4;
-const SCULPT_SIZE = 256;
-const SCULPT_SPAN = 48;
-const MAX_CELLS = 200000;
-const SUN = [-0.81, 0.58, -0.02];
-export type TopographyDirection = 'forward' | 'backward' | 'left' | 'right';
-export type TopographyHoverEffect = 'lift' | 'trace' | 'light';
-export type TopographyClickEffect = 'pulse' | 'peak' | 'none';
-export type TopographyMarkers = 'none' | 'plus' | 'dots';
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+const FOV = 0.32
+const ORBIT = 9
+const NEAR = 0.05
+const FAR = 160
+const HEIGHT = 1.7
+const FREQUENCY = 0.45
+const INTRO_SECONDS = 2.8
+const MAX_PULSES = 4
+const BLOOM_LEVELS = 4
+const SCULPT_SIZE = 256
+const SCULPT_SPAN = 48
+const MAX_CELLS = 200000
+const SUN = [-0.81, 0.58, -0.02]
+export type TopographyDirection = 'forward' | 'backward' | 'left' | 'right'
+export type TopographyHoverEffect = 'lift' | 'trace' | 'light'
+export type TopographyClickEffect = 'pulse' | 'peak' | 'none'
+export type TopographyMarkers = 'none' | 'plus' | 'dots'
 
 export interface TopographyProps {
-  color?: string;
-  lineCount?: number;
-  lineWidth?: number;
-  majorLines?: boolean;
-  elevation?: number;
-  foreground?: number;
-  scale?: number;
-  detail?: number;
-  tilt?: number;
-  speed?: number;
-  direction?: TopographyDirection;
-  morph?: number;
-  glow?: number;
-  depthOfField?: number;
-  fog?: number;
-  brightness?: number;
-  opacity?: number;
-  mouseInteraction?: boolean;
-  hoverEffect?: TopographyHoverEffect;
-  mouseRadius?: number;
-  mouseStrength?: number;
-  trail?: number;
-  parallax?: number;
-  clickEffect?: TopographyClickEffect;
-  markers?: TopographyMarkers;
-  glitch?: number;
-  intro?: boolean;
-  lightMode?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  color?: string
+  lineCount?: number
+  lineWidth?: number
+  majorLines?: boolean
+  elevation?: number
+  foreground?: number
+  scale?: number
+  detail?: number
+  tilt?: number
+  speed?: number
+  direction?: TopographyDirection
+  morph?: number
+  glow?: number
+  depthOfField?: number
+  fog?: number
+  brightness?: number
+  opacity?: number
+  mouseInteraction?: boolean
+  hoverEffect?: TopographyHoverEffect
+  mouseRadius?: number
+  mouseStrength?: number
+  trail?: number
+  parallax?: number
+  clickEffect?: TopographyClickEffect
+  markers?: TopographyMarkers
+  glitch?: number
+  intro?: boolean
+  lightMode?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
+  program: WebGLProgram
+  uniforms: Record<string, WebGLUniformLocation | null>
 }
 
 interface Target {
-  texture: WebGLTexture | null;
-  framebuffer: WebGLFramebuffer | null;
-  depth: WebGLRenderbuffer | null;
-  width: number;
-  height: number;
+  texture: WebGLTexture | null
+  framebuffer: WebGLFramebuffer | null
+  depth: WebGLRenderbuffer | null
+  width: number
+  height: number
 }
 
 interface Frame {
-  f: number[];
-  r: number[];
-  u: number[];
-  eye: number[];
-  distance: number;
+  f: number[]
+  r: number[]
+  u: number[]
+  eye: number[]
+  distance: number
 }
 
 interface Hit {
-  x: number;
-  y: number;
-  z: number;
-  depth: number;
+  x: number
+  y: number
+  z: number
+  depth: number
 }
 
 interface Box {
-  minX: number;
-  maxX: number;
-  minZ: number;
-  maxZ: number;
-  near: number;
+  minX: number
+  maxX: number
+  minZ: number
+  maxZ: number
+  near: number
 }
 
 interface Pulse {
-  x: number;
-  z: number;
-  age: number;
+  x: number
+  z: number
+  age: number
 }
 
 interface TopographyState {
-  intro: number;
-  rise: number;
-  travelX: number;
-  travelZ: number;
-  morph: number;
-  yaw: number;
-  pitch: number;
-  yawVelocity: number;
-  pitchVelocity: number;
-  presence: number;
-  focus: number;
-  hit: Hit | null;
-  brushFrom: { x: number; z: number } | null;
-  sculptLife: number;
-  burst: Pulse | null;
-  level: number;
-  trace: number;
-  clock: number;
-  tilt: number;
-  elevation: number;
-  scale: number;
+  intro: number
+  rise: number
+  travelX: number
+  travelZ: number
+  morph: number
+  yaw: number
+  pitch: number
+  yawVelocity: number
+  pitchVelocity: number
+  presence: number
+  focus: number
+  hit: Hit | null
+  brushFrom: { x: number; z: number } | null
+  sculptLife: number
+  burst: Pulse | null
+  level: number
+  trace: number
+  clock: number
+  tilt: number
+  elevation: number
+  scale: number
 }
 
-const DIRECTIONS: Record<string, number[]> = { forward: [0, 1], backward: [0, -1], left: [-1, 0], right: [1, 0] };
-const HOVER_EFFECTS = ['lift', 'trace', 'light'];
-const MARKER_STYLES: Record<string, number> = { plus: 0, dots: 1 };
-const MARKER_SPACING = 1.25;
+const DIRECTIONS: Record<string, number[]> = {
+  forward: [0, 1],
+  backward: [0, -1],
+  left: [-1, 0],
+  right: [1, 0],
+}
+const HOVER_EFFECTS = ['lift', 'trace', 'light']
+const MARKER_STYLES: Record<string, number> = { plus: 0, dots: 1 }
+const MARKER_SPACING = 1.25
 const COMMON = `
 precision highp float;
 precision highp int;
@@ -199,7 +204,7 @@ float settle(vec2 world) {
   float x = clamp((depth - uNear.x) / max(uNear.y - uNear.x, 1e-3), 0.0, 1.0);
   return mix(uNear.z, 1.0, x * x * x * (x * (x * 6.0 - 15.0) + 10.0));
 }
-`;
+`
 
 const FIELD = `#version 300 es
 ${COMMON}
@@ -218,7 +223,7 @@ void main() {
   float fine = noise(dp) * 0.6 + noise(octave(dp, vec2(2.3, 6.1))) * 0.3;
   outField = vec4(carved.g, ring, ground, carved.r);
   outHeight = vec4(ground + uDetail * 0.1 * fine, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const terrainVertex = (baked: boolean) => `#version 300 es
 #define BAKED ${baked ? 1 : 0}
@@ -271,7 +276,7 @@ void main() {
   vTerrain = terrain;
   vDepth = clip.w;
   vLift = h * uHeight;
-}`;
+}`
 
 const terrainFragment = (baked: boolean) => `#version 300 es
 #define BAKED ${baked ? 1 : 0}
@@ -422,7 +427,7 @@ void main() {
   float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
   color = max(color + dither / 255.0 * step(0.002, top), 0.0);
   outColor = vec4(color, max(max(color.r, color.g), color.b)) * uOpacity;
-}`;
+}`
 
 const MARKER_VERTEX = `#version 300 es
 ${COMMON}
@@ -476,7 +481,7 @@ void main() {
   vFrame = frame;
   vGlow = 0.5 + 0.4 * b + blink * 0.9 + heat * 1.8 + ring * 3.0;
   vDepth = clip.w;
-}`;
+}`
 
 const MARKER_FRAGMENT = `#version 300 es
 precision highp float;
@@ -528,13 +533,13 @@ void main() {
   }
   vec3 color = 1.0 - exp(-uColor * light * 1.8);
   outColor = vec4(color, max(max(color.r, color.g), color.b)) * uOpacity;
-}`;
+}`
 
 const FULLSCREEN = `#version 300 es
 void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
-}`;
+}`
 
 const SCULPT = `#version 300 es
 precision highp float;
@@ -564,7 +569,7 @@ void main() {
   vec2 b = wrapped(t - uBurst.xy);
   height += uBurst.w * exp(-dot(b, b) / (uBurst.z * uBurst.z));
   outColor = vec4(height, heat, 0.0, 1.0);
-}`;
+}`
 
 const DOWNSAMPLE = `#version 300 es
 precision highp float;
@@ -580,7 +585,7 @@ void main() {
   color += texture(uSource, uv + vec2(uTexel.x, -uTexel.y));
   color += texture(uSource, uv + vec2(-uTexel.x, uTexel.y));
   outColor = min(color * 0.25, vec4(1.0));
-}`;
+}`
 
 const BLUR = `#version 300 es
 precision highp float;
@@ -596,7 +601,7 @@ void main() {
   color += (texture(uSource, uv + uStep * 3.326702) + texture(uSource, uv - uStep * 3.326702)) * 0.106598;
   color += (texture(uSource, uv + uStep * 5.242989) + texture(uSource, uv - uStep * 5.242989)) * 0.018156;
   outColor = color;
-}`;
+}`
 
 const COMPOSITE = `#version 300 es
 precision highp float;
@@ -622,125 +627,129 @@ void main() {
   vec3 color = halo.rgb * uGlow * 1.6;
   color = color / (1.0 + color);
   outColor = vec4(color, max(max(color.r, color.g), color.b));
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const smoother = (x: number) => {
-  const t = clamp(x, 0, 1);
-  return t * t * t * (t * (t * 6 - 15) + 10);
-};
+  const t = clamp(x, 0, 1)
+  return t * t * t * (t * (t * 6 - 15) + 10)
+}
 
 const lattice = (x: number, y: number) => {
-  let h = (Math.imul(x + 1073741824, 2654435761) + Math.imul(y + 1073741824, 2246822519)) >>> 0;
-  h = Math.imul(h ^ (h >>> 15), 739982445) >>> 0;
-  h = Math.imul(h ^ (h >>> 12), 695872825) >>> 0;
-  return (h ^ (h >>> 15)) >>> 0;
-};
+  let h = (Math.imul(x + 1073741824, 2654435761) + Math.imul(y + 1073741824, 2246822519)) >>> 0
+  h = Math.imul(h ^ (h >>> 15), 739982445) >>> 0
+  h = Math.imul(h ^ (h >>> 12), 695872825) >>> 0
+  return (h ^ (h >>> 15)) >>> 0
+}
 
 const corner = (cx: number, cy: number, fx: number, fy: number) => {
-  const h = lattice(cx, cy);
-  return ((h & 65535) / 32767.5 - 1) * fx + ((h >>> 16) / 32767.5 - 1) * fy;
-};
+  const h = lattice(cx, cy)
+  return ((h & 65535) / 32767.5 - 1) * fx + ((h >>> 16) / 32767.5 - 1) * fy
+}
 
 const noise = (x: number, y: number) => {
-  const ix = Math.floor(x);
-  const iy = Math.floor(y);
-  const fx = x - ix;
-  const fy = y - iy;
-  const ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10);
-  const uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10);
-  const a = corner(ix, iy, fx, fy);
-  const b = corner(ix + 1, iy, fx - 1, fy);
-  const d = corner(ix, iy + 1, fx, fy - 1);
-  const e = corner(ix + 1, iy + 1, fx - 1, fy - 1);
-  const top = a + (b - a) * ux;
-  return top + (d + (e - d) * ux - top) * uy;
-};
+  const ix = Math.floor(x)
+  const iy = Math.floor(y)
+  const fx = x - ix
+  const fy = y - iy
+  const ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10)
+  const uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10)
+  const a = corner(ix, iy, fx, fy)
+  const b = corner(ix + 1, iy, fx - 1, fy)
+  const d = corner(ix, iy + 1, fx, fy - 1)
+  const e = corner(ix + 1, iy + 1, fx - 1, fy - 1)
+  const top = a + (b - a) * ux
+  return top + (d + (e - d) * ux - top) * uy
+}
 
 const relief = (tx: number, tz: number, frequency: number, morphX: number, morphZ: number) => {
-  let px = tx * frequency;
-  let pz = tz * frequency;
-  const wx = noise(px * 0.42 + morphX, pz * 0.42 + morphZ);
-  const wz = noise(px * 0.42 - morphZ + 5.2, pz * 0.42 - morphX + 1.3);
-  px += wx * 0.8;
-  pz += wz * 0.8;
-  let n = noise(px, pz) * 0.55;
-  const qx = 1.6 * px - 1.2 * pz + 7.1;
-  const qz = 1.2 * px + 1.6 * pz + 3.7;
-  n += noise(qx, qz) * 0.15;
-  n += noise(1.6 * qx - 1.2 * qz + 1.9, 1.2 * qx + 1.6 * qz + 8.3) * 0.04;
-  const s = Math.log(1 + Math.exp(7 * (3 * n + 0.05))) / 7;
-  return s * s * 1.4 + 0.1 * n;
-};
+  let px = tx * frequency
+  let pz = tz * frequency
+  const wx = noise(px * 0.42 + morphX, pz * 0.42 + morphZ)
+  const wz = noise(px * 0.42 - morphZ + 5.2, pz * 0.42 - morphX + 1.3)
+  px += wx * 0.8
+  pz += wz * 0.8
+  let n = noise(px, pz) * 0.55
+  const qx = 1.6 * px - 1.2 * pz + 7.1
+  const qz = 1.2 * px + 1.6 * pz + 3.7
+  n += noise(qx, qz) * 0.15
+  n += noise(1.6 * qx - 1.2 * qz + 1.9, 1.2 * qx + 1.6 * qz + 8.3) * 0.04
+  const s = Math.log(1 + Math.exp(7 * (3 * n + 0.05))) / 7
+  return s * s * 1.4 + 0.1 * n
+}
 
 const fineDetail = (tx: number, tz: number, frequency: number) => {
-  const px = tx * frequency * 5 + 13.1;
-  const pz = tz * frequency * 5 + 4.7;
-  return noise(px, pz) * 0.6 + noise(1.6 * px - 1.2 * pz + 2.3, 1.2 * px + 1.6 * pz + 6.1) * 0.3;
-};
+  const px = tx * frequency * 5 + 13.1
+  const pz = tz * frequency * 5 + 4.7
+  return noise(px, pz) * 0.6 + noise(1.6 * px - 1.2 * pz + 2.3, 1.2 * px + 1.6 * pz + 6.1) * 0.3
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
-const link = (gl: WebGL2RenderingContext, vertexSource: string, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+const link = (
+  gl: WebGL2RenderingContext,
+  vertexSource: string,
+  fragmentSource: string,
+): Program | null => {
+  const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const total = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const total = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < total; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const toRgb = (hex: string): number[] => {
   let h = String(hex || '#ffffff')
     .replace('#', '')
-    .trim();
+    .trim()
   if (h.length === 3 || h.length === 4)
     h = h
       .slice(0, 3)
       .split('')
       .map(c => c + c)
-      .join('');
-  const num = parseInt(h.slice(0, 6), 16);
-  if (Number.isNaN(num)) return [1, 1, 1];
-  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
-};
+      .join('')
+  const num = parseInt(h.slice(0, 6), 16)
+  if (Number.isNaN(num)) return [1, 1, 1]
+  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255]
+}
 
 const orient = (yaw: number, pitch: number) => {
-  const cp = Math.cos(pitch);
-  const f = [Math.sin(yaw) * cp, -Math.sin(pitch), Math.cos(yaw) * cp];
-  const r = [Math.cos(yaw), 0, -Math.sin(yaw)];
-  const u = [f[1] * r[2] - f[2] * r[1], f[2] * r[0] - f[0] * r[2], f[0] * r[1] - f[1] * r[0]];
-  return { f, r, u };
-};
+  const cp = Math.cos(pitch)
+  const f = [Math.sin(yaw) * cp, -Math.sin(pitch), Math.cos(yaw) * cp]
+  const r = [Math.cos(yaw), 0, -Math.sin(yaw)]
+  const u = [f[1] * r[2] - f[2] * r[1], f[2] * r[0] - f[0] * r[2], f[0] * r[1] - f[1] * r[0]]
+  return { f, r, u }
+}
 
-const lens = (aspect: number) => clamp(0.4877 / aspect, FOV, 0.6);
+const lens = (aspect: number) => clamp(0.4877 / aspect, FOV, 0.6)
 
 const viewProjection = ({ eye, f, r, u }: Frame, aspect: number, out: Float32Array) => {
-  const t = 1 / lens(aspect);
-  const nf = 1 / (NEAR - FAR);
+  const t = 1 / lens(aspect)
+  const nf = 1 / (NEAR - FAR)
   const view = [
     r[0],
     u[0],
@@ -757,56 +766,73 @@ const viewProjection = ({ eye, f, r, u }: Frame, aspect: number, out: Float32Arr
     -(r[0] * eye[0] + r[1] * eye[1] + r[2] * eye[2]),
     -(u[0] * eye[0] + u[1] * eye[1] + u[2] * eye[2]),
     f[0] * eye[0] + f[1] * eye[1] + f[2] * eye[2],
-    1
-  ];
-  const projection = [t / aspect, 0, 0, 0, 0, t, 0, 0, 0, 0, (FAR + NEAR) * nf, -1, 0, 0, 2 * FAR * NEAR * nf, 0];
+    1,
+  ]
+  const projection = [
+    t / aspect,
+    0,
+    0,
+    0,
+    0,
+    t,
+    0,
+    0,
+    0,
+    0,
+    (FAR + NEAR) * nf,
+    -1,
+    0,
+    0,
+    2 * FAR * NEAR * nf,
+    0,
+  ]
   for (let c = 0; c < 4; c++) {
     for (let row = 0; row < 4; row++) {
-      let sum = 0;
-      for (let k = 0; k < 4; k++) sum += projection[k * 4 + row] * view[c * 4 + k];
-      out[c * 4 + row] = sum;
+      let sum = 0
+      for (let k = 0; k < 4; k++) sum += projection[k * 4 + row] * view[c * 4 + k]
+      out[c * 4 + row] = sum
     }
   }
-  return out;
-};
+  return out
+}
 interface Settings {
-  color: string;
-  lineCount: number;
-  lineWidth: number;
-  majorLines: boolean;
-  elevation: number;
-  foreground: number;
-  scale: number;
-  detail: number;
-  tilt: number;
-  speed: number;
-  direction: number[];
-  morph: number;
-  glow: number;
-  depthOfField: number;
-  fog: number;
-  brightness: number;
-  opacity: number;
-  mouseInteraction: boolean;
-  hoverEffect: TopographyHoverEffect;
-  mouseRadius: number;
-  mouseStrength: number;
-  trail: number;
-  parallax: number;
-  clickEffect: TopographyClickEffect;
-  markers: number;
-  glitch: number;
-  intro: boolean;
-  lightMode: boolean;
-  dpr?: number;
+  color: string
+  lineCount: number
+  lineWidth: number
+  majorLines: boolean
+  elevation: number
+  foreground: number
+  scale: number
+  detail: number
+  tilt: number
+  speed: number
+  direction: number[]
+  morph: number
+  glow: number
+  depthOfField: number
+  fog: number
+  brightness: number
+  opacity: number
+  mouseInteraction: boolean
+  hoverEffect: TopographyHoverEffect
+  mouseRadius: number
+  mouseStrength: number
+  trail: number
+  parallax: number
+  clickEffect: TopographyClickEffect
+  markers: number
+  glitch: number
+  intro: boolean
+  lightMode: boolean
+  dpr?: number
 }
 
 const Topography = (props: TopographyProps) => {
-  const [own] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wake: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  const [own] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wake: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
   // Upstream rebuilt this object each render and kept it in a ref; the memo
   // tracks the same props so per-render effects fire on the same changes.
@@ -830,7 +856,9 @@ const Topography = (props: TopographyProps) => {
       brightness: Math.max(0, props.brightness ?? 1),
       opacity: clamp(props.opacity ?? 1, 0, 1),
       mouseInteraction: props.mouseInteraction ?? true,
-      hoverEffect: HOVER_EFFECTS.includes(props.hoverEffect ?? 'lift') ? (props.hoverEffect ?? 'lift') : 'lift',
+      hoverEffect: HOVER_EFFECTS.includes(props.hoverEffect ?? 'lift')
+        ? (props.hoverEffect ?? 'lift')
+        : 'lift',
       mouseRadius: Math.max(0.1, props.mouseRadius ?? 1),
       mouseStrength: Math.max(0, props.mouseStrength ?? 0.6),
       trail: clamp(props.trail ?? 0.3, 0, 1),
@@ -840,801 +868,875 @@ const Topography = (props: TopographyProps) => {
       glitch: clamp(props.glitch ?? 0, 0, 1),
       intro: props.intro ?? true,
       lightMode: props.lightMode ?? false,
-      dpr: props.dpr
-    })
-  );
+      dpr: props.dpr,
+    }),
+  )
 
   // Upstream main effect deps: [generation] — re-creates the pipeline after a
   // WebGL context restore. Only the generation signal re-runs this effect;
   // every settings read below stays untracked (upstream read settingsRef).
   createEffect(() => {
-    generation();
+    generation()
     untrack(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
-    const ratio = Math.min(settings().dpr || window.devicePixelRatio || 1, 2);
-    const gl = canvas?.getContext('webgl2', {
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: ratio < 1.5,
-      depth: true,
-      stencil: false,
-      powerPreference: 'high-performance'
-    });
-    if (!container || !canvas || !gl) return undefined;
+      const container = containerRef
+      const canvas = canvasRef
+      const ratio = Math.min(settings().dpr || window.devicePixelRatio || 1, 2)
+      const gl = canvas?.getContext('webgl2', {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: ratio < 1.5,
+        depth: true,
+        stencil: false,
+        powerPreference: 'high-performance',
+      })
+      if (!container || !canvas || !gl) return undefined
 
-    const floatTargets = !!gl.getExtension('EXT_color_buffer_float');
-    const terrain = link(gl, terrainVertex(floatTargets), terrainFragment(floatTargets));
-    const fieldProgram = floatTargets ? link(gl, FULLSCREEN, FIELD) : null;
-    const sculptProgram = floatTargets ? link(gl, FULLSCREEN, SCULPT) : null;
-    const downProgram = link(gl, FULLSCREEN, DOWNSAMPLE);
-    const blurProgram = link(gl, FULLSCREEN, BLUR);
-    const compositeProgram = link(gl, FULLSCREEN, COMPOSITE);
-    const markerProgram = link(gl, MARKER_VERTEX, MARKER_FRAGMENT);
-    if (!terrain || !downProgram || !blurProgram || !compositeProgram || !markerProgram) return undefined;
+      const floatTargets = !!gl.getExtension('EXT_color_buffer_float')
+      const terrain = link(gl, terrainVertex(floatTargets), terrainFragment(floatTargets))
+      const fieldProgram = floatTargets ? link(gl, FULLSCREEN, FIELD) : null
+      const sculptProgram = floatTargets ? link(gl, FULLSCREEN, SCULPT) : null
+      const downProgram = link(gl, FULLSCREEN, DOWNSAMPLE)
+      const blurProgram = link(gl, FULLSCREEN, BLUR)
+      const compositeProgram = link(gl, FULLSCREEN, COMPOSITE)
+      const markerProgram = link(gl, MARKER_VERTEX, MARKER_FRAGMENT)
+      if (!terrain || !downProgram || !blurProgram || !compositeProgram || !markerProgram)
+        return undefined
 
-    const onContextLost = (event: Event) => event.preventDefault();
-    const onContextRestored = () => setGeneration(value => value + 1);
-    canvas.addEventListener('webglcontextlost', onContextLost);
-    canvas.addEventListener('webglcontextrestored', onContextRestored);
+      const onContextLost = (event: Event) => event.preventDefault()
+      const onContextRestored = () => setGeneration(value => value + 1)
+      canvas.addEventListener('webglcontextlost', onContextLost)
+      canvas.addEventListener('webglcontextrestored', onContextRestored)
 
-    const vao = gl.createVertexArray();
-    const format = floatTargets ? gl.RGBA16F : gl.RGBA8;
+      const vao = gl.createVertexArray()
+      const format = floatTargets ? gl.RGBA16F : gl.RGBA8
 
-    const createTexture = (width: number, height: number, internal: number, wrap: number) => {
-      const texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texStorage2D(gl.TEXTURE_2D, 1, internal, width, height);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
-      return texture;
-    };
-
-    const createTarget = (): Target => ({
-      texture: null,
-      framebuffer: gl.createFramebuffer(),
-      depth: null,
-      width: 0,
-      height: 0
-    });
-
-    const allocate = (target: Target, width: number, height: number, withDepth: boolean) => {
-      if (target.texture && target.width === width && target.height === height) return;
-      if (target.texture) gl.deleteTexture(target.texture);
-      target.texture = createTexture(width, height, format, gl.CLAMP_TO_EDGE);
-      target.width = width;
-      target.height = height;
-      gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.texture, 0);
-      if (withDepth) {
-        if (!target.depth) target.depth = gl.createRenderbuffer();
-        gl.bindRenderbuffer(gl.RENDERBUFFER, target.depth);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, target.depth);
-      }
-    };
-
-    const source = createTarget();
-    const levels = Array.from({ length: BLOOM_LEVELS }, () => [createTarget(), createTarget()]);
-    const sculpt = sculptProgram
-      ? [0, 1].map(() => {
-          const texture = createTexture(SCULPT_SIZE, SCULPT_SIZE, gl.RG16F, gl.REPEAT);
-          const framebuffer = gl.createFramebuffer();
-          gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          return { texture, framebuffer };
-        })
-      : null;
-    const blank = createTexture(1, 1, gl.RGBA8, gl.REPEAT);
-    const field: {
-      texture: WebGLTexture | null;
-      heights: WebGLTexture | null;
-      framebuffer: WebGLFramebuffer | null;
-      width: number;
-      height: number;
-    } = { texture: null, heights: null, framebuffer: gl.createFramebuffer(), width: 0, height: 0 };
-    let sculptIndex = 0;
-
-    const reserveField = (width: number, height: number) => {
-      if (field.texture && width <= field.width && height <= field.height) return;
-      if (field.texture) gl.deleteTexture(field.texture);
-      if (field.heights) gl.deleteTexture(field.heights);
-      field.width = Math.max(width, Math.ceil(field.width * 1.25), 64);
-      field.height = Math.max(height, Math.ceil(field.height * 1.25), 64);
-      field.texture = createTexture(field.width, field.height, gl.RGBA16F, gl.CLAMP_TO_EDGE);
-      field.heights = createTexture(field.width, field.height, gl.R32F, gl.CLAMP_TO_EDGE);
-      gl.bindTexture(gl.TEXTURE_2D, field.heights);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, field.framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, field.texture, 0);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, field.heights, 0);
-      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
-    };
-
-    const bind = (unit: number, texture: WebGLTexture | null) => {
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-    };
-
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const matrix = new Float32Array(16);
-    const pulseData = new Float32Array(MAX_PULSES * 4);
-    const glitchData = new Float32Array(12);
-    const glitch = { until: 0, next: 1.5, roll: 0, seed: 0 };
-    let entropy = 7919;
-    const random = () => {
-      entropy = (entropy * 16807) % 2147483647;
-      return (entropy - 1) / 2147483646;
-    };
-    const pulses: Pulse[] = [];
-    const pointer = { x: 0, y: 0, inside: false };
-    const view = { width: 1, height: 1, ratio: 1, cell: 0.05, cellKey: '' };
-    const state: TopographyState = {
-      intro: settings().intro && !reduce ? 0 : 1,
-      rise: 1,
-      travelX: 0,
-      travelZ: 0,
-      morph: 0,
-      yaw: 0,
-      pitch: 0,
-      yawVelocity: 0,
-      pitchVelocity: 0,
-      presence: 0,
-      focus: ORBIT,
-      hit: null,
-      brushFrom: null,
-      sculptLife: 0,
-      burst: null,
-      level: 0,
-      trace: 0,
-      clock: 0,
-      tilt: settings().tilt,
-      elevation: settings().elevation,
-      scale: settings().scale
-    };
-    state.rise = smoother(state.intro);
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let quiet = 0;
-
-    const camera = (): Frame => {
-      const pitch = Math.min((state.tilt * Math.PI) / 180 + state.pitch, Math.PI / 2 - 1e-4);
-      const frame = orient(state.yaw, pitch);
-      const lift = state.elevation * HEIGHT * state.rise * 0.18;
-      const clearance = state.elevation * HEIGHT * state.rise * 1.3 + 0.9;
-      const distance = Math.max(ORBIT, (clearance - lift) / Math.sin(pitch));
-      return {
-        ...frame,
-        distance,
-        eye: [-frame.f[0] * distance, lift - frame.f[1] * distance, -frame.f[2] * distance]
-      };
-    };
-
-    const rayDirection = (cam: Frame, nx: number, ny: number) => {
-      const aspect = view.width / view.height;
-      const t = lens(aspect);
-      const d = [0, 1, 2].map(i => cam.f[i] + cam.r[i] * nx * t * aspect + cam.u[i] * ny * t);
-      const length = Math.hypot(d[0], d[1], d[2]);
-      return d.map(v => v / length);
-    };
-
-    const along = (cam: Frame, d: number[]) => d[0] * cam.f[0] + d[1] * cam.f[1] + d[2] * cam.f[2];
-
-    const groundDepth = (cam: Frame, ny: number) => {
-      const d = rayDirection(cam, 0, ny);
-      if (d[1] > -1e-3) return Infinity;
-      return (cam.eye[1] / -d[1]) * along(cam, d);
-    };
-
-    const nearRange = (cam: Frame, s: Settings) => [groundDepth(cam, -1) * 0.9, cam.distance, s.foreground];
-
-    const settleAt = (cam: Frame, near: number[], x: number, z: number) => {
-      const depth = (x - cam.eye[0]) * cam.f[0] - cam.eye[1] * cam.f[1] + (z - cam.eye[2]) * cam.f[2];
-      return near[2] + (1 - near[2]) * smoother((depth - near[0]) / Math.max(near[1] - near[0], 1e-3));
-    };
-
-    const pick = (cam: Frame, s: Settings, nx: number, ny: number): Hit | null => {
-      const d = rayDirection(cam, nx, ny);
-      const height = state.elevation * HEIGHT * state.rise;
-      const frequency = FREQUENCY / state.scale;
-      const near = nearRange(cam, s);
-      const above = (distance: number) => {
-        const x = cam.eye[0] + d[0] * distance;
-        const z = cam.eye[2] + d[2] * distance;
-        const ground = relief(state.travelX + x, state.travelZ + z, frequency, state.morph * 0.37, state.morph * 0.23);
-        return cam.eye[1] + d[1] * distance - ground * height * settleAt(cam, near, x, z);
-      };
-      let distance = NEAR;
-      let gap = above(distance);
-      for (let i = 0; i < 200 && distance < FAR * 0.5; i++) {
-        const next = distance + Math.max(0.02, gap * 0.4);
-        const value = above(next);
-        if (value < 0) {
-          let lo = distance;
-          let hi = next;
-          for (let k = 0; k < 10; k++) {
-            const mid = (lo + hi) * 0.5;
-            if (above(mid) < 0) hi = mid;
-            else lo = mid;
-          }
-          return {
-            x: state.travelX + cam.eye[0] + d[0] * hi,
-            y: cam.eye[1] + d[1] * hi,
-            z: state.travelZ + cam.eye[2] + d[2] * hi,
-            depth: hi * along(cam, d)
-          };
-        }
-        distance = next;
-        gap = value;
-      }
-      return null;
-    };
-
-    const footprint = (cam: Frame, s: Settings, fadeEnd: number) => {
-      const ceiling = state.elevation * HEIGHT * state.rise * 1.7 + 0.2 + s.mouseStrength;
-      const box: Box = { minX: Infinity, maxX: -Infinity, minZ: Infinity, maxZ: -Infinity, near: Infinity };
-      const add = (d: number[], distance: number) => {
-        const x = cam.eye[0] + d[0] * distance;
-        const z = cam.eye[2] + d[2] * distance;
-        box.minX = Math.min(box.minX, x);
-        box.maxX = Math.max(box.maxX, x);
-        box.minZ = Math.min(box.minZ, z);
-        box.maxZ = Math.max(box.maxZ, z);
-      };
-      for (const nx of [-1.08, 0, 1.08]) {
-        for (const ny of [-1.08, 1.08]) {
-          const d = rayDirection(cam, nx, ny);
-          const forward = Math.max(along(cam, d), 1e-3);
-          let near = NEAR;
-          let far = (fadeEnd * 1.05) / forward;
-          if (d[1] < -1e-4) {
-            near = Math.max(NEAR, (cam.eye[1] - ceiling) / -d[1]);
-            far = Math.min(far, cam.eye[1] / -d[1]);
-          }
-          near = Math.min(near, far);
-          add(d, near);
-          add(d, far);
-          box.near = Math.min(box.near, near * forward);
-        }
-      }
-      return box;
-    };
-
-    const grid = (box: Box, cell: number) => {
-      const camX = Math.floor(state.travelX / cell);
-      const camZ = Math.floor(state.travelZ / cell);
-      const fracX = state.travelX - camX * cell;
-      const fracZ = state.travelZ - camZ * cell;
-      const k0 = Math.floor((box.minX + fracX) / cell) - 2;
-      const m0 = Math.floor((box.minZ + fracZ) / cell) - 2;
-      const columns = clamp(Math.ceil((box.maxX + fracX) / cell) + 2 - k0, 1, 4000);
-      const rows = clamp(Math.ceil((box.maxZ + fracZ) / cell) + 2 - m0, 1, Math.floor((MAX_CELLS * 1.5) / columns));
-      return { cell, camX, camZ, fracX, fracZ, k0, m0, columns, rows };
-    };
-
-    const render = () => {
-      const s = settings();
-      const cam = camera();
-      viewProjection(cam, view.width / view.height, matrix);
-
-      const bottom = groundDepth(cam, -1);
-      const top = Math.min(groundDepth(cam, 1), cam.distance * 3.2);
-      const horizon = Math.max(top, bottom * 1.6, cam.distance * 1.4);
-      const fadeEnd = horizon + (bottom * 1.8 - horizon) * s.fog;
-      const fadeStart = fadeEnd * 0.7 + (bottom * 0.7 - fadeEnd * 0.7) * s.fog;
-      const box = footprint(cam, s, fadeEnd);
-
-      const cellKey = `${view.width}x${view.height}@${view.ratio}|${Math.round(state.tilt / 4)}|${Math.round(state.elevation * 5)}|${s.fog}`;
-      if (cellKey !== view.cellKey) {
-        view.cellKey = cellKey;
-        const focal = (view.height * view.ratio * 0.5) / lens(view.width / view.height);
-        let cell = clamp((14 * Math.max(box.near, 0.5)) / focal, 0.02, 0.4);
-        const cells = ((box.maxX - box.minX) * (box.maxZ - box.minZ)) / (cell * cell);
-        if (cells > MAX_CELLS) cell *= Math.sqrt(cells / MAX_CELLS);
-        view.cell = cell;
+      const createTexture = (width: number, height: number, internal: number, wrap: number) => {
+        const texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texStorage2D(gl.TEXTURE_2D, 1, internal, width, height)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap)
+        return texture
       }
 
-      const color = toRgb(s.color);
-      const height = state.elevation * HEIGHT * state.rise;
-      const layout = grid(box, view.cell);
-      const near = nearRange(cam, s);
-      const dots = s.markers >= 0 ? grid(box, MARKER_SPACING) : null;
-      const touch = state.hit && s.mouseInteraction ? state.presence : 0;
-      const heatStrength = touch * (0.35 + 0.5 * s.mouseStrength);
-      const focusScale = s.depthOfField * view.height * 0.016;
-      const reveal = smoother(state.intro / 0.35);
-      const hitX = state.hit ? state.hit.x : 0;
-      const hitZ = state.hit ? state.hit.z : 0;
+      const createTarget = (): Target => ({
+        texture: null,
+        framebuffer: gl.createFramebuffer(),
+        depth: null,
+        width: 0,
+        height: 0,
+      })
 
-      pulseData.fill(0);
-      pulses.forEach((p, i) => {
-        pulseData.set([p.x, p.z, p.age * 4.2, Math.exp(-p.age * 1.1) * smoother(p.age / 0.08)], i * 4);
-      });
-
-      gl.bindVertexArray(vao);
-      if (fieldProgram) {
-        const width = layout.columns + 7;
-        const height2 = layout.rows + 7;
-        reserveField(width, height2);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, field.framebuffer);
-        gl.viewport(0, 0, width, height2);
-        gl.useProgram(fieldProgram.program);
-        const f = fieldProgram.uniforms;
-        bind(0, sculpt ? sculpt[sculptIndex].texture : blank);
-        gl.uniform1i(f.uSculpt, 0);
-        gl.uniform1f(f.uSculptOn, sculpt ? 1 : 0);
-        gl.uniform1f(f.uFrequency, FREQUENCY / state.scale);
-        gl.uniform2f(f.uMorph, state.morph * 0.37, state.morph * 0.23);
-        gl.uniform4fv(f.uPulses, pulseData);
-        gl.uniform2i(f.uBase, layout.k0 - 2 + layout.camX, layout.m0 - 2 + layout.camZ);
-        gl.uniform1f(f.uCell, layout.cell);
-        gl.uniform1f(f.uDetail, s.detail);
-        gl.disable(gl.DEPTH_TEST);
-        gl.disable(gl.BLEND);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-      }
-
-      const drawTerrain = (pixel: number, width: number, targetHeight: number, stride: number) => {
-        gl.viewport(0, 0, width, targetHeight);
-        gl.useProgram(terrain.program);
-        const u = terrain.uniforms;
-        bind(0, fieldProgram ? field.texture : blank);
-        gl.uniform1i(u.uField, 0);
-        bind(1, fieldProgram ? field.heights : blank);
-        gl.uniform1i(u.uHeightField, 1);
-        gl.uniform1f(u.uFrequency, FREQUENCY / state.scale);
-        gl.uniform2f(u.uMorph, state.morph * 0.37, state.morph * 0.23);
-        gl.uniform4fv(u.uPulses, pulseData);
-        gl.uniform2i(u.uOrigin, layout.k0, layout.m0);
-        gl.uniform2i(u.uCamCell, layout.camX, layout.camZ);
-        gl.uniform2f(u.uCamFrac, layout.fracX, layout.fracZ);
-        gl.uniform1f(u.uCell, layout.cell);
-        gl.uniform1i(u.uStride, stride);
-        gl.uniform1f(u.uHeight, height);
-        gl.uniform3fv(u.uEye, cam.eye);
-        gl.uniform3fv(u.uForward, cam.f);
-        gl.uniform3fv(u.uNear, near);
-        gl.uniform1f(u.uRefDepth, cam.distance);
-        gl.uniformMatrix4fv(u.uViewProj, false, matrix);
-        gl.uniform1f(u.uDetail, s.detail);
-        gl.uniform1f(u.uLines, s.lineCount);
-        gl.uniform1f(u.uLineWidth, s.lineWidth * pixel);
-        gl.uniform1f(u.uMajor, s.majorLines ? 1 : 0);
-        gl.uniform3fv(u.uColor, color);
-        gl.uniform1f(u.uBrightness, s.brightness);
-        gl.uniform2f(u.uFade, fadeStart, fadeEnd);
-        gl.uniform3f(u.uFocus, state.focus, focusScale * pixel, view.height * 0.03 * pixel);
-        gl.uniform4f(u.uHeat, hitX, hitZ, 0.9 * s.mouseRadius, heatStrength);
-        gl.uniform4f(u.uLamp, hitX, state.hit ? state.hit.y + 1.4 : 0, hitZ, heatStrength);
-        gl.uniform4f(u.uTrace, state.level, state.trace, hitX, hitZ);
-        gl.uniform3fv(u.uSun, SUN);
-        gl.uniform1f(u.uReveal, reveal);
-        gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0);
-        gl.uniform1f(u.uOpacity, s.opacity);
-        gl.uniform4fv(u.uGlitch, glitchData);
-        gl.uniform1f(u.uGlitchSeed, glitch.seed);
-        gl.uniform1f(u.uPixel, pixel);
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LESS);
-        gl.disable(gl.BLEND);
-        gl.clearColor(0, 0, 0, 0);
-        gl.clearDepth(1);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.drawArraysInstanced(
-          gl.TRIANGLE_STRIP,
+      const allocate = (target: Target, width: number, height: number, withDepth: boolean) => {
+        if (target.texture && target.width === width && target.height === height) return
+        if (target.texture) gl.deleteTexture(target.texture)
+        target.texture = createTexture(width, height, format, gl.CLAMP_TO_EDGE)
+        target.width = width
+        target.height = height
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer)
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          gl.COLOR_ATTACHMENT0,
+          gl.TEXTURE_2D,
+          target.texture,
           0,
-          2 * (Math.ceil(layout.columns / stride) + 1),
-          Math.ceil(layout.rows / stride)
-        );
-        if (dots) {
-          gl.useProgram(markerProgram.program);
-          const m = markerProgram.uniforms;
-          bind(2, sculpt ? sculpt[sculptIndex].texture : blank);
-          gl.uniform1i(m.uSculpt, 2);
-          gl.uniform1f(m.uSculptOn, sculpt ? 1 : 0);
-          gl.uniform1f(m.uFrequency, FREQUENCY / state.scale);
-          gl.uniform2f(m.uMorph, state.morph * 0.37, state.morph * 0.23);
-          gl.uniform4fv(m.uPulses, pulseData);
-          gl.uniform3fv(m.uEye, cam.eye);
-          gl.uniform3fv(m.uForward, cam.f);
-          gl.uniform3fv(m.uNear, near);
-          gl.uniform2i(m.uOrigin, dots.k0, dots.m0);
-          gl.uniform2i(m.uCamCell, dots.camX, dots.camZ);
-          gl.uniform2f(m.uCamFrac, dots.fracX, dots.fracZ);
-          gl.uniform1f(m.uSpacing, dots.cell);
-          gl.uniform1i(m.uColumns, dots.columns + 1);
-          gl.uniform1f(m.uHeight, height);
-          gl.uniformMatrix4fv(m.uViewProj, false, matrix);
-          gl.uniform2f(m.uView, width, targetHeight);
-          gl.uniform1f(m.uSize, 4 * pixel);
-          gl.uniform1f(m.uRefDepth, cam.distance);
-          gl.uniform4f(m.uHeat, hitX, hitZ, 1.2 * s.mouseRadius, heatStrength);
-          gl.uniform1f(m.uTime, state.clock);
-          gl.uniform4fv(m.uGlitch, glitchData);
-          gl.uniform1f(m.uPixel, pixel);
-          gl.uniform3fv(m.uColor, color);
-          gl.uniform2f(m.uFade, fadeStart, fadeEnd);
-          gl.uniform1f(m.uReveal, reveal);
-          gl.uniform1f(m.uBrightness, s.brightness);
-          gl.uniform1f(m.uLightMode, s.lightMode ? 1 : 0);
-          gl.uniform1f(m.uOpacity, s.opacity);
-          gl.uniform1f(m.uStyle, s.markers);
-          gl.depthFunc(gl.LEQUAL);
-          gl.depthMask(false);
-          gl.enable(gl.BLEND);
-          gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-          gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, (dots.columns + 1) * (dots.rows + 1));
-          gl.disable(gl.BLEND);
-          gl.depthMask(true);
+        )
+        if (withDepth) {
+          if (!target.depth) target.depth = gl.createRenderbuffer()
+          gl.bindRenderbuffer(gl.RENDERBUFFER, target.depth)
+          gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, width, height)
+          gl.framebufferRenderbuffer(
+            gl.FRAMEBUFFER,
+            gl.DEPTH_ATTACHMENT,
+            gl.RENDERBUFFER,
+            target.depth,
+          )
         }
-        gl.disable(gl.DEPTH_TEST);
-      };
-
-      const bloom = s.glow > 0.001;
-      if (bloom) {
-        const width = Math.max(1, Math.round(view.width / 2));
-        const targetHeight = Math.max(1, Math.round(view.height / 2));
-        allocate(source, width, targetHeight, true);
-        levels.forEach((pair, index) => {
-          const w = Math.max(1, Math.round(view.width / 2 ** (index + 2)));
-          const h = Math.max(1, Math.round(view.height / 2 ** (index + 2)));
-          allocate(pair[0], w, h, false);
-          allocate(pair[1], w, h, false);
-        });
-        gl.bindFramebuffer(gl.FRAMEBUFFER, source.framebuffer);
-        drawTerrain(0.5, width, targetHeight, 2);
-        let from = source;
-        levels.forEach(([front, back]) => {
-          gl.bindFramebuffer(gl.FRAMEBUFFER, front.framebuffer);
-          gl.viewport(0, 0, front.width, front.height);
-          gl.useProgram(downProgram.program);
-          bind(0, from.texture);
-          gl.uniform1i(downProgram.uniforms.uSource, 0);
-          gl.uniform2f(downProgram.uniforms.uTarget, front.width, front.height);
-          gl.uniform2f(downProgram.uniforms.uTexel, 1 / from.width, 1 / from.height);
-          gl.drawArrays(gl.TRIANGLES, 0, 3);
-          gl.useProgram(blurProgram.program);
-          gl.uniform1i(blurProgram.uniforms.uSource, 0);
-          gl.uniform2f(blurProgram.uniforms.uTarget, back.width, back.height);
-          gl.bindFramebuffer(gl.FRAMEBUFFER, back.framebuffer);
-          bind(0, front.texture);
-          gl.uniform2f(blurProgram.uniforms.uStep, 1 / front.width, 0);
-          gl.drawArrays(gl.TRIANGLES, 0, 3);
-          gl.bindFramebuffer(gl.FRAMEBUFFER, front.framebuffer);
-          bind(0, back.texture);
-          gl.uniform2f(blurProgram.uniforms.uStep, 0, 1 / back.height);
-          gl.drawArrays(gl.TRIANGLES, 0, 3);
-          from = front;
-        });
       }
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      drawTerrain(view.ratio, canvas.width, canvas.height, 1);
+      const source = createTarget()
+      const levels = Array.from({ length: BLOOM_LEVELS }, () => [createTarget(), createTarget()])
+      const sculpt = sculptProgram
+        ? [0, 1].map(() => {
+            const texture = createTexture(SCULPT_SIZE, SCULPT_SIZE, gl.RG16F, gl.REPEAT)
+            const framebuffer = gl.createFramebuffer()
+            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+            gl.clearColor(0, 0, 0, 0)
+            gl.clear(gl.COLOR_BUFFER_BIT)
+            return { texture, framebuffer }
+          })
+        : null
+      const blank = createTexture(1, 1, gl.RGBA8, gl.REPEAT)
+      const field: {
+        texture: WebGLTexture | null
+        heights: WebGLTexture | null
+        framebuffer: WebGLFramebuffer | null
+        width: number
+        height: number
+      } = { texture: null, heights: null, framebuffer: gl.createFramebuffer(), width: 0, height: 0 }
+      let sculptIndex = 0
 
-      if (bloom) {
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(compositeProgram.program);
-        const c = compositeProgram.uniforms;
-        levels.forEach(([front], index) => {
-          bind(index, front.texture);
-          gl.uniform1i(c[`uBloom${index}`], index);
-        });
-        gl.uniform2f(c.uView, canvas.width, canvas.height);
-        gl.uniform1f(c.uGlow, s.glow * reveal);
-        gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0);
-        gl.enable(gl.BLEND);
-        if (s.lightMode) gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-        else gl.blendFunc(gl.ONE, gl.ONE);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        gl.disable(gl.BLEND);
+      const reserveField = (width: number, height: number) => {
+        if (field.texture && width <= field.width && height <= field.height) return
+        if (field.texture) gl.deleteTexture(field.texture)
+        if (field.heights) gl.deleteTexture(field.heights)
+        field.width = Math.max(width, Math.ceil(field.width * 1.25), 64)
+        field.height = Math.max(height, Math.ceil(field.height * 1.25), 64)
+        field.texture = createTexture(field.width, field.height, gl.RGBA16F, gl.CLAMP_TO_EDGE)
+        field.heights = createTexture(field.width, field.height, gl.R32F, gl.CLAMP_TO_EDGE)
+        gl.bindTexture(gl.TEXTURE_2D, field.heights)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, field.framebuffer)
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          gl.COLOR_ATTACHMENT0,
+          gl.TEXTURE_2D,
+          field.texture,
+          0,
+        )
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          gl.COLOR_ATTACHMENT1,
+          gl.TEXTURE_2D,
+          field.heights,
+          0,
+        )
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1])
       }
-      for (let unit = BLOOM_LEVELS; unit >= 0; unit--) bind(unit, null);
-    };
 
-    const updateSculpt = (s: Settings, dt: number) => {
-      if (!sculpt || !sculptProgram) return false;
-      const brush = s.mouseInteraction && s.hoverEffect === 'lift' && state.presence > 0.001 ? state.hit : null;
-      const burst = state.burst;
-      if (!brush && !burst && state.sculptLife <= 0) return false;
-      const from = state.brushFrom || brush;
-      const read = sculpt[sculptIndex];
-      const write = sculpt[1 - sculptIndex];
-      gl.bindFramebuffer(gl.FRAMEBUFFER, write.framebuffer);
-      gl.viewport(0, 0, SCULPT_SIZE, SCULPT_SIZE);
-      gl.useProgram(sculptProgram.program);
-      const u = sculptProgram.uniforms;
-      bind(0, read.texture);
-      gl.uniform1i(u.uPrevious, 0);
-      if (brush && from) gl.uniform4f(u.uSegment, from.x, from.z, brush.x, brush.z);
-      else gl.uniform4f(u.uSegment, 0, 0, 0, 0);
-      gl.uniform4f(
-        u.uBrush,
-        1.1 * s.mouseRadius,
-        0.9 * s.mouseStrength,
-        1 - Math.exp(-dt * 7),
-        brush ? state.presence : 0
-      );
-      if (burst) {
-        const before = smoother(burst.age / 0.7);
-        burst.age += dt;
-        const amount = (smoother(burst.age / 0.7) - before) * 0.9 * Math.max(s.mouseStrength, 0.3);
-        gl.uniform4f(u.uBurst, burst.x, burst.z, 1.6 * s.mouseRadius, amount);
-        if (burst.age >= 0.7) state.burst = null;
-      } else {
-        gl.uniform4f(u.uBurst, 0, 0, 1, 0);
+      const bind = (unit: number, texture: WebGLTexture | null) => {
+        gl.activeTexture(gl.TEXTURE0 + unit)
+        gl.bindTexture(gl.TEXTURE_2D, texture)
       }
-      const tau = 0.25 + 3 * s.trail * s.trail;
-      gl.uniform2f(u.uDecay, Math.exp(-dt / tau), Math.exp(-dt / 0.7));
-      gl.disable(gl.BLEND);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      sculptIndex = 1 - sculptIndex;
-      state.brushFrom = brush ? { x: brush.x, z: brush.z } : null;
-      if (brush || burst) state.sculptLife = tau * 6;
-      else state.sculptLife -= dt;
-      return true;
-    };
 
-    let sizedDpr = settings().dpr;
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+      const matrix = new Float32Array(16)
+      const pulseData = new Float32Array(MAX_PULSES * 4)
+      const glitchData = new Float32Array(12)
+      const glitch = { until: 0, next: 1.5, roll: 0, seed: 0 }
+      let entropy = 7919
+      const random = () => {
+        entropy = (entropy * 16807) % 2147483647
+        return (entropy - 1) / 2147483646
+      }
+      const pulses: Pulse[] = []
+      const pointer = { x: 0, y: 0, inside: false }
+      const view = { width: 1, height: 1, ratio: 1, cell: 0.05, cellKey: '' }
+      const state: TopographyState = {
+        intro: settings().intro && !reduce ? 0 : 1,
+        rise: 1,
+        travelX: 0,
+        travelZ: 0,
+        morph: 0,
+        yaw: 0,
+        pitch: 0,
+        yawVelocity: 0,
+        pitchVelocity: 0,
+        presence: 0,
+        focus: ORBIT,
+        hit: null,
+        brushFrom: null,
+        sculptLife: 0,
+        burst: null,
+        level: 0,
+        trace: 0,
+        clock: 0,
+        tilt: settings().tilt,
+        elevation: settings().elevation,
+        scale: settings().scale,
+      }
+      state.rise = smoother(state.intro)
+      let raf = 0
+      let last = 0
+      let visible = true
+      let quiet = 0
 
-    const resize = () => {
-      const s = settings();
-      sizedDpr = s.dpr;
-      view.width = Math.max(1, container.clientWidth);
-      view.height = Math.max(1, container.clientHeight);
-      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(view.width * view.ratio));
-      canvas.height = Math.max(1, Math.round(view.height * view.ratio));
-      render();
-      wakeFn();
-    };
-
-    const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settings();
-      if (s.dpr !== sizedDpr) resize();
-      const dt = last ? clamp((now - last) / 1000, 0, 1 / 20) : 1 / 60;
-      last = now;
-
-      if (!s.intro || reduce) state.intro = 1;
-      else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS);
-      state.rise = smoother(state.intro);
-      const ease = reduce ? 1 : 1 - Math.exp(-dt / 0.4);
-      state.tilt += (s.tilt - state.tilt) * ease;
-      state.elevation += (s.elevation - state.elevation) * ease;
-      state.scale = s.scale;
-
-      state.clock += dt;
-      const glitching = reduce ? 0 : s.glitch;
-      if (glitching > 0) {
-        if (state.clock >= glitch.next && state.clock >= glitch.until) {
-          glitch.until = state.clock + 0.1 + random() * 0.22 * (0.5 + glitching);
-          glitch.next = glitch.until + (9 - 7.4 * glitching) * (0.45 + random() * 1.1);
-          glitch.roll = 0;
+      const camera = (): Frame => {
+        const pitch = Math.min((state.tilt * Math.PI) / 180 + state.pitch, Math.PI / 2 - 1e-4)
+        const frame = orient(state.yaw, pitch)
+        const lift = state.elevation * HEIGHT * state.rise * 0.18
+        const clearance = state.elevation * HEIGHT * state.rise * 1.3 + 0.9
+        const distance = Math.max(ORBIT, (clearance - lift) / Math.sin(pitch))
+        return {
+          ...frame,
+          distance,
+          eye: [-frame.f[0] * distance, lift - frame.f[1] * distance, -frame.f[2] * distance],
         }
-        if (state.clock < glitch.until) {
-          if (state.clock >= glitch.roll) {
-            glitchData.fill(0);
-            const count = 1 + Math.floor(random() * 3);
-            for (let i = 0; i < count; i++) {
-              const band = 3 + random() * random() * view.height * 0.14;
-              const y = random() * view.height;
-              const shift = (random() - 0.5) * 2 * (10 + 46 * glitching);
-              glitchData.set([y, y + band, shift, 1 + random() * 3 * glitching], i * 4);
+      }
+
+      const rayDirection = (cam: Frame, nx: number, ny: number) => {
+        const aspect = view.width / view.height
+        const t = lens(aspect)
+        const d = [0, 1, 2].map(i => cam.f[i] + cam.r[i] * nx * t * aspect + cam.u[i] * ny * t)
+        const length = Math.hypot(d[0], d[1], d[2])
+        return d.map(v => v / length)
+      }
+
+      const along = (cam: Frame, d: number[]) => d[0] * cam.f[0] + d[1] * cam.f[1] + d[2] * cam.f[2]
+
+      const groundDepth = (cam: Frame, ny: number) => {
+        const d = rayDirection(cam, 0, ny)
+        if (d[1] > -1e-3) return Infinity
+        return (cam.eye[1] / -d[1]) * along(cam, d)
+      }
+
+      const nearRange = (cam: Frame, s: Settings) => [
+        groundDepth(cam, -1) * 0.9,
+        cam.distance,
+        s.foreground,
+      ]
+
+      const settleAt = (cam: Frame, near: number[], x: number, z: number) => {
+        const depth =
+          (x - cam.eye[0]) * cam.f[0] - cam.eye[1] * cam.f[1] + (z - cam.eye[2]) * cam.f[2]
+        return (
+          near[2] + (1 - near[2]) * smoother((depth - near[0]) / Math.max(near[1] - near[0], 1e-3))
+        )
+      }
+
+      const pick = (cam: Frame, s: Settings, nx: number, ny: number): Hit | null => {
+        const d = rayDirection(cam, nx, ny)
+        const height = state.elevation * HEIGHT * state.rise
+        const frequency = FREQUENCY / state.scale
+        const near = nearRange(cam, s)
+        const above = (distance: number) => {
+          const x = cam.eye[0] + d[0] * distance
+          const z = cam.eye[2] + d[2] * distance
+          const ground = relief(
+            state.travelX + x,
+            state.travelZ + z,
+            frequency,
+            state.morph * 0.37,
+            state.morph * 0.23,
+          )
+          return cam.eye[1] + d[1] * distance - ground * height * settleAt(cam, near, x, z)
+        }
+        let distance = NEAR
+        let gap = above(distance)
+        for (let i = 0; i < 200 && distance < FAR * 0.5; i++) {
+          const next = distance + Math.max(0.02, gap * 0.4)
+          const value = above(next)
+          if (value < 0) {
+            let lo = distance
+            let hi = next
+            for (let k = 0; k < 10; k++) {
+              const mid = (lo + hi) * 0.5
+              if (above(mid) < 0) hi = mid
+              else lo = mid
             }
-            glitch.seed = random();
-            glitch.roll = state.clock + 0.04 + random() * 0.05;
+            return {
+              x: state.travelX + cam.eye[0] + d[0] * hi,
+              y: cam.eye[1] + d[1] * hi,
+              z: state.travelZ + cam.eye[2] + d[2] * hi,
+              depth: hi * along(cam, d),
+            }
           }
-        } else glitchData.fill(0);
-      } else glitchData.fill(0);
-
-      if (!reduce) {
-        state.travelX += s.direction[0] * s.speed * 0.8 * dt;
-        state.travelZ += s.direction[1] * s.speed * 0.8 * dt;
-        state.morph += s.morph * 0.12 * dt;
-      }
-
-      const engaged = pointer.inside && s.mouseInteraction;
-      state.presence += ((engaged ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / (engaged ? 0.18 : 0.45)));
-
-      const nx = (pointer.x / view.width) * 2 - 1;
-      const ny = 1 - (pointer.y / view.height) * 2;
-      const lean = reduce || !engaged ? 0 : s.parallax;
-      const targetYaw = nx * lean * 0.09;
-      const targetPitch = -ny * lean * 0.045;
-      state.yawVelocity += (38 * (targetYaw - state.yaw) - 11 * state.yawVelocity) * dt;
-      state.pitchVelocity += (38 * (targetPitch - state.pitch) - 11 * state.pitchVelocity) * dt;
-      state.yaw += state.yawVelocity * dt;
-      state.pitch += state.pitchVelocity * dt;
-
-      const cam = camera();
-      if (engaged) {
-        state.hit = pick(cam, s, nx, ny);
-        if (state.hit && state.brushFrom) {
-          const jump = Math.hypot(state.hit.x - state.brushFrom.x, state.hit.z - state.brushFrom.z);
-          if (jump > 3 * s.mouseRadius) state.brushFrom = null;
+          distance = next
+          gap = value
         }
-      } else if (state.presence < 0.002) {
-        state.hit = null;
-        state.brushFrom = null;
+        return null
       }
 
-      const tracing = state.hit && s.mouseInteraction && s.hoverEffect === 'trace' ? state.presence : 0;
-      if (state.hit) {
-        const frequency = FREQUENCY / state.scale;
-        const target =
-          relief(state.hit.x, state.hit.z, frequency, state.morph * 0.37, state.morph * 0.23) +
-          s.detail * 0.1 * fineDetail(state.hit.x, state.hit.z, frequency);
-        state.level = state.trace < 0.01 ? target : state.level + (target - state.level) * (1 - Math.exp(-dt / 0.09));
+      const footprint = (cam: Frame, s: Settings, fadeEnd: number) => {
+        const ceiling = state.elevation * HEIGHT * state.rise * 1.7 + 0.2 + s.mouseStrength
+        const box: Box = {
+          minX: Infinity,
+          maxX: -Infinity,
+          minZ: Infinity,
+          maxZ: -Infinity,
+          near: Infinity,
+        }
+        const add = (d: number[], distance: number) => {
+          const x = cam.eye[0] + d[0] * distance
+          const z = cam.eye[2] + d[2] * distance
+          box.minX = Math.min(box.minX, x)
+          box.maxX = Math.max(box.maxX, x)
+          box.minZ = Math.min(box.minZ, z)
+          box.maxZ = Math.max(box.maxZ, z)
+        }
+        for (const nx of [-1.08, 0, 1.08]) {
+          for (const ny of [-1.08, 1.08]) {
+            const d = rayDirection(cam, nx, ny)
+            const forward = Math.max(along(cam, d), 1e-3)
+            let near = NEAR
+            let far = (fadeEnd * 1.05) / forward
+            if (d[1] < -1e-4) {
+              near = Math.max(NEAR, (cam.eye[1] - ceiling) / -d[1])
+              far = Math.min(far, cam.eye[1] / -d[1])
+            }
+            near = Math.min(near, far)
+            add(d, near)
+            add(d, far)
+            box.near = Math.min(box.near, near * forward)
+          }
+        }
+        return box
       }
-      state.trace += (tracing - state.trace) * (1 - Math.exp(-dt / 0.2));
 
-      const focusTarget = state.hit && s.depthOfField > 0 ? state.hit.depth : cam.distance;
-      state.focus += (focusTarget - state.focus) * (1 - Math.exp(-dt / 0.35));
-
-      for (let i = pulses.length - 1; i >= 0; i--) {
-        pulses[i].age += dt;
-        if (pulses[i].age > 4) pulses.splice(i, 1);
+      const grid = (box: Box, cell: number) => {
+        const camX = Math.floor(state.travelX / cell)
+        const camZ = Math.floor(state.travelZ / cell)
+        const fracX = state.travelX - camX * cell
+        const fracZ = state.travelZ - camZ * cell
+        const k0 = Math.floor((box.minX + fracX) / cell) - 2
+        const m0 = Math.floor((box.minZ + fracZ) / cell) - 2
+        const columns = clamp(Math.ceil((box.maxX + fracX) / cell) + 2 - k0, 1, 4000)
+        const rows = clamp(
+          Math.ceil((box.maxZ + fracZ) / cell) + 2 - m0,
+          1,
+          Math.floor((MAX_CELLS * 1.5) / columns),
+        )
+        return { cell, camX, camZ, fracX, fracZ, k0, m0, columns, rows }
       }
 
-      const sculpting = updateSculpt(s, dt);
-      render();
+      const render = () => {
+        const s = settings()
+        const cam = camera()
+        viewProjection(cam, view.width / view.height, matrix)
 
-      const settling =
-        Math.abs(s.tilt - state.tilt) > 0.01 ||
-        Math.abs(s.elevation - state.elevation) > 1e-4 ||
-        Math.abs(state.yaw - targetYaw) > 1e-4 ||
-        Math.abs(state.pitch - targetPitch) > 1e-4 ||
-        Math.abs(state.yawVelocity) > 1e-4 ||
-        Math.abs(state.pitchVelocity) > 1e-4 ||
-        Math.abs(focusTarget - state.focus) > 1e-3 ||
-        Math.abs(tracing - state.trace) > 1e-3;
-      const busy =
-        (!reduce && (s.speed !== 0 || s.morph !== 0 || s.glitch > 0 || s.markers >= 0)) ||
-        state.intro < 1 ||
-        pulses.length > 0 ||
-        sculpting ||
-        settling ||
-        (state.presence > 0.001 && state.presence < 0.999);
-      quiet = busy ? 0 : quiet + dt;
-      if (quiet < 0.5) raf = requestAnimationFrame(frame);
-    };
+        const bottom = groundDepth(cam, -1)
+        const top = Math.min(groundDepth(cam, 1), cam.distance * 3.2)
+        const horizon = Math.max(top, bottom * 1.6, cam.distance * 1.4)
+        const fadeEnd = horizon + (bottom * 1.8 - horizon) * s.fog
+        const fadeStart = fadeEnd * 0.7 + (bottom * 0.7 - fadeEnd * 0.7) * s.fog
+        const box = footprint(cam, s, fadeEnd)
 
-    const wakeFn = () => {
-      quiet = 0;
-      if (!raf && visible && !document.hidden) {
-        last = 0;
-        raf = requestAnimationFrame(frame);
+        const cellKey = `${view.width}x${view.height}@${view.ratio}|${Math.round(state.tilt / 4)}|${Math.round(state.elevation * 5)}|${s.fog}`
+        if (cellKey !== view.cellKey) {
+          view.cellKey = cellKey
+          const focal = (view.height * view.ratio * 0.5) / lens(view.width / view.height)
+          let cell = clamp((14 * Math.max(box.near, 0.5)) / focal, 0.02, 0.4)
+          const cells = ((box.maxX - box.minX) * (box.maxZ - box.minZ)) / (cell * cell)
+          if (cells > MAX_CELLS) cell *= Math.sqrt(cells / MAX_CELLS)
+          view.cell = cell
+        }
+
+        const color = toRgb(s.color)
+        const height = state.elevation * HEIGHT * state.rise
+        const layout = grid(box, view.cell)
+        const near = nearRange(cam, s)
+        const dots = s.markers >= 0 ? grid(box, MARKER_SPACING) : null
+        const touch = state.hit && s.mouseInteraction ? state.presence : 0
+        const heatStrength = touch * (0.35 + 0.5 * s.mouseStrength)
+        const focusScale = s.depthOfField * view.height * 0.016
+        const reveal = smoother(state.intro / 0.35)
+        const hitX = state.hit ? state.hit.x : 0
+        const hitZ = state.hit ? state.hit.z : 0
+
+        pulseData.fill(0)
+        pulses.forEach((p, i) => {
+          pulseData.set(
+            [p.x, p.z, p.age * 4.2, Math.exp(-p.age * 1.1) * smoother(p.age / 0.08)],
+            i * 4,
+          )
+        })
+
+        gl.bindVertexArray(vao)
+        if (fieldProgram) {
+          const width = layout.columns + 7
+          const height2 = layout.rows + 7
+          reserveField(width, height2)
+          gl.bindFramebuffer(gl.FRAMEBUFFER, field.framebuffer)
+          gl.viewport(0, 0, width, height2)
+          gl.useProgram(fieldProgram.program)
+          const f = fieldProgram.uniforms
+          bind(0, sculpt ? sculpt[sculptIndex].texture : blank)
+          gl.uniform1i(f.uSculpt, 0)
+          gl.uniform1f(f.uSculptOn, sculpt ? 1 : 0)
+          gl.uniform1f(f.uFrequency, FREQUENCY / state.scale)
+          gl.uniform2f(f.uMorph, state.morph * 0.37, state.morph * 0.23)
+          gl.uniform4fv(f.uPulses, pulseData)
+          gl.uniform2i(f.uBase, layout.k0 - 2 + layout.camX, layout.m0 - 2 + layout.camZ)
+          gl.uniform1f(f.uCell, layout.cell)
+          gl.uniform1f(f.uDetail, s.detail)
+          gl.disable(gl.DEPTH_TEST)
+          gl.disable(gl.BLEND)
+          gl.drawArrays(gl.TRIANGLES, 0, 3)
+        }
+
+        const drawTerrain = (
+          pixel: number,
+          width: number,
+          targetHeight: number,
+          stride: number,
+        ) => {
+          gl.viewport(0, 0, width, targetHeight)
+          gl.useProgram(terrain.program)
+          const u = terrain.uniforms
+          bind(0, fieldProgram ? field.texture : blank)
+          gl.uniform1i(u.uField, 0)
+          bind(1, fieldProgram ? field.heights : blank)
+          gl.uniform1i(u.uHeightField, 1)
+          gl.uniform1f(u.uFrequency, FREQUENCY / state.scale)
+          gl.uniform2f(u.uMorph, state.morph * 0.37, state.morph * 0.23)
+          gl.uniform4fv(u.uPulses, pulseData)
+          gl.uniform2i(u.uOrigin, layout.k0, layout.m0)
+          gl.uniform2i(u.uCamCell, layout.camX, layout.camZ)
+          gl.uniform2f(u.uCamFrac, layout.fracX, layout.fracZ)
+          gl.uniform1f(u.uCell, layout.cell)
+          gl.uniform1i(u.uStride, stride)
+          gl.uniform1f(u.uHeight, height)
+          gl.uniform3fv(u.uEye, cam.eye)
+          gl.uniform3fv(u.uForward, cam.f)
+          gl.uniform3fv(u.uNear, near)
+          gl.uniform1f(u.uRefDepth, cam.distance)
+          gl.uniformMatrix4fv(u.uViewProj, false, matrix)
+          gl.uniform1f(u.uDetail, s.detail)
+          gl.uniform1f(u.uLines, s.lineCount)
+          gl.uniform1f(u.uLineWidth, s.lineWidth * pixel)
+          gl.uniform1f(u.uMajor, s.majorLines ? 1 : 0)
+          gl.uniform3fv(u.uColor, color)
+          gl.uniform1f(u.uBrightness, s.brightness)
+          gl.uniform2f(u.uFade, fadeStart, fadeEnd)
+          gl.uniform3f(u.uFocus, state.focus, focusScale * pixel, view.height * 0.03 * pixel)
+          gl.uniform4f(u.uHeat, hitX, hitZ, 0.9 * s.mouseRadius, heatStrength)
+          gl.uniform4f(u.uLamp, hitX, state.hit ? state.hit.y + 1.4 : 0, hitZ, heatStrength)
+          gl.uniform4f(u.uTrace, state.level, state.trace, hitX, hitZ)
+          gl.uniform3fv(u.uSun, SUN)
+          gl.uniform1f(u.uReveal, reveal)
+          gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0)
+          gl.uniform1f(u.uOpacity, s.opacity)
+          gl.uniform4fv(u.uGlitch, glitchData)
+          gl.uniform1f(u.uGlitchSeed, glitch.seed)
+          gl.uniform1f(u.uPixel, pixel)
+          gl.enable(gl.DEPTH_TEST)
+          gl.depthFunc(gl.LESS)
+          gl.disable(gl.BLEND)
+          gl.clearColor(0, 0, 0, 0)
+          gl.clearDepth(1)
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+          gl.drawArraysInstanced(
+            gl.TRIANGLE_STRIP,
+            0,
+            2 * (Math.ceil(layout.columns / stride) + 1),
+            Math.ceil(layout.rows / stride),
+          )
+          if (dots) {
+            gl.useProgram(markerProgram.program)
+            const m = markerProgram.uniforms
+            bind(2, sculpt ? sculpt[sculptIndex].texture : blank)
+            gl.uniform1i(m.uSculpt, 2)
+            gl.uniform1f(m.uSculptOn, sculpt ? 1 : 0)
+            gl.uniform1f(m.uFrequency, FREQUENCY / state.scale)
+            gl.uniform2f(m.uMorph, state.morph * 0.37, state.morph * 0.23)
+            gl.uniform4fv(m.uPulses, pulseData)
+            gl.uniform3fv(m.uEye, cam.eye)
+            gl.uniform3fv(m.uForward, cam.f)
+            gl.uniform3fv(m.uNear, near)
+            gl.uniform2i(m.uOrigin, dots.k0, dots.m0)
+            gl.uniform2i(m.uCamCell, dots.camX, dots.camZ)
+            gl.uniform2f(m.uCamFrac, dots.fracX, dots.fracZ)
+            gl.uniform1f(m.uSpacing, dots.cell)
+            gl.uniform1i(m.uColumns, dots.columns + 1)
+            gl.uniform1f(m.uHeight, height)
+            gl.uniformMatrix4fv(m.uViewProj, false, matrix)
+            gl.uniform2f(m.uView, width, targetHeight)
+            gl.uniform1f(m.uSize, 4 * pixel)
+            gl.uniform1f(m.uRefDepth, cam.distance)
+            gl.uniform4f(m.uHeat, hitX, hitZ, 1.2 * s.mouseRadius, heatStrength)
+            gl.uniform1f(m.uTime, state.clock)
+            gl.uniform4fv(m.uGlitch, glitchData)
+            gl.uniform1f(m.uPixel, pixel)
+            gl.uniform3fv(m.uColor, color)
+            gl.uniform2f(m.uFade, fadeStart, fadeEnd)
+            gl.uniform1f(m.uReveal, reveal)
+            gl.uniform1f(m.uBrightness, s.brightness)
+            gl.uniform1f(m.uLightMode, s.lightMode ? 1 : 0)
+            gl.uniform1f(m.uOpacity, s.opacity)
+            gl.uniform1f(m.uStyle, s.markers)
+            gl.depthFunc(gl.LEQUAL)
+            gl.depthMask(false)
+            gl.enable(gl.BLEND)
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, (dots.columns + 1) * (dots.rows + 1))
+            gl.disable(gl.BLEND)
+            gl.depthMask(true)
+          }
+          gl.disable(gl.DEPTH_TEST)
+        }
+
+        const bloom = s.glow > 0.001
+        if (bloom) {
+          const width = Math.max(1, Math.round(view.width / 2))
+          const targetHeight = Math.max(1, Math.round(view.height / 2))
+          allocate(source, width, targetHeight, true)
+          levels.forEach((pair, index) => {
+            const w = Math.max(1, Math.round(view.width / 2 ** (index + 2)))
+            const h = Math.max(1, Math.round(view.height / 2 ** (index + 2)))
+            allocate(pair[0], w, h, false)
+            allocate(pair[1], w, h, false)
+          })
+          gl.bindFramebuffer(gl.FRAMEBUFFER, source.framebuffer)
+          drawTerrain(0.5, width, targetHeight, 2)
+          let from = source
+          levels.forEach(([front, back]) => {
+            gl.bindFramebuffer(gl.FRAMEBUFFER, front.framebuffer)
+            gl.viewport(0, 0, front.width, front.height)
+            gl.useProgram(downProgram.program)
+            bind(0, from.texture)
+            gl.uniform1i(downProgram.uniforms.uSource, 0)
+            gl.uniform2f(downProgram.uniforms.uTarget, front.width, front.height)
+            gl.uniform2f(downProgram.uniforms.uTexel, 1 / from.width, 1 / from.height)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+            gl.useProgram(blurProgram.program)
+            gl.uniform1i(blurProgram.uniforms.uSource, 0)
+            gl.uniform2f(blurProgram.uniforms.uTarget, back.width, back.height)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, back.framebuffer)
+            bind(0, front.texture)
+            gl.uniform2f(blurProgram.uniforms.uStep, 1 / front.width, 0)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+            gl.bindFramebuffer(gl.FRAMEBUFFER, front.framebuffer)
+            bind(0, back.texture)
+            gl.uniform2f(blurProgram.uniforms.uStep, 0, 1 / back.height)
+            gl.drawArrays(gl.TRIANGLES, 0, 3)
+            from = front
+          })
+        }
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        drawTerrain(view.ratio, canvas.width, canvas.height, 1)
+
+        if (bloom) {
+          gl.viewport(0, 0, canvas.width, canvas.height)
+          gl.useProgram(compositeProgram.program)
+          const c = compositeProgram.uniforms
+          levels.forEach(([front], index) => {
+            bind(index, front.texture)
+            gl.uniform1i(c[`uBloom${index}`], index)
+          })
+          gl.uniform2f(c.uView, canvas.width, canvas.height)
+          gl.uniform1f(c.uGlow, s.glow * reveal)
+          gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0)
+          gl.enable(gl.BLEND)
+          if (s.lightMode) gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+          else gl.blendFunc(gl.ONE, gl.ONE)
+          gl.drawArrays(gl.TRIANGLES, 0, 3)
+          gl.disable(gl.BLEND)
+        }
+        for (let unit = BLOOM_LEVELS; unit >= 0; unit--) bind(unit, null)
       }
-    }
 
-    const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height };
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      const { x, y, inside } = locate(event);
-      const was = pointer.inside;
-      pointer.inside = inside;
-      if (inside) {
-        pointer.x = x;
-        pointer.y = y;
+      const updateSculpt = (s: Settings, dt: number) => {
+        if (!sculpt || !sculptProgram) return false
+        const brush =
+          s.mouseInteraction && s.hoverEffect === 'lift' && state.presence > 0.001
+            ? state.hit
+            : null
+        const burst = state.burst
+        if (!brush && !burst && state.sculptLife <= 0) return false
+        const from = state.brushFrom || brush
+        const read = sculpt[sculptIndex]
+        const write = sculpt[1 - sculptIndex]
+        gl.bindFramebuffer(gl.FRAMEBUFFER, write.framebuffer)
+        gl.viewport(0, 0, SCULPT_SIZE, SCULPT_SIZE)
+        gl.useProgram(sculptProgram.program)
+        const u = sculptProgram.uniforms
+        bind(0, read.texture)
+        gl.uniform1i(u.uPrevious, 0)
+        if (brush && from) gl.uniform4f(u.uSegment, from.x, from.z, brush.x, brush.z)
+        else gl.uniform4f(u.uSegment, 0, 0, 0, 0)
+        gl.uniform4f(
+          u.uBrush,
+          1.1 * s.mouseRadius,
+          0.9 * s.mouseStrength,
+          1 - Math.exp(-dt * 7),
+          brush ? state.presence : 0,
+        )
+        if (burst) {
+          const before = smoother(burst.age / 0.7)
+          burst.age += dt
+          const amount = (smoother(burst.age / 0.7) - before) * 0.9 * Math.max(s.mouseStrength, 0.3)
+          gl.uniform4f(u.uBurst, burst.x, burst.z, 1.6 * s.mouseRadius, amount)
+          if (burst.age >= 0.7) state.burst = null
+        } else {
+          gl.uniform4f(u.uBurst, 0, 0, 1, 0)
+        }
+        const tau = 0.25 + 3 * s.trail * s.trail
+        gl.uniform2f(u.uDecay, Math.exp(-dt / tau), Math.exp(-dt / 0.7))
+        gl.disable(gl.BLEND)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        sculptIndex = 1 - sculptIndex
+        state.brushFrom = brush ? { x: brush.x, z: brush.z } : null
+        if (brush || burst) state.sculptLife = tau * 6
+        else state.sculptLife -= dt
+        return true
       }
-      if (inside || was) wakeFn();
-    };
 
-    const onPointerDown = (event: PointerEvent) => {
-      const s = settings();
-      const { x, y, inside } = locate(event);
-      if (!inside) return;
-      pointer.x = x;
-      pointer.y = y;
-      pointer.inside = true;
-      wakeFn();
-      if (s.glitch > 0 && !reduce) {
-        glitch.until = state.clock + 0.16;
-        glitch.roll = 0;
+      let sizedDpr = settings().dpr
+
+      const resize = () => {
+        const s = settings()
+        sizedDpr = s.dpr
+        view.width = Math.max(1, container.clientWidth)
+        view.height = Math.max(1, container.clientHeight)
+        view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+        canvas.width = Math.max(1, Math.round(view.width * view.ratio))
+        canvas.height = Math.max(1, Math.round(view.height * view.ratio))
+        render()
+        wakeFn()
       }
-      if (!s.mouseInteraction || (s.clickEffect !== 'pulse' && s.clickEffect !== 'peak')) return;
-      const hit = pick(camera(), s, (x / view.width) * 2 - 1, 1 - (y / view.height) * 2);
-      if (!hit) return;
-      if (s.clickEffect === 'peak' && sculpt) {
-        state.burst = { x: hit.x, z: hit.z, age: 0 };
-      } else if (s.clickEffect === 'pulse') {
-        if (pulses.length >= MAX_PULSES) pulses.shift();
-        pulses.push({ x: hit.x, z: hit.z, age: 0 });
+
+      const frame = (now: number) => {
+        raf = 0
+        if (!visible || document.hidden) return
+        const s = settings()
+        if (s.dpr !== sizedDpr) resize()
+        const dt = last ? clamp((now - last) / 1000, 0, 1 / 20) : 1 / 60
+        last = now
+
+        if (!s.intro || reduce) state.intro = 1
+        else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS)
+        state.rise = smoother(state.intro)
+        const ease = reduce ? 1 : 1 - Math.exp(-dt / 0.4)
+        state.tilt += (s.tilt - state.tilt) * ease
+        state.elevation += (s.elevation - state.elevation) * ease
+        state.scale = s.scale
+
+        state.clock += dt
+        const glitching = reduce ? 0 : s.glitch
+        if (glitching > 0) {
+          if (state.clock >= glitch.next && state.clock >= glitch.until) {
+            glitch.until = state.clock + 0.1 + random() * 0.22 * (0.5 + glitching)
+            glitch.next = glitch.until + (9 - 7.4 * glitching) * (0.45 + random() * 1.1)
+            glitch.roll = 0
+          }
+          if (state.clock < glitch.until) {
+            if (state.clock >= glitch.roll) {
+              glitchData.fill(0)
+              const count = 1 + Math.floor(random() * 3)
+              for (let i = 0; i < count; i++) {
+                const band = 3 + random() * random() * view.height * 0.14
+                const y = random() * view.height
+                const shift = (random() - 0.5) * 2 * (10 + 46 * glitching)
+                glitchData.set([y, y + band, shift, 1 + random() * 3 * glitching], i * 4)
+              }
+              glitch.seed = random()
+              glitch.roll = state.clock + 0.04 + random() * 0.05
+            }
+          } else glitchData.fill(0)
+        } else glitchData.fill(0)
+
+        if (!reduce) {
+          state.travelX += s.direction[0] * s.speed * 0.8 * dt
+          state.travelZ += s.direction[1] * s.speed * 0.8 * dt
+          state.morph += s.morph * 0.12 * dt
+        }
+
+        const engaged = pointer.inside && s.mouseInteraction
+        state.presence +=
+          ((engaged ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / (engaged ? 0.18 : 0.45)))
+
+        const nx = (pointer.x / view.width) * 2 - 1
+        const ny = 1 - (pointer.y / view.height) * 2
+        const lean = reduce || !engaged ? 0 : s.parallax
+        const targetYaw = nx * lean * 0.09
+        const targetPitch = -ny * lean * 0.045
+        state.yawVelocity += (38 * (targetYaw - state.yaw) - 11 * state.yawVelocity) * dt
+        state.pitchVelocity += (38 * (targetPitch - state.pitch) - 11 * state.pitchVelocity) * dt
+        state.yaw += state.yawVelocity * dt
+        state.pitch += state.pitchVelocity * dt
+
+        const cam = camera()
+        if (engaged) {
+          state.hit = pick(cam, s, nx, ny)
+          if (state.hit && state.brushFrom) {
+            const jump = Math.hypot(
+              state.hit.x - state.brushFrom.x,
+              state.hit.z - state.brushFrom.z,
+            )
+            if (jump > 3 * s.mouseRadius) state.brushFrom = null
+          }
+        } else if (state.presence < 0.002) {
+          state.hit = null
+          state.brushFrom = null
+        }
+
+        const tracing =
+          state.hit && s.mouseInteraction && s.hoverEffect === 'trace' ? state.presence : 0
+        if (state.hit) {
+          const frequency = FREQUENCY / state.scale
+          const target =
+            relief(state.hit.x, state.hit.z, frequency, state.morph * 0.37, state.morph * 0.23) +
+            s.detail * 0.1 * fineDetail(state.hit.x, state.hit.z, frequency)
+          state.level =
+            state.trace < 0.01
+              ? target
+              : state.level + (target - state.level) * (1 - Math.exp(-dt / 0.09))
+        }
+        state.trace += (tracing - state.trace) * (1 - Math.exp(-dt / 0.2))
+
+        const focusTarget = state.hit && s.depthOfField > 0 ? state.hit.depth : cam.distance
+        state.focus += (focusTarget - state.focus) * (1 - Math.exp(-dt / 0.35))
+
+        for (let i = pulses.length - 1; i >= 0; i--) {
+          pulses[i].age += dt
+          if (pulses[i].age > 4) pulses.splice(i, 1)
+        }
+
+        const sculpting = updateSculpt(s, dt)
+        render()
+
+        const settling =
+          Math.abs(s.tilt - state.tilt) > 0.01 ||
+          Math.abs(s.elevation - state.elevation) > 1e-4 ||
+          Math.abs(state.yaw - targetYaw) > 1e-4 ||
+          Math.abs(state.pitch - targetPitch) > 1e-4 ||
+          Math.abs(state.yawVelocity) > 1e-4 ||
+          Math.abs(state.pitchVelocity) > 1e-4 ||
+          Math.abs(focusTarget - state.focus) > 1e-3 ||
+          Math.abs(tracing - state.trace) > 1e-3
+        const busy =
+          (!reduce && (s.speed !== 0 || s.morph !== 0 || s.glitch > 0 || s.markers >= 0)) ||
+          state.intro < 1 ||
+          pulses.length > 0 ||
+          sculpting ||
+          settling ||
+          (state.presence > 0.001 && state.presence < 0.999)
+        quiet = busy ? 0 : quiet + dt
+        if (quiet < 0.5) raf = requestAnimationFrame(frame)
       }
-    };
 
-    const onPointerUp = (event: PointerEvent) => {
-      if (event.pointerType !== 'touch') return;
-      pointer.inside = false;
-      wakeFn();
-    };
+      const wakeFn = () => {
+        quiet = 0
+        if (!raf && visible && !document.hidden) {
+          last = 0
+          raf = requestAnimationFrame(frame)
+        }
+      }
 
-    const onPointerLeave = () => {
-      pointer.inside = false;
-      wakeFn();
-    };
+      const locate = (event: PointerEvent) => {
+        const rect = container.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height }
+      }
 
-    const onVisibility = () => wakeFn();
+      const onPointerMove = (event: PointerEvent) => {
+        const { x, y, inside } = locate(event)
+        const was = pointer.inside
+        pointer.inside = inside
+        if (inside) {
+          pointer.x = x
+          pointer.y = y
+        }
+        if (inside || was) wakeFn()
+      }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
-    const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      if (visible) wakeFn();
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    window.addEventListener('pointerup', onPointerUp, { passive: true });
-    window.addEventListener('pointercancel', onPointerUp, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
-    wake = wakeFn;
+      const onPointerDown = (event: PointerEvent) => {
+        const s = settings()
+        const { x, y, inside } = locate(event)
+        if (!inside) return
+        pointer.x = x
+        pointer.y = y
+        pointer.inside = true
+        wakeFn()
+        if (s.glitch > 0 && !reduce) {
+          glitch.until = state.clock + 0.16
+          glitch.roll = 0
+        }
+        if (!s.mouseInteraction || (s.clickEffect !== 'pulse' && s.clickEffect !== 'peak')) return
+        const hit = pick(camera(), s, (x / view.width) * 2 - 1, 1 - (y / view.height) * 2)
+        if (!hit) return
+        if (s.clickEffect === 'peak' && sculpt) {
+          state.burst = { x: hit.x, z: hit.z, age: 0 }
+        } else if (s.clickEffect === 'pulse') {
+          if (pulses.length >= MAX_PULSES) pulses.shift()
+          pulses.push({ x: hit.x, z: hit.z, age: 0 })
+        }
+      }
 
-    onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wake = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      canvas.removeEventListener('webglcontextlost', onContextLost);
-      canvas.removeEventListener('webglcontextrestored', onContextRestored);
-      [source, ...levels.flat()].forEach(target => {
-        if (target.texture) gl.deleteTexture(target.texture);
-        if (target.depth) gl.deleteRenderbuffer(target.depth);
-        gl.deleteFramebuffer(target.framebuffer);
-      });
-      sculpt?.forEach(target => {
-        gl.deleteTexture(target.texture);
-        gl.deleteFramebuffer(target.framebuffer);
-      });
-      gl.deleteTexture(blank);
-      gl.deleteVertexArray(vao);
-      if (field.texture) gl.deleteTexture(field.texture);
-      if (field.heights) gl.deleteTexture(field.heights);
-      gl.deleteFramebuffer(field.framebuffer);
-      [terrain, fieldProgram, sculptProgram, downProgram, blurProgram, compositeProgram, markerProgram].forEach(
-        program => program && gl.deleteProgram(program.program)
-      );
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
-  });
+      const onPointerUp = (event: PointerEvent) => {
+        if (event.pointerType !== 'touch') return
+        pointer.inside = false
+        wakeFn()
+      }
+
+      const onPointerLeave = () => {
+        pointer.inside = false
+        wakeFn()
+      }
+
+      const onVisibility = () => wakeFn()
+
+      const resizeObserver = new ResizeObserver(resize)
+      resizeObserver.observe(container)
+      const intersection = new IntersectionObserver(entries => {
+        visible = entries.some(entry => entry.isIntersecting)
+        if (visible) wakeFn()
+      })
+      intersection.observe(container)
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { passive: true })
+      window.addEventListener('pointercancel', onPointerUp, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onPointerLeave)
+      document.addEventListener('visibilitychange', onVisibility)
+      resize()
+      wake = wakeFn
+
+      onCleanup(() => {
+        cancelAnimationFrame(raf)
+        wake = null
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointerup', onPointerUp)
+        window.removeEventListener('pointercancel', onPointerUp)
+        document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        canvas.removeEventListener('webglcontextlost', onContextLost)
+        canvas.removeEventListener('webglcontextrestored', onContextRestored)
+        ;[source, ...levels.flat()].forEach(target => {
+          if (target.texture) gl.deleteTexture(target.texture)
+          if (target.depth) gl.deleteRenderbuffer(target.depth)
+          gl.deleteFramebuffer(target.framebuffer)
+        })
+        sculpt?.forEach(target => {
+          gl.deleteTexture(target.texture)
+          gl.deleteFramebuffer(target.framebuffer)
+        })
+        gl.deleteTexture(blank)
+        gl.deleteVertexArray(vao)
+        if (field.texture) gl.deleteTexture(field.texture)
+        if (field.heights) gl.deleteTexture(field.heights)
+        gl.deleteFramebuffer(field.framebuffer)
+        ;[
+          terrain,
+          fieldProgram,
+          sculptProgram,
+          downProgram,
+          blurProgram,
+          compositeProgram,
+          markerProgram,
+        ].forEach(program => program && gl.deleteProgram(program.program))
+        gl.getExtension('WEBGL_lose_context')?.loseContext()
+      })
+    })
+  })
 
   // Upstream woke the renderer after every render; this fires on the same
   // prop changes (everything the settings memo reads).
   createEffect(() => {
-    settings();
-    wake?.();
-  });
+    settings()
+    wake?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative w-full h-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative w-full h-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       style={own.style}
     >
-      <canvas ref={canvasRef} class="block w-full h-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="block w-full h-full" />
     </div>
-  );
-};
+  )
+}
 
-export default Topography;
+export default Topography

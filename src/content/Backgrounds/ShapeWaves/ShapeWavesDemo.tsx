@@ -1,4 +1,4 @@
-import ShapeWaves from './ShapeWaves';
+import ShapeWaves from './ShapeWaves'
 
 const ShapeWavesDemo = () => (
   <div class="h-96 w-full">
@@ -11,6 +11,6 @@ const ShapeWavesDemo = () => (
       glow={0.35}
     />
   </div>
-);
+)
 
-export default ShapeWavesDemo;
+export default ShapeWavesDemo

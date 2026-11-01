@@ -1,4 +1,4 @@
-import TrueFocus from './TrueFocus';
+import TrueFocus from './TrueFocus'
 
 function TrueFocusDemo() {
   return (
@@ -10,7 +10,7 @@ function TrueFocusDemo() {
         blurAmount={4}
       />
     </div>
-  );
+  )
 }
 
-export default TrueFocusDemo;
+export default TrueFocusDemo

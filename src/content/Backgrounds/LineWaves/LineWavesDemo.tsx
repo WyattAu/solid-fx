@@ -1,4 +1,4 @@
-import LineWaves from './LineWaves';
+import LineWaves from './LineWaves'
 
 const LineWavesDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -13,6 +13,6 @@ const LineWavesDemo = () => (
       rotation={-33}
     />
   </div>
-);
+)
 
-export default LineWavesDemo;
+export default LineWavesDemo

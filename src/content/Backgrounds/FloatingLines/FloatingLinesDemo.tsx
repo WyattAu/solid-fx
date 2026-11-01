@@ -1,4 +1,4 @@
-import FloatingLines from './FloatingLines';
+import FloatingLines from './FloatingLines'
 
 function FloatingLinesDemo() {
   return (
@@ -17,7 +17,7 @@ function FloatingLinesDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default FloatingLinesDemo;
+export default FloatingLinesDemo

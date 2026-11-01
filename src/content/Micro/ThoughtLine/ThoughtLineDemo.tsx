@@ -1,13 +1,13 @@
-import { For } from 'solid-js';
-import ThoughtLine from './ThoughtLine';
+import { For } from 'solid-js'
+import ThoughtLine from './ThoughtLine'
 
 interface Case {
-  label: string;
-  glyph?: 'sparkle' | 'dot';
-  steps: string[];
-  settleAfter: number;
-  showTimer?: boolean;
-  doneLabel?: string;
+  label: string
+  glyph?: 'sparkle' | 'dot'
+  steps: string[]
+  settleAfter: number
+  showTimer?: boolean
+  doneLabel?: string
 }
 
 const CASES: Case[] = [
@@ -15,7 +15,7 @@ const CASES: Case[] = [
     label: 'Thinking…',
     glyph: 'sparkle',
     steps: ['Parsing the question', 'Retrieving context', 'Drafting a response'],
-    settleAfter: 6
+    settleAfter: 6,
   },
   {
     label: 'Summarizing sources',
@@ -23,15 +23,15 @@ const CASES: Case[] = [
     steps: ['Reading 12 pages', 'Extracting key claims'],
     settleAfter: 3.5,
     showTimer: false,
-    doneLabel: 'Summary ready'
-  }
-];
+    doneLabel: 'Summary ready',
+  },
+]
 
 function ThoughtLineDemo() {
   return (
     <div class="flex h-96 w-full flex-col items-start justify-center gap-8 bg-gray-950 p-8 text-white">
       <For each={CASES}>
-        {(c) => (
+        {c => (
           <ThoughtLine
             label={c.label}
             glyph={c.glyph}
@@ -43,7 +43,7 @@ function ThoughtLineDemo() {
         )}
       </For>
     </div>
-  );
+  )
 }
 
-export default ThoughtLineDemo;
+export default ThoughtLineDemo

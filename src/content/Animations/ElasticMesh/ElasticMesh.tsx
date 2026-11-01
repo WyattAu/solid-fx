@@ -1,54 +1,57 @@
-import { createEffect, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type ElasticMeshMaterial = 'balloon' | 'chrome' | 'jelly' | 'clay';
+export type ElasticMeshMaterial = 'balloon' | 'chrome' | 'jelly' | 'clay'
 
 export interface ElasticMeshProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'className' | 'style' | 'ref'> {
-  text?: string;
-  src?: string;
-  fontFamily?: string;
-  fontWeight?: number | string;
-  color?: string;
-  imageColors?: boolean;
-  material?: ElasticMeshMaterial;
-  inflate?: number;
-  stiffness?: number;
-  wobble?: number;
-  grabRadius?: number;
-  stretch?: number;
-  press?: number;
-  shadow?: number;
-  intro?: boolean;
-  theme?: 'dark' | 'light';
-  dpr?: number;
-  children?: JSX.Element;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  extends Omit<
+    JSX.HTMLAttributes<HTMLDivElement>,
+    'children' | 'class' | 'className' | 'style' | 'ref'
+  > {
+  text?: string
+  src?: string
+  fontFamily?: string
+  fontWeight?: number | string
+  color?: string
+  imageColors?: boolean
+  material?: ElasticMeshMaterial
+  inflate?: number
+  stiffness?: number
+  wobble?: number
+  grabRadius?: number
+  stretch?: number
+  press?: number
+  shadow?: number
+  intro?: boolean
+  theme?: 'dark' | 'light'
+  dpr?: number
+  children?: JSX.Element
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  text: string;
-  src: string;
-  fontFamily: string;
-  fontWeight: number | string;
-  color: string;
-  imageColors: boolean;
-  material: number;
-  inflate: number;
-  stiffness: number;
-  wobble: number;
-  grabRadius: number;
-  stretch: number;
-  press: number;
-  shadow: number;
-  intro: boolean;
-  light: boolean;
-  dpr?: number;
-};
+  text: string
+  src: string
+  fontFamily: string
+  fontWeight: number | string
+  color: string
+  imageColors: boolean
+  material: number
+  inflate: number
+  stiffness: number
+  wobble: number
+  grabRadius: number
+  stretch: number
+  press: number
+  shadow: number
+  intro: boolean
+  light: boolean
+  dpr?: number
+}
 
-type Part = { x: number; y: number; left: number; size: number; delay: number };
+type Part = { x: number; y: number; left: number; size: number; delay: number }
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
@@ -66,7 +69,7 @@ void main() {
   vDent = aDent;
   vec2 clip = (aPosition + uOffset) / uViewport * 2.0 - 1.0;
   gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
-}`;
+}`
 
 const SHADOW = `#version 300 es
 precision highp float;
@@ -108,7 +111,7 @@ void main() {
   vec3 arrived = settle(vRest);
   float shade = texture(uField, arrived.xy).z * uShadow * clamp(arrived.z, 0.0, 1.0) * (1.0 - 0.35 * clamp(vDent.x, 0.0, 1.0));
   outColor = vec4(uShadowColor * shade, shade);
-}`;
+}`
 
 const SURFACE = `#version 300 es
 precision highp float;
@@ -274,248 +277,256 @@ void main() {
   }
   float alpha = cover * smoothstep(0.0, 0.18, presence);
   outColor = vec4(color * alpha, alpha);
-}`;
+}`
 
-const MATERIALS: Record<string, number> = { balloon: 0, chrome: 1, jelly: 2, clay: 3 };
-const MAX_FIELD = 720;
-const MAX_NODES = 5200;
-const STEP = 1 / 480;
+const MATERIALS: Record<string, number> = { balloon: 0, chrome: 1, jelly: 2, clay: 3 }
+const MAX_FIELD = 720
+const MAX_NODES = 5200
+const STEP = 1 / 480
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string) => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.bindAttribLocation(program, 1, 'aRest');
-  gl.bindAttribLocation(program, 2, 'aStrain');
-  gl.bindAttribLocation(program, 3, 'aDent');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
-  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program;
-  gl.deleteProgram(program);
-  return null;
-};
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.bindAttribLocation(program, 1, 'aRest')
+  gl.bindAttribLocation(program, 2, 'aStrain')
+  gl.bindAttribLocation(program, 3, 'aDent')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
+  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program
+  gl.deleteProgram(program)
+  return null
+}
 
 const locate = (gl: WebGL2RenderingContext, program: WebGLProgram, names: string[]) => {
-  const result: Record<string, WebGLUniformLocation | null> = {};
-  for (const name of names) result[name] = gl.getUniformLocation(program, name);
-  return result;
-};
+  const result: Record<string, WebGLUniformLocation | null> = {}
+  for (const name of names) result[name] = gl.getUniformLocation(program, name)
+  return result
+}
 
-const distance1d = (f: Float64Array, n: number, d: Float64Array, v: Int32Array, z: Float64Array) => {
-  let k = 0;
-  v[0] = 0;
-  z[0] = -Infinity;
-  z[1] = Infinity;
+const distance1d = (
+  f: Float64Array,
+  n: number,
+  d: Float64Array,
+  v: Int32Array,
+  z: Float64Array,
+) => {
+  let k = 0
+  v[0] = 0
+  z[0] = -Infinity
+  z[1] = Infinity
   for (let q = 1; q < n; q++) {
-    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
     while (s <= z[k]) {
-      k--;
-      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+      k--
+      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
     }
-    k++;
-    v[k] = q;
-    z[k] = s;
-    z[k + 1] = Infinity;
+    k++
+    v[k] = q
+    z[k] = s
+    z[k + 1] = Infinity
   }
-  k = 0;
+  k = 0
   for (let q = 0; q < n; q++) {
-    while (z[k + 1] < q) k++;
-    d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
+    while (z[k + 1] < q) k++
+    d[q] = (q - v[k]) * (q - v[k]) + f[v[k]]
   }
-};
+}
 
 const distanceField = (grid: Float64Array, width: number, height: number) => {
-  const n = Math.max(width, height);
-  const f = new Float64Array(n);
-  const d = new Float64Array(n);
-  const v = new Int32Array(n);
-  const z = new Float64Array(n + 1);
+  const n = Math.max(width, height)
+  const f = new Float64Array(n)
+  const d = new Float64Array(n)
+  const v = new Int32Array(n)
+  const z = new Float64Array(n + 1)
   for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height; y++) f[y] = grid[y * width + x];
-    distance1d(f, height, d, v, z);
-    for (let y = 0; y < height; y++) grid[y * width + x] = d[y];
+    for (let y = 0; y < height; y++) f[y] = grid[y * width + x]
+    distance1d(f, height, d, v, z)
+    for (let y = 0; y < height; y++) grid[y * width + x] = d[y]
   }
   for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) f[x] = grid[y * width + x];
-    distance1d(f, width, d, v, z);
-    for (let x = 0; x < width; x++) grid[y * width + x] = Math.sqrt(d[x]);
+    for (let x = 0; x < width; x++) f[x] = grid[y * width + x]
+    distance1d(f, width, d, v, z)
+    for (let x = 0; x < width; x++) grid[y * width + x] = Math.sqrt(d[x])
   }
-  return grid;
-};
+  return grid
+}
 
 const nearestLabels = (labels: Int32Array, width: number, height: number) => {
-  const far = 1e20;
-  const column = new Float64Array(width * height);
-  const site = new Int32Array(width * height);
+  const far = 1e20
+  const column = new Float64Array(width * height)
+  const site = new Int32Array(width * height)
   for (let x = 0; x < width; x++) {
-    let last = -1;
+    let last = -1
     for (let y = 0; y < height; y++) {
-      const i = y * width + x;
-      if (labels[i]) last = y;
-      site[i] = last;
-      column[i] = last >= 0 ? (y - last) * (y - last) : far;
+      const i = y * width + x
+      if (labels[i]) last = y
+      site[i] = last
+      column[i] = last >= 0 ? (y - last) * (y - last) : far
     }
-    last = -1;
+    last = -1
     for (let y = height - 1; y >= 0; y--) {
-      const i = y * width + x;
-      if (labels[i]) last = y;
+      const i = y * width + x
+      if (labels[i]) last = y
       if (last >= 0 && (last - y) * (last - y) < column[i]) {
-        column[i] = (last - y) * (last - y);
-        site[i] = last;
+        column[i] = (last - y) * (last - y)
+        site[i] = last
       }
     }
   }
-  const out = new Float32Array(width * height);
-  const f = new Float64Array(width);
-  const v = new Int32Array(width);
-  const z = new Float64Array(width + 1);
+  const out = new Float32Array(width * height)
+  const f = new Float64Array(width)
+  const v = new Int32Array(width)
+  const z = new Float64Array(width + 1)
   for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) f[x] = column[y * width + x];
-    let k = 0;
-    v[0] = 0;
-    z[0] = -Infinity;
-    z[1] = Infinity;
+    for (let x = 0; x < width; x++) f[x] = column[y * width + x]
+    let k = 0
+    v[0] = 0
+    z[0] = -Infinity
+    z[1] = Infinity
     for (let q = 1; q < width; q++) {
-      let cut = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+      let cut = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
       while (cut <= z[k]) {
-        k--;
-        cut = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        k--
+        cut = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
       }
-      k++;
-      v[k] = q;
-      z[k] = cut;
-      z[k + 1] = Infinity;
+      k++
+      v[k] = q
+      z[k] = cut
+      z[k + 1] = Infinity
     }
-    k = 0;
+    k = 0
     for (let x = 0; x < width; x++) {
-      while (z[k + 1] < x) k++;
-      const sx = v[k];
-      const sy = site[y * width + sx];
-      out[y * width + x] = sy >= 0 ? labels[sy * width + sx] : 0;
+      while (z[k + 1] < x) k++
+      const sx = v[k]
+      const sy = site[y * width + sx]
+      out[y * width + x] = sy >= 0 ? labels[sy * width + sx] : 0
     }
   }
-  return out;
-};
+  return out
+}
 
 const inflateField = (mask: Float32Array, width: number, height: number) => {
-  const levels = [{ width, height, mask }];
+  const levels = [{ width, height, mask }]
   while (Math.max(levels[levels.length - 1].width, levels[levels.length - 1].height) > 48) {
-    const prev = levels[levels.length - 1];
-    const w = Math.ceil(prev.width / 2);
-    const h = Math.ceil(prev.height / 2);
-    const next = new Float32Array(w * h);
+    const prev = levels[levels.length - 1]
+    const w = Math.ceil(prev.width / 2)
+    const h = Math.ceil(prev.height / 2)
+    const next = new Float32Array(w * h)
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
-        let sum = 0;
-        let count = 0;
+        let sum = 0
+        let count = 0
         for (let dy = 0; dy < 2; dy++) {
           for (let dx = 0; dx < 2; dx++) {
-            const sx = x * 2 + dx;
-            const sy = y * 2 + dy;
+            const sx = x * 2 + dx
+            const sy = y * 2 + dy
             if (sx < prev.width && sy < prev.height) {
-              sum += prev.mask[sy * prev.width + sx];
-              count++;
+              sum += prev.mask[sy * prev.width + sx]
+              count++
             }
           }
         }
-        next[y * w + x] = sum / count;
+        next[y * w + x] = sum / count
       }
     }
-    levels.push({ width: w, height: h, mask: next });
+    levels.push({ width: w, height: h, mask: next })
   }
 
-  let solution: Float32Array | null = null;
+  let solution: Float32Array | null = null
   for (let level = levels.length - 1; level >= 0; level--) {
-    const { width: w, height: h, mask: m } = levels[level];
-    const current = new Float32Array(w * h);
+    const { width: w, height: h, mask: m } = levels[level]
+    const current = new Float32Array(w * h)
     if (solution) {
-      const pw = levels[level + 1].width;
-      const ph = levels[level + 1].height;
+      const pw = levels[level + 1].width
+      const ph = levels[level + 1].height
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
-          const fx = clamp((x + 0.5) / 2 - 0.5, 0, pw - 1);
-          const fy = clamp((y + 0.5) / 2 - 0.5, 0, ph - 1);
-          const x0 = Math.floor(fx);
-          const y0 = Math.floor(fy);
-          const x1 = Math.min(pw - 1, x0 + 1);
-          const y1 = Math.min(ph - 1, y0 + 1);
-          const tx = fx - x0;
-          const ty = fy - y0;
-          const top = solution[y0 * pw + x0] * (1 - tx) + solution[y0 * pw + x1] * tx;
-          const bottom = solution[y1 * pw + x0] * (1 - tx) + solution[y1 * pw + x1] * tx;
-          current[y * w + x] = top * (1 - ty) + bottom * ty;
+          const fx = clamp((x + 0.5) / 2 - 0.5, 0, pw - 1)
+          const fy = clamp((y + 0.5) / 2 - 0.5, 0, ph - 1)
+          const x0 = Math.floor(fx)
+          const y0 = Math.floor(fy)
+          const x1 = Math.min(pw - 1, x0 + 1)
+          const y1 = Math.min(ph - 1, y0 + 1)
+          const tx = fx - x0
+          const ty = fy - y0
+          const top = solution[y0 * pw + x0] * (1 - tx) + solution[y0 * pw + x1] * tx
+          const bottom = solution[y1 * pw + x0] * (1 - tx) + solution[y1 * pw + x1] * tx
+          current[y * w + x] = top * (1 - ty) + bottom * ty
         }
       }
     }
-    const source = 4 ** level;
-    const iterations = level === levels.length - 1 ? 300 : 60;
+    const source = 4 ** level
+    const iterations = level === levels.length - 1 ? 300 : 60
     for (let iteration = 0; iteration < iterations; iteration++) {
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
-          const i = y * w + x;
+          const i = y * w + x
           if (m[i] < 0.5) {
-            current[i] = 0;
-            continue;
+            current[i] = 0
+            continue
           }
-          const l = x > 0 ? current[i - 1] : 0;
-          const r = x < w - 1 ? current[i + 1] : 0;
-          const u = y > 0 ? current[i - w] : 0;
-          const d = y < h - 1 ? current[i + w] : 0;
-          current[i] += ((l + r + u + d + source) * 0.25 - current[i]) * 1.85;
+          const l = x > 0 ? current[i - 1] : 0
+          const r = x < w - 1 ? current[i + 1] : 0
+          const u = y > 0 ? current[i - w] : 0
+          const d = y < h - 1 ? current[i + w] : 0
+          current[i] += ((l + r + u + d + source) * 0.25 - current[i]) * 1.85
         }
       }
     }
-    solution = current;
+    solution = current
   }
-  return solution as Float32Array;
-};
+  return solution as Float32Array
+}
 
 const blurField = (source: ArrayLike<number>, width: number, height: number, radius: number) => {
-  const r = Math.max(1, Math.round(radius));
-  const sigma = r / 2.5;
-  const kernel: number[] = [];
-  let total = 0;
+  const r = Math.max(1, Math.round(radius))
+  const sigma = r / 2.5
+  const kernel: number[] = []
+  let total = 0
   for (let i = -r; i <= r; i++) {
-    const weight = Math.exp(-(i * i) / (2 * sigma * sigma));
-    kernel.push(weight);
-    total += weight;
+    const weight = Math.exp(-(i * i) / (2 * sigma * sigma))
+    kernel.push(weight)
+    total += weight
   }
-  for (let i = 0; i < kernel.length; i++) kernel[i] /= total;
-  const temp = new Float32Array(width * height);
-  const out = new Float32Array(width * height);
+  for (let i = 0; i < kernel.length; i++) kernel[i] /= total
+  const temp = new Float32Array(width * height)
+  const out = new Float32Array(width * height)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let sum = 0;
-      for (let i = -r; i <= r; i++) sum += source[y * width + clamp(x + i, 0, width - 1)] * kernel[i + r];
-      temp[y * width + x] = sum;
+      let sum = 0
+      for (let i = -r; i <= r; i++)
+        sum += source[y * width + clamp(x + i, 0, width - 1)] * kernel[i + r]
+      temp[y * width + x] = sum
     }
   }
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      let sum = 0;
-      for (let i = -r; i <= r; i++) sum += temp[clamp(y + i, 0, height - 1) * width + x] * kernel[i + r];
-      out[y * width + x] = sum;
+      let sum = 0
+      for (let i = -r; i <= r; i++)
+        sum += temp[clamp(y + i, 0, height - 1) * width + x] * kernel[i + r]
+      out[y * width + x] = sum
     }
   }
-  return out;
-};
+  return out
+}
 
 const OWN_KEYS = [
   'text',
@@ -538,15 +549,15 @@ const OWN_KEYS = [
   'children',
   'class',
   'className',
-  'style'
-] as const;
+  'style',
+] as const
 
 const ElasticMesh = (props: ElasticMeshProps) => {
-  const [own, rest] = splitProps(props, OWN_KEYS);
-  let container!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
-  let contentRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, OWN_KEYS)
+  let container!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
+  let contentRef: (() => void) | null = null
 
   // Upstream rebuilt `settings` into a ref on every render and re-woke via a
   // dep-less effect; the mirror below refreshes on any prop change.
@@ -567,42 +578,42 @@ const ElasticMesh = (props: ElasticMeshProps) => {
     shadow: clamp(own.shadow ?? 0.5, 0, 1),
     intro: own.intro ?? true,
     light: (own.theme ?? 'dark') === 'light',
-    dpr: own.dpr
-  });
-  let cfg: Settings = buildSettings();
+    dpr: own.dpr,
+  })
+  let cfg: Settings = buildSettings()
   // Derived from props (reactive), not from the plain `cfg` mirror.
   const contentKey = () =>
-    `${String(own.text ?? 'Squish')}|${String(own.src || '')}|${String(own.fontFamily ?? 'system-ui, sans-serif')}|${String(own.fontWeight ?? 900)}`;
-  let built = contentKey();
+    `${String(own.text ?? 'Squish')}|${String(own.src || '')}|${String(own.fontFamily ?? 'system-ui, sans-serif')}|${String(own.fontWeight ?? 900)}`
+  let built = contentKey()
 
   createEffect(() => {
-    cfg = buildSettings();
-    wakeRef?.();
-  });
+    cfg = buildSettings()
+    wakeRef?.()
+  })
 
   // Upstream's effect keyed on [contentKey]: rebuild the rasterized content.
   createEffect(() => {
-    const key = contentKey();
-    if (built === key) return;
-    built = key;
-    contentRef?.();
-  });
+    const key = contentKey()
+    if (built === key) return
+    built = key
+    contentRef?.()
+  })
 
   onMount(() => {
-    const host = container;
-    const canvas = canvasEl;
+    const host = container
+    const canvas = canvasEl
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!host || !canvas || !gl) return;
+      stencil: false,
+    })
+    if (!host || !canvas || !gl) return
 
-    const surfaceProgram = link(gl, SURFACE);
-    const shadowProgram = link(gl, SHADOW);
-    if (!surfaceProgram || !shadowProgram) return;
+    const surfaceProgram = link(gl, SURFACE)
+    const shadowProgram = link(gl, SHADOW)
+    if (!surfaceProgram || !shadowProgram) return
     const surface = locate(gl, surfaceProgram, [
       'uViewport',
       'uOffset',
@@ -616,8 +627,8 @@ const ElasticMesh = (props: ElasticMeshProps) => {
       'uInflate',
       'uTurn',
       'uClock',
-      'uParts'
-    ]);
+      'uParts',
+    ])
     const shade = locate(gl, shadowProgram, [
       'uViewport',
       'uOffset',
@@ -625,43 +636,53 @@ const ElasticMesh = (props: ElasticMeshProps) => {
       'uShadowColor',
       'uShadow',
       'uClock',
-      'uParts'
-    ]);
+      'uParts',
+    ])
 
-    const fieldTexture = gl.createTexture();
-    const paintTexture = gl.createTexture();
-    const slopeTexture = gl.createTexture();
+    const fieldTexture = gl.createTexture()
+    const paintTexture = gl.createTexture()
+    const slopeTexture = gl.createTexture()
     for (const texture of [fieldTexture, paintTexture, slopeTexture]) {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        1,
+        1,
+        0,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        new Uint8Array(4),
+      )
     }
 
-    const vao = gl.createVertexArray();
-    const restBuffer = gl.createBuffer();
-    const dynamicBuffer = gl.createBuffer();
-    const indexBuffer = gl.createBuffer();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, restBuffer);
-    gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 36, 0);
-    gl.enableVertexAttribArray(2);
-    gl.vertexAttribPointer(2, 4, gl.FLOAT, false, 36, 8);
-    gl.enableVertexAttribArray(3);
-    gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 36, 24);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bindVertexArray(null);
+    const vao = gl.createVertexArray()
+    const restBuffer = gl.createBuffer()
+    const dynamicBuffer = gl.createBuffer()
+    const indexBuffer = gl.createBuffer()
+    gl.bindVertexArray(vao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, restBuffer)
+    gl.enableVertexAttribArray(1)
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 0, 0)
+    gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 36, 0)
+    gl.enableVertexAttribArray(2)
+    gl.vertexAttribPointer(2, 4, gl.FLOAT, false, 36, 8)
+    gl.enableVertexAttribArray(3)
+    gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 36, 24)
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+    gl.bindVertexArray(null)
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const partData = new Float32Array(256);
-    const turnMatrix = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const partData = new Float32Array(256)
+    const turnMatrix = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1])
     const mesh = {
       cols: 0,
       rows: 0,
@@ -687,8 +708,8 @@ const ElasticMesh = (props: ElasticMeshProps) => {
       indexType: gl.UNSIGNED_SHORT as number,
       activeCount: 0,
       width: 1,
-      height: 1
-    };
+      height: 1,
+    }
     const state = {
       width: 1,
       height: 1,
@@ -701,78 +722,87 @@ const ElasticMesh = (props: ElasticMeshProps) => {
       clock: cfg.intro && !reduce ? 0 : 10,
       colorKey: '',
       color: [0.31, 0.42, 1],
-      pointer: { x: 0, y: 0, inside: false, down: false, startX: 0, startY: 0, startTime: 0, dragging: false },
+      pointer: {
+        x: 0,
+        y: 0,
+        inside: false,
+        down: false,
+        startX: 0,
+        startY: 0,
+        startTime: 0,
+        dragging: false,
+      },
       hover: { x: 0, y: 0, vx: 0, vy: 0, power: 0 },
       turn: { x: 0, y: 0, vx: 0, vy: 0 },
       accumulator: 0,
       energy: 1,
-      buildToken: 0
-    };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let alive = true;
-    let resizeTimer = 0;
+      buildToken: 0,
+    }
+    let raf = 0
+    let last = 0
+    let visible = true
+    let alive = true
+    let resizeTimer = 0
 
     const toRgb = (value: string): number[] => {
-      if (!probe || !value) return [0.31, 0.42, 1];
-      probe.fillStyle = '#000000';
-      probe.fillStyle = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value;
-      probe.fillRect(0, 0, 1, 1);
-      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-      return [r / 255, g / 255, b / 255];
-    };
+      if (!probe || !value) return [0.31, 0.42, 1]
+      probe.fillStyle = '#000000'
+      probe.fillStyle = /^[0-9a-f]{3,8}$/i.test(value) ? `#${value}` : value
+      probe.fillRect(0, 0, 1, 1)
+      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+      return [r / 255, g / 255, b / 255]
+    }
 
     const sampleSdf = (px: number, py: number) => {
-      const fx = clamp(Math.round(px * state.fieldScale), 0, state.fieldWidth - 1);
-      const fy = clamp(Math.round(py * state.fieldScale), 0, state.fieldHeight - 1);
-      return state.sdf[fy * state.fieldWidth + fx] || -1e6;
-    };
+      const fx = clamp(Math.round(px * state.fieldScale), 0, state.fieldWidth - 1)
+      const fy = clamp(Math.round(py * state.fieldScale), 0, state.fieldHeight - 1)
+      return state.sdf[fy * state.fieldWidth + fx] || -1e6
+    }
 
     const buildMesh = () => {
-      const { width, height } = state;
-      const spacing = Math.max(7, Math.sqrt((width * height) / MAX_NODES));
-      const cols = Math.ceil(width / spacing) + 1;
-      const rows = Math.ceil(height / spacing) + 1;
-      const count = cols * rows;
-      const sx = width / (cols - 1);
-      const sy = height / (rows - 1);
-      mesh.cols = cols;
-      mesh.rows = rows;
-      mesh.width = width;
-      mesh.height = height;
-      mesh.spacing = (sx + sy) / 2;
-      mesh.count = count;
-      mesh.restX = new Float32Array(count);
-      mesh.restY = new Float32Array(count);
-      mesh.x = new Float32Array(count);
-      mesh.y = new Float32Array(count);
-      mesh.vx = new Float32Array(count);
-      mesh.vy = new Float32Array(count);
-      mesh.dent = new Float32Array(count);
-      mesh.dentV = new Float32Array(count);
-      mesh.grip = new Float32Array(count);
-      mesh.gripX = new Float32Array(count);
-      mesh.gripY = new Float32Array(count);
-      mesh.active = new Uint8Array(count);
-      mesh.dynamic = new Float32Array(count * 9);
-      const rest = new Float32Array(count * 2);
-      const reach = -2.5 * mesh.spacing;
+      const { width, height } = state
+      const spacing = Math.max(7, Math.sqrt((width * height) / MAX_NODES))
+      const cols = Math.ceil(width / spacing) + 1
+      const rows = Math.ceil(height / spacing) + 1
+      const count = cols * rows
+      const sx = width / (cols - 1)
+      const sy = height / (rows - 1)
+      mesh.cols = cols
+      mesh.rows = rows
+      mesh.width = width
+      mesh.height = height
+      mesh.spacing = (sx + sy) / 2
+      mesh.count = count
+      mesh.restX = new Float32Array(count)
+      mesh.restY = new Float32Array(count)
+      mesh.x = new Float32Array(count)
+      mesh.y = new Float32Array(count)
+      mesh.vx = new Float32Array(count)
+      mesh.vy = new Float32Array(count)
+      mesh.dent = new Float32Array(count)
+      mesh.dentV = new Float32Array(count)
+      mesh.grip = new Float32Array(count)
+      mesh.gripX = new Float32Array(count)
+      mesh.gripY = new Float32Array(count)
+      mesh.active = new Uint8Array(count)
+      mesh.dynamic = new Float32Array(count * 9)
+      const rest = new Float32Array(count * 2)
+      const reach = -2.5 * mesh.spacing
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
-          const k = j * cols + i;
-          const px = i * sx;
-          const py = j * sy;
-          mesh.restX[k] = px;
-          mesh.restY[k] = py;
-          mesh.x[k] = px;
-          mesh.y[k] = py;
-          rest[k * 2] = px / width;
-          rest[k * 2 + 1] = py / height;
-          mesh.active[k] = state.ready && sampleSdf(px, py) > reach ? 1 : 0;
+          const k = j * cols + i
+          const px = i * sx
+          const py = j * sy
+          mesh.restX[k] = px
+          mesh.restY[k] = py
+          mesh.x[k] = px
+          mesh.y[k] = py
+          rest[k * 2] = px / width
+          rest[k * 2 + 1] = py / height
+          mesh.active[k] = state.ready && sampleSdf(px, py) > reach ? 1 : 0
         }
       }
-      const neighbors = new Int32Array(count * 8).fill(-1);
+      const neighbors = new Int32Array(count * 8).fill(-1)
       const offsets = [
         [-1, 0],
         [1, 0],
@@ -781,535 +811,573 @@ const ElasticMesh = (props: ElasticMeshProps) => {
         [-1, -1],
         [1, -1],
         [-1, 1],
-        [1, 1]
-      ];
+        [1, 1],
+      ]
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
-          const k = j * cols + i;
-          if (!mesh.active[k]) continue;
+          const k = j * cols + i
+          if (!mesh.active[k]) continue
           offsets.forEach(([di, dj], n) => {
-            const ni = i + di;
-            const nj = j + dj;
-            if (ni < 0 || nj < 0 || ni >= cols || nj >= rows) return;
-            const nk = nj * cols + ni;
-            if (mesh.active[nk]) neighbors[k * 8 + n] = nk;
-          });
+            const ni = i + di
+            const nj = j + dj
+            if (ni < 0 || nj < 0 || ni >= cols || nj >= rows) return
+            const nk = nj * cols + ni
+            if (mesh.active[nk]) neighbors[k * 8 + n] = nk
+          })
         }
       }
-      mesh.neighbors = neighbors;
-      mesh.activeCount = mesh.active.reduce((total, flag) => total + flag, 0);
-      const margin = -(Math.min(width, height) * 0.14 + mesh.spacing * 3);
-      const near = new Uint8Array(count);
-      for (let k = 0; k < count; k++) near[k] = state.ready && sampleSdf(mesh.restX[k], mesh.restY[k]) > margin ? 1 : 0;
-      const quads: number[] = [];
+      mesh.neighbors = neighbors
+      mesh.activeCount = mesh.active.reduce((total, flag) => total + flag, 0)
+      const margin = -(Math.min(width, height) * 0.14 + mesh.spacing * 3)
+      const near = new Uint8Array(count)
+      for (let k = 0; k < count; k++)
+        near[k] = state.ready && sampleSdf(mesh.restX[k], mesh.restY[k]) > margin ? 1 : 0
+      const quads: number[] = []
       for (let j = 0; j < rows - 1; j++) {
         for (let i = 0; i < cols - 1; i++) {
-          const a = j * cols + i;
-          const b = a + 1;
-          const c = a + cols;
-          const d = c + 1;
-          if (near[a] || near[b] || near[c] || near[d]) quads.push(a, c, b, b, c, d);
+          const a = j * cols + i
+          const b = a + 1
+          const c = a + cols
+          const d = c + 1
+          if (near[a] || near[b] || near[c] || near[d]) quads.push(a, c, b, b, c, d)
         }
       }
-      const indexData = count > 65535 ? new Uint32Array(quads) : new Uint16Array(quads);
-      mesh.indexType = count > 65535 ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
-      mesh.indices = quads.length;
-      gl.bindBuffer(gl.ARRAY_BUFFER, restBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, rest, gl.STATIC_DRAW);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
-      writeDynamic();
-    };
+      const indexData = count > 65535 ? new Uint32Array(quads) : new Uint16Array(quads)
+      mesh.indexType = count > 65535 ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT
+      mesh.indices = quads.length
+      gl.bindBuffer(gl.ARRAY_BUFFER, restBuffer)
+      gl.bufferData(gl.ARRAY_BUFFER, rest, gl.STATIC_DRAW)
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW)
+      writeDynamic()
+    }
 
     const writeDynamic = () => {
-      const { cols, rows, x, y, dent, dynamic, spacing } = mesh;
-      const sx = mesh.width / Math.max(1, cols - 1);
-      const sy = mesh.height / Math.max(1, rows - 1);
+      const { cols, rows, x, y, dent, dynamic, spacing } = mesh
+      const sx = mesh.width / Math.max(1, cols - 1)
+      const sy = mesh.height / Math.max(1, rows - 1)
       for (let j = 0; j < rows; j++) {
         for (let i = 0; i < cols; i++) {
-          const k = j * cols + i;
-          const l = i > 0 ? k - 1 : k;
-          const r = i < cols - 1 ? k + 1 : k;
-          const u = j > 0 ? k - cols : k;
-          const d = j < rows - 1 ? k + cols : k;
-          const spanX = (r - l) * sx || spacing;
-          const spanY = ((d - u) / cols) * sy || spacing;
-          const o = k * 9;
-          dynamic[o] = x[k];
-          dynamic[o + 1] = y[k];
-          dynamic[o + 2] = (x[r] - x[l]) / spanX;
-          dynamic[o + 3] = (y[r] - y[l]) / spanX;
-          dynamic[o + 4] = (x[d] - x[u]) / spanY;
-          dynamic[o + 5] = (y[d] - y[u]) / spanY;
-          dynamic[o + 6] = dent[k];
-          dynamic[o + 7] = (dent[r] - dent[l]) / spanX;
-          dynamic[o + 8] = (dent[d] - dent[u]) / spanY;
+          const k = j * cols + i
+          const l = i > 0 ? k - 1 : k
+          const r = i < cols - 1 ? k + 1 : k
+          const u = j > 0 ? k - cols : k
+          const d = j < rows - 1 ? k + cols : k
+          const spanX = (r - l) * sx || spacing
+          const spanY = ((d - u) / cols) * sy || spacing
+          const o = k * 9
+          dynamic[o] = x[k]
+          dynamic[o + 1] = y[k]
+          dynamic[o + 2] = (x[r] - x[l]) / spanX
+          dynamic[o + 3] = (y[r] - y[l]) / spanX
+          dynamic[o + 4] = (x[d] - x[u]) / spanY
+          dynamic[o + 5] = (y[d] - y[u]) / spanY
+          dynamic[o + 6] = dent[k]
+          dynamic[o + 7] = (dent[r] - dent[l]) / spanX
+          dynamic[o + 8] = (dent[d] - dent[u]) / spanY
         }
       }
-      gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, dynamic, gl.DYNAMIC_DRAW);
-    };
+      gl.bindBuffer(gl.ARRAY_BUFFER, dynamicBuffer)
+      gl.bufferData(gl.ARRAY_BUFFER, dynamic, gl.DYNAMIC_DRAW)
+    }
 
     const rasterize = async () => {
-      const s = cfg;
-      const token = ++state.buildToken;
-      const { width, height } = state;
-      const scale = Math.min(1, MAX_FIELD / Math.max(width, height));
-      const fw = Math.max(8, Math.round(width * scale));
-      const fh = Math.max(8, Math.round(height * scale));
-      const canvas2d = document.createElement('canvas');
-      canvas2d.width = fw;
-      canvas2d.height = fh;
-      const ctx = canvas2d.getContext('2d', { willReadFrequently: true });
-      if (!ctx) return;
-      let drawn = false;
+      const s = cfg
+      const token = ++state.buildToken
+      const { width, height } = state
+      const scale = Math.min(1, MAX_FIELD / Math.max(width, height))
+      const fw = Math.max(8, Math.round(width * scale))
+      const fh = Math.max(8, Math.round(height * scale))
+      const canvas2d = document.createElement('canvas')
+      canvas2d.width = fw
+      canvas2d.height = fh
+      const ctx = canvas2d.getContext('2d', { willReadFrequently: true })
+      if (!ctx) return
+      let drawn = false
       if (s.src) {
-        const image = new Image();
-        image.crossOrigin = 'anonymous';
-        image.decoding = 'async';
-        image.src = s.src;
+        const image = new Image()
+        image.crossOrigin = 'anonymous'
+        image.decoding = 'async'
+        image.src = s.src
         try {
-          await image.decode();
+          await image.decode()
         } catch {
-          return;
+          return
         }
-        if (token !== state.buildToken) return;
-        const fit = Math.min((fw * 0.78) / image.naturalWidth, (fh * 0.74) / image.naturalHeight);
-        const w = image.naturalWidth * fit;
-        const h = image.naturalHeight * fit;
-        ctx.drawImage(image, (fw - w) / 2, (fh - h) / 2, w, h);
-        drawn = true;
+        if (token !== state.buildToken) return
+        const fit = Math.min((fw * 0.78) / image.naturalWidth, (fh * 0.74) / image.naturalHeight)
+        const w = image.naturalWidth * fit
+        const h = image.naturalHeight * fit
+        ctx.drawImage(image, (fw - w) / 2, (fh - h) / 2, w, h)
+        drawn = true
       } else {
-        const family = s.fontFamily;
-        const weight = s.fontWeight;
-        if (document.fonts) await document.fonts.load(`${weight} 100px ${family}`).catch(() => null);
-        if (token !== state.buildToken) return;
-        const lines = s.text.split('\n');
-        ctx.font = `${weight} 100px ${family}`;
-        let widest = 1;
-        let ascent = 0;
-        let descent = 0;
+        const family = s.fontFamily
+        const weight = s.fontWeight
+        if (document.fonts) await document.fonts.load(`${weight} 100px ${family}`).catch(() => null)
+        if (token !== state.buildToken) return
+        const lines = s.text.split('\n')
+        ctx.font = `${weight} 100px ${family}`
+        let widest = 1
+        let ascent = 0
+        let descent = 0
         for (const line of lines) {
-          const m = ctx.measureText(line || ' ');
-          widest = Math.max(widest, m.actualBoundingBoxLeft + m.actualBoundingBoxRight);
-          ascent = Math.max(ascent, m.actualBoundingBoxAscent);
-          descent = Math.max(descent, m.actualBoundingBoxDescent);
+          const m = ctx.measureText(line || ' ')
+          widest = Math.max(widest, m.actualBoundingBoxLeft + m.actualBoundingBoxRight)
+          ascent = Math.max(ascent, m.actualBoundingBoxAscent)
+          descent = Math.max(descent, m.actualBoundingBoxDescent)
         }
-        const lineHeight = 100 * 1.02;
-        const blockHeight = ascent + descent + lineHeight * (lines.length - 1);
-        const size = Math.min((fw * 0.8) / widest, (fh * 0.7) / blockHeight) * 100;
-        ctx.font = `${weight} ${size}px ${family}`;
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'alphabetic';
-        const k = size / 100;
-        const top = (fh - blockHeight * k) / 2 + ascent * k;
+        const lineHeight = 100 * 1.02
+        const blockHeight = ascent + descent + lineHeight * (lines.length - 1)
+        const size = Math.min((fw * 0.8) / widest, (fh * 0.7) / blockHeight) * 100
+        ctx.font = `${weight} ${size}px ${family}`
+        ctx.fillStyle = '#ffffff'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'alphabetic'
+        const k = size / 100
+        const top = (fh - blockHeight * k) / 2 + ascent * k
         lines.forEach((line, index) => {
-          const m = ctx.measureText(line || ' ');
-          const shift = (m.actualBoundingBoxLeft - m.actualBoundingBoxRight) / 2;
-          ctx.fillText(line, fw / 2 + shift, top + index * lineHeight * k);
-        });
-        drawn = true;
+          const m = ctx.measureText(line || ' ')
+          const shift = (m.actualBoundingBoxLeft - m.actualBoundingBoxRight) / 2
+          ctx.fillText(line, fw / 2 + shift, top + index * lineHeight * k)
+        })
+        drawn = true
       }
-      if (!drawn || token !== state.buildToken) return;
+      if (!drawn || token !== state.buildToken) return
 
-      const pixels = ctx.getImageData(0, 0, fw, fh).data;
-      const count = fw * fh;
-      const mask = new Float32Array(count);
-      const inside = new Float64Array(count);
-      const outside = new Float64Array(count);
+      const pixels = ctx.getImageData(0, 0, fw, fh).data
+      const count = fw * fh
+      const mask = new Float32Array(count)
+      const inside = new Float64Array(count)
+      const outside = new Float64Array(count)
       for (let i = 0; i < count; i++) {
-        const a = pixels[i * 4 + 3] / 255;
-        mask[i] = a;
-        inside[i] = a > 0.5 ? 1e10 : 0;
-        outside[i] = a > 0.5 ? 0 : 1e10;
+        const a = pixels[i * 4 + 3] / 255
+        mask[i] = a
+        inside[i] = a > 0.5 ? 1e10 : 0
+        outside[i] = a > 0.5 ? 0 : 1e10
       }
-      distanceField(inside, fw, fh);
-      distanceField(outside, fw, fh);
-      const binary = new Float32Array(count);
-      const signed = new Float32Array(count);
+      distanceField(inside, fw, fh)
+      distanceField(outside, fw, fh)
+      const binary = new Float32Array(count)
+      const signed = new Float32Array(count)
       for (let i = 0; i < count; i++) {
-        binary[i] = mask[i] > 0.5 ? 1 : 0;
+        binary[i] = mask[i] > 0.5 ? 1 : 0
         signed[i] =
-          mask[i] > 0.02 && mask[i] < 0.98 ? mask[i] - 0.5 : inside[i] > 0 ? inside[i] - 0.5 : 0.5 - outside[i];
+          mask[i] > 0.02 && mask[i] < 0.98
+            ? mask[i] - 0.5
+            : inside[i] > 0
+              ? inside[i] - 0.5
+              : 0.5 - outside[i]
       }
-      const labels = new Int32Array(count);
-      const parts: Part[] = [];
-      const queue = new Int32Array(count);
+      const labels = new Int32Array(count)
+      const parts: Part[] = []
+      const queue = new Int32Array(count)
       for (let start = 0; start < count; start++) {
-        if (!binary[start] || labels[start]) continue;
-        const id = parts.length + 1;
-        let head = 0;
-        let tail = 0;
-        let sumX = 0;
-        let sumY = 0;
-        let minX = Infinity;
-        queue[tail++] = start;
-        labels[start] = id;
+        if (!binary[start] || labels[start]) continue
+        const id = parts.length + 1
+        let head = 0
+        let tail = 0
+        let sumX = 0
+        let sumY = 0
+        let minX = Infinity
+        queue[tail++] = start
+        labels[start] = id
         while (head < tail) {
-          const i = queue[head++];
-          const x = i % fw;
-          const y = (i - x) / fw;
-          sumX += x;
-          sumY += y;
-          if (x < minX) minX = x;
+          const i = queue[head++]
+          const x = i % fw
+          const y = (i - x) / fw
+          sumX += x
+          sumY += y
+          if (x < minX) minX = x
           if (x > 0 && binary[i - 1] && !labels[i - 1]) {
-            labels[i - 1] = id;
-            queue[tail++] = i - 1;
+            labels[i - 1] = id
+            queue[tail++] = i - 1
           }
           if (x < fw - 1 && binary[i + 1] && !labels[i + 1]) {
-            labels[i + 1] = id;
-            queue[tail++] = i + 1;
+            labels[i + 1] = id
+            queue[tail++] = i + 1
           }
           if (y > 0 && binary[i - fw] && !labels[i - fw]) {
-            labels[i - fw] = id;
-            queue[tail++] = i - fw;
+            labels[i - fw] = id
+            queue[tail++] = i - fw
           }
           if (y < fh - 1 && binary[i + fw] && !labels[i + fw]) {
-            labels[i + fw] = id;
-            queue[tail++] = i + fw;
+            labels[i + fw] = id
+            queue[tail++] = i + fw
           }
         }
-        parts.push({ x: sumX / tail / scale, y: sumY / tail / scale, left: minX, size: tail, delay: 0 });
+        parts.push({
+          x: sumX / tail / scale,
+          y: sumY / tail / scale,
+          left: minX,
+          size: tail,
+          delay: 0,
+        })
       }
-      const order = [...parts].sort((a, b) => a.left - b.left);
-      const gap = order.length > 1 ? Math.min(0.07, 0.5 / (order.length - 1)) : 0;
+      const order = [...parts].sort((a, b) => a.left - b.left)
+      const gap = order.length > 1 ? Math.min(0.07, 0.5 / (order.length - 1)) : 0
       order.forEach((part, rank) => {
-        part.delay = rank * gap;
-      });
-      const owners = parts.length <= 64 ? nearestLabels(labels, fw, fh) : new Float32Array(count);
-      const solution = blurField(inflateField(binary, fw, fh), fw, fh, 2);
-      const edges = blurField(signed, fw, fh, 2);
-      const shadowMask = blurField(binary, fw, fh, Math.max(4, Math.min(fw, fh) * 0.045));
-      const field = new Float32Array(count * 4);
-      const sdf = new Float32Array(count);
-      const heights = new Float32Array(count);
+        part.delay = rank * gap
+      })
+      const owners = parts.length <= 64 ? nearestLabels(labels, fw, fh) : new Float32Array(count)
+      const solution = blurField(inflateField(binary, fw, fh), fw, fh, 2)
+      const edges = blurField(signed, fw, fh, 2)
+      const shadowMask = blurField(binary, fw, fh, Math.max(4, Math.min(fw, fh) * 0.045))
+      const field = new Float32Array(count * 4)
+      const sdf = new Float32Array(count)
+      const heights = new Float32Array(count)
       for (let i = 0; i < count; i++) {
-        const distance = edges[i] / scale;
-        sdf[i] = distance;
-        heights[i] = Math.sqrt(Math.max(0, 2 * solution[i])) / scale;
-        field[i * 4] = heights[i];
-        field[i * 4 + 1] = distance;
-        field[i * 4 + 2] = shadowMask[i];
-        field[i * 4 + 3] = owners[i];
+        const distance = edges[i] / scale
+        sdf[i] = distance
+        heights[i] = Math.sqrt(Math.max(0, 2 * solution[i])) / scale
+        field[i * 4] = heights[i]
+        field[i * 4 + 1] = distance
+        field[i * 4 + 2] = shadowMask[i]
+        field[i * 4 + 3] = owners[i]
       }
-      const slopes = new Float32Array(count * 2);
+      const slopes = new Float32Array(count * 2)
       for (let y = 0; y < fh; y++) {
         for (let x = 0; x < fw; x++) {
-          const i = y * fw + x;
-          let gx = (heights[y * fw + Math.min(fw - 1, x + 1)] - heights[y * fw + Math.max(0, x - 1)]) * 0.5 * scale;
-          let gy = (heights[Math.min(fh - 1, y + 1) * fw + x] - heights[Math.max(0, y - 1) * fw + x]) * 0.5 * scale;
-          const steep = Math.hypot(gx, gy);
+          const i = y * fw + x
+          let gx =
+            (heights[y * fw + Math.min(fw - 1, x + 1)] - heights[y * fw + Math.max(0, x - 1)]) *
+            0.5 *
+            scale
+          let gy =
+            (heights[Math.min(fh - 1, y + 1) * fw + x] - heights[Math.max(0, y - 1) * fw + x]) *
+            0.5 *
+            scale
+          const steep = Math.hypot(gx, gy)
           if (steep > 7) {
-            gx *= 7 / steep;
-            gy *= 7 / steep;
+            gx *= 7 / steep
+            gy *= 7 / steep
           }
-          slopes[i * 2] = gx;
-          slopes[i * 2 + 1] = gy;
+          slopes[i * 2] = gx
+          slopes[i * 2 + 1] = gy
         }
       }
-      gl.bindTexture(gl.TEXTURE_2D, fieldTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, fw, fh, 0, gl.RGBA, gl.FLOAT, field);
-      gl.bindTexture(gl.TEXTURE_2D, slopeTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG16F, fw, fh, 0, gl.RG, gl.FLOAT, slopes);
-      gl.bindTexture(gl.TEXTURE_2D, paintTexture);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas2d);
-      state.fieldWidth = fw;
-      state.fieldHeight = fh;
-      state.fieldScale = scale;
-      state.sdf = sdf;
-      state.parts = parts;
-      partData.fill(0);
+      gl.bindTexture(gl.TEXTURE_2D, fieldTexture)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, fw, fh, 0, gl.RGBA, gl.FLOAT, field)
+      gl.bindTexture(gl.TEXTURE_2D, slopeTexture)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG16F, fw, fh, 0, gl.RG, gl.FLOAT, slopes)
+      gl.bindTexture(gl.TEXTURE_2D, paintTexture)
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas2d)
+      state.fieldWidth = fw
+      state.fieldHeight = fh
+      state.fieldScale = scale
+      state.sdf = sdf
+      state.parts = parts
+      partData.fill(0)
       parts.slice(0, 64).forEach((part, index) => {
-        partData[index * 4] = part.x / width;
-        partData[index * 4 + 1] = part.y / height;
-        partData[index * 4 + 2] = part.delay;
-      });
-      state.ready = true;
-      buildMesh();
-      wake();
-    };
+        partData[index * 4] = part.x / width
+        partData[index * 4 + 1] = part.y / height
+        partData[index * 4 + 2] = part.delay
+      })
+      state.ready = true
+      buildMesh()
+      wake()
+    }
 
     const solve = (dt: number, s: Settings) => {
-      const { count, x, y, vx, vy, restX, restY, dent, dentV, active, neighbors, grip, gripX, gripY, spacing } = mesh;
-      const firm = 0.4 + s.stiffness * 1.2;
-      const anchor = 350 * firm * firm;
-      const couple = anchor * (52 / Math.sqrt(firm) / spacing) ** 2;
-      const ratio = reduce ? 0.8 : 0.5 - s.wobble * 0.42;
-      const damping = 2 * ratio * Math.sqrt(anchor);
-      const dentAnchor = anchor * 1.4;
-      const dentCouple = dentAnchor * (18 / spacing) ** 2;
-      const dentDamping = 2 * (ratio + 0.06) * Math.sqrt(dentAnchor);
-      const gripStiffness = anchor * 30;
-      const gripDamping = 1.2 * Math.sqrt(gripStiffness);
-      const brush = state.pointer.dragging ? 0 : 10;
-      const hover = state.hover;
-      const pressRadius = s.grabRadius * 0.32;
-      const pressInv = 1 / (2 * pressRadius * pressRadius);
-      const pressPower = hover.power * s.press;
-      const pressDepth = state.pointer.dragging ? 1.6 : 1;
-      let energy = 0;
+      const {
+        count,
+        x,
+        y,
+        vx,
+        vy,
+        restX,
+        restY,
+        dent,
+        dentV,
+        active,
+        neighbors,
+        grip,
+        gripX,
+        gripY,
+        spacing,
+      } = mesh
+      const firm = 0.4 + s.stiffness * 1.2
+      const anchor = 350 * firm * firm
+      const couple = anchor * (52 / Math.sqrt(firm) / spacing) ** 2
+      const ratio = reduce ? 0.8 : 0.5 - s.wobble * 0.42
+      const damping = 2 * ratio * Math.sqrt(anchor)
+      const dentAnchor = anchor * 1.4
+      const dentCouple = dentAnchor * (18 / spacing) ** 2
+      const dentDamping = 2 * (ratio + 0.06) * Math.sqrt(dentAnchor)
+      const gripStiffness = anchor * 30
+      const gripDamping = 1.2 * Math.sqrt(gripStiffness)
+      const brush = state.pointer.dragging ? 0 : 10
+      const hover = state.hover
+      const pressRadius = s.grabRadius * 0.32
+      const pressInv = 1 / (2 * pressRadius * pressRadius)
+      const pressPower = hover.power * s.press
+      const pressDepth = state.pointer.dragging ? 1.6 : 1
+      let energy = 0
       for (let k = 0; k < count; k++) {
-        if (!active[k]) continue;
-        const ux = x[k] - restX[k];
-        const uy = y[k] - restY[k];
-        let ax = -anchor * ux - damping * vx[k];
-        let ay = -anchor * uy - damping * vy[k];
-        let ad = -dentAnchor * dent[k] - dentDamping * dentV[k];
-        const base = k * 8;
+        if (!active[k]) continue
+        const ux = x[k] - restX[k]
+        const uy = y[k] - restY[k]
+        let ax = -anchor * ux - damping * vx[k]
+        let ay = -anchor * uy - damping * vy[k]
+        let ad = -dentAnchor * dent[k] - dentDamping * dentV[k]
+        const base = k * 8
         for (let n = 0; n < 8; n++) {
-          const m = neighbors[base + n];
-          if (m < 0) continue;
-          const weight = n < 4 ? 1 : 0.5;
-          ax += couple * weight * (x[m] - restX[m] - ux);
-          ay += couple * weight * (y[m] - restY[m] - uy);
-          ad += dentCouple * weight * (dent[m] - dent[k]);
+          const m = neighbors[base + n]
+          if (m < 0) continue
+          const weight = n < 4 ? 1 : 0.5
+          ax += couple * weight * (x[m] - restX[m] - ux)
+          ay += couple * weight * (y[m] - restY[m] - uy)
+          ad += dentCouple * weight * (dent[m] - dent[k])
         }
         if (pressPower > 0.001) {
-          const dx = x[k] - hover.x;
-          const dy = y[k] - hover.y;
-          const falloff = Math.exp(-(dx * dx + dy * dy) * pressInv);
-          ad += dentAnchor * 2.6 * pressDepth * pressPower * falloff;
-          ax += (anchor * 0.3 * dx + brush * hover.vx) * pressPower * falloff;
-          ay += (anchor * 0.3 * dy + brush * hover.vy) * pressPower * falloff;
+          const dx = x[k] - hover.x
+          const dy = y[k] - hover.y
+          const falloff = Math.exp(-(dx * dx + dy * dy) * pressInv)
+          ad += dentAnchor * 2.6 * pressDepth * pressPower * falloff
+          ax += (anchor * 0.3 * dx + brush * hover.vx) * pressPower * falloff
+          ay += (anchor * 0.3 * dy + brush * hover.vy) * pressPower * falloff
         }
         if (grip[k] > 0) {
-          ax += grip[k] * (gripStiffness * (gripX[k] - x[k]) - gripDamping * vx[k]);
-          ay += grip[k] * (gripStiffness * (gripY[k] - y[k]) - gripDamping * vy[k]);
+          ax += grip[k] * (gripStiffness * (gripX[k] - x[k]) - gripDamping * vx[k])
+          ay += grip[k] * (gripStiffness * (gripY[k] - y[k]) - gripDamping * vy[k])
         }
-        vx[k] += ax * dt;
-        vy[k] += ay * dt;
-        dentV[k] += ad * dt;
-        energy += Math.abs(vx[k]) + Math.abs(vy[k]) + Math.abs(dentV[k]) * spacing;
+        vx[k] += ax * dt
+        vy[k] += ay * dt
+        dentV[k] += ad * dt
+        energy += Math.abs(vx[k]) + Math.abs(vy[k]) + Math.abs(dentV[k]) * spacing
       }
       for (let k = 0; k < count; k++) {
-        if (!active[k]) continue;
-        x[k] += vx[k] * dt;
-        y[k] += vy[k] * dt;
-        dent[k] = clamp(dent[k] + dentV[k] * dt, -0.6, 0.85);
+        if (!active[k]) continue
+        x[k] += vx[k] * dt
+        y[k] += vy[k] * dt
+        dent[k] = clamp(dent[k] + dentV[k] * dt, -0.6, 0.85)
       }
-      return energy;
-    };
+      return energy
+    }
 
     const updateGrip = (s: Settings) => {
-      const { pointer } = state;
-      const { count, grip, gripX, gripY } = mesh;
-      if (!pointer.dragging) return;
-      const limit = Math.max(20, Math.min(state.width, state.height) * (0.08 + s.stretch * 0.32));
-      const dx = pointer.x - pointer.startX;
-      const dy = pointer.y - pointer.startY;
-      const length = Math.hypot(dx, dy);
-      const eased = length > 0 ? (limit * Math.tanh(length / limit)) / length : 0;
+      const { pointer } = state
+      const { count, grip, gripX, gripY } = mesh
+      if (!pointer.dragging) return
+      const limit = Math.max(20, Math.min(state.width, state.height) * (0.08 + s.stretch * 0.32))
+      const dx = pointer.x - pointer.startX
+      const dy = pointer.y - pointer.startY
+      const length = Math.hypot(dx, dy)
+      const eased = length > 0 ? (limit * Math.tanh(length / limit)) / length : 0
       for (let k = 0; k < count; k++) {
-        if (grip[k] <= 0) continue;
-        gripX[k] = mesh.anchorX[k] + dx * eased;
-        gripY[k] = mesh.anchorY[k] + dy * eased;
+        if (grip[k] <= 0) continue
+        gripX[k] = mesh.anchorX[k] + dx * eased
+        gripY[k] = mesh.anchorY[k] + dy * eased
       }
-    };
+    }
 
     const grab = (px: number, py: number, s: Settings) => {
-      const { count, x, y, grip, active } = mesh;
-      const radius = s.grabRadius * 0.3;
-      const inv = 1 / (2 * radius * radius);
-      mesh.anchorX = new Float32Array(count);
-      mesh.anchorY = new Float32Array(count);
-      let total = 0;
+      const { count, x, y, grip, active } = mesh
+      const radius = s.grabRadius * 0.3
+      const inv = 1 / (2 * radius * radius)
+      mesh.anchorX = new Float32Array(count)
+      mesh.anchorY = new Float32Array(count)
+      let total = 0
       for (let k = 0; k < count; k++) {
-        if (!active[k]) continue;
-        const dx = x[k] - px;
-        const dy = y[k] - py;
-        const weight = Math.exp(-(dx * dx + dy * dy) * inv);
-        grip[k] = weight > 0.03 ? weight : 0;
-        mesh.anchorX[k] = x[k];
-        mesh.anchorY[k] = y[k];
-        total += grip[k];
+        if (!active[k]) continue
+        const dx = x[k] - px
+        const dy = y[k] - py
+        const weight = Math.exp(-(dx * dx + dy * dy) * inv)
+        grip[k] = weight > 0.03 ? weight : 0
+        mesh.anchorX[k] = x[k]
+        mesh.anchorY[k] = y[k]
+        total += grip[k]
       }
-      return total > 0;
-    };
+      return total > 0
+    }
 
     const release = () => {
-      mesh.grip.fill(0);
-      state.pointer.dragging = false;
-    };
+      mesh.grip.fill(0)
+      state.pointer.dragging = false
+    }
 
     const poke = (px: number, py: number, s: Settings) => {
-      const { count, x, y, vx, vy, dentV, active } = mesh;
-      const radius = s.grabRadius;
-      const inv = 1 / (2 * radius * radius);
-      const strength = 0.4 + s.press;
+      const { count, x, y, vx, vy, dentV, active } = mesh
+      const radius = s.grabRadius
+      const inv = 1 / (2 * radius * radius)
+      const strength = 0.4 + s.press
       for (let k = 0; k < count; k++) {
-        if (!active[k]) continue;
-        const dx = x[k] - px;
-        const dy = y[k] - py;
-        const falloff = Math.exp(-(dx * dx + dy * dy) * inv);
-        dentV[k] += 9 * strength * falloff;
-        vx[k] += dx * 9 * strength * falloff;
-        vy[k] += dy * 9 * strength * falloff;
+        if (!active[k]) continue
+        const dx = x[k] - px
+        const dy = y[k] - py
+        const falloff = Math.exp(-(dx * dx + dy * dy) * inv)
+        dentV[k] += 9 * strength * falloff
+        vx[k] += dx * 9 * strength * falloff
+        vy[k] += dy * 9 * strength * falloff
       }
-    };
+    }
 
     const onSurface = (px: number, py: number) => {
-      const { cols, rows, x, y, active, spacing } = mesh;
-      let best = Infinity;
-      let bestK = -1;
-      const range = Math.ceil(80 / spacing);
-      const ci = clamp(Math.round(px / (mesh.width / Math.max(1, cols - 1))), 0, cols - 1);
-      const cj = clamp(Math.round(py / (mesh.height / Math.max(1, rows - 1))), 0, rows - 1);
+      const { cols, rows, x, y, active, spacing } = mesh
+      let best = Infinity
+      let bestK = -1
+      const range = Math.ceil(80 / spacing)
+      const ci = clamp(Math.round(px / (mesh.width / Math.max(1, cols - 1))), 0, cols - 1)
+      const cj = clamp(Math.round(py / (mesh.height / Math.max(1, rows - 1))), 0, rows - 1)
       for (let j = Math.max(0, cj - range); j <= Math.min(rows - 1, cj + range); j++) {
         for (let i = Math.max(0, ci - range); i <= Math.min(cols - 1, ci + range); i++) {
-          const k = j * cols + i;
-          if (!active[k]) continue;
-          const d = Math.hypot(x[k] - px, y[k] - py);
+          const k = j * cols + i
+          if (!active[k]) continue
+          const d = Math.hypot(x[k] - px, y[k] - py)
           if (d < best) {
-            best = d;
-            bestK = k;
+            best = d
+            bestK = k
           }
         }
       }
-      if (bestK < 0) return false;
-      return sampleSdf(mesh.restX[bestK] + (px - x[bestK]), mesh.restY[bestK] + (py - y[bestK])) > -4;
-    };
+      if (bestK < 0) return false
+      return (
+        sampleSdf(mesh.restX[bestK] + (px - x[bestK]), mesh.restY[bestK] + (py - y[bestK])) > -4
+      )
+    }
 
     const resize = () => {
-      const s = cfg;
-      const width = Math.max(1, host.clientWidth);
-      const height = Math.max(1, host.clientHeight);
-      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(width * ratio));
-      canvas.height = Math.max(1, Math.round(height * ratio));
+      const s = cfg
+      const width = Math.max(1, host.clientWidth)
+      const height = Math.max(1, host.clientHeight)
+      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      canvas.width = Math.max(1, Math.round(width * ratio))
+      canvas.height = Math.max(1, Math.round(height * ratio))
       if (width !== state.width || height !== state.height) {
-        const first = !state.ready && !state.buildToken;
-        state.width = width;
-        state.height = height;
-        window.clearTimeout(resizeTimer);
-        if (first) rasterize();
-        else resizeTimer = window.setTimeout(rasterize, 160);
+        const first = !state.ready && !state.buildToken
+        state.width = width
+        state.height = height
+        window.clearTimeout(resizeTimer)
+        if (first) rasterize()
+        else resizeTimer = window.setTimeout(rasterize, 160)
       }
-      wake();
-    };
+      wake()
+    }
 
     const render = () => {
-      const s = cfg;
-      const colorKey = s.color;
+      const s = cfg
+      const colorKey = s.color
       if (colorKey !== state.colorKey) {
-        state.colorKey = colorKey;
-        state.color = toRgb(s.color);
+        state.colorKey = colorKey
+        state.color = toRgb(s.color)
       }
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      if (!state.ready || !mesh.indices) return;
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.bindVertexArray(vao);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, fieldTexture);
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, paintTexture);
-      gl.activeTexture(gl.TEXTURE2);
-      gl.bindTexture(gl.TEXTURE_2D, slopeTexture);
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      if (!state.ready || !mesh.indices) return
+      gl.enable(gl.BLEND)
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+      gl.bindVertexArray(vao)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, fieldTexture)
+      gl.activeTexture(gl.TEXTURE1)
+      gl.bindTexture(gl.TEXTURE_2D, paintTexture)
+      gl.activeTexture(gl.TEXTURE2)
+      gl.bindTexture(gl.TEXTURE_2D, slopeTexture)
 
       if (s.shadow > 0) {
-        gl.useProgram(shadowProgram);
-        gl.uniform2f(shade.uViewport, mesh.width, mesh.height);
-        const drop = Math.min(mesh.width, mesh.height) * 0.035 * s.inflate;
-        gl.uniform2f(shade.uOffset, drop * 0.25, drop);
-        gl.uniform1i(shade.uField, 0);
-        if (s.light) gl.uniform3f(shade.uShadowColor, 0.08, 0.08, 0.14);
-        else gl.uniform3f(shade.uShadowColor, 0, 0, 0);
-        gl.uniform1f(shade.uShadow, s.shadow * (s.light ? 0.35 : 0.7));
-        gl.uniform1f(shade.uClock, state.clock);
-        gl.uniform4fv(shade.uParts, partData);
-        gl.drawElements(gl.TRIANGLES, mesh.indices, mesh.indexType, 0);
+        gl.useProgram(shadowProgram)
+        gl.uniform2f(shade.uViewport, mesh.width, mesh.height)
+        const drop = Math.min(mesh.width, mesh.height) * 0.035 * s.inflate
+        gl.uniform2f(shade.uOffset, drop * 0.25, drop)
+        gl.uniform1i(shade.uField, 0)
+        if (s.light) gl.uniform3f(shade.uShadowColor, 0.08, 0.08, 0.14)
+        else gl.uniform3f(shade.uShadowColor, 0, 0, 0)
+        gl.uniform1f(shade.uShadow, s.shadow * (s.light ? 0.35 : 0.7))
+        gl.uniform1f(shade.uClock, state.clock)
+        gl.uniform4fv(shade.uParts, partData)
+        gl.drawElements(gl.TRIANGLES, mesh.indices, mesh.indexType, 0)
       }
 
-      gl.useProgram(surfaceProgram);
-      gl.uniform2f(surface.uViewport, mesh.width, mesh.height);
-      gl.uniform2f(surface.uOffset, 0, 0);
-      gl.uniform1i(surface.uField, 0);
-      gl.uniform1i(surface.uPaint, 1);
-      gl.uniform1i(surface.uSlope, 2);
-      const yaw = state.turn.x;
-      const pitch = state.turn.y;
-      const cy = Math.cos(yaw);
-      const sy = Math.sin(yaw);
-      const cp = Math.cos(pitch);
-      const sp = Math.sin(pitch);
-      turnMatrix[0] = cy;
-      turnMatrix[1] = sy * sp;
-      turnMatrix[2] = -sy * cp;
-      turnMatrix[3] = 0;
-      turnMatrix[4] = cp;
-      turnMatrix[5] = sp;
-      turnMatrix[6] = sy;
-      turnMatrix[7] = -cy * sp;
-      turnMatrix[8] = cy * cp;
-      gl.uniformMatrix3fv(surface.uTurn, false, turnMatrix);
-      gl.uniform3f(surface.uColor, state.color[0], state.color[1], state.color[2]);
-      gl.uniform1f(surface.uPaintMix, s.src && s.imageColors ? 1 : 0);
-      gl.uniform1f(surface.uMaterial, s.material);
-      gl.uniform1f(surface.uLight, s.light ? 1 : 0);
-      gl.uniform1f(surface.uInflate, s.inflate);
-      gl.uniform1f(surface.uClock, state.clock);
-      gl.uniform4fv(surface.uParts, partData);
-      gl.drawElements(gl.TRIANGLES, mesh.indices, mesh.indexType, 0);
-      gl.bindVertexArray(null);
-    };
+      gl.useProgram(surfaceProgram)
+      gl.uniform2f(surface.uViewport, mesh.width, mesh.height)
+      gl.uniform2f(surface.uOffset, 0, 0)
+      gl.uniform1i(surface.uField, 0)
+      gl.uniform1i(surface.uPaint, 1)
+      gl.uniform1i(surface.uSlope, 2)
+      const yaw = state.turn.x
+      const pitch = state.turn.y
+      const cy = Math.cos(yaw)
+      const sy = Math.sin(yaw)
+      const cp = Math.cos(pitch)
+      const sp = Math.sin(pitch)
+      turnMatrix[0] = cy
+      turnMatrix[1] = sy * sp
+      turnMatrix[2] = -sy * cp
+      turnMatrix[3] = 0
+      turnMatrix[4] = cp
+      turnMatrix[5] = sp
+      turnMatrix[6] = sy
+      turnMatrix[7] = -cy * sp
+      turnMatrix[8] = cy * cp
+      gl.uniformMatrix3fv(surface.uTurn, false, turnMatrix)
+      gl.uniform3f(surface.uColor, state.color[0], state.color[1], state.color[2])
+      gl.uniform1f(surface.uPaintMix, s.src && s.imageColors ? 1 : 0)
+      gl.uniform1f(surface.uMaterial, s.material)
+      gl.uniform1f(surface.uLight, s.light ? 1 : 0)
+      gl.uniform1f(surface.uInflate, s.inflate)
+      gl.uniform1f(surface.uClock, state.clock)
+      gl.uniform4fv(surface.uParts, partData)
+      gl.drawElements(gl.TRIANGLES, mesh.indices, mesh.indexType, 0)
+      gl.bindVertexArray(null)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive || !visible || document.hidden) return;
-      const s = cfg;
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
+      raf = 0
+      if (!alive || !visible || document.hidden) return
+      const s = cfg
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
 
-      if (reduce || !s.intro) state.clock = 10;
-      else if (state.ready && state.clock < 10) state.clock = state.clock + dt > 1.8 ? 10 : state.clock + dt;
+      if (reduce || !s.intro) state.clock = 10
+      else if (state.ready && state.clock < 10)
+        state.clock = state.clock + dt > 1.8 ? 10 : state.clock + dt
 
-      const hover = state.hover;
-      const pointer = state.pointer;
+      const hover = state.hover
+      const pointer = state.pointer
       const pressing =
-        state.ready && (pointer.dragging || (pointer.inside && !pointer.down && onSurface(pointer.x, pointer.y)));
-      const follow = 1 - Math.exp(-dt / 0.05);
-      const nextX = hover.x + (pointer.x - hover.x) * follow;
-      const nextY = hover.y + (pointer.y - hover.y) * follow;
-      const blend = 1 - Math.exp(-dt / 0.04);
-      hover.vx += ((nextX - hover.x) / Math.max(dt, 0.001) - hover.vx) * blend;
-      hover.vy += ((nextY - hover.y) / Math.max(dt, 0.001) - hover.vy) * blend;
-      hover.x = nextX;
-      hover.y = nextY;
-      const goal = pressing ? 1 : 0;
-      hover.power += (goal - hover.power) * (1 - Math.exp(-dt / (pressing ? 0.12 : 0.25)));
+        state.ready &&
+        (pointer.dragging || (pointer.inside && !pointer.down && onSurface(pointer.x, pointer.y)))
+      const follow = 1 - Math.exp(-dt / 0.05)
+      const nextX = hover.x + (pointer.x - hover.x) * follow
+      const nextY = hover.y + (pointer.y - hover.y) * follow
+      const blend = 1 - Math.exp(-dt / 0.04)
+      hover.vx += ((nextX - hover.x) / Math.max(dt, 0.001) - hover.vx) * blend
+      hover.vy += ((nextY - hover.y) / Math.max(dt, 0.001) - hover.vy) * blend
+      hover.x = nextX
+      hover.y = nextY
+      const goal = pressing ? 1 : 0
+      hover.power += (goal - hover.power) * (1 - Math.exp(-dt / (pressing ? 0.12 : 0.25)))
 
-      const turn = state.turn;
-      const aimX = pointer.inside && !reduce ? (pointer.x / Math.max(1, mesh.width) - 0.5) * 0.7 : 0;
-      const aimY = pointer.inside && !reduce ? (pointer.y / Math.max(1, mesh.height) - 0.5) * 0.4 : 0;
-      turn.vx += (28 * (aimX - turn.x) - 10 * turn.vx) * dt;
-      turn.vy += (28 * (aimY - turn.y) - 10 * turn.vy) * dt;
-      turn.x += turn.vx * dt;
-      turn.y += turn.vy * dt;
+      const turn = state.turn
+      const aimX = pointer.inside && !reduce ? (pointer.x / Math.max(1, mesh.width) - 0.5) * 0.7 : 0
+      const aimY =
+        pointer.inside && !reduce ? (pointer.y / Math.max(1, mesh.height) - 0.5) * 0.4 : 0
+      turn.vx += (28 * (aimX - turn.x) - 10 * turn.vx) * dt
+      turn.vy += (28 * (aimY - turn.y) - 10 * turn.vy) * dt
+      turn.x += turn.vx * dt
+      turn.y += turn.vy * dt
       const turning =
         Math.abs(aimX - turn.x) > 0.0005 ||
         Math.abs(aimY - turn.y) > 0.0005 ||
         Math.abs(turn.vx) > 0.001 ||
-        Math.abs(turn.vy) > 0.001;
+        Math.abs(turn.vy) > 0.001
 
-      let energy = 0;
+      let energy = 0
       if (state.ready) {
-        updateGrip(s);
-        state.accumulator += dt;
-        let steps = 0;
+        updateGrip(s)
+        state.accumulator += dt
+        let steps = 0
         while (state.accumulator >= STEP && steps < 40) {
-          energy = solve(STEP, s);
-          state.accumulator -= STEP;
-          steps++;
+          energy = solve(STEP, s)
+          state.accumulator -= STEP
+          steps++
         }
-        if (steps === 40) state.accumulator = 0;
-        writeDynamic();
+        if (steps === 40) state.accumulator = 0
+        writeDynamic()
       }
-      state.energy = energy;
-      render();
+      state.energy = energy
+      render()
 
       const settling =
         !state.ready ||
@@ -1318,133 +1386,143 @@ const ElasticMesh = (props: ElasticMeshProps) => {
         turning ||
         Math.hypot(pointer.x - hover.x, pointer.y - hover.y) > 0.1 ||
         pointer.dragging ||
-        energy > 0.05 * Math.max(1, mesh.activeCount);
-      if (settling) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+        energy > 0.05 * Math.max(1, mesh.activeCount)
+      if (settling) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (!raf && alive && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    };
+      if (!raf && alive && visible && !document.hidden) raf = requestAnimationFrame(frame)
+    }
 
     const locatePointer = (event: PointerEvent) => {
-      const rect = host.getBoundingClientRect();
-      state.pointer.x = event.clientX - rect.left;
-      state.pointer.y = event.clientY - rect.top;
+      const rect = host.getBoundingClientRect()
+      state.pointer.x = event.clientX - rect.left
+      state.pointer.y = event.clientY - rect.top
       state.pointer.inside =
-        state.pointer.x >= 0 && state.pointer.y >= 0 && state.pointer.x <= rect.width && state.pointer.y <= rect.height;
-    };
+        state.pointer.x >= 0 &&
+        state.pointer.y >= 0 &&
+        state.pointer.x <= rect.width &&
+        state.pointer.y <= rect.height
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      locatePointer(event);
-      wake();
-    };
+      locatePointer(event)
+      wake()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      locatePointer(event);
-      if (!state.ready || !onSurface(state.pointer.x, state.pointer.y)) return;
-      const s = cfg;
-      state.pointer.down = true;
-      state.pointer.startX = state.pointer.x;
-      state.pointer.startY = state.pointer.y;
-      state.pointer.startTime = performance.now();
-      state.pointer.dragging = grab(state.pointer.x, state.pointer.y, s);
-      host.setPointerCapture?.(event.pointerId);
-      wake();
-    };
+      locatePointer(event)
+      if (!state.ready || !onSurface(state.pointer.x, state.pointer.y)) return
+      const s = cfg
+      state.pointer.down = true
+      state.pointer.startX = state.pointer.x
+      state.pointer.startY = state.pointer.y
+      state.pointer.startTime = performance.now()
+      state.pointer.dragging = grab(state.pointer.x, state.pointer.y, s)
+      host.setPointerCapture?.(event.pointerId)
+      wake()
+    }
 
     const onPointerUp = (event: PointerEvent) => {
-      if (!state.pointer.down) return;
-      locatePointer(event);
-      const s = cfg;
-      const moved = Math.hypot(state.pointer.x - state.pointer.startX, state.pointer.y - state.pointer.startY);
-      const quick = performance.now() - state.pointer.startTime < 260;
-      release();
-      if (moved < 8 && quick) poke(state.pointer.x, state.pointer.y, s);
-      state.pointer.down = false;
-      wake();
-    };
+      if (!state.pointer.down) return
+      locatePointer(event)
+      const s = cfg
+      const moved = Math.hypot(
+        state.pointer.x - state.pointer.startX,
+        state.pointer.y - state.pointer.startY,
+      )
+      const quick = performance.now() - state.pointer.startTime < 260
+      release()
+      if (moved < 8 && quick) poke(state.pointer.x, state.pointer.y, s)
+      state.pointer.down = false
+      wake()
+    }
 
     const onPointerLeave = () => {
-      state.pointer.inside = false;
-      wake();
-    };
+      state.pointer.inside = false
+      wake()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wake();
-    };
+      last = 0
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(host);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(host)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(host);
-    host.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
-    host.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
+    })
+    intersection.observe(host)
+    host.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerup', onPointerUp)
+    window.addEventListener('pointercancel', onPointerUp)
+    host.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
 
     contentRef = () => {
-      state.ready = false;
-      state.clock = cfg.intro && !reduce ? 0 : 10;
-      rasterize();
-    };
+      state.ready = false
+      state.clock = cfg.intro && !reduce ? 0 : 10
+      rasterize()
+    }
     wakeRef = () => {
-      if (!raf) render();
-      wake();
-    };
+      if (!raf) render()
+      wake()
+    }
 
     onCleanup(() => {
-      alive = false;
-      state.buildToken++;
-      cancelAnimationFrame(raf);
-      window.clearTimeout(resizeTimer);
-      wakeRef = null;
-      contentRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      host.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      host.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteBuffer(restBuffer);
-      gl.deleteBuffer(dynamicBuffer);
-      gl.deleteBuffer(indexBuffer);
-      gl.deleteVertexArray(vao);
-      gl.deleteTexture(fieldTexture);
-      gl.deleteTexture(paintTexture);
-      gl.deleteTexture(slopeTexture);
-      gl.deleteProgram(surfaceProgram);
-      gl.deleteProgram(shadowProgram);
-    });
-  });
+      alive = false
+      state.buildToken++
+      cancelAnimationFrame(raf)
+      window.clearTimeout(resizeTimer)
+      wakeRef = null
+      contentRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      host.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
+      host.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteBuffer(restBuffer)
+      gl.deleteBuffer(dynamicBuffer)
+      gl.deleteBuffer(indexBuffer)
+      gl.deleteVertexArray(vao)
+      gl.deleteTexture(fieldTexture)
+      gl.deleteTexture(paintTexture)
+      gl.deleteTexture(slopeTexture)
+      gl.deleteProgram(surfaceProgram)
+      gl.deleteProgram(shadowProgram)
+    })
+  })
 
   return (
     <div
       {...rest}
       ref={container}
-      class={['relative h-full w-full touch-pan-y select-none overflow-hidden', own.class, own.className]
+      class={[
+        'relative h-full w-full touch-pan-y select-none overflow-hidden',
+        own.class,
+        own.className,
+      ]
         .filter(Boolean)
         .join(' ')}
       style={own.style}
       role="img"
       aria-label={props.src ? 'Elastic logo' : (props.text ?? 'Squish')}
     >
-      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" />
       {own.children}
     </div>
-  );
-};
+  )
+}
 
-export default ElasticMesh;
+export default ElasticMesh

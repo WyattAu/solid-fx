@@ -1,4 +1,4 @@
-import BorderGlow from './BorderGlow';
+import BorderGlow from './BorderGlow'
 
 function BorderGlowDemo() {
   return (
@@ -14,7 +14,7 @@ function BorderGlowDemo() {
         </div>
       </BorderGlow>
     </div>
-  );
+  )
 }
 
-export default BorderGlowDemo;
+export default BorderGlowDemo

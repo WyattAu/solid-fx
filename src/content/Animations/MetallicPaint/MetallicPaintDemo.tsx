@@ -1,4 +1,4 @@
-import MetallicPaint from './MetallicPaint';
+import MetallicPaint from './MetallicPaint'
 
 function MetallicPaintDemo() {
   return (
@@ -7,7 +7,7 @@ function MetallicPaintDemo() {
         <MetallicPaint text="Solid" fontWeight={800} color="#ffffff" scale={0.55} />
       </div>
     </div>
-  );
+  )
 }
 
-export default MetallicPaintDemo;
+export default MetallicPaintDemo

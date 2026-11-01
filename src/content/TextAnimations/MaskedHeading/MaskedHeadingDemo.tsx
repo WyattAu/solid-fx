@@ -1,4 +1,4 @@
-import MaskedHeading from './MaskedHeading';
+import MaskedHeading from './MaskedHeading'
 
 function MaskedHeadingDemo() {
   return (
@@ -14,7 +14,7 @@ function MaskedHeadingDemo() {
         className="text-white"
       />
     </div>
-  );
+  )
 }
 
-export default MaskedHeadingDemo;
+export default MaskedHeadingDemo

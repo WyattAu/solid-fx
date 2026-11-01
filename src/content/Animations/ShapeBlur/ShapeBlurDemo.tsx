@@ -1,4 +1,4 @@
-import ShapeBlur from './ShapeBlur';
+import ShapeBlur from './ShapeBlur'
 
 function ShapeBlurDemo() {
   return (
@@ -16,7 +16,7 @@ function ShapeBlurDemo() {
         <span class="text-xs font-medium tracking-[0.3em] text-white/70 uppercase">Shape blur</span>
       </ShapeBlur>
     </div>
-  );
+  )
 }
 
-export default ShapeBlurDemo;
+export default ShapeBlurDemo

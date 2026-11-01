@@ -1,4 +1,4 @@
-import FallingText from './FallingText';
+import FallingText from './FallingText'
 
 function FallingTextDemo() {
   return (
@@ -10,7 +10,7 @@ function FallingTextDemo() {
         highlightClass="font-semibold"
       />
     </div>
-  );
+  )
 }
 
-export default FallingTextDemo;
+export default FallingTextDemo

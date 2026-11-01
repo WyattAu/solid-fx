@@ -1,212 +1,216 @@
-import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { FavouriteIcon, StarIcon, ThumbsUpIcon } from '@hugeicons/core-free-icons';
-import type { IconSvgObject } from '@/lib/HugeiconsIcon';
+import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { FavouriteIcon, StarIcon, ThumbsUpIcon } from '@hugeicons/core-free-icons'
+import type { IconSvgObject } from '@/lib/HugeiconsIcon'
 
-export type PulseHeartIcon = 'heart' | 'star' | 'thumb';
+export type PulseHeartIcon = 'heart' | 'star' | 'thumb'
 
 export interface PulseHeartProps {
-  liked?: boolean;
-  defaultLiked?: boolean;
-  count?: number;
-  onChange?: (liked: boolean, count: number) => void;
-  showCount?: boolean;
-  icon?: PulseHeartIcon | JSX.Element;
-  idleOutline?: boolean;
-  size?: number;
-  corner?: number;
-  likedColor?: string;
-  idleColor?: string;
-  pillColor?: string;
-  textColor?: string;
-  duration?: number;
-  dotSize?: number;
-  overshoot?: number;
-  beat?: number;
-  rollDuration?: number;
-  disabled?: boolean;
-  label?: string;
-  className?: string;
-  class?: string;
+  liked?: boolean
+  defaultLiked?: boolean
+  count?: number
+  onChange?: (liked: boolean, count: number) => void
+  showCount?: boolean
+  icon?: PulseHeartIcon | JSX.Element
+  idleOutline?: boolean
+  size?: number
+  corner?: number
+  likedColor?: string
+  idleColor?: string
+  pillColor?: string
+  textColor?: string
+  duration?: number
+  dotSize?: number
+  overshoot?: number
+  beat?: number
+  rollDuration?: number
+  disabled?: boolean
+  label?: string
+  className?: string
+  class?: string
 }
 
-type Roll = { a: string; b: string; at: number; up: boolean };
-type Cell = { ch: string } | { top: string; bottom: string };
+type Roll = { a: string; b: string; at: number; up: boolean }
+type Cell = { ch: string } | { top: string; bottom: string }
 
-const OUT = 0.4;
-const ICONS: Record<PulseHeartIcon, IconSvgObject> = { heart: FavouriteIcon, star: StarIcon, thumb: ThumbsUpIcon };
+const OUT = 0.4
+const ICONS: Record<PulseHeartIcon, IconSvgObject> = {
+  heart: FavouriteIcon,
+  star: StarIcon,
+  thumb: ThumbsUpIcon,
+}
 
 const back = (k: number, c: number) => {
-  const u = k - 1;
-  return 1 + (c + 1) * u ** 3 + c * u ** 2;
-};
+  const u = k - 1
+  return 1 + (c + 1) * u ** 3 + c * u ** 2
+}
 const swellOf = (t: number, c: number) =>
-  t <= 0 ? 0 : t < OUT ? 1 - (1 - t / OUT) ** 3 : 1 - back((t - OUT) / (1 - OUT), c);
-const format = (n: number) => new Intl.NumberFormat().format(n);
+  t <= 0 ? 0 : t < OUT ? 1 - (1 - t / OUT) ** 3 : 1 - back((t - OUT) / (1 - OUT), c)
+const format = (n: number) => new Intl.NumberFormat().format(n)
 const reducedMotion = () =>
-  typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
 const PulseHeart = (props: PulseHeartProps) => {
-  const controlled = () => props.liked !== undefined;
-  const [inner, setInner] = createSignal(props.defaultLiked ?? false);
-  const [total, setTotal] = createSignal(props.count ?? 0);
-  const liked = () => (controlled() ? (props.liked as boolean) : inner());
-  const [shown, setShown] = createSignal({ liked: liked(), count: props.count ?? 0 });
-  const [roll, setRoll] = createSignal<Roll | null>(null);
+  const controlled = () => props.liked !== undefined
+  const [inner, setInner] = createSignal(props.defaultLiked ?? false)
+  const [total, setTotal] = createSignal(props.count ?? 0)
+  const liked = () => (controlled() ? (props.liked as boolean) : inner())
+  const [shown, setShown] = createSignal({ liked: liked(), count: props.count ?? 0 })
+  const [roll, setRoll] = createSignal<Roll | null>(null)
 
-  let rootEl!: HTMLButtonElement;
-  let pillEl!: HTMLSpanElement;
-  let heartEl!: HTMLSpanElement;
-  let glyphEl: SVGGElement | undefined;
-  let rollEl: HTMLSpanElement | undefined;
-  let raf = 0;
-  let rollTimer: ReturnType<typeof setTimeout> | undefined;
-  let viaPointer = false;
-  let shownRef = { liked: liked(), count: props.count ?? 0 };
-
-  createEffect(() => {
-    setTotal(props.count ?? 0);
-  });
+  let rootEl!: HTMLButtonElement
+  let pillEl!: HTMLSpanElement
+  let heartEl!: HTMLSpanElement
+  let glyphEl: SVGGElement | undefined
+  let rollEl: HTMLSpanElement | undefined
+  let raf = 0
+  let rollTimer: ReturnType<typeof setTimeout> | undefined
+  let viaPointer = false
+  let shownRef = { liked: liked(), count: props.count ?? 0 }
 
   createEffect(() => {
-    const l = liked();
-    const t = total();
-    if (raf) return;
-    if (shownRef.liked === l && shownRef.count === t) return;
-    shownRef = { liked: l, count: t };
-    setShown(shownRef);
-  });
+    setTotal(props.count ?? 0)
+  })
+
+  createEffect(() => {
+    const l = liked()
+    const t = total()
+    if (raf) return
+    if (shownRef.liked === l && shownRef.count === t) return
+    shownRef = { liked: l, count: t }
+    setShown(shownRef)
+  })
 
   // Upstream layout effect: flush the [data-instant] transition skip after paint.
   createEffect(() => {
-    void shown();
-    const root = rootEl;
-    if (!root || root.dataset.instant === undefined) return;
-    root.getBoundingClientRect();
-    delete root.dataset.instant;
-  });
+    void shown()
+    const root = rootEl
+    if (!root || root.dataset.instant === undefined) return
+    root.getBoundingClientRect()
+    delete root.dataset.instant
+  })
 
   // Upstream layout effect on [roll]: start the digit roll from its pre-position.
   createEffect(() => {
-    const r = roll();
-    void shown();
-    const el = rollEl;
-    if (!el || !r) return;
-    el.style.transition = 'none';
-    el.style.transform = `translateY(${r.up ? '0' : '-1em'})`;
-    el.getBoundingClientRect();
-    el.style.transition = '';
-    el.style.transform = `translateY(${r.up ? '-1em' : '0'})`;
-  });
+    const r = roll()
+    void shown()
+    const el = rollEl
+    if (!el || !r) return
+    el.style.transition = 'none'
+    el.style.transform = `translateY(${r.up ? '0' : '-1em'})`
+    el.getBoundingClientRect()
+    el.style.transition = ''
+    el.style.transform = `translateY(${r.up ? '-1em' : '0'})`
+  })
 
   onMount(() => {
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      clearTimeout(rollTimer);
-    });
-  });
+      cancelAnimationFrame(raf)
+      clearTimeout(rollTimer)
+    })
+  })
 
   const startRoll = (from: number, to: number) => {
-    if (from === to) return;
-    const a = format(from);
-    const b = format(to);
-    const changed = a.length === b.length ? [...b].flatMap((ch, i) => (ch !== a[i] ? [i] : [])) : [];
-    setRoll({ a, b, at: changed.length === 1 ? changed[0] : -1, up: to > from });
-    clearTimeout(rollTimer);
-    rollTimer = setTimeout(() => setRoll(null), props.rollDuration ?? 350);
-  };
+    if (from === to) return
+    const a = format(from)
+    const b = format(to)
+    const changed = a.length === b.length ? [...b].flatMap((ch, i) => (ch !== a[i] ? [i] : [])) : []
+    setRoll({ a, b, at: changed.length === 1 ? changed[0] : -1, up: to > from })
+    clearTimeout(rollTimer)
+    rollTimer = setTimeout(() => setRoll(null), props.rollDuration ?? 350)
+  }
 
   const run = (nextLiked: boolean, nextCount: number) => {
-    const root = rootEl;
-    const heart = heartEl;
-    const pill = pillEl;
-    if (!root || !heart || !pill) return;
-    const glyph = glyphEl;
-    root.dataset.running = '';
-    let swapped = false;
-    let prev = 0;
-    const t0 = performance.now();
+    const root = rootEl
+    const heart = heartEl
+    const pill = pillEl
+    if (!root || !heart || !pill) return
+    const glyph = glyphEl
+    root.dataset.running = ''
+    let swapped = false
+    let prev = 0
+    const t0 = performance.now()
     const tick = (now: number) => {
-      const D = props.duration ?? 560;
-      const dot = props.dotSize ?? 0.3;
-      const c = props.overshoot ?? 1.7;
-      const B = props.beat ?? 3;
-      const t = Math.min(1, (now - t0) / D);
-      const step = prev ? now - prev : 1000 / 60;
-      prev = now;
-      const s = swellOf(t, c);
-      const k = 1 - (1 - dot) * s;
-      if (glyph) glyph.setAttribute('transform', `translate(12 12) scale(${k}) translate(-12 -12)`);
-      else heart.style.transform = `scale(${k})`;
-      pill.style.transform = `scale(${1 - (B / 100) * s})`;
+      const D = props.duration ?? 560
+      const dot = props.dotSize ?? 0.3
+      const c = props.overshoot ?? 1.7
+      const B = props.beat ?? 3
+      const t = Math.min(1, (now - t0) / D)
+      const step = prev ? now - prev : 1000 / 60
+      prev = now
+      const s = swellOf(t, c)
+      const k = 1 - (1 - dot) * s
+      if (glyph) glyph.setAttribute('transform', `translate(12 12) scale(${k}) translate(-12 -12)`)
+      else heart.style.transform = `scale(${k})`
+      pill.style.transform = `scale(${1 - (B / 100) * s})`
       if (!swapped && t + step / 2 / D >= OUT) {
-        swapped = true;
-        root.dataset.liked = String(nextLiked);
-        startRoll(shownRef.count, nextCount);
-        shownRef = { liked: nextLiked, count: nextCount };
-        setShown(shownRef);
+        swapped = true
+        root.dataset.liked = String(nextLiked)
+        startRoll(shownRef.count, nextCount)
+        shownRef = { liked: nextLiked, count: nextCount }
+        setShown(shownRef)
       }
       if (t < 1) {
-        raf = requestAnimationFrame(tick);
-        return;
+        raf = requestAnimationFrame(tick)
+        return
       }
-      raf = 0;
-      if (glyph) glyph.removeAttribute('transform');
-      heart.style.transform = '';
-      pill.style.transform = '';
-      delete root.dataset.running;
-      const l = { liked: liked(), count: total() };
+      raf = 0
+      if (glyph) glyph.removeAttribute('transform')
+      heart.style.transform = ''
+      pill.style.transform = ''
+      delete root.dataset.running
+      const l = { liked: liked(), count: total() }
       if (l.liked !== shownRef.liked || l.count !== shownRef.count) {
-        shownRef = l;
-        setShown(shownRef);
+        shownRef = l
+        setShown(shownRef)
       }
-    };
-    raf = requestAnimationFrame(tick);
-  };
+    }
+    raf = requestAnimationFrame(tick)
+  }
 
   const handlePointerDown = (e: PointerEvent) => {
-    if (e.button !== 0 || props.disabled) return;
-    viaPointer = true;
-    if (!reducedMotion() && rootEl) rootEl.dataset.pressed = '';
-  };
+    if (e.button !== 0 || props.disabled) return
+    viaPointer = true
+    if (!reducedMotion() && rootEl) rootEl.dataset.pressed = ''
+  }
   const handlePointerUp = () => {
-    if (rootEl) delete rootEl.dataset.pressed;
-  };
+    if (rootEl) delete rootEl.dataset.pressed
+  }
   const handlePointerCancel = () => {
-    viaPointer = false;
-    handlePointerUp();
-  };
+    viaPointer = false
+    handlePointerUp()
+  }
   const handleKeyDown = () => {
-    viaPointer = false;
-  };
+    viaPointer = false
+  }
   const handleClick = (e: MouseEvent) => {
-    if (props.disabled || raf) return;
-    const pointer = viaPointer && e.detail !== 0;
-    viaPointer = false;
-    const nextLiked = !liked();
-    const nextCount = total() + (nextLiked ? 1 : -1);
-    if (!controlled()) setInner(nextLiked);
-    setTotal(nextCount);
-    untrack(() => props.onChange?.(nextLiked, nextCount));
-    if (pointer && !reducedMotion()) run(nextLiked, nextCount);
-    else if (rootEl) rootEl.dataset.instant = '';
-  };
+    if (props.disabled || raf) return
+    const pointer = viaPointer && e.detail !== 0
+    viaPointer = false
+    const nextLiked = !liked()
+    const nextCount = total() + (nextLiked ? 1 : -1)
+    if (!controlled()) setInner(nextLiked)
+    setTotal(nextCount)
+    untrack(() => props.onChange?.(nextLiked, nextCount))
+    if (pointer && !reducedMotion()) run(nextLiked, nextCount)
+    else if (rootEl) rootEl.dataset.instant = ''
+  }
 
-  const iconVal = (): PulseHeartIcon | JSX.Element | undefined => props.icon ?? 'heart';
+  const iconVal = (): PulseHeartIcon | JSX.Element | undefined => props.icon ?? 'heart'
   const paths = (): IconSvgObject | null =>
-    typeof iconVal() === 'string' ? (ICONS[iconVal() as PulseHeartIcon] ?? ICONS.heart) : null;
+    typeof iconVal() === 'string' ? (ICONS[iconVal() as PulseHeartIcon] ?? ICONS.heart) : null
 
-  const text = () => format(shown().count);
+  const text = () => format(shown().count)
   const cells = (): Cell[] => {
-    const r = roll();
+    const r = roll()
     if (r) {
-      if (r.at === -1) return [{ top: r.up ? r.a : r.b, bottom: r.up ? r.b : r.a }];
+      if (r.at === -1) return [{ top: r.up ? r.a : r.b, bottom: r.up ? r.b : r.a }]
       return [...r.b].map((ch, i) =>
-        i === r.at ? { top: r.up ? r.a[i] : ch, bottom: r.up ? ch : r.a[i] } : { ch }
-      );
+        i === r.at ? { top: r.up ? r.a[i] : ch, bottom: r.up ? ch : r.a[i] } : { ch },
+      )
     }
-    return [...text()].map(ch => ({ ch }));
-  };
+    return [...text()].map(ch => ({ ch }))
+  }
 
   return (
     <button
@@ -227,7 +231,7 @@ const PulseHeart = (props: PulseHeartProps) => {
         '--ph-text': props.textColor ?? '#f5f5f5',
         '--ph-roll': `${props.rollDuration ?? 350}ms`,
         '--ph-stroke': `${(1.5 * (props.size ?? 40)) / 24}px`,
-        '--ph-ease-out': 'cubic-bezier(0.23, 1, 0.32, 1)'
+        '--ph-ease-out': 'cubic-bezier(0.23, 1, 0.32, 1)',
       }}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
@@ -249,7 +253,7 @@ const PulseHeart = (props: PulseHeartProps) => {
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <g
                 ref={el => {
-                  glyphEl = el;
+                  glyphEl = el
                 }}
               >
                 <For each={paths()!}>
@@ -261,20 +265,20 @@ const PulseHeart = (props: PulseHeartProps) => {
             iconVal()
           )}
         </span>
-        {props.showCount ?? true ? (
+        {(props.showCount ?? true) ? (
           <span
             class="inline-flex font-semibold leading-none tracking-[-0.1px] tabular-nums [font-size:calc(var(--ph-size)*0.5)] [color:var(--ph-text)] [&>span]:block [&>span]:h-[1em]"
             aria-hidden="true"
           >
             <For each={cells()}>
-              {(cell, i) =>
+              {(cell, _i) =>
                 'ch' in cell ? (
                   <span>{cell.ch}</span>
                 ) : (
                   <span class="relative overflow-hidden">
                     <span
                       ref={el => {
-                        rollEl = el;
+                        rollEl = el
                       }}
                       class="flex flex-col [transition:transform_var(--ph-roll)_var(--ph-ease-out)] motion-reduce:transition-none [&>span]:block [&>span]:h-[1em] [&>span]:leading-none"
                     >
@@ -288,11 +292,13 @@ const PulseHeart = (props: PulseHeartProps) => {
           </span>
         ) : null}
         <span class="sr-only">
-          {(props.showCount ?? true) ? `${props.label ?? 'Like'}, ${format(total())}` : (props.label ?? 'Like')}
+          {(props.showCount ?? true)
+            ? `${props.label ?? 'Like'}, ${format(total())}`
+            : (props.label ?? 'Like')}
         </span>
       </span>
     </button>
-  );
-};
+  )
+}
 
-export default PulseHeart;
+export default PulseHeart

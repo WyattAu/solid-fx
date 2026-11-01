@@ -1,4 +1,4 @@
-import ScrollReveal from './ScrollReveal';
+import ScrollReveal from './ScrollReveal'
 
 function ScrollRevealDemo() {
   return (
@@ -16,7 +16,7 @@ function ScrollRevealDemo() {
         Solid pieces rise letter by letter as this heading enters the viewport.
       </ScrollReveal>
     </div>
-  );
+  )
 }
 
-export default ScrollRevealDemo;
+export default ScrollRevealDemo

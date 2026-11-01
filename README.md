@@ -4,8 +4,12 @@
 > port of [react-bits](https://github.com/DavidHDev/react-bits) (TypeScript +
 > Tailwind variant) to SolidJS idioms.
 
-**Status: `DRAFT`** — port in progress. See `AGENTS.md` for the operating
-contract and `PORTING.md` for the translation rules.
+**Status: `CURRENT`** — 218/218 components ported. Every component typechecks
+(`tsc --noEmit` clean), the barrel smoke test passes, the React-free contract
+oracle is green, and the Starlight site builds all 218 demo pages
+(`bun run build`). 21 `PORT-NOTE` markers remain as the greppable debt ledger
+(`make contract --strict` eventually must reach zero); visual QA against
+reactbits.dev is the next milestone.
 
 ## What this is
 

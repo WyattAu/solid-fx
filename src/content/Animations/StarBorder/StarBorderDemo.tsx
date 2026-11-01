@@ -1,4 +1,4 @@
-import StarBorder from './StarBorder';
+import StarBorder from './StarBorder'
 
 function StarBorderDemo() {
   return (
@@ -7,7 +7,7 @@ function StarBorderDemo() {
         <span class="px-4 text-base text-white">Launch mission</span>
       </StarBorder>
     </div>
-  );
+  )
 }
 
-export default StarBorderDemo;
+export default StarBorderDemo

@@ -1,4 +1,4 @@
-import Ribbons from './Ribbons';
+import Ribbons from './Ribbons'
 
 function RibbonsDemo() {
   return (
@@ -13,7 +13,7 @@ function RibbonsDemo() {
         fade
       />
     </div>
-  );
+  )
 }
 
-export default RibbonsDemo;
+export default RibbonsDemo

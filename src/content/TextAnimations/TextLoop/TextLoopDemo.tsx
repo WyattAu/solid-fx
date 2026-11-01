@@ -1,4 +1,4 @@
-import TextLoop from './TextLoop';
+import TextLoop from './TextLoop'
 
 function TextLoopDemo() {
   return (
@@ -13,7 +13,7 @@ function TextLoopDemo() {
         class="text-white"
       />
     </div>
-  );
+  )
 }
 
-export default TextLoopDemo;
+export default TextLoopDemo

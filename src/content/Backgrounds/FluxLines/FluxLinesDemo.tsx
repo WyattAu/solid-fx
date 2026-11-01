@@ -1,4 +1,4 @@
-import FluxLines from './FluxLines';
+import FluxLines from './FluxLines'
 
 function FluxLinesDemo() {
   return (
@@ -17,7 +17,7 @@ function FluxLinesDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default FluxLinesDemo;
+export default FluxLinesDemo

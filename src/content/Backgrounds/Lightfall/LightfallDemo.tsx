@@ -1,4 +1,4 @@
-import Lightfall from './Lightfall';
+import Lightfall from './Lightfall'
 
 const LightfallDemo = () => (
   <div class="relative h-96 w-full overflow-hidden bg-black">
@@ -11,6 +11,6 @@ const LightfallDemo = () => (
       zoom={3}
     />
   </div>
-);
+)
 
-export default LightfallDemo;
+export default LightfallDemo

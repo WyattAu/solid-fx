@@ -1,4 +1,4 @@
-import SpecularButton from './SpecularButton';
+import SpecularButton from './SpecularButton'
 
 function SpecularButtonDemo() {
   return (
@@ -7,7 +7,7 @@ function SpecularButtonDemo() {
         Get Started
       </SpecularButton>
     </div>
-  );
+  )
 }
 
-export default SpecularButtonDemo;
+export default SpecularButtonDemo

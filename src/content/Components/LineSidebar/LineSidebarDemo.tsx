@@ -1,8 +1,8 @@
-import { createSignal } from 'solid-js';
-import LineSidebar from './LineSidebar';
+import { createSignal } from 'solid-js'
+import LineSidebar from './LineSidebar'
 
 function LineSidebarDemo() {
-  const [lastClicked, setLastClicked] = createSignal('');
+  const [lastClicked, setLastClicked] = createSignal('')
 
   return (
     <div class="flex h-96 w-full items-center justify-start overflow-hidden bg-gray-950 p-8">
@@ -12,7 +12,7 @@ function LineSidebarDemo() {
       />
       <span class="sr-only">{`Last clicked: ${lastClicked()}`}</span>
     </div>
-  );
+  )
 }
 
-export default LineSidebarDemo;
+export default LineSidebarDemo

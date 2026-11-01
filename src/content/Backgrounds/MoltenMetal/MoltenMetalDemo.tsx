@@ -1,4 +1,4 @@
-import MoltenMetal from './MoltenMetal';
+import MoltenMetal from './MoltenMetal'
 
 function MoltenMetalDemo() {
   return (
@@ -17,7 +17,7 @@ function MoltenMetalDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default MoltenMetalDemo;
+export default MoltenMetalDemo

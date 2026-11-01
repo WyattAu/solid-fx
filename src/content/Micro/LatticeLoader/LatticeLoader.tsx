@@ -1,7 +1,7 @@
-import { createEffect, createMemo, createSignal, For, onCleanup } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, onCleanup } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type LatticeStatus = 'working' | 'done' | 'error';
+export type LatticeStatus = 'working' | 'done' | 'error'
 export type LatticePatternName =
   | 'arrow'
   | 'dots'
@@ -12,42 +12,42 @@ export type LatticePatternName =
   | 'sweep'
   | 'spin'
   | 'rain'
-  | 'pulse';
-export type LatticeGrid = 3 | 4;
+  | 'pulse'
+export type LatticeGrid = 3 | 4
 
 export interface LatticePattern {
-  cells: (number | null)[];
-  loop?: number;
-  scale?: number;
-  lit?: 0.25 | 0.35 | 0.45 | 0.62;
+  cells: (number | null)[]
+  loop?: number
+  scale?: number
+  lit?: 0.25 | 0.35 | 0.45 | 0.62
 }
 
 export interface LatticeLoaderProps {
-  label?: string;
-  doneLabel?: string;
-  errorLabel?: string;
-  status?: LatticeStatus;
-  pattern?: LatticePatternName | LatticePattern;
-  grid?: LatticeGrid;
-  shape?: 'square' | 'round';
-  color?: string;
-  doneColor?: string;
-  errorColor?: string;
-  cellSize?: number;
-  gap?: number;
-  fontSize?: number;
-  step?: number;
-  idleOpacity?: number;
-  glow?: boolean;
-  glowColor?: string;
-  showTimer?: boolean;
-  elapsed?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  label?: string
+  doneLabel?: string
+  errorLabel?: string
+  status?: LatticeStatus
+  pattern?: LatticePatternName | LatticePattern
+  grid?: LatticeGrid
+  shape?: 'square' | 'round'
+  color?: string
+  doneColor?: string
+  errorColor?: string
+  cellSize?: number
+  gap?: number
+  fontSize?: number
+  step?: number
+  idleOpacity?: number
+  glow?: boolean
+  glowColor?: string
+  showTimer?: boolean
+  elapsed?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type ResolvedPattern = { cells: (number | null)[]; loop: number; scale: number; lit?: number };
+type ResolvedPattern = { cells: (number | null)[]; loop: number; scale: number; lit?: number }
 
 const PATTERNS: Record<LatticePatternName, Partial<Record<LatticeGrid, ResolvedPattern>>> = {
   arrow: { 3: { cells: [1, 2, 3, 0, 1, 2, 1, 2, 3], loop: 7.2, scale: 1 } },
@@ -56,40 +56,71 @@ const PATTERNS: Record<LatticePatternName, Partial<Record<LatticeGrid, ResolvedP
   spiral: { 3: { cells: [0, 1, 2, 7, 8, 3, 6, 5, 4], loop: 9, scale: 1.2, lit: 0.35 } },
   orbit: {
     3: { cells: [0, 1, 2, 7, null, 3, 6, 5, 4], loop: 8, scale: 1.2 },
-    4: { cells: [0, 1, 2, 3, 11, null, null, 4, 10, null, null, 5, 9, 8, 7, 6], loop: 6, scale: 1.2, lit: 0.45 }
+    4: {
+      cells: [0, 1, 2, 3, 11, null, null, 4, 10, null, null, 5, 9, 8, 7, 6],
+      loop: 6,
+      scale: 1.2,
+      lit: 0.45,
+    },
   },
   snake: {
     3: { cells: [0, 1, 2, 5, 4, 3, 6, 7, 8], loop: 9, scale: 1, lit: 0.35 },
-    4: { cells: [0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11, 15, 14, 13, 12], loop: 16, scale: 1, lit: 0.25 }
+    4: {
+      cells: [0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11, 15, 14, 13, 12],
+      loop: 16,
+      scale: 1,
+      lit: 0.25,
+    },
   },
-  sweep: { 4: { cells: [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6], loop: 5, scale: 1, lit: 0.45 } },
-  spin: { 4: { cells: [0, 0, 1, 1, 0, 0, 1, 1, 3, 3, 2, 2, 3, 3, 2, 2], loop: 4, scale: 1.6, lit: 0.35 } },
-  rain: { 4: { cells: [0, 2, 1, 3, 1, 3, 2, 4, 2, 4, 3, 5, 3, 5, 4, 6], loop: 4, scale: 1.2, lit: 0.35 } },
-  pulse: { 4: { cells: [2, 1, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1, 2, 1, 1, 2], loop: 2.4, scale: 2.5, lit: 0.45 } }
-};
-const DEFAULT_PATTERN: Record<LatticeGrid, LatticePatternName> = { 3: 'orbit', 4: 'sweep' };
+  sweep: {
+    4: { cells: [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6], loop: 5, scale: 1, lit: 0.45 },
+  },
+  spin: {
+    4: { cells: [0, 0, 1, 1, 0, 0, 1, 1, 3, 3, 2, 2, 3, 3, 2, 2], loop: 4, scale: 1.6, lit: 0.35 },
+  },
+  rain: {
+    4: { cells: [0, 2, 1, 3, 1, 3, 2, 4, 2, 4, 3, 5, 3, 5, 4, 6], loop: 4, scale: 1.2, lit: 0.35 },
+  },
+  pulse: {
+    4: {
+      cells: [2, 1, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1, 2, 1, 1, 2],
+      loop: 2.4,
+      scale: 2.5,
+      lit: 0.45,
+    },
+  },
+}
+const DEFAULT_PATTERN: Record<LatticeGrid, LatticePatternName> = { 3: 'orbit', 4: 'sweep' }
 const MARKS: Record<LatticeGrid, Record<'done' | 'error', number[]>> = {
   3: { done: [2, 3, 5, 7], error: [0, 2, 4, 6, 8] },
-  4: { done: [7, 8, 10, 13], error: [0, 3, 5, 6, 9, 10, 12, 15] }
-};
+  4: { done: [7, 8, 10, 13], error: [0, 3, 5, 6, 9, 10, 12, 15] },
+}
 
-const resolvePattern = (pattern: LatticePatternName | LatticePattern, grid: LatticeGrid): ResolvedPattern => {
+const resolvePattern = (
+  pattern: LatticePatternName | LatticePattern,
+  grid: LatticeGrid,
+): ResolvedPattern => {
   if (typeof pattern === 'string') {
-    const named = PATTERNS[pattern];
-    return (named && named[grid]) || (PATTERNS[DEFAULT_PATTERN[grid]][grid] as ResolvedPattern);
+    const named = PATTERNS[pattern]
+    return (named?.[grid]) || (PATTERNS[DEFAULT_PATTERN[grid]][grid] as ResolvedPattern)
   }
-  const cells = Array.from({ length: grid * grid }, (_, i) => pattern.cells[i] ?? null);
-  const max = Math.max(0, ...cells.filter(v => v != null));
-  return { cells, loop: pattern.loop ?? max + 4.2, scale: pattern.scale ?? 1, lit: pattern.lit ?? 0.62 };
-};
+  const cells = Array.from({ length: grid * grid }, (_, i) => pattern.cells[i] ?? null)
+  const max = Math.max(0, ...cells.filter(v => v != null))
+  return {
+    cells,
+    loop: pattern.loop ?? max + 4.2,
+    scale: pattern.scale ?? 1,
+    lit: pattern.lit ?? 0.62,
+  }
+}
 const CELL =
-  'h-[var(--ll-cell)] w-[var(--ll-cell)] [border-radius:max(1px,calc(var(--ll-cell)*0.25))] [background:var(--ll-color)] group-data-[shape=round]:rounded-full';
+  'h-[var(--ll-cell)] w-[var(--ll-cell)] [border-radius:max(1px,calc(var(--ll-cell)*0.25))] [background:var(--ll-color)] group-data-[shape=round]:rounded-full'
 const LIT: Record<number, string> = {
   62: 'animate-[lattice-on_var(--ll-cycle)_infinite]',
   45: 'animate-[lattice-on-45_var(--ll-cycle)_infinite]',
   35: 'animate-[lattice-on-35_var(--ll-cycle)_infinite]',
-  25: 'animate-[lattice-on-25_var(--ll-cycle)_infinite]'
-};
+  25: 'animate-[lattice-on-25_var(--ll-cycle)_infinite]',
+}
 const STYLE = `
 @keyframes lattice-on { 0%, 100% { opacity: var(--ll-idle); } 18%, 42% { opacity: var(--ll-peak); } 62% { opacity: var(--ll-idle); } }
 @keyframes lattice-on-45 { 0%, 100% { opacity: var(--ll-idle); } 13%, 31% { opacity: var(--ll-peak); } 45% { opacity: var(--ll-idle); } }
@@ -101,69 +132,71 @@ const STYLE = `
   .ll-mark { transform: none !important; }
   .ll-text { filter: none !important; }
 }
-`;
+`
 const fmt = (ds: number) =>
-  ds < 600 ? `${(ds / 10).toFixed(1)}s` : `${Math.floor(ds / 600)}m ${((ds % 600) / 10).toFixed(1)}s`;
+  ds < 600
+    ? `${(ds / 10).toFixed(1)}s`
+    : `${Math.floor(ds / 600)}m ${((ds % 600) / 10).toFixed(1)}s`
 const spoken = (ds: number) =>
   ds < 600
     ? `${(ds / 10).toFixed(1)} seconds`
-    : `${Math.floor(ds / 600)} minutes ${((ds % 600) / 10).toFixed(1)} seconds`;
+    : `${Math.floor(ds / 600)} minutes ${((ds % 600) / 10).toFixed(1)} seconds`
 
 const LatticeLoader = (props: LatticeLoaderProps) => {
-  const label = () => props.label ?? 'Thinking';
-  const doneLabel = () => props.doneLabel ?? 'Done in';
-  const errorLabel = () => props.errorLabel ?? 'Failed after';
-  const status = () => props.status ?? 'working';
-  const grid = () => (props.grid === 4 ? 4 : 3) as LatticeGrid;
-  const pat = createMemo(() => resolvePattern(props.pattern ?? 'orbit', grid()));
-  const marks = createMemo(() => MARKS[grid()]);
-  const d = () => (props.step ?? 90) * pat().scale;
-  const cycle = () => Math.round(pat().loop * d());
+  const label = () => props.label ?? 'Thinking'
+  const doneLabel = () => props.doneLabel ?? 'Done in'
+  const errorLabel = () => props.errorLabel ?? 'Failed after'
+  const status = () => props.status ?? 'working'
+  const grid = () => (props.grid === 4 ? 4 : 3) as LatticeGrid
+  const pat = createMemo(() => resolvePattern(props.pattern ?? 'orbit', grid()))
+  const marks = createMemo(() => MARKS[grid()])
+  const d = () => (props.step ?? 90) * pat().scale
+  const cycle = () => Math.round(pat().loop * d())
 
-  let timerEl: HTMLSpanElement | undefined;
-  let ds = 0;
+  let timerEl: HTMLSpanElement | undefined
+  let ds = 0
   // Upstream kept the last non-working status in a mutable ref so a return to
   // 'working' re-shows the previous terminal mark.
-  const [mark, setMark] = createSignal<'done' | 'error'>('done');
+  const [mark, setMark] = createSignal<'done' | 'error'>('done')
   const markNow = () => {
-    const s = status();
-    return s === 'working' ? mark() : s;
-  };
+    const s = status()
+    return s === 'working' ? mark() : s
+  }
   createEffect(() => {
-    const s = status();
-    if (s !== 'working') setMark(s === 'error' ? 'error' : 'done');
-  });
-  const [announce, setAnnounce] = createSignal(`${label()}, in progress`);
+    const s = status()
+    if (s !== 'working') setMark(s === 'error' ? 'error' : 'done')
+  })
+  const [announce, setAnnounce] = createSignal(`${label()}, in progress`)
 
   const paint = (value: number) => {
-    ds = value;
-    if (timerEl) timerEl.textContent = fmt(value);
-  };
+    ds = value
+    if (timerEl) timerEl.textContent = fmt(value)
+  }
 
   // Upstream: layout effect on [status, elapsed] — live 100ms timer.
   createEffect(() => {
-    const elapsed = props.elapsed;
-    const st = status();
+    const elapsed = props.elapsed
+    const st = status()
     if (elapsed != null) {
-      paint(Math.round(elapsed * 10));
-      return;
+      paint(Math.round(elapsed * 10))
+      return
     }
-    if (st !== 'working') return;
-    const startedAt = performance.now();
-    paint(0);
-    const id = setInterval(() => paint(Math.floor((performance.now() - startedAt) / 100)), 100);
-    onCleanup(() => clearInterval(id));
-  });
+    if (st !== 'working') return
+    const startedAt = performance.now()
+    paint(0)
+    const id = setInterval(() => paint(Math.floor((performance.now() - startedAt) / 100)), 100)
+    onCleanup(() => clearInterval(id))
+  })
 
   // Upstream: effect on [status] — live-region copy.
   createEffect(() => {
-    const st = status();
-    if (st === 'working') setAnnounce(`${label()}, in progress`);
+    const st = status()
+    if (st === 'working') setAnnounce(`${label()}, in progress`)
     else
       setAnnounce(
-        `${st === 'done' ? doneLabel() : errorLabel()}${(props.showTimer ?? true) ? ` ${spoken(ds)}` : ''}`
-      );
-  });
+        `${st === 'done' ? doneLabel() : errorLabel()}${(props.showTimer ?? true) ? ` ${spoken(ds)}` : ''}`,
+      )
+  })
 
   const textSpan = (active: boolean, children: JSX.Element) => (
     <span
@@ -172,7 +205,7 @@ const LatticeLoader = (props: LatticeLoaderProps) => {
     >
       {children}
     </span>
-  );
+  )
 
   return (
     <span
@@ -187,24 +220,26 @@ const LatticeLoader = (props: LatticeLoaderProps) => {
         '--ll-gap': `${props.gap ?? 2}px`,
         '--ll-font': `${props.fontSize ?? 14}px`,
         '--ll-color': props.color ?? 'currentColor',
-        '--ll-mark': status() === 'error' ? (props.errorColor ?? '#ef4444') : (props.doneColor ?? '#22c55e'),
+        '--ll-mark':
+          status() === 'error' ? (props.errorColor ?? '#ef4444') : (props.doneColor ?? '#22c55e'),
         '--ll-idle': props.idleOpacity ?? 0.15,
         '--ll-glow': props.glowColor || (props.color ?? 'currentColor'),
         '--ll-mark-glow':
-          props.glowColor || (status() === 'error' ? (props.errorColor ?? '#ef4444') : (props.doneColor ?? '#22c55e')),
+          props.glowColor ||
+          (status() === 'error' ? (props.errorColor ?? '#ef4444') : (props.doneColor ?? '#22c55e')),
         '--ll-cycle': `${cycle()}ms`,
         '--ll-peak': 1,
         '--ll-ease-out': 'cubic-bezier(0.23, 1, 0.32, 1)',
         '--ll-ease-in-out': 'cubic-bezier(0.77, 0, 0.175, 1)',
-        ...props.style
+        ...props.style,
       }}
     >
       <style>{STYLE}</style>
       <span class="grid shrink-0" aria-hidden="true">
         <span class="ll-run [grid-area:1/1] grid [grid-template-columns:repeat(var(--ll-n),var(--ll-cell))] [gap:var(--ll-gap)] [transition:opacity_200ms_ease] group-data-[status=done]:opacity-0 group-data-[status=error]:opacity-0 group-data-[status=done]:[&>span]:[animation-play-state:paused] group-data-[status=error]:[&>span]:[animation-play-state:paused]">
           <For each={pat().cells}>
-            {(unit) => {
-              const lit = pat().lit;
+            {unit => {
+              const lit = pat().lit
               return (
                 <span
                   class={
@@ -214,9 +249,11 @@ const LatticeLoader = (props: LatticeLoaderProps) => {
                   }
                   data-hole={unit == null ? '' : undefined}
                   data-lit={lit && lit !== 0.62 ? Math.round(lit * 100) : undefined}
-                  style={unit == null ? undefined : { 'animation-delay': `${Math.round(unit * d())}ms` }}
+                  style={
+                    unit == null ? undefined : { 'animation-delay': `${Math.round(unit * d())}ms` }
+                  }
                 />
-              );
+              )
             }}
           </For>
         </span>
@@ -239,7 +276,7 @@ const LatticeLoader = (props: LatticeLoaderProps) => {
       {(props.showTimer ?? true) ? (
         <span
           ref={(el: HTMLSpanElement) => {
-            timerEl = el;
+            timerEl = el
           }}
           class="font-mono tabular-nums opacity-60 [font-size:calc(var(--ll-font)*0.875)]"
           aria-hidden="true"
@@ -249,7 +286,7 @@ const LatticeLoader = (props: LatticeLoaderProps) => {
       ) : null}
       <span class="sr-only">{announce()}</span>
     </span>
-  );
-};
+  )
+}
 
-export default LatticeLoader;
+export default LatticeLoader

@@ -1,69 +1,70 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type PrismAnimation = 'rotate' | '3drotate' | 'rotate3d' | 'hover' | 'static';
+export type PrismAnimation = 'rotate' | '3drotate' | 'rotate3d' | 'hover' | 'static'
 
-export interface PrismProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'ref' | 'children'> {
-  height?: number;
-  baseWidth?: number;
-  animationType?: PrismAnimation;
-  glow?: number;
-  offset?: { x?: number; y?: number };
-  noise?: number;
-  scale?: number;
-  hueShift?: number;
-  colorFrequency?: number;
-  colors?: string[];
-  saturation?: number;
-  timeScale?: number;
-  interactive?: boolean;
-  hoverStrength?: number;
-  inertia?: number;
-  intro?: boolean;
-  resolution?: number;
-  lightMode?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+export interface PrismProps
+  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'ref' | 'children'> {
+  height?: number
+  baseWidth?: number
+  animationType?: PrismAnimation
+  glow?: number
+  offset?: { x?: number; y?: number }
+  noise?: number
+  scale?: number
+  hueShift?: number
+  colorFrequency?: number
+  colors?: string[]
+  saturation?: number
+  timeScale?: number
+  interactive?: boolean
+  hoverStrength?: number
+  inertia?: number
+  intro?: boolean
+  resolution?: number
+  lightMode?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  height: number;
-  baseWidth: number;
-  animationType: string;
-  glow: number;
-  offsetX: number;
-  offsetY: number;
-  noise: number;
-  scale: number;
-  hueShift: number;
-  colorFrequency: number;
-  colors: string[];
-  saturation: number;
-  timeScale: number;
-  interactive: boolean;
-  hoverStrength: number;
-  inertia: number;
-  intro: boolean;
-  resolution: number;
-  lightMode: boolean;
-  dpr?: number;
-};
+  height: number
+  baseWidth: number
+  animationType: string
+  glow: number
+  offsetX: number
+  offsetY: number
+  noise: number
+  scale: number
+  hueShift: number
+  colorFrequency: number
+  colors: string[]
+  saturation: number
+  timeScale: number
+  interactive: boolean
+  hoverStrength: number
+  inertia: number
+  intro: boolean
+  resolution: number
+  lightMode: boolean
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-const INTRO_SECONDS = 1.4;
-const PALETTE_SIZE = 64;
-const HUE_W = [0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114];
-const HUE_U = [0.701, -0.587, -0.114, -0.299, 0.413, -0.114, -0.3, -0.588, 0.886];
-const HUE_V = [0.168, -0.331, 0.5, 0.328, 0.035, -0.5, -0.497, 0.296, 0.201];
+const INTRO_SECONDS = 1.4
+const PALETTE_SIZE = 64
+const HUE_W = [0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114]
+const HUE_U = [0.701, -0.587, -0.114, -0.299, 0.413, -0.114, -0.3, -0.588, 0.886]
+const HUE_V = [0.168, -0.331, 0.5, 0.328, 0.035, -0.5, -0.497, 0.296, 0.201]
 
 const VERTEX = `#version 300 es
 void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -138,50 +139,50 @@ void main() {
   } else {
     outColor = vec4(grade(mapped.rgb, seed) * mapped.a, mapped.a);
   }
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const rotation = (yaw: number, pitch: number, roll: number): number[] => {
-  const cy = Math.cos(yaw);
-  const sy = Math.sin(yaw);
-  const cx = Math.cos(pitch);
-  const sx = Math.sin(pitch);
-  const cz = Math.cos(roll);
-  const sz = Math.sin(roll);
+  const cy = Math.cos(yaw)
+  const sy = Math.sin(yaw)
+  const cx = Math.cos(pitch)
+  const sx = Math.sin(pitch)
+  const cz = Math.cos(roll)
+  const sz = Math.sin(roll)
   return [
     cy * cz + sy * sx * sz,
     cx * sz,
@@ -191,32 +192,35 @@ const rotation = (yaw: number, pitch: number, roll: number): number[] => {
     sy * sz + cy * sx * cz,
     sy * cx,
     -sx,
-    cy * cx
-  ];
-};
+    cy * cx,
+  ]
+}
 
 const multiply = (a: number[], b: number[]) => {
-  const out: number[] = new Array(9);
+  const out: number[] = new Array(9)
   for (let c = 0; c < 3; c++) {
     for (let r = 0; r < 3; r++) {
-      out[c * 3 + r] = a[r] * b[c * 3] + a[3 + r] * b[c * 3 + 1] + a[6 + r] * b[c * 3 + 2];
+      out[c * 3 + r] = a[r] * b[c * 3] + a[3 + r] * b[c * 3 + 1] + a[6 + r] * b[c * 3 + 2]
     }
   }
-  return out;
-};
+  return out
+}
 
 const Prism = (props: PrismProps) => {
-  const [own, rest] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = createMemo((): Settings => {
-    const palette = Array.isArray(props.colors) ? props.colors.filter(Boolean).slice(0, 8) : [];
+    const palette = Array.isArray(props.colors) ? props.colors.filter(Boolean).slice(0, 8) : []
     return {
       height: Math.max(0.1, props.height ?? 3.5),
       baseWidth: Math.max(0.1, props.baseWidth ?? 5.5),
-      animationType: (props.animationType ?? 'rotate') === 'rotate3d' ? '3drotate' : (props.animationType ?? 'rotate'),
+      animationType:
+        (props.animationType ?? 'rotate') === 'rotate3d'
+          ? '3drotate'
+          : (props.animationType ?? 'rotate'),
       glow: Math.max(0, props.glow ?? 1),
       offsetX: props.offset?.x ?? 0,
       offsetY: props.offset?.y ?? 0,
@@ -233,251 +237,261 @@ const Prism = (props: PrismProps) => {
       intro: props.intro ?? true,
       resolution: clamp(props.resolution ?? 0.5, 0.25, 1),
       lightMode: props.lightMode ?? false,
-      dpr: props.dpr
-    };
-  });
+      dpr: props.dpr,
+    }
+  })
 
   onMount(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
+    const container = containerRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return;
-    const shader = link(gl);
-    if (!shader) return;
-    const u = shader.uniforms;
-    const vao = gl.createVertexArray();
-    const paletteTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, paletteTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, PALETTE_SIZE, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      stencil: false,
+    })
+    if (!container || !canvas || !gl) return
+    const shader = link(gl)
+    if (!shader) return
+    const u = shader.uniforms
+    const vao = gl.createVertexArray()
+    const paletteTexture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, paletteTexture)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, PALETTE_SIZE, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
     const parse = (value: string): number[] => {
-      if (!probe) return [255, 255, 255];
-      probe.clearRect(0, 0, 1, 1);
-      probe.fillStyle = '#000000';
-      probe.fillStyle = String(value);
-      probe.fillRect(0, 0, 1, 1);
-      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-      return [r, g, b];
-    };
-    let paletteKey = '';
-    let neutral = 0;
+      if (!probe) return [255, 255, 255]
+      probe.clearRect(0, 0, 1, 1)
+      probe.fillStyle = '#000000'
+      probe.fillStyle = String(value)
+      probe.fillRect(0, 0, 1, 1)
+      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+      return [r, g, b]
+    }
+    let paletteKey = ''
+    let neutral = 0
     const syncPalette = (colorsList: string[]) => {
-      const key = colorsList.join(',');
-      if (key === paletteKey) return;
-      paletteKey = key;
-      neutral = 0;
-      if (!colorsList.length) return;
-      const stops = colorsList.map(parse);
+      const key = colorsList.join(',')
+      if (key === paletteKey) return
+      paletteKey = key
+      neutral = 0
+      if (!colorsList.length) return
+      const stops = colorsList.map(parse)
       neutral =
         1 -
         stops.reduce((sum, [r, g, b]) => {
-          const top = Math.max(r, g, b);
-          return sum + (top > 0 ? (top - Math.min(r, g, b)) / top : 0);
+          const top = Math.max(r, g, b)
+          return sum + (top > 0 ? (top - Math.min(r, g, b)) / top : 0)
         }, 0) /
-          stops.length;
-      const data = new Uint8Array(PALETTE_SIZE * 4);
+          stops.length
+      const data = new Uint8Array(PALETTE_SIZE * 4)
       for (let i = 0; i < PALETTE_SIZE; i++) {
-        const position = (i / PALETTE_SIZE) * stops.length;
-        const index = Math.floor(position);
-        const a = stops[index % stops.length];
-        const b = stops[(index + 1) % stops.length];
-        const t = position - index;
-        const k = t * t * (3 - 2 * t);
-        for (let c = 0; c < 3; c++) data[i * 4 + c] = Math.round(a[c] + (b[c] - a[c]) * k);
-        data[i * 4 + 3] = 255;
+        const position = (i / PALETTE_SIZE) * stops.length
+        const index = Math.floor(position)
+        const a = stops[index % stops.length]
+        const b = stops[(index + 1) % stops.length]
+        const t = position - index
+        const k = t * t * (3 - 2 * t)
+        for (let c = 0; c < 3; c++) data[i * 4 + c] = Math.round(a[c] + (b[c] - a[c]) * k)
+        data[i * 4 + 3] = 255
       }
-      gl.bindTexture(gl.TEXTURE_2D, paletteTexture);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, PALETTE_SIZE, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    };
+      gl.bindTexture(gl.TEXTURE_2D, paletteTexture)
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, PALETTE_SIZE, 1, gl.RGBA, gl.UNSIGNED_BYTE, data)
+    }
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const view = { width: 1, height: 1, scale: 1 };
-    const pose = { yaw: 0, pitch: 0, roll: 0 };
-    const pointer = { x: 0, y: 0, inside: false };
-    let time = 0;
-    let introClock = settings().intro && !reduce ? 0 : 1;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const view = { width: 1, height: 1, scale: 1 }
+    const pose = { yaw: 0, pitch: 0, roll: 0 }
+    const pointer = { x: 0, y: 0, inside: false }
+    let time = 0
+    let introClock = settings().intro && !reduce ? 0 : 1
+    let raf = 0
+    let last = 0
+    let visible = true
 
     const orientation = (s: Settings) => {
-      const tilt = rotation(pose.yaw, pose.pitch, pose.roll);
+      const tilt = rotation(pose.yaw, pose.pitch, pose.roll)
       if (s.animationType === 'rotate') {
-        const t = time * s.timeScale;
-        const c0 = Math.cos(t);
-        const c1 = Math.cos(t + 33);
-        const c2 = Math.cos(t + 11);
-        return multiply(tilt, [c0, 0, c2, 0, 1, 0, c1, 0, c0]);
+        const t = time * s.timeScale
+        const c0 = Math.cos(t)
+        const c1 = Math.cos(t + 33)
+        const c2 = Math.cos(t + 11)
+        return multiply(tilt, [c0, 0, c2, 0, 1, 0, c1, 0, c0])
       }
       if (s.animationType === '3drotate') {
-        const t = time * s.timeScale;
-        return multiply(tilt, rotation(t * 0.55, Math.sin(t * 0.6 + 0.6) * 0.6, Math.sin(t * 0.35 + 1.9) * 0.5));
+        const t = time * s.timeScale
+        return multiply(
+          tilt,
+          rotation(t * 0.55, Math.sin(t * 0.6 + 0.6) * 0.6, Math.sin(t * 0.35 + 1.9) * 0.5),
+        )
       }
-      return tilt;
-    };
+      return tilt
+    }
 
     const draw = () => {
-      const s = settings();
-      syncPalette(s.colors);
-      const half = s.baseWidth * 0.5;
-      const ignite = introClock * introClock * (3 - 2 * introClock);
-      const c = Math.cos(s.hueShift);
-      const sn = Math.sin(s.hueShift);
-      gl.bindVertexArray(vao);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(shader.program);
-      gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-      gl.uniformMatrix3fv(u.uRay, false, orientation(s));
-      gl.uniform1f(u.uGlow, s.glow * ignite * ignite);
-      gl.uniform2f(u.uOffset, s.offsetX * view.scale, -s.offsetY * view.scale);
-      gl.uniform1f(u.uColorFreq, s.colorFrequency);
-      gl.uniform1f(u.uCenterShift, s.height * 0.25);
-      gl.uniform1f(u.uInvBaseHalf, 1 / half);
-      gl.uniform1f(u.uInvHeight, 1 / s.height);
-      gl.uniform1f(u.uMinAxis, Math.min(half, s.height));
-      gl.uniform1f(u.uPxScale, 1 / (canvas.height * 0.1 * s.scale));
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, paletteTexture);
-      gl.uniform1i(u.uPalette, 0);
-      gl.uniform1i(u.uUsePalette, s.colors.length ? 1 : 0);
-      gl.uniform1f(u.uTime, time);
-      gl.uniform1f(u.uNoise, s.noise);
-      gl.uniform1f(u.uSaturation, s.saturation);
+      const s = settings()
+      syncPalette(s.colors)
+      const half = s.baseWidth * 0.5
+      const ignite = introClock * introClock * (3 - 2 * introClock)
+      const c = Math.cos(s.hueShift)
+      const sn = Math.sin(s.hueShift)
+      gl.bindVertexArray(vao)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(shader.program)
+      gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+      gl.uniformMatrix3fv(u.uRay, false, orientation(s))
+      gl.uniform1f(u.uGlow, s.glow * ignite * ignite)
+      gl.uniform2f(u.uOffset, s.offsetX * view.scale, -s.offsetY * view.scale)
+      gl.uniform1f(u.uColorFreq, s.colorFrequency)
+      gl.uniform1f(u.uCenterShift, s.height * 0.25)
+      gl.uniform1f(u.uInvBaseHalf, 1 / half)
+      gl.uniform1f(u.uInvHeight, 1 / s.height)
+      gl.uniform1f(u.uMinAxis, Math.min(half, s.height))
+      gl.uniform1f(u.uPxScale, 1 / (canvas.height * 0.1 * s.scale))
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, paletteTexture)
+      gl.uniform1i(u.uPalette, 0)
+      gl.uniform1i(u.uUsePalette, s.colors.length ? 1 : 0)
+      gl.uniform1f(u.uTime, time)
+      gl.uniform1f(u.uNoise, s.noise)
+      gl.uniform1f(u.uSaturation, s.saturation)
       gl.uniformMatrix3fv(
         u.uHue,
         false,
-        HUE_W.map((w, i) => w + HUE_U[i] * c + HUE_V[i] * sn)
-      );
-      gl.uniform1i(u.uUseHue, Math.abs(s.hueShift) > 0.0001 ? 1 : 0);
-      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0);
-      gl.uniform1f(u.uNeutral, neutral);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        HUE_W.map((w, i) => w + HUE_U[i] * c + HUE_V[i] * sn),
+      )
+      gl.uniform1i(u.uUseHue, Math.abs(s.hueShift) > 0.0001 ? 1 : 0)
+      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0)
+      gl.uniform1f(u.uNeutral, neutral)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const resize = () => {
-      const s = settings();
-      view.width = Math.max(1, container.clientWidth);
-      view.height = Math.max(1, container.clientHeight);
-      view.scale = Math.min(s.dpr || window.devicePixelRatio || 1, 2) * s.resolution;
-      canvas.width = Math.max(1, Math.round(view.width * view.scale));
-      canvas.height = Math.max(1, Math.round(view.height * view.scale));
-      draw();
-      wake();
-    };
+      const s = settings()
+      view.width = Math.max(1, container.clientWidth)
+      view.height = Math.max(1, container.clientHeight)
+      view.scale = Math.min(s.dpr || window.devicePixelRatio || 1, 2) * s.resolution
+      canvas.width = Math.max(1, Math.round(view.width * view.scale))
+      canvas.height = Math.max(1, Math.round(view.height * view.scale))
+      draw()
+      wake()
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settings();
-      if (Math.round(view.width * Math.min(s.dpr || window.devicePixelRatio || 1, 2) * s.resolution) !== canvas.width) {
-        resize();
-        return;
+      raf = 0
+      if (!visible || document.hidden) return
+      const s = settings()
+      if (
+        Math.round(
+          view.width * Math.min(s.dpr || window.devicePixelRatio || 1, 2) * s.resolution,
+        ) !== canvas.width
+      ) {
+        resize()
+        return
       }
-      const dt = last ? clamp((now - last) / 1000, 0.001, 0.05) : 1 / 60;
-      last = now;
-      if (!reduce) time += dt;
-      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS);
-      const hover = s.animationType === 'hover';
-      const aim = pointer.inside && !reduce && (hover || s.interactive);
-      const reach = (hover ? 0.6 : 0.09) * s.hoverStrength;
-      const yaw = aim ? -pointer.x * reach : 0;
-      const pitch = aim ? pointer.y * reach : 0;
-      const follow = 1 - Math.pow(1 - s.inertia, dt * 60);
-      pose.yaw += (yaw - pose.yaw) * follow;
-      pose.pitch += (pitch - pose.pitch) * follow;
-      pose.roll += (0 - pose.roll) * (1 - Math.pow(0.9, dt * 60));
-      draw();
-      const settling = Math.abs(yaw - pose.yaw) + Math.abs(pitch - pose.pitch) + Math.abs(pose.roll) > 1e-4;
-      const spinning = !reduce && !hover && s.animationType !== 'static' && s.timeScale > 0;
-      const busy = spinning || settling || introClock < 1 || (!reduce && s.noise > 0);
-      if (busy) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+      const dt = last ? clamp((now - last) / 1000, 0.001, 0.05) : 1 / 60
+      last = now
+      if (!reduce) time += dt
+      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS)
+      const hover = s.animationType === 'hover'
+      const aim = pointer.inside && !reduce && (hover || s.interactive)
+      const reach = (hover ? 0.6 : 0.09) * s.hoverStrength
+      const yaw = aim ? -pointer.x * reach : 0
+      const pitch = aim ? pointer.y * reach : 0
+      const follow = 1 - (1 - s.inertia) ** (dt * 60)
+      pose.yaw += (yaw - pose.yaw) * follow
+      pose.pitch += (pitch - pose.pitch) * follow
+      pose.roll += (0 - pose.roll) * (1 - 0.9 ** (dt * 60))
+      draw()
+      const settling =
+        Math.abs(yaw - pose.yaw) + Math.abs(pitch - pose.pitch) + Math.abs(pose.roll) > 1e-4
+      const spinning = !reduce && !hover && s.animationType !== 'static' && s.timeScale > 0
+      const busy = spinning || settling || introClock < 1 || (!reduce && s.noise > 0)
+      if (busy) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     function wake() {
-      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
+      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
     }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1;
-      const y = ((event.clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1;
-      pointer.inside = Math.abs(x) <= 1 && Math.abs(y) <= 1;
-      pointer.x = clamp(x, -1, 1);
-      pointer.y = clamp(y, -1, 1);
-      const s = settings();
-      if (s.interactive || s.animationType === 'hover') wake();
-    };
+      const rect = container.getBoundingClientRect()
+      const x = ((event.clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1
+      const y = ((event.clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1
+      pointer.inside = Math.abs(x) <= 1 && Math.abs(y) <= 1
+      pointer.x = clamp(x, -1, 1)
+      pointer.y = clamp(y, -1, 1)
+      const s = settings()
+      if (s.interactive || s.animationType === 'hover') wake()
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wake();
-    };
+      last = 0
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('blur', onPointerLeave);
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
-    wakeRef = wake;
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('blur', onPointerLeave)
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
+    wakeRef = wake
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('blur', onPointerLeave);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteTexture(paletteTexture);
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(shader.program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('blur', onPointerLeave)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteTexture(paletteTexture)
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(shader.program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       style={own.style}
       {...rest}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default Prism;
+export default Prism

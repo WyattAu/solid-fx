@@ -1,4 +1,4 @@
-import ShapeGrid from './ShapeGrid';
+import ShapeGrid from './ShapeGrid'
 
 const ShapeGridDemo = () => (
   <div class="h-96 w-full">
@@ -12,6 +12,6 @@ const ShapeGridDemo = () => (
       glow={0.35}
     />
   </div>
-);
+)
 
-export default ShapeGridDemo;
+export default ShapeGridDemo

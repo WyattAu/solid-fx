@@ -1,4 +1,4 @@
-import ColorBends from './ColorBends';
+import ColorBends from './ColorBends'
 
 function ColorBendsDemo() {
   return (
@@ -22,7 +22,7 @@ function ColorBendsDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default ColorBendsDemo;
+export default ColorBendsDemo

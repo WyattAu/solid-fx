@@ -1,4 +1,4 @@
-import BlobCursor from './BlobCursor';
+import BlobCursor from './BlobCursor'
 
 function BlobCursorDemo() {
   return (
@@ -8,7 +8,7 @@ function BlobCursorDemo() {
       </p>
       <BlobCursor color="#3B82F6" trail={12} />
     </div>
-  );
+  )
 }
 
-export default BlobCursorDemo;
+export default BlobCursorDemo

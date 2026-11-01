@@ -1,4 +1,4 @@
-import ScrollStack, { ScrollStackItem } from './ScrollStack';
+import ScrollStack, { ScrollStackItem } from './ScrollStack'
 
 function ScrollStackDemo() {
   return (
@@ -21,7 +21,7 @@ function ScrollStackDemo() {
         </ScrollStackItem>
       </ScrollStack>
     </div>
-  );
+  )
 }
 
-export default ScrollStackDemo;
+export default ScrollStackDemo

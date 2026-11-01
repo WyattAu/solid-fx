@@ -1,4 +1,4 @@
-import TextPressure from './TextPressure';
+import TextPressure from './TextPressure'
 
 function TextPressureDemo() {
   return (
@@ -6,9 +6,11 @@ function TextPressureDemo() {
       <div class="h-40 w-full max-w-2xl text-white">
         <TextPressure text="Compressa" idle="wave" textColor="#ffffff" />
       </div>
-      <p class="text-xs text-gray-400">Letters compress toward the pointer; the idle wave keeps them breathing.</p>
+      <p class="text-xs text-gray-400">
+        Letters compress toward the pointer; the idle wave keeps them breathing.
+      </p>
     </div>
-  );
+  )
 }
 
-export default TextPressureDemo;
+export default TextPressureDemo

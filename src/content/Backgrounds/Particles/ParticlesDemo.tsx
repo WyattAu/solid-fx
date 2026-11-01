@@ -1,4 +1,4 @@
-import Particles from './Particles';
+import Particles from './Particles'
 
 function ParticlesDemo() {
   return (
@@ -18,7 +18,7 @@ function ParticlesDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default ParticlesDemo;
+export default ParticlesDemo

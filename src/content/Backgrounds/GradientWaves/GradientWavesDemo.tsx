@@ -1,4 +1,4 @@
-import GradientWaves from './GradientWaves';
+import GradientWaves from './GradientWaves'
 
 const GradientWavesDemo = () => (
   <div class="h-96 w-full">
@@ -11,6 +11,6 @@ const GradientWavesDemo = () => (
       swell={35}
     />
   </div>
-);
+)
 
-export default GradientWavesDemo;
+export default GradientWavesDemo

@@ -1,4 +1,4 @@
-import Lanyard from './Lanyard';
+import Lanyard from './Lanyard'
 
 function LanyardDemo() {
   return (
@@ -10,7 +10,7 @@ function LanyardDemo() {
         gravity={0.6}
       />
     </div>
-  );
+  )
 }
 
-export default LanyardDemo;
+export default LanyardDemo

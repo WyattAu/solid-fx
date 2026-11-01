@@ -1,4 +1,4 @@
-import CrystalizedBall from './CrystalizedBall';
+import CrystalizedBall from './CrystalizedBall'
 
 function CrystalizedBallDemo() {
   return (
@@ -7,7 +7,7 @@ function CrystalizedBallDemo() {
         <CrystalizedBall preset="aurora" particleCount={8000} />
       </div>
     </div>
-  );
+  )
 }
 
-export default CrystalizedBallDemo;
+export default CrystalizedBallDemo

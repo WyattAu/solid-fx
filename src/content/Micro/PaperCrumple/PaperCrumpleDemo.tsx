@@ -1,4 +1,4 @@
-import PaperCrumple from './PaperCrumple';
+import PaperCrumple from './PaperCrumple'
 
 function PaperCrumpleDemo() {
   return (
@@ -10,7 +10,7 @@ function PaperCrumpleDemo() {
         sceneHeight={384}
       />
     </div>
-  );
+  )
 }
 
-export default PaperCrumpleDemo;
+export default PaperCrumpleDemo

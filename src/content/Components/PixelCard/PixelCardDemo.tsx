@@ -1,4 +1,4 @@
-import PixelCard from './PixelCard';
+import PixelCard from './PixelCard'
 
 function PixelCardDemo() {
   return (
@@ -10,7 +10,7 @@ function PixelCardDemo() {
         </div>
       </PixelCard>
     </div>
-  );
+  )
 }
 
-export default PixelCardDemo;
+export default PixelCardDemo

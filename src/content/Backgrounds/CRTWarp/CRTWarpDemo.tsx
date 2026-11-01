@@ -1,4 +1,4 @@
-import CRTWarp from './CRTWarp';
+import CRTWarp from './CRTWarp'
 
 const CRTWarpDemo = () => (
   <div class="h-96 w-full">
@@ -12,6 +12,6 @@ const CRTWarpDemo = () => (
       vignette={0.3}
     />
   </div>
-);
+)
 
-export default CRTWarpDemo;
+export default CRTWarpDemo

@@ -1,9 +1,9 @@
-import { createSignal } from 'solid-js';
-import CurvedInput from './CurvedInput';
+import { createSignal } from 'solid-js'
+import CurvedInput from './CurvedInput'
 
 const CurvedInputDemo = () => {
-  const [value, setValue] = createSignal('');
-  const [submitted, setSubmitted] = createSignal('');
+  const [value, setValue] = createSignal('')
+  const [submitted, setSubmitted] = createSignal('')
 
   return (
     <div class="flex h-96 w-full flex-col items-center justify-center gap-6 bg-[#141019] px-6">
@@ -17,10 +17,12 @@ const CurvedInputDemo = () => {
         bend={28}
       />
       <p class="text-xs text-zinc-400">
-        {submitted() ? `Submitted: ${submitted()}` : 'Type and submit — the text follows the curve.'}
+        {submitted()
+          ? `Submitted: ${submitted()}`
+          : 'Type and submit — the text follows the curve.'}
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default CurvedInputDemo;
+export default CurvedInputDemo

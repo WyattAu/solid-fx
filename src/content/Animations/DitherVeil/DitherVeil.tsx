@@ -1,42 +1,43 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { Renderer, Program, Mesh, Triangle, Texture, RenderTarget } from 'ogl';
+import { createEffect, onCleanup, } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { Renderer, Program, Mesh, Triangle, Texture, RenderTarget } from 'ogl'
 
-type Pattern = 'bayer' | 'noise' | 'atkinson' | 'floyd' | 'lines';
-type Palette = 'duotone' | 'rgb';
-type Fit = 'contain' | 'cover';
-type Kernel = [number, number, number][];
-type Rgb = [number, number, number];
+type Pattern = 'bayer' | 'noise' | 'atkinson' | 'floyd' | 'lines'
+type Palette = 'duotone' | 'rgb'
+type Fit = 'contain' | 'cover'
+type Kernel = [number, number, number][]
+type Rgb = [number, number, number]
 
 export interface DitherVeilProps {
-  src?: string;
-  fit?: Fit;
-  pattern?: Pattern;
-  pixelSize?: number;
-  levels?: number;
-  palette?: Palette;
-  inkColor?: string;
-  paperColor?: string;
-  contrast?: number;
-  brightness?: number;
-  revealRadius?: number;
-  softness?: number;
-  linger?: number;
-  rimColor?: string;
-  rim?: number;
-  reverse?: boolean;
-  wander?: boolean;
-  clickBurst?: boolean;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  src?: string
+  fit?: Fit
+  pattern?: Pattern
+  pixelSize?: number
+  levels?: number
+  palette?: Palette
+  inkColor?: string
+  paperColor?: string
+  contrast?: number
+  brightness?: number
+  revealRadius?: number
+  softness?: number
+  linger?: number
+  rimColor?: string
+  rim?: number
+  reverse?: boolean
+  wander?: boolean
+  clickBurst?: boolean
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Settings = Required<Omit<DitherVeilProps, 'src' | 'className' | 'class' | 'style'>>;
+type Settings = Required<Omit<DitherVeilProps, 'src' | 'className' | 'class' | 'style'>>
 
-const DEFAULT_SRC = 'https://images.unsplash.com/photo-1737071371043-761e02b1ef95?q=80&w=1400&auto=format&fit=crop';
+const DEFAULT_SRC =
+  'https://images.unsplash.com/photo-1737071371043-761e02b1ef95?q=80&w=1400&auto=format&fit=crop'
 
-const ORDERED: Record<string, number> = { bayer: 0, noise: 1, lines: 2 };
+const ORDERED: Record<string, number> = { bayer: 0, noise: 1, lines: 2 }
 
 const KERNELS: Record<string, Kernel> = {
   atkinson: [
@@ -45,148 +46,162 @@ const KERNELS: Record<string, Kernel> = {
     [-1, 1, 1 / 8],
     [0, 1, 1 / 8],
     [1, 1, 1 / 8],
-    [0, 2, 1 / 8]
+    [0, 2, 1 / 8],
   ],
   floyd: [
     [1, 0, 7 / 16],
     [-1, 1, 3 / 16],
     [0, 1, 5 / 16],
-    [1, 1, 1 / 16]
-  ]
-};
+    [1, 1, 1 / 16],
+  ],
+}
 
-const MASK_SCALE = 0.5;
-const MAX_BURSTS = 4;
-const BURST_SECONDS = 1.2;
-const HOLD = 1.6;
-const INTRO_MS = 1100;
+const MASK_SCALE = 0.5
+const MAX_BURSTS = 4
+const BURST_SECONDS = 1.2
+const HOLD = 1.6
+const INTRO_MS = 1100
 
 const hexToRgb = (hex: string): Rgb => {
-  let h = String(hex || '').replace('#', '');
-  if (h.length === 3) h = h.replace(/./g, c => c + c);
-  const n = parseInt(h.slice(0, 6), 16);
-  return Number.isNaN(n) ? [0, 0, 0] : [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
-};
+  let h = String(hex || '').replace('#', '')
+  if (h.length === 3) h = h.replace(/./g, c => c + c)
+  const n = parseInt(h.slice(0, 6), 16)
+  return Number.isNaN(n)
+    ? [0, 0, 0]
+    : [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+}
 
-const fitScale = (w: number, h: number, iw: number, ih: number, contain: boolean): [number, number] => {
-  const ratio = w / h / (iw / ih);
-  if (contain) return ratio > 1 ? [ratio, 1] : [1, 1 / ratio];
-  return ratio > 1 ? [1, 1 / ratio] : [ratio, 1];
-};
+const fitScale = (
+  w: number,
+  h: number,
+  iw: number,
+  ih: number,
+  contain: boolean,
+): [number, number] => {
+  const ratio = w / h / (iw / ih)
+  if (contain) return ratio > 1 ? [ratio, 1] : [1, 1 / ratio]
+  return ratio > 1 ? [1, 1 / ratio] : [ratio, 1]
+}
 
 const wanderAt = (t: number, w: number, h: number): [number, number] => [
   w * (0.5 + 0.33 * Math.sin(t * 0.53) + 0.08 * Math.sin(t * 1.31 + 0.6)),
-  h * (0.5 + 0.28 * Math.sin(t * 0.71 + 1.1) + 0.07 * Math.cos(t * 1.57))
-];
+  h * (0.5 + 0.28 * Math.sin(t * 0.71 + 1.1) + 0.07 * Math.cos(t * 1.57)),
+]
 
-const measureEdge = (context: CanvasRenderingContext2D, image: HTMLImageElement): { matte: Rgb; plain: boolean } => {
-  const size = 32;
-  context.canvas.width = size;
-  context.canvas.height = size;
-  context.drawImage(image, 0, 0, size, size);
-  const data = context.getImageData(0, 0, size, size).data;
-  const sum = [0, 0, 0];
-  const squares = [0, 0, 0];
-  let count = 0;
+const measureEdge = (
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+): { matte: Rgb; plain: boolean } => {
+  const size = 32
+  context.canvas.width = size
+  context.canvas.height = size
+  context.drawImage(image, 0, 0, size, size)
+  const data = context.getImageData(0, 0, size, size).data
+  const sum = [0, 0, 0]
+  const squares = [0, 0, 0]
+  let count = 0
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      if (x > 0 && y > 0 && x < size - 1 && y < size - 1) continue;
+      if (x > 0 && y > 0 && x < size - 1 && y < size - 1) continue
       for (let c = 0; c < 3; c++) {
-        const v = data[(y * size + x) * 4 + c] / 255;
-        sum[c] += v;
-        squares[c] += v * v;
+        const v = data[(y * size + x) * 4 + c] / 255
+        sum[c] += v
+        squares[c] += v * v
       }
-      count++;
+      count++
     }
   }
-  const matte: Rgb = [sum[0] / count, sum[1] / count, sum[2] / count];
+  const matte: Rgb = [sum[0] / count, sum[1] / count, sum[2] / count]
   const spread =
-    matte.reduce((total, mean, c) => total + Math.sqrt(Math.max(0, squares[c] / count - mean * mean)), 0) / 3;
-  return { matte, plain: spread < 0.06 };
-};
+    matte.reduce(
+      (total, mean, c) => total + Math.sqrt(Math.max(0, squares[c] / count - mean * mean)),
+      0,
+    ) / 3
+  return { matte, plain: spread < 0.06 }
+}
 
-let blueNoise: Uint8Array | null = null;
+let blueNoise: Uint8Array | null = null
 
 const getBlueNoise = (): Uint8Array => {
-  if (blueNoise) return blueNoise;
-  const size = 64;
-  const n = size * size;
-  const wrap = size - 1;
-  const taps: number[] = [];
+  if (blueNoise) return blueNoise
+  const size = 64
+  const n = size * size
+  const wrap = size - 1
+  const taps: number[] = []
   for (let dy = -6; dy <= 6; dy++) {
-    for (let dx = -6; dx <= 6; dx++) taps.push(dx, dy, Math.exp(-(dx * dx + dy * dy) / 4.5));
+    for (let dx = -6; dx <= 6; dx++) taps.push(dx, dy, Math.exp(-(dx * dx + dy * dy) / 4.5))
   }
-  const energy = new Float32Array(n);
-  const on = new Uint8Array(n);
+  const energy = new Float32Array(n)
+  const on = new Uint8Array(n)
   const splat = (i: number, sign: number) => {
-    const x = i % size;
-    const y = (i - x) / size;
+    const x = i % size
+    const y = (i - x) / size
     for (let k = 0; k < taps.length; k += 3) {
-      energy[((y + taps[k + 1]) & wrap) * size + ((x + taps[k]) & wrap)] += sign * taps[k + 2];
+      energy[((y + taps[k + 1]) & wrap) * size + ((x + taps[k]) & wrap)] += sign * taps[k + 2]
     }
-  };
+  }
   const find = (state: number, highest: boolean) => {
-    let best = 0;
-    let value = highest ? -Infinity : Infinity;
+    let best = 0
+    let value = highest ? -Infinity : Infinity
     for (let i = 0; i < n; i++) {
-      if (on[i] !== state) continue;
+      if (on[i] !== state) continue
       if (highest ? energy[i] > value : energy[i] < value) {
-        value = energy[i];
-        best = i;
+        value = energy[i]
+        best = i
       }
     }
-    return best;
-  };
-  let seed = 7;
+    return best
+  }
+  let seed = 7
   const random = () => {
-    seed = (seed * 16807) % 2147483647;
-    return seed / 2147483647;
-  };
-  const initial = Math.round(n * 0.1);
+    seed = (seed * 16807) % 2147483647
+    return seed / 2147483647
+  }
+  const initial = Math.round(n * 0.1)
   for (let placed = 0; placed < initial; ) {
-    const i = Math.floor(random() * n);
-    if (on[i]) continue;
-    on[i] = 1;
-    splat(i, 1);
-    placed++;
+    const i = Math.floor(random() * n)
+    if (on[i]) continue
+    on[i] = 1
+    splat(i, 1)
+    placed++
   }
   for (let guard = 0; guard < n; guard++) {
-    const cluster = find(1, true);
-    on[cluster] = 0;
-    splat(cluster, -1);
-    const gap = find(0, false);
-    on[gap] = 1;
-    splat(gap, 1);
-    if (gap === cluster) break;
+    const cluster = find(1, true)
+    on[cluster] = 0
+    splat(cluster, -1)
+    const gap = find(0, false)
+    on[gap] = 1
+    splat(gap, 1)
+    if (gap === cluster) break
   }
-  const seedOn = on.slice();
-  const seedEnergy = energy.slice();
-  const rank = new Uint16Array(n);
+  const seedOn = on.slice()
+  const seedEnergy = energy.slice()
+  const rank = new Uint16Array(n)
   for (let r = initial - 1; r >= 0; r--) {
-    const cluster = find(1, true);
-    on[cluster] = 0;
-    splat(cluster, -1);
-    rank[cluster] = r;
+    const cluster = find(1, true)
+    on[cluster] = 0
+    splat(cluster, -1)
+    rank[cluster] = r
   }
-  on.set(seedOn);
-  energy.set(seedEnergy);
+  on.set(seedOn)
+  energy.set(seedEnergy)
   for (let r = initial; r < n; r++) {
-    const gap = find(0, false);
-    on[gap] = 1;
-    splat(gap, 1);
-    rank[gap] = r;
+    const gap = find(0, false)
+    on[gap] = 1
+    splat(gap, 1)
+    rank[gap] = r
   }
-  const data = new Uint8Array(n * 4);
+  const data = new Uint8Array(n * 4)
   for (let i = 0; i < n; i++) {
-    const v = Math.floor((rank[i] / n) * 256);
-    data[i * 4] = v;
-    data[i * 4 + 1] = v;
-    data[i * 4 + 2] = v;
-    data[i * 4 + 3] = 255;
+    const v = Math.floor((rank[i] / n) * 256)
+    data[i * 4] = v
+    data[i * 4 + 1] = v
+    data[i * 4 + 2] = v
+    data[i * 4 + 3] = 255
   }
-  blueNoise = data;
-  return data;
-};
+  blueNoise = data
+  return data
+}
 
 const diffuse = (
   pixels: Uint8ClampedArray,
@@ -195,48 +210,48 @@ const diffuse = (
   kernel: Kernel,
   levels: number,
   rgb: boolean,
-  grade: (v: number) => number
+  grade: (v: number) => number,
 ): Uint8Array => {
-  const channels = rgb ? 3 : 1;
-  const values = new Float32Array(cols * rows * channels);
+  const channels = rgb ? 3 : 1
+  const values = new Float32Array(cols * rows * channels)
   for (let i = 0; i < cols * rows; i++) {
-    const r = pixels[i * 4] / 255;
-    const g = pixels[i * 4 + 1] / 255;
-    const b = pixels[i * 4 + 2] / 255;
+    const r = pixels[i * 4] / 255
+    const g = pixels[i * 4 + 1] / 255
+    const b = pixels[i * 4 + 2] / 255
     if (rgb) {
-      values[i * 3] = grade(r);
-      values[i * 3 + 1] = grade(g);
-      values[i * 3 + 2] = grade(b);
+      values[i * 3] = grade(r)
+      values[i * 3 + 1] = grade(g)
+      values[i * 3 + 2] = grade(b)
     } else {
-      values[i] = grade(0.2126 * r + 0.7152 * g + 0.0722 * b);
+      values[i] = grade(0.2126 * r + 0.7152 * g + 0.0722 * b)
     }
   }
-  const steps = levels - 1;
-  const out = new Uint8Array(cols * rows * 4);
+  const steps = levels - 1
+  const out = new Uint8Array(cols * rows * 4)
   for (let y = 0; y < rows; y++) {
-    const dir = y & 1 ? -1 : 1;
+    const dir = y & 1 ? -1 : 1
     for (let i = 0; i < cols; i++) {
-      const x = dir > 0 ? i : cols - 1 - i;
-      const p = y * cols + x;
+      const x = dir > 0 ? i : cols - 1 - i
+      const p = y * cols + x
       for (let c = 0; c < channels; c++) {
-        const old = values[p * channels + c];
-        const q = Math.min(steps, Math.max(0, Math.round(old * steps))) / steps;
-        const err = old - q;
-        const byte = Math.round(q * 255);
-        if (rgb) out[p * 4 + c] = byte;
-        else out[p * 4] = out[p * 4 + 1] = out[p * 4 + 2] = byte;
+        const old = values[p * channels + c]
+        const q = Math.min(steps, Math.max(0, Math.round(old * steps))) / steps
+        const err = old - q
+        const byte = Math.round(q * 255)
+        if (rgb) out[p * 4 + c] = byte
+        else out[p * 4] = out[p * 4 + 1] = out[p * 4 + 2] = byte
         for (let k = 0; k < kernel.length; k++) {
-          const nx = x + kernel[k][0] * dir;
-          const ny = y + kernel[k][1];
-          if (nx < 0 || nx >= cols || ny >= rows) continue;
-          values[(ny * cols + nx) * channels + c] += err * kernel[k][2];
+          const nx = x + kernel[k][0] * dir
+          const ny = y + kernel[k][1]
+          if (nx < 0 || nx >= cols || ny >= rows) continue
+          values[(ny * cols + nx) * channels + c] += err * kernel[k][2]
         }
       }
-      out[p * 4 + 3] = 255;
+      out[p * 4 + 3] = 255
     }
   }
-  return out;
-};
+  return out
+}
 
 const vertex = `#version 300 es
 in vec2 position;
@@ -246,7 +261,7 @@ void main() {
   vUv = uv;
   gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const maskFragment = `#version 300 es
 precision highp float;
@@ -278,7 +293,7 @@ void main() {
   trail = max(trail, clamp((uRadius - d) / band, 0.0, 1.0) * uStrength);
   fragColor = vec4(trail, 0.0, 0.0, 1.0);
 }
-`;
+`
 
 const viewFragment = `#version 300 es
 precision highp float;
@@ -403,11 +418,11 @@ void main() {
   float appear = step(spread * 0.72 + bayer(cell + vec2(3.0, 5.0)) * 0.28, uIntro * 1.001);
   fragColor = vec4(mix(uInk, color, appear), 1.0);
 }
-`;
+`
 
 const DitherVeil = (props: DitherVeilProps) => {
-  let container!: HTMLDivElement;
-  let wakeRef: () => void = () => {};
+  let container!: HTMLDivElement
+  let wakeRef: () => void = () => {}
 
   // Upstream rebuilt `settings` into a ref on every render and re-woke via a
   // dep-less effect; the mirror below refreshes on any prop change.
@@ -428,33 +443,37 @@ const DitherVeil = (props: DitherVeilProps) => {
     rim: props.rim ?? 0,
     reverse: props.reverse ?? false,
     wander: props.wander ?? false,
-    clickBurst: props.clickBurst ?? true
-  });
-  let cfg: Settings = buildSettings();
+    clickBurst: props.clickBurst ?? true,
+  })
+  let cfg: Settings = buildSettings()
 
   createEffect(() => {
-    cfg = buildSettings();
-    wakeRef();
-  });
+    cfg = buildSettings()
+    wakeRef()
+  })
 
   // Upstream's effect keyed on [src]: re-create the whole pipeline when it changes.
   createEffect(() => {
-    const src = props.src ?? DEFAULT_SRC;
-    const host = container;
-    if (!host) return;
+    const src = props.src ?? DEFAULT_SRC
+    const host = container
+    if (!host) return
 
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 2), alpha: false, antialias: false });
-    const gl = renderer.gl;
-    const canvas = gl.canvas;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    host.appendChild(canvas);
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const renderer = new Renderer({
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      alpha: false,
+      antialias: false,
+    })
+    const gl = renderer.gl
+    const canvas = gl.canvas
+    canvas.style.display = 'block'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
+    host.appendChild(canvas)
 
-    const gl2 = gl as WebGL2RenderingContext;
-    const floatMask = renderer.isWebgl2 && !!renderer.getExtension('EXT_color_buffer_float');
-    const geometry = new Triangle(gl);
+    const gl2 = gl as WebGL2RenderingContext
+    const floatMask = renderer.isWebgl2 && !!renderer.getExtension('EXT_color_buffer_float')
+    const geometry = new Triangle(gl)
 
     const dataTexture = () =>
       new Texture(gl, {
@@ -464,11 +483,14 @@ const DitherVeil = (props: DitherVeilProps) => {
         generateMipmaps: false,
         flipY: false,
         minFilter: gl.NEAREST,
-        magFilter: gl.NEAREST
-      });
-    const imageTexture = new Texture(gl, { minFilter: gl.LINEAR_MIPMAP_LINEAR, magFilter: gl.LINEAR });
-    const noiseTexture = dataTexture();
-    const diffusedTexture = dataTexture();
+        magFilter: gl.NEAREST,
+      })
+    const imageTexture = new Texture(gl, {
+      minFilter: gl.LINEAR_MIPMAP_LINEAR,
+      magFilter: gl.LINEAR,
+    })
+    const noiseTexture = dataTexture()
+    const diffusedTexture = dataTexture()
 
     const createMask = (w: number, h: number) =>
       new RenderTarget(gl, {
@@ -478,13 +500,13 @@ const DitherVeil = (props: DitherVeilProps) => {
         type: floatMask ? gl2.HALF_FLOAT : gl.UNSIGNED_BYTE,
         internalFormat: floatMask ? gl2.RGBA16F : gl.RGBA,
         minFilter: gl.LINEAR,
-        magFilter: gl.LINEAR
-      });
+        magFilter: gl.LINEAR,
+      })
     const destroyMask = (target: RenderTarget) => {
-      gl.deleteFramebuffer(target.buffer);
-      gl.deleteTexture(target.texture.texture);
-    };
-    let masks = [createMask(2, 2), createMask(2, 2)];
+      gl.deleteFramebuffer(target.buffer)
+      gl.deleteTexture(target.texture.texture)
+    }
+    let masks = [createMask(2, 2), createMask(2, 2)]
 
     const maskUniforms = {
       tPrev: { value: masks[0].texture },
@@ -495,8 +517,8 @@ const DitherVeil = (props: DitherVeilProps) => {
       uSoftness: { value: 0.5 },
       uStrength: { value: 0 },
       uFade: { value: 1 },
-      uHold: { value: HOLD }
-    };
+      uHold: { value: HOLD },
+    }
     const viewUniforms = {
       tImage: { value: imageTexture },
       tMask: { value: masks[0].texture },
@@ -522,55 +544,55 @@ const DitherVeil = (props: DitherVeilProps) => {
       uKey: { value: 0 },
       uSize: { value: [1, 1] },
       uBursts: { value: Array.from({ length: MAX_BURSTS * 4 }, () => 0) },
-      uBurstWidth: { value: 60 }
-    };
+      uBurstWidth: { value: 60 },
+    }
     const program = (fragment: string, uniforms: Record<string, { value: unknown }>) =>
-      new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false });
-    const maskMesh = new Mesh(gl, { geometry, program: program(maskFragment, maskUniforms) });
-    const viewMesh = new Mesh(gl, { geometry, program: program(viewFragment, viewUniforms) });
+      new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false })
+    const maskMesh = new Mesh(gl, { geometry, program: program(maskFragment, maskUniforms) })
+    const viewMesh = new Mesh(gl, { geometry, program: program(viewFragment, viewUniforms) })
 
-    const sampler = document.createElement('canvas');
-    const samplerContext = sampler.getContext('2d', { willReadFrequently: true });
+    const sampler = document.createElement('canvas')
+    const samplerContext = sampler.getContext('2d', { willReadFrequently: true })
 
-    let image: HTMLImageElement | null = null;
-    let introStart = 0;
-    let diffusedKey = '';
-    let diffusionBlocked = false;
-    let width = 1;
-    let height = 1;
-    let visible = true;
-    let raf = 0;
-    let last = performance.now();
-    let trailUntil = 0;
-    let presence = 0;
-    let drift = 0;
-    const pointer = { x: 0, y: 0, inside: false, fresh: true, placed: false };
-    const brush = { x: 0, y: 0, px: 0, py: 0 };
-    const bursts: { x: number; y: number; start: number }[] = [];
+    let image: HTMLImageElement | null = null
+    let introStart = 0
+    let diffusedKey = ''
+    let diffusionBlocked = false
+    let width = 1
+    let height = 1
+    let visible = true
+    let raf = 0
+    let last = performance.now()
+    let trailUntil = 0
+    let presence = 0
+    let drift = 0
+    const pointer = { x: 0, y: 0, inside: false, fresh: true, placed: false }
+    const brush = { x: 0, y: 0, px: 0, py: 0 }
+    const bursts: { x: number; y: number; start: number }[] = []
 
     const layout = () => {
-      width = Math.max(1, host.clientWidth);
-      height = Math.max(1, host.clientHeight);
-      renderer.setSize(width, height);
-      viewUniforms.uResolution.value = [canvas.width, canvas.height];
-      maskUniforms.uSize.value = [width, height];
-      viewUniforms.uSize.value = [width, height];
-      const mw = Math.max(2, Math.round(width * MASK_SCALE));
-      const mh = Math.max(2, Math.round(height * MASK_SCALE));
+      width = Math.max(1, host.clientWidth)
+      height = Math.max(1, host.clientHeight)
+      renderer.setSize(width, height)
+      viewUniforms.uResolution.value = [canvas.width, canvas.height]
+      maskUniforms.uSize.value = [width, height]
+      viewUniforms.uSize.value = [width, height]
+      const mw = Math.max(2, Math.round(width * MASK_SCALE))
+      const mh = Math.max(2, Math.round(height * MASK_SCALE))
       if (mw !== masks[0].width || mh !== masks[0].height) {
-        masks.forEach(destroyMask);
-        masks = [createMask(mw, mh), createMask(mw, mh)];
+        masks.forEach(destroyMask)
+        masks = [createMask(mw, mh), createMask(mw, mh)]
       }
       if (!pointer.placed) {
-        pointer.x = width / 2;
-        pointer.y = height / 2;
+        pointer.x = width / 2
+        pointer.y = height / 2
       }
-    };
+    }
 
     const updateDiffusion = (cell: number, s: Settings) => {
-      if (!image || !samplerContext) return;
-      const cols = Math.ceil(canvas.width / cell);
-      const rows = Math.ceil(canvas.height / cell);
+      if (!image || !samplerContext) return
+      const cols = Math.ceil(canvas.width / cell)
+      const rows = Math.ceil(canvas.height / cell)
       const key = [
         s.pattern,
         s.levels,
@@ -581,28 +603,28 @@ const DitherVeil = (props: DitherVeilProps) => {
         cols,
         rows,
         canvas.width,
-        canvas.height
-      ].join('|');
-      if (key === diffusedKey) return;
-      diffusedKey = key;
-      const [cx, cy] = viewUniforms.uCover.value;
-      const iw = image.naturalWidth;
-      const ih = image.naturalHeight;
-      sampler.width = cols;
-      sampler.height = rows;
-      samplerContext.imageSmoothingEnabled = true;
-      samplerContext.imageSmoothingQuality = 'high';
-      const [mr, mg, mb] = viewUniforms.uMatte.value;
-      samplerContext.fillStyle = `rgb(${mr * 255}, ${mg * 255}, ${mb * 255})`;
-      samplerContext.fillRect(0, 0, cols, rows);
-      const sx = (0.5 - 0.5 * cx) * iw;
-      const sy = (0.5 - 0.5 * cy) * ih;
-      const sw = ((cols * cell) / canvas.width) * cx * iw;
-      const sh = ((rows * cell) / canvas.height) * cy * ih;
-      const x0 = Math.max(sx, 0);
-      const y0 = Math.max(sy, 0);
-      const x1 = Math.min(sx + sw, iw);
-      const y1 = Math.min(sy + sh, ih);
+        canvas.height,
+      ].join('|')
+      if (key === diffusedKey) return
+      diffusedKey = key
+      const [cx, cy] = viewUniforms.uCover.value
+      const iw = image.naturalWidth
+      const ih = image.naturalHeight
+      sampler.width = cols
+      sampler.height = rows
+      samplerContext.imageSmoothingEnabled = true
+      samplerContext.imageSmoothingQuality = 'high'
+      const [mr, mg, mb] = viewUniforms.uMatte.value
+      samplerContext.fillStyle = `rgb(${mr * 255}, ${mg * 255}, ${mb * 255})`
+      samplerContext.fillRect(0, 0, cols, rows)
+      const sx = (0.5 - 0.5 * cx) * iw
+      const sy = (0.5 - 0.5 * cy) * ih
+      const sw = ((cols * cell) / canvas.width) * cx * iw
+      const sh = ((rows * cell) / canvas.height) * cy * ih
+      const x0 = Math.max(sx, 0)
+      const y0 = Math.max(sy, 0)
+      const x1 = Math.min(sx + sw, iw)
+      const y1 = Math.min(sy + sh, ih)
       if (x1 > x0 && y1 > y0) {
         samplerContext.drawImage(
           image,
@@ -613,216 +635,234 @@ const DitherVeil = (props: DitherVeilProps) => {
           ((x0 - sx) / sw) * cols,
           ((y0 - sy) / sh) * rows,
           ((x1 - x0) / sw) * cols,
-          ((y1 - y0) / sh) * rows
-        );
+          ((y1 - y0) / sh) * rows,
+        )
       }
-      const grade = (v: number) => Math.pow(Math.min(1, Math.max(0, (v - 0.5) * s.contrast + 0.5 + s.brightness)), 1.6);
-      const pixels = samplerContext.getImageData(0, 0, cols, rows).data;
-      diffusedTexture.image = diffuse(pixels, cols, rows, KERNELS[s.pattern], s.levels, s.palette === 'rgb', grade);
-      diffusedTexture.width = cols;
-      diffusedTexture.height = rows;
-      diffusedTexture.needsUpdate = true;
-    };
+      const grade = (v: number) =>
+        Math.min(1, Math.max(0, (v - 0.5) * s.contrast + 0.5 + s.brightness)) ** 1.6
+      const pixels = samplerContext.getImageData(0, 0, cols, rows).data
+      diffusedTexture.image = diffuse(
+        pixels,
+        cols,
+        rows,
+        KERNELS[s.pattern],
+        s.levels,
+        s.palette === 'rgb',
+        grade,
+      )
+      diffusedTexture.width = cols
+      diffusedTexture.height = rows
+      diffusedTexture.needsUpdate = true
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      const s = cfg;
-      const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
-      last = now;
+      raf = 0
+      const s = cfg
+      const dt = Math.min(0.05, Math.max(0, (now - last) / 1000))
+      last = now
 
-      const wanderOn = s.wander && !reducedMotion;
-      let targetX = pointer.x;
-      let targetY = pointer.y;
+      const wanderOn = s.wander && !reducedMotion
+      let targetX = pointer.x
+      let targetY = pointer.y
       if (!pointer.inside && wanderOn) {
-        drift = Math.min(1, drift + dt / 1.2);
-        const [wx, wy] = wanderAt(now / 1000, width, height);
-        const k = drift * drift * (3 - 2 * drift);
-        targetX += (wx - targetX) * k;
-        targetY += (wy - targetY) * k;
+        drift = Math.min(1, drift + dt / 1.2)
+        const [wx, wy] = wanderAt(now / 1000, width, height)
+        const k = drift * drift * (3 - 2 * drift)
+        targetX += (wx - targetX) * k
+        targetY += (wy - targetY) * k
       } else {
-        drift = 0;
+        drift = 0
       }
 
-      presence += ((pointer.inside || wanderOn ? 1 : 0) - presence) * (1 - Math.exp(-dt / 0.16));
+      presence += ((pointer.inside || wanderOn ? 1 : 0) - presence) * (1 - Math.exp(-dt / 0.16))
 
       if (pointer.fresh) {
-        brush.x = brush.px = targetX;
-        brush.y = brush.py = targetY;
-        pointer.fresh = false;
+        brush.x = brush.px = targetX
+        brush.y = brush.py = targetY
+        pointer.fresh = false
       } else {
-        const follow = 1 - Math.exp(-dt / 0.035);
-        brush.x += (targetX - brush.x) * follow;
-        brush.y += (targetY - brush.y) * follow;
+        const follow = 1 - Math.exp(-dt / 0.035)
+        brush.x += (targetX - brush.x) * follow
+        brush.y += (targetY - brush.y) * follow
       }
 
-      const burstData = viewUniforms.uBursts.value;
-      burstData.fill(0);
+      const burstData = viewUniforms.uBursts.value
+      burstData.fill(0)
       for (let i = bursts.length - 1; i >= 0; i--) {
-        if ((now - bursts[i].start) / 1000 >= BURST_SECONDS) bursts.splice(i, 1);
+        if ((now - bursts[i].start) / 1000 >= BURST_SECONDS) bursts.splice(i, 1)
       }
       bursts.forEach((b, i) => {
-        const k = Math.max(0, (now - b.start) / 1000 / BURST_SECONDS);
-        const reach = Math.hypot(Math.max(b.x, width - b.x), Math.max(b.y, height - b.y)) + viewUniforms.uBurstWidth.value;
-        burstData[i * 4] = b.x;
-        burstData[i * 4 + 1] = b.y;
-        burstData[i * 4 + 2] = reach * Math.sin((k * Math.PI) / 2);
-        burstData[i * 4 + 3] = 1 - k * k * k;
-      });
+        const k = Math.max(0, (now - b.start) / 1000 / BURST_SECONDS)
+        const reach =
+          Math.hypot(Math.max(b.x, width - b.x), Math.max(b.y, height - b.y)) +
+          viewUniforms.uBurstWidth.value
+        burstData[i * 4] = b.x
+        burstData[i * 4 + 1] = b.y
+        burstData[i * 4 + 2] = reach * Math.sin((k * Math.PI) / 2)
+        burstData[i * 4 + 3] = 1 - k * k * k
+      })
 
-      if (presence > 0.002) trailUntil = now + s.linger * 1000 + 150;
+      if (presence > 0.002) trailUntil = now + s.linger * 1000 + 150
 
-      const minFade = floatMask ? 0 : 1.5 / 255;
-      const fade = s.linger > 0 ? dt / s.linger : 1;
-      maskUniforms.tPrev.value = masks[0].texture;
-      maskUniforms.uFrom.value = [brush.px, brush.py];
-      maskUniforms.uTo.value = [brush.x, brush.y];
-      maskUniforms.uRadius.value = s.revealRadius * (0.45 + 0.55 * presence);
-      maskUniforms.uSoftness.value = s.softness;
-      maskUniforms.uStrength.value = presence;
-      maskUniforms.uFade.value = Math.max(fade, minFade);
-      viewUniforms.uBurstWidth.value = Math.max(60, s.revealRadius * 0.9);
-      renderer.render({ scene: maskMesh, target: masks[1] });
-      masks.reverse();
-      brush.px = brush.x;
-      brush.py = brush.y;
+      const minFade = floatMask ? 0 : 1.5 / 255
+      const fade = s.linger > 0 ? dt / s.linger : 1
+      maskUniforms.tPrev.value = masks[0].texture
+      maskUniforms.uFrom.value = [brush.px, brush.py]
+      maskUniforms.uTo.value = [brush.x, brush.y]
+      maskUniforms.uRadius.value = s.revealRadius * (0.45 + 0.55 * presence)
+      maskUniforms.uSoftness.value = s.softness
+      maskUniforms.uStrength.value = presence
+      maskUniforms.uFade.value = Math.max(fade, minFade)
+      viewUniforms.uBurstWidth.value = Math.max(60, s.revealRadius * 0.9)
+      renderer.render({ scene: maskMesh, target: masks[1] })
+      masks.reverse()
+      brush.px = brush.x
+      brush.py = brush.y
 
-      const cell = Math.max(1, Math.round(s.pixelSize * renderer.dpr));
+      const cell = Math.max(1, Math.round(s.pixelSize * renderer.dpr))
       if (image) {
         viewUniforms.uCover.value = fitScale(
           canvas.width,
           canvas.height,
           image.naturalWidth,
           image.naturalHeight,
-          s.fit === 'contain'
-        );
+          s.fit === 'contain',
+        )
       }
-      let patternIndex = ORDERED[s.pattern] ?? 0;
+      let patternIndex = ORDERED[s.pattern] ?? 0
       if (KERNELS[s.pattern]) {
-        patternIndex = 0;
+        patternIndex = 0
         if (image && !diffusionBlocked) {
           try {
-            updateDiffusion(cell, s);
-            patternIndex = 3;
+            updateDiffusion(cell, s)
+            patternIndex = 3
           } catch {
-            diffusionBlocked = true;
+            diffusionBlocked = true
           }
         }
       }
       if (patternIndex === 1 && noiseTexture.width !== 64) {
-        noiseTexture.image = getBlueNoise();
-        noiseTexture.width = 64;
-        noiseTexture.height = 64;
-        noiseTexture.needsUpdate = true;
+        noiseTexture.image = getBlueNoise()
+        noiseTexture.width = 64
+        noiseTexture.height = 64
+        noiseTexture.needsUpdate = true
       }
 
-      const texelsPerPixel = image ? (viewUniforms.uCover.value[0] * image.naturalWidth) / canvas.width : 1;
-      viewUniforms.tMask.value = masks[0].texture;
-      viewUniforms.uCell.value = cell;
-      viewUniforms.uLod.value = Math.log2(Math.max(cell * texelsPerPixel, 1));
-      viewUniforms.uPattern.value = patternIndex;
-      viewUniforms.uPalette.value = s.palette === 'rgb' ? 1 : 0;
-      viewUniforms.uLevels.value = Math.max(2, Math.round(s.levels));
-      viewUniforms.uInk.value = hexToRgb(s.inkColor);
-      viewUniforms.uPaper.value = hexToRgb(s.paperColor);
-      viewUniforms.uRimColor.value = hexToRgb(s.rimColor);
-      viewUniforms.uRim.value = Math.min(Math.max(s.rim, 0), 0.95);
-      viewUniforms.uContrast.value = s.contrast;
-      viewUniforms.uBrightness.value = s.brightness;
-      viewUniforms.uReverse.value = s.reverse ? 1 : 0;
-      const intro = image ? Math.min(1, (now - introStart) / INTRO_MS) : 0;
-      viewUniforms.uIntro.value = 1 - Math.pow(1 - intro, 2);
-      renderer.render({ scene: viewMesh });
+      const texelsPerPixel = image
+        ? (viewUniforms.uCover.value[0] * image.naturalWidth) / canvas.width
+        : 1
+      viewUniforms.tMask.value = masks[0].texture
+      viewUniforms.uCell.value = cell
+      viewUniforms.uLod.value = Math.log2(Math.max(cell * texelsPerPixel, 1))
+      viewUniforms.uPattern.value = patternIndex
+      viewUniforms.uPalette.value = s.palette === 'rgb' ? 1 : 0
+      viewUniforms.uLevels.value = Math.max(2, Math.round(s.levels))
+      viewUniforms.uInk.value = hexToRgb(s.inkColor)
+      viewUniforms.uPaper.value = hexToRgb(s.paperColor)
+      viewUniforms.uRimColor.value = hexToRgb(s.rimColor)
+      viewUniforms.uRim.value = Math.min(Math.max(s.rim, 0), 0.95)
+      viewUniforms.uContrast.value = s.contrast
+      viewUniforms.uBrightness.value = s.brightness
+      viewUniforms.uReverse.value = s.reverse ? 1 : 0
+      const intro = image ? Math.min(1, (now - introStart) / INTRO_MS) : 0
+      viewUniforms.uIntro.value = 1 - (1 - intro) ** 2
+      renderer.render({ scene: viewMesh })
 
       const busy =
-        pointer.inside || wanderOn || presence > 0.002 || bursts.length > 0 || now < trailUntil || (image && intro < 1);
-      if (busy && visible) raf = requestAnimationFrame(frame);
-    };
+        pointer.inside ||
+        wanderOn ||
+        presence > 0.002 ||
+        bursts.length > 0 ||
+        now < trailUntil ||
+        (image && intro < 1)
+      if (busy && visible) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || !visible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-    wakeRef = wake;
+      if (raf || !visible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
+    wakeRef = wake
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.decoding = 'async';
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.decoding = 'async'
     img.onload = () => {
-      image = img;
-      imageTexture.image = img;
+      image = img
+      imageTexture.image = img
       try {
         if (samplerContext) {
-          const edge = measureEdge(samplerContext, img);
-          viewUniforms.uMatte.value = edge.matte;
-          viewUniforms.uKey.value = edge.plain ? 1 : 0;
+          const edge = measureEdge(samplerContext, img)
+          viewUniforms.uMatte.value = edge.matte
+          viewUniforms.uKey.value = edge.plain ? 1 : 0
         }
       } catch {}
-      introStart = performance.now();
-      wake();
-    };
-    img.src = src;
+      introStart = performance.now()
+      wake()
+    }
+    img.src = src
 
     const locate = (e: PointerEvent) => {
-      const rect = host.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
-      pointer.placed = true;
-    };
+      const rect = host.getBoundingClientRect()
+      pointer.x = e.clientX - rect.left
+      pointer.y = e.clientY - rect.top
+      pointer.placed = true
+    }
     const onMove = (e: PointerEvent) => {
-      locate(e);
+      locate(e)
       if (!pointer.inside) {
-        pointer.inside = true;
-        pointer.fresh = true;
+        pointer.inside = true
+        pointer.fresh = true
       }
-      wake();
-    };
+      wake()
+    }
     const onLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
     const onDown = (e: PointerEvent) => {
-      onMove(e);
-      if (!cfg.clickBurst || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      bursts.push({ x: pointer.x, y: pointer.y, start: performance.now() });
-      if (bursts.length > MAX_BURSTS) bursts.shift();
-    };
-    host.addEventListener('pointermove', onMove, { passive: true });
-    host.addEventListener('pointerenter', onMove, { passive: true });
-    host.addEventListener('pointerdown', onDown, { passive: true });
-    host.addEventListener('pointerleave', onLeave, { passive: true });
-    host.addEventListener('pointercancel', onLeave, { passive: true });
+      onMove(e)
+      if (!cfg.clickBurst || (e.pointerType === 'mouse' && e.button !== 0)) return
+      bursts.push({ x: pointer.x, y: pointer.y, start: performance.now() })
+      if (bursts.length > MAX_BURSTS) bursts.shift()
+    }
+    host.addEventListener('pointermove', onMove, { passive: true })
+    host.addEventListener('pointerenter', onMove, { passive: true })
+    host.addEventListener('pointerdown', onDown, { passive: true })
+    host.addEventListener('pointerleave', onLeave, { passive: true })
+    host.addEventListener('pointercancel', onLeave, { passive: true })
 
     const resizeObserver = new ResizeObserver(() => {
-      layout();
-      wake();
-    });
-    resizeObserver.observe(host);
+      layout()
+      wake()
+    })
+    resizeObserver.observe(host)
     const intersectionObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      wake();
-    });
-    intersectionObserver.observe(host);
+      visible = entry.isIntersecting
+      wake()
+    })
+    intersectionObserver.observe(host)
 
-    layout();
-    wake();
+    layout()
+    wake()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = () => {};
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      img.onload = null;
-      host.removeEventListener('pointermove', onMove);
-      host.removeEventListener('pointerenter', onMove);
-      host.removeEventListener('pointerdown', onDown);
-      host.removeEventListener('pointerleave', onLeave);
-      host.removeEventListener('pointercancel', onLeave);
-      masks.forEach(destroyMask);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    });
-  });
+      cancelAnimationFrame(raf)
+      wakeRef = () => {}
+      resizeObserver.disconnect()
+      intersectionObserver.disconnect()
+      img.onload = null
+      host.removeEventListener('pointermove', onMove)
+      host.removeEventListener('pointerenter', onMove)
+      host.removeEventListener('pointerdown', onDown)
+      host.removeEventListener('pointerleave', onLeave)
+      host.removeEventListener('pointercancel', onLeave)
+      masks.forEach(destroyMask)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
+    })
+  })
 
   return (
     <div
@@ -832,7 +872,7 @@ const DitherVeil = (props: DitherVeilProps) => {
         .join(' ')}
       style={props.style}
     />
-  );
-};
+  )
+}
 
-export default DitherVeil;
+export default DitherVeil

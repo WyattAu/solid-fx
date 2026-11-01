@@ -1,4 +1,4 @@
-import OptionWheel from './OptionWheel';
+import OptionWheel from './OptionWheel'
 
 function OptionWheelDemo() {
   return (
@@ -7,7 +7,7 @@ function OptionWheelDemo() {
         <OptionWheel defaultSelected={3} onChange={index => console.log('selected', index)} />
       </div>
     </div>
-  );
+  )
 }
 
-export default OptionWheelDemo;
+export default OptionWheelDemo

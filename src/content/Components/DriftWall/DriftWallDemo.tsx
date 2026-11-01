@@ -1,4 +1,4 @@
-import DriftWall from './DriftWall';
+import DriftWall from './DriftWall'
 
 function DriftWallDemo() {
   return (
@@ -10,7 +10,7 @@ function DriftWallDemo() {
         turn={-12}
       />
     </div>
-  );
+  )
 }
 
-export default DriftWallDemo;
+export default DriftWallDemo

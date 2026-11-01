@@ -1,54 +1,71 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-type HoloPreset = 'bursts' | 'stars' | 'shards' | 'cosmos' | 'rainbow' | 'swirl' | 'glitter' | 'gold';
+type HoloPreset =
+  | 'bursts'
+  | 'stars'
+  | 'shards'
+  | 'cosmos'
+  | 'rainbow'
+  | 'swirl'
+  | 'glitter'
+  | 'gold'
 
 export interface HoloCardProps {
-  image?: string;
-  backImage?: string;
-  alt?: string;
-  preset?: HoloPreset;
-  intensity?: number;
-  scale?: number;
-  edgeSparkle?: number;
-  frame?: number;
-  glare?: number;
-  foilColor?: string;
-  width?: number;
-  radius?: number;
-  tiltMax?: number;
-  hoverScale?: number;
-  idle?: boolean;
-  shadow?: boolean;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  image?: string
+  backImage?: string
+  alt?: string
+  preset?: HoloPreset
+  intensity?: number
+  scale?: number
+  edgeSparkle?: number
+  frame?: number
+  glare?: number
+  foilColor?: string
+  width?: number
+  radius?: number
+  tiltMax?: number
+  hoverScale?: number
+  idle?: boolean
+  shadow?: boolean
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface Settings {
-  preset: number;
-  intensity: number;
-  scale: number;
-  edgeSparkle: number;
-  frame: number;
-  glare: number;
-  foil: number[];
-  radius: number;
-  tiltMax: number;
-  hoverScale: number;
-  idle: boolean;
+  preset: number
+  intensity: number
+  scale: number
+  edgeSparkle: number
+  frame: number
+  glare: number
+  foil: number[]
+  radius: number
+  tiltMax: number
+  hoverScale: number
+  idle: boolean
 }
 
-const PRESETS: HoloPreset[] = ['bursts', 'stars', 'shards', 'cosmos', 'rainbow', 'swirl', 'glitter', 'gold'];
-const PERSPECTIVE = 1100;
-const CARD_RATIO = 63 / 88;
+const PRESETS: HoloPreset[] = [
+  'bursts',
+  'stars',
+  'shards',
+  'cosmos',
+  'rainbow',
+  'swirl',
+  'glitter',
+  'gold',
+]
+const PERSPECTIVE = 1100
+const CARD_RATIO = 63 / 88
 
 const VERTEX = `#version 300 es
 in vec2 position;
 void main() {
   gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -312,45 +329,45 @@ void main() {
   color = pow(clamp(color, 0.0, 1.0), vec3(1.0 / 2.2));
   outColor = vec4(color * alpha, alpha);
 }
-`;
+`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const parseColor = (value: string): number[] => {
-  const fallback = [0.78, 0.8, 0.84];
-  if (typeof document === 'undefined') return fallback;
-  const ctx = document.createElement('canvas').getContext('2d');
-  if (!ctx) return fallback;
-  ctx.fillStyle = '#000000';
-  ctx.fillStyle = value;
-  const resolved = ctx.fillStyle;
-  if (!resolved.startsWith('#') || resolved.length !== 7) return fallback;
-  return [1, 3, 5].map(i => Math.pow(parseInt(resolved.slice(i, i + 2), 16) / 255, 2.2));
-};
+  const fallback = [0.78, 0.8, 0.84]
+  if (typeof document === 'undefined') return fallback
+  const ctx = document.createElement('canvas').getContext('2d')
+  if (!ctx) return fallback
+  ctx.fillStyle = '#000000'
+  ctx.fillStyle = value
+  const resolved = ctx.fillStyle
+  if (!resolved.startsWith('#') || resolved.length !== 7) return fallback
+  return [1, 3, 5].map(i => (parseInt(resolved.slice(i, i + 2), 16) / 255) ** 2.2)
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string): WebGLShader | null => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const HoloCard = (props: HoloCardProps) => {
-  let rootEl!: HTMLDivElement;
-  let rotorEl!: HTMLDivElement;
-  let shadowEl: HTMLSpanElement | undefined;
-  let canvasEl!: HTMLCanvasElement;
-  let pointer = { x: 0.5, y: 0.5, inside: false };
-  let wake: (() => void) | null = null;
-  let load: ((src?: string) => void) | null = null;
-  const [ratio, setRatio] = createSignal(CARD_RATIO);
-  const [ready, setReady] = createSignal(false);
-  const [flipped, setFlipped] = createSignal(false);
-  const flippable = () => Boolean(props.backImage);
-  const flipNow = () => flippable() && flipped();
+  let rootEl!: HTMLDivElement
+  let rotorEl!: HTMLDivElement
+  let shadowEl: HTMLSpanElement | undefined
+  let canvasEl!: HTMLCanvasElement
+  let pointer = { x: 0.5, y: 0.5, inside: false }
+  let wake: (() => void) | null = null
+  let load: ((src?: string) => void) | null = null
+  const [ratio, setRatio] = createSignal(CARD_RATIO)
+  const [ready, setReady] = createSignal(false)
+  const [flipped, setFlipped] = createSignal(false)
+  const flippable = () => Boolean(props.backImage)
+  const flipNow = () => flippable() && flipped()
 
   const settings = createMemo<Settings>(() => ({
     preset: Math.max(0, PRESETS.indexOf(props.preset ?? 'bursts')),
@@ -363,62 +380,76 @@ const HoloCard = (props: HoloCardProps) => {
     radius: Math.max(0, props.radius ?? 14),
     tiltMax: clamp(props.tiltMax ?? 14, 0, 45),
     hoverScale: clamp(props.hoverScale ?? 1.04, 0.8, 1.3),
-    idle: props.idle ?? true
-  }));
+    idle: props.idle ?? true,
+  }))
 
   // Upstream wakes the render loop on every render.
   createEffect(() => {
-    settings();
-    wake?.();
-  });
+    settings()
+    wake?.()
+  })
 
   createEffect(() => {
-    load?.(props.image);
-  });
+    load?.(props.image)
+  })
 
   onMount(() => {
-    const root = rootEl;
-    const rotor = rotorEl;
-    const canvas = canvasEl;
-    if (!root || !rotor || !canvas) return;
+    const root = rootEl
+    const rotor = rotorEl
+    const canvas = canvasEl
+    if (!root || !rotor || !canvas) return
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    let program: WebGLProgram | null = null;
-    let texture: WebGLTexture | null = null;
-    let buffer: WebGLBuffer | null = null;
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
-    let textureReady = false;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    let program: WebGLProgram | null = null
+    let texture: WebGLTexture | null = null
+    let buffer: WebGLBuffer | null = null
+    const uniforms: Record<string, WebGLUniformLocation | null> = {}
+    let textureReady = false
 
     if (gl) {
-      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
+      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
       if (vertex && fragment) {
-        program = gl.createProgram();
-        gl.attachShader(program, vertex);
-        gl.attachShader(program, fragment);
-        gl.bindAttribLocation(program, 0, 'position');
-        gl.linkProgram(program);
-        gl.deleteShader(vertex);
-        gl.deleteShader(fragment);
+        program = gl.createProgram()
+        gl.attachShader(program, vertex)
+        gl.attachShader(program, fragment)
+        gl.bindAttribLocation(program, 0, 'position')
+        gl.linkProgram(program)
+        gl.deleteShader(vertex)
+        gl.deleteShader(fragment)
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-          gl.deleteProgram(program);
-          program = null;
+          gl.deleteProgram(program)
+          program = null
         }
       }
       if (program) {
-        buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-        texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+        buffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+        gl.enableVertexAttribArray(0)
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+        texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          1,
+          1,
+          0,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          new Uint8Array([0, 0, 0, 0]),
+        )
         for (const name of [
           'uArt',
           'uSize',
@@ -434,9 +465,9 @@ const HoloCard = (props: HoloCardProps) => {
           'uRadius',
           'uGlare',
           'uFoil',
-          'uReady'
+          'uReady',
         ]) {
-          uniforms[name] = gl.getUniformLocation(program, name);
+          uniforms[name] = gl.getUniformLocation(program, name)
         }
       }
     }
@@ -454,43 +485,47 @@ const HoloCard = (props: HoloCardProps) => {
       liftV: 0,
       turn: 0,
       turnV: 0,
-      clock: Math.random() * 40
-    };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let alive = true;
-    let calm = 0;
+      clock: Math.random() * 40,
+    }
+    let raf = 0
+    let last = 0
+    let visible = true
+    let alive = true
+    let calm = 0
 
     const draw = () => {
-      if (!gl || !program) return;
-      const s = settings();
-      const w = canvas.width;
-      const h = canvas.height;
-      if (!w || !h) return;
-      gl.viewport(0, 0, w, h);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(uniforms.uArt, 0);
-      gl.uniform2f(uniforms.uSize, w, h);
-      gl.uniform1f(uniforms.uAspect, h / w);
-      gl.uniform2f(uniforms.uTilt, (state.tiltX * Math.PI) / 180, ((state.tiltY + state.turn) * Math.PI) / 180);
-      gl.uniform2f(uniforms.uLight, state.lightX, state.lightY);
-      gl.uniform1f(uniforms.uDistance, PERSPECTIVE / Math.max(1, canvas.clientWidth));
-      gl.uniform1i(uniforms.uPreset, s.preset);
-      gl.uniform1f(uniforms.uIntensity, s.intensity);
-      gl.uniform1f(uniforms.uScale, s.scale);
-      gl.uniform1f(uniforms.uEdge, s.edgeSparkle);
-      gl.uniform1f(uniforms.uFrame, s.frame);
-      gl.uniform1f(uniforms.uRadius, s.radius / Math.max(1, canvas.clientWidth));
-      gl.uniform1f(uniforms.uGlare, s.glare);
-      gl.uniform3f(uniforms.uFoil, s.foil[0], s.foil[1], s.foil[2]);
-      gl.uniform1f(uniforms.uReady, textureReady ? 1 : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+      if (!gl || !program) return
+      const s = settings()
+      const w = canvas.width
+      const h = canvas.height
+      if (!w || !h) return
+      gl.viewport(0, 0, w, h)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.uniform1i(uniforms.uArt, 0)
+      gl.uniform2f(uniforms.uSize, w, h)
+      gl.uniform1f(uniforms.uAspect, h / w)
+      gl.uniform2f(
+        uniforms.uTilt,
+        (state.tiltX * Math.PI) / 180,
+        ((state.tiltY + state.turn) * Math.PI) / 180,
+      )
+      gl.uniform2f(uniforms.uLight, state.lightX, state.lightY)
+      gl.uniform1f(uniforms.uDistance, PERSPECTIVE / Math.max(1, canvas.clientWidth))
+      gl.uniform1i(uniforms.uPreset, s.preset)
+      gl.uniform1f(uniforms.uIntensity, s.intensity)
+      gl.uniform1f(uniforms.uScale, s.scale)
+      gl.uniform1f(uniforms.uEdge, s.edgeSparkle)
+      gl.uniform1f(uniforms.uFrame, s.frame)
+      gl.uniform1f(uniforms.uRadius, s.radius / Math.max(1, canvas.clientWidth))
+      gl.uniform1f(uniforms.uGlare, s.glare)
+      gl.uniform3f(uniforms.uFoil, s.foil[0], s.foil[1], s.foil[2])
+      gl.uniform1f(uniforms.uReady, textureReady ? 1 : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const spring = (
       value: number,
@@ -498,55 +533,55 @@ const HoloCard = (props: HoloCardProps) => {
       target: number,
       stiffness: number,
       damping: number,
-      dt: number
+      dt: number,
     ): [number, number] => {
-      const next = velocity + ((target - value) * stiffness - velocity * damping) * dt;
-      return [value + next * dt, next];
-    };
+      const next = velocity + ((target - value) * stiffness - velocity * damping) * dt
+      return [value + next * dt, next]
+    }
 
     const tick = (now: number) => {
-      raf = 0;
-      if (!alive) return;
-      const dt = Math.min(1 / 30, Math.max(1 / 240, (now - last) / 1000));
-      last = now;
-      const s = settings();
-      let targetX = 0;
-      let targetY = 0;
-      let lightX = 0.36;
-      let lightY = 0.26;
-      let lift = 1;
-      const drifting = s.idle && !reduce && !pointer.inside;
+      raf = 0
+      if (!alive) return
+      const dt = Math.min(1 / 30, Math.max(1 / 240, (now - last) / 1000))
+      last = now
+      const s = settings()
+      let targetX = 0
+      let targetY = 0
+      let lightX = 0.36
+      let lightY = 0.26
+      let lift = 1
+      const drifting = s.idle && !reduce && !pointer.inside
       if (pointer.inside && !reduce) {
-        targetX = (0.5 - pointer.y) * 2 * s.tiltMax;
-        targetY = (pointer.x - 0.5) * 2 * s.tiltMax;
-        lightX = pointer.x;
-        lightY = pointer.y;
-        lift = s.hoverScale;
+        targetX = (0.5 - pointer.y) * 2 * s.tiltMax
+        targetY = (pointer.x - 0.5) * 2 * s.tiltMax
+        lightX = pointer.x
+        lightY = pointer.y
+        lift = s.hoverScale
       } else if (drifting) {
-        state.clock += dt;
-        const t = state.clock;
-        targetX = Math.sin(t * 0.7) * s.tiltMax * 0.28;
-        targetY = Math.sin(t * 0.53 + 1.2) * s.tiltMax * 0.4;
-        lightX = 0.5 + Math.sin(t * 0.41) * 0.42;
-        lightY = 0.38 + Math.sin(t * 0.33 + 0.6) * 0.3;
+        state.clock += dt
+        const t = state.clock
+        targetX = Math.sin(t * 0.7) * s.tiltMax * 0.28
+        targetY = Math.sin(t * 0.53 + 1.2) * s.tiltMax * 0.4
+        lightX = 0.5 + Math.sin(t * 0.41) * 0.42
+        lightY = 0.38 + Math.sin(t * 0.33 + 0.6) * 0.3
       }
-      const steps = Math.ceil(dt / (1 / 240));
-      const h = dt / steps;
+      const steps = Math.ceil(dt / (1 / 240))
+      const h = dt / steps
       for (let i = 0; i < steps; i++) {
-        [state.tiltX, state.tiltVX] = spring(state.tiltX, state.tiltVX, targetX, 150, 16, h);
-        [state.tiltY, state.tiltVY] = spring(state.tiltY, state.tiltVY, targetY, 150, 16, h);
-        [state.lightX, state.lightVX] = spring(state.lightX, state.lightVX, lightX, 220, 30, h);
-        [state.lightY, state.lightVY] = spring(state.lightY, state.lightVY, lightY, 220, 30, h);
-        [state.lift, state.liftV] = spring(state.lift, state.liftV, lift, 320, 30, h);
-        [state.turn, state.turnV] = reduce
+        ;[state.tiltX, state.tiltVX] = spring(state.tiltX, state.tiltVX, targetX, 150, 16, h)
+        ;[state.tiltY, state.tiltVY] = spring(state.tiltY, state.tiltVY, targetY, 150, 16, h)
+        ;[state.lightX, state.lightVX] = spring(state.lightX, state.lightVX, lightX, 220, 30, h)
+        ;[state.lightY, state.lightVY] = spring(state.lightY, state.lightVY, lightY, 220, 30, h)
+        ;[state.lift, state.liftV] = spring(state.lift, state.liftV, lift, 320, 30, h)
+        ;[state.turn, state.turnV] = reduce
           ? [flipNow() ? 180 : 0, 0]
-          : spring(state.turn, state.turnV, flipNow() ? 180 : 0, 170, 20, h);
+          : spring(state.turn, state.turnV, flipNow() ? 180 : 0, 170, 20, h)
       }
-      rotor.style.transform = `perspective(${PERSPECTIVE}px) scale(${state.lift}) rotateX(${state.tiltX}deg) rotateY(${state.tiltY + state.turn}deg)`;
+      rotor.style.transform = `perspective(${PERSPECTIVE}px) scale(${state.lift}) rotateX(${state.tiltX}deg) rotateY(${state.tiltY + state.turn}deg)`
       if (shadowEl) {
-        shadowEl.style.transform = `translate(${-state.tiltY * 0.7}px, ${state.tiltX * 0.7}px) scale(${0.9 + (state.lift - 1) * 1.5})`;
+        shadowEl.style.transform = `translate(${-state.tiltY * 0.7}px, ${state.tiltX * 0.7}px) scale(${0.9 + (state.lift - 1) * 1.5})`
       }
-      if (Math.cos(((state.tiltY + state.turn) * Math.PI) / 180) > -0.05) draw();
+      if (Math.cos(((state.tiltY + state.turn) * Math.PI) / 180) > -0.05) draw()
       const motion =
         Math.abs(state.tiltVX) +
         Math.abs(state.tiltVY) +
@@ -554,105 +589,105 @@ const HoloCard = (props: HoloCardProps) => {
         Math.abs(state.turnV) +
         (Math.abs(state.lightVX) + Math.abs(state.lightVY)) * 60 +
         Math.abs(state.tiltX - targetX) +
-        Math.abs(state.tiltY - targetY);
-      calm = motion > 0.02 ? 0 : calm + dt;
-      if (!visible || (!drifting && !pointer.inside && calm > 0.3)) return;
-      raf = requestAnimationFrame(tick);
-    };
+        Math.abs(state.tiltY - targetY)
+      calm = motion > 0.02 ? 0 : calm + dt
+      if (!visible || (!drifting && !pointer.inside && calm > 0.3)) return
+      raf = requestAnimationFrame(tick)
+    }
 
     wake = () => {
-      if (raf || !alive) return;
-      calm = 0;
-      last = performance.now();
-      raf = requestAnimationFrame(tick);
-    };
+      if (raf || !alive) return
+      calm = 0
+      last = performance.now()
+      raf = requestAnimationFrame(tick)
+    }
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.max(1, Math.round(canvas.clientWidth * dpr));
-      const h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const w = Math.max(1, Math.round(canvas.clientWidth * dpr))
+      const h = Math.max(1, Math.round(canvas.clientHeight * dpr))
       if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = w
+        canvas.height = h
       }
-      draw();
-      wake?.();
-    };
+      draw()
+      wake?.()
+    }
 
     load = (src?: string) => {
-      textureReady = false;
-      setReady(false);
-      if (!src) return;
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.decoding = 'async';
+      textureReady = false
+      setReady(false)
+      if (!src) return
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.decoding = 'async'
       img.onload = () => {
-        if (!alive) return;
-        if (img.naturalWidth && img.naturalHeight) setRatio(img.naturalWidth / img.naturalHeight);
-        if (!gl || !program) return;
+        if (!alive) return
+        if (img.naturalWidth && img.naturalHeight) setRatio(img.naturalWidth / img.naturalHeight)
+        if (!gl || !program) return
         try {
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-          gl.generateMipmap(gl.TEXTURE_2D);
-          textureReady = true;
-          setReady(true);
-          draw();
-          wake?.();
+          gl.bindTexture(gl.TEXTURE_2D, texture)
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+          gl.generateMipmap(gl.TEXTURE_2D)
+          textureReady = true
+          setReady(true)
+          draw()
+          wake?.()
         } catch {
-          textureReady = false;
+          textureReady = false
         }
-      };
-      img.src = src;
-    };
-    load(props.image);
+      }
+      img.src = src
+    }
+    load(props.image)
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(canvas)
     const visibility = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      if (visible) wake?.();
-    });
-    visibility.observe(root);
-    resize();
+      visible = entries.some(entry => entry.isIntersecting)
+      if (visible) wake?.()
+    })
+    visibility.observe(root)
+    resize()
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      wake = null;
-      load = null;
-      resizeObserver.disconnect();
-      visibility.disconnect();
+      alive = false
+      cancelAnimationFrame(raf)
+      wake = null
+      load = null
+      resizeObserver.disconnect()
+      visibility.disconnect()
       if (gl) {
-        gl.deleteTexture(texture);
-        gl.deleteBuffer(buffer);
-        gl.deleteProgram(program);
+        gl.deleteTexture(texture)
+        gl.deleteBuffer(buffer)
+        gl.deleteProgram(program)
       }
-    });
-  });
+    })
+  })
 
   const track = (e: PointerEvent) => {
-    if (e.pointerType === 'touch' && e.type === 'pointermove' && !e.buttons) return;
-    const target = e.currentTarget as HTMLElement;
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
+    if (e.pointerType === 'touch' && e.type === 'pointermove' && !e.buttons) return
+    const target = e.currentTarget as HTMLElement
+    if (!target) return
+    const rect = target.getBoundingClientRect()
     pointer = {
       x: clamp((e.clientX - rect.left) / rect.width, 0, 1),
       y: clamp((e.clientY - rect.top) / rect.height, 0, 1),
-      inside: true
-    };
-    wake?.();
-  };
+      inside: true,
+    }
+    wake?.()
+  }
 
   const leave = () => {
-    pointer = { ...pointer, inside: false };
-    wake?.();
-  };
+    pointer = { ...pointer, inside: false }
+    wake?.()
+  }
 
   const toggle = () => {
-    if (flippable()) setFlipped(value => !value);
-  };
+    if (flippable()) setFlipped(value => !value)
+  }
 
   return (
     <div
@@ -671,16 +706,16 @@ const HoloCard = (props: HoloCardProps) => {
       onPointerCancel={leave}
       onClick={toggle}
       onKeyDown={e => {
-        if (!flippable() || (e.key !== 'Enter' && e.key !== ' ')) return;
-        e.preventDefault();
-        if (!e.repeat) toggle();
+        if (!flippable() || (e.key !== 'Enter' && e.key !== ' ')) return
+        e.preventDefault()
+        if (!e.repeat) toggle()
       }}
       style={
         {
           '--hc-w': `${props.width ?? 320}px`,
           '--hc-ratio': ratio(),
           '--hc-radius': `${props.radius ?? 14}px`,
-          ...props.style
+          ...props.style,
         } as JSX.CSSProperties
       }
     >
@@ -691,7 +726,10 @@ const HoloCard = (props: HoloCardProps) => {
           aria-hidden="true"
         />
       </Show>
-      <div ref={rotorEl} class="absolute inset-0 [transform-style:preserve-3d] will-change-transform">
+      <div
+        ref={rotorEl}
+        class="absolute inset-0 [transform-style:preserve-3d] will-change-transform"
+      >
         <div class="absolute inset-0 overflow-hidden rounded-[var(--hc-radius)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
           <Show when={props.image}>
             <img
@@ -718,7 +756,7 @@ const HoloCard = (props: HoloCardProps) => {
         </Show>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default HoloCard;
+export default HoloCard

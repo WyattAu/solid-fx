@@ -1,4 +1,4 @@
-import LiquidEther from './LiquidEther';
+import LiquidEther from './LiquidEther'
 
 function LiquidEtherDemo() {
   return (
@@ -17,7 +17,7 @@ function LiquidEtherDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default LiquidEtherDemo;
+export default LiquidEtherDemo

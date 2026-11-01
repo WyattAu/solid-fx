@@ -1,4 +1,4 @@
-import GradualBlur from './GradualBlur';
+import GradualBlur from './GradualBlur'
 
 function GradualBlurDemo() {
   return (
@@ -8,9 +8,16 @@ function GradualBlurDemo() {
         alt="Sample landscape"
         class="h-full w-full object-cover"
       />
-      <GradualBlur target="parent" position="bottom" height="45%" strength={3} layers={8} hoverIntensity={1.6} />
+      <GradualBlur
+        target="parent"
+        position="bottom"
+        height="45%"
+        strength={3}
+        layers={8}
+        hoverIntensity={1.6}
+      />
     </div>
-  );
+  )
 }
 
-export default GradualBlurDemo;
+export default GradualBlurDemo

@@ -1,93 +1,94 @@
-import { createEffect, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type PixelTransitionPattern = 'random' | 'dither' | 'ripple' | 'wipe';
-export type PixelTransitionAnimation = 'pop' | 'grow' | 'fade';
-export type PixelTransitionShape = 'square' | 'rounded' | 'circle';
+export type PixelTransitionPattern = 'random' | 'dither' | 'ripple' | 'wipe'
+export type PixelTransitionAnimation = 'pop' | 'grow' | 'fade'
+export type PixelTransitionShape = 'square' | 'rounded' | 'circle'
 
 export interface PixelTransitionProps {
-  firstContent: JSX.Element;
-  secondContent: JSX.Element;
-  gridSize?: number;
-  pixelColor?: string;
-  mosaic?: number;
-  animationStepDuration?: number;
-  pattern?: PixelTransitionPattern;
-  randomness?: number;
-  pixelAnimation?: PixelTransitionAnimation;
-  pixelShape?: PixelTransitionShape;
-  gap?: number;
-  fps?: number;
-  trigger?: 'hover' | 'click';
-  active?: boolean;
-  once?: boolean;
-  onActiveChange?: (active: boolean) => void;
-  aspectRatio?: string;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  firstContent: JSX.Element
+  secondContent: JSX.Element
+  gridSize?: number
+  pixelColor?: string
+  mosaic?: number
+  animationStepDuration?: number
+  pattern?: PixelTransitionPattern
+  randomness?: number
+  pixelAnimation?: PixelTransitionAnimation
+  pixelShape?: PixelTransitionShape
+  gap?: number
+  fps?: number
+  trigger?: 'hover' | 'click'
+  active?: boolean
+  once?: boolean
+  onActiveChange?: (active: boolean) => void
+  aspectRatio?: string
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Point = { x: number; y: number };
+type Point = { x: number; y: number }
 
-type Control = { go: (next: boolean, point: Point | null) => void; goal: () => number };
+type Control = { go: (next: boolean, point: Point | null) => void; goal: () => number }
 
 interface Settings {
-  gridSize: number;
-  pixelColor: string;
-  mosaic: number;
-  duration: number;
-  pattern: PixelTransitionPattern;
-  randomness: number;
-  animation: PixelTransitionAnimation;
-  shape: PixelTransitionShape;
-  gap: number;
-  fps: number;
-  once: boolean;
+  gridSize: number
+  pixelColor: string
+  mosaic: number
+  duration: number
+  pattern: PixelTransitionPattern
+  randomness: number
+  animation: PixelTransitionAnimation
+  shape: PixelTransitionShape
+  gap: number
+  fps: number
+  once: boolean
 }
 
-const PATTERNS: PixelTransitionPattern[] = ['random', 'dither', 'ripple', 'wipe'];
-const ANIMATIONS: PixelTransitionAnimation[] = ['pop', 'grow', 'fade'];
-const SHAPES: PixelTransitionShape[] = ['square', 'rounded', 'circle'];
+const PATTERNS: PixelTransitionPattern[] = ['random', 'dither', 'ripple', 'wipe']
+const ANIMATIONS: PixelTransitionAnimation[] = ['pop', 'grow', 'fade']
+const SHAPES: PixelTransitionShape[] = ['square', 'rounded', 'circle']
 const ROOT =
-  'relative isolate w-[300px] max-w-full overflow-hidden rounded-[16px] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-current';
-const LAYER = 'absolute inset-0';
-const PIXELS = 'pointer-events-none absolute inset-0 z-[1] block h-full w-full';
+  'relative isolate w-[300px] max-w-full overflow-hidden rounded-[16px] [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-current'
+const LAYER = 'absolute inset-0'
+const PIXELS = 'pointer-events-none absolute inset-0 z-[1] block h-full w-full'
 
-const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-const WINDOW = 0.35;
-const SEAL = 0.22;
-const TONES = 5;
-const LEVELS = 16;
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+const WINDOW = 0.35
+const SEAL = 0.22
+const TONES = 5
+const LEVELS = 16
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-const smooth = (t: number) => t * t * (3 - 2 * t);
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+const smooth = (t: number) => t * t * (3 - 2 * t)
 
 const hash = (x: number, y: number, seed: number) => {
-  let h = Math.imul(x + 1, 0x27d4eb2d) ^ Math.imul(y + 1, 0x165667b1) ^ Math.imul(seed + 1, 0x2c1b3c6d);
-  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
-  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-};
+  let h =
+    Math.imul(x + 1, 0x27d4eb2d) ^ Math.imul(y + 1, 0x165667b1) ^ Math.imul(seed + 1, 0x2c1b3c6d)
+  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b)
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35)
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296
+}
 
 const PixelTransition = (props: PixelTransitionProps) => {
-  let root!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let firstLayer!: HTMLDivElement;
-  let secondLayer!: HTMLDivElement;
-  let control: Control | null = null;
-  let pointValue: Point | null = null;
-  let hovered = false;
-  let focused = false;
-  let pointerKind = 'mouse';
-  const initial = props.active ? 1 : 0;
+  let root!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let firstLayer!: HTMLDivElement
+  let secondLayer!: HTMLDivElement
+  let control: Control | null = null
+  let pointValue: Point | null = null
+  let hovered = false
+  let focused = false
+  let pointerKind = 'mouse'
+  const initial = props.active ? 1 : 0
 
-  const settingsRef: { current: Settings } = { current: {} as Settings };
+  const settingsRef: { current: Settings } = { current: {} as Settings }
   // Upstream rebuilt settings every render; this tracked effect replaces it.
   createEffect(() => {
-    const pattern = props.pattern ?? 'random';
-    const animation = props.pixelAnimation ?? 'pop';
-    const shape = props.pixelShape ?? 'square';
+    const pattern = props.pattern ?? 'random'
+    const animation = props.pixelAnimation ?? 'pop'
+    const shape = props.pixelShape ?? 'square'
     settingsRef.current = {
       gridSize: clamp(Math.round(props.gridSize ?? 10), 2, 80),
       pixelColor: props.pixelColor ?? '#ffffff',
@@ -99,20 +100,20 @@ const PixelTransition = (props: PixelTransitionProps) => {
       shape: SHAPES.includes(shape) ? shape : 'square',
       gap: Math.max(0, props.gap ?? 0),
       fps: clamp(props.fps ?? 0, 0, 120),
-      once: props.once ?? false
-    };
-  });
+      once: props.once ?? false,
+    }
+  })
 
   onMount(() => {
-    const canvas = canvasEl;
-    const ctx = canvas?.getContext('2d');
-    if (!root || !canvas || !ctx) return;
+    const canvas = canvasEl
+    const ctx = canvas?.getContext('2d')
+    if (!root || !canvas || !ctx) return
 
-    const probe = document.createElement('canvas');
-    probe.width = 1;
-    probe.height = 1;
-    const probeCtx = probe.getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const probe = document.createElement('canvas')
+    probe.width = 1
+    probe.height = 1
+    const probeCtx = probe.getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     const state = {
       progress: 0,
       base: initial,
@@ -124,283 +125,292 @@ const PixelTransition = (props: PixelTransitionProps) => {
       edge: 'left' as 'left' | 'right' | 'top' | 'bottom',
       tones: ['#ffffff'] as string[],
       toneKey: '',
-      dpr: 1
-    };
-    let raf = 0;
-    let last = 0;
-    let drawnAt = 0;
-    let alive = true;
+      dpr: 1,
+    }
+    let raf = 0
+    let last = 0
+    let drawnAt = 0
+    let alive = true
 
     const resolveTones = () => {
-      const s = settingsRef.current;
-      canvas.style.color = s.pixelColor;
-      const color = getComputedStyle(canvas).color;
-      canvas.style.color = '';
-      let rgba = [255, 255, 255, 1];
+      const s = settingsRef.current
+      canvas.style.color = s.pixelColor
+      const color = getComputedStyle(canvas).color
+      canvas.style.color = ''
+      let rgba = [255, 255, 255, 1]
       if (probeCtx) {
-        probeCtx.clearRect(0, 0, 1, 1);
-        probeCtx.fillStyle = color;
-        probeCtx.fillRect(0, 0, 1, 1);
-        const data = probeCtx.getImageData(0, 0, 1, 1).data;
-        rgba = [data[0], data[1], data[2], data[3] / 255];
+        probeCtx.clearRect(0, 0, 1, 1)
+        probeCtx.fillStyle = color
+        probeCtx.fillRect(0, 0, 1, 1)
+        const data = probeCtx.getImageData(0, 0, 1, 1).data
+        rgba = [data[0], data[1], data[2], data[3] / 255]
       }
-      const target = (0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2]) / 255 > 0.5 ? 0 : 255;
+      const target = (0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2]) / 255 > 0.5 ? 0 : 255
       state.tones = Array.from({ length: TONES }, (_, index) => {
-        const mix = s.mosaic * 0.5 * (index / (TONES - 1));
-        const [r, g, b] = rgba.slice(0, 3).map(value => Math.round(value + (target - value) * mix));
-        return `rgba(${r}, ${g}, ${b}, ${rgba[3]})`;
-      });
-      state.toneKey = `${s.pixelColor}|${s.mosaic}`;
-    };
+        const mix = s.mosaic * 0.5 * (index / (TONES - 1))
+        const [r, g, b] = rgba.slice(0, 3).map(value => Math.round(value + (target - value) * mix))
+        return `rgba(${r}, ${g}, ${b}, ${rgba[3]})`
+      })
+      state.toneKey = `${s.pixelColor}|${s.mosaic}`
+    }
 
     const show = (index: number) => {
-      state.shown = index;
-      if (firstLayer) firstLayer.style.visibility = index === 0 ? '' : 'hidden';
-      if (secondLayer) secondLayer.style.visibility = index === 1 ? '' : 'hidden';
-    };
+      state.shown = index
+      if (firstLayer) firstLayer.style.visibility = index === 0 ? '' : 'hidden'
+      if (secondLayer) secondLayer.style.visibility = index === 1 ? '' : 'hidden'
+    }
 
     const draw = () => {
-      const s = settingsRef.current;
-      const { width, height } = canvas;
-      ctx.globalAlpha = 1;
-      ctx.clearRect(0, 0, width, height);
-      const progress = state.progress;
-      if (progress <= 0 || progress >= 1) return;
-      if (state.toneKey !== `${s.pixelColor}|${s.mosaic}`) resolveTones();
+      const s = settingsRef.current
+      const { width, height } = canvas
+      ctx.globalAlpha = 1
+      ctx.clearRect(0, 0, width, height)
+      const progress = state.progress
+      if (progress <= 0 || progress >= 1) return
+      if (state.toneKey !== `${s.pixelColor}|${s.mosaic}`) resolveTones()
 
-      const covering = progress < 0.5;
-      const local = covering ? progress * 2 : progress * 2 - 1;
-      const seal = covering ? smooth(clamp((local - 1 + SEAL) / SEAL, 0, 1)) : 1 - smooth(clamp(local / SEAL, 0, 1));
-      const cols = s.gridSize;
-      const cell = width / cols;
-      const rows = Math.ceil(height / cell);
-      const top = (height - rows * cell) / 2;
-      const gap = Math.min(cell * 0.8, s.gap * state.dpr) * (1 - seal);
-      const ox = state.originX * width;
-      const oy = state.originY * height;
+      const covering = progress < 0.5
+      const local = covering ? progress * 2 : progress * 2 - 1
+      const seal = covering
+        ? smooth(clamp((local - 1 + SEAL) / SEAL, 0, 1))
+        : 1 - smooth(clamp(local / SEAL, 0, 1))
+      const cols = s.gridSize
+      const cell = width / cols
+      const rows = Math.ceil(height / cell)
+      const top = (height - rows * cell) / 2
+      const gap = Math.min(cell * 0.8, s.gap * state.dpr) * (1 - seal)
+      const ox = state.originX * width
+      const oy = state.originY * height
       const far = Math.max(
         Math.hypot(ox, oy),
         Math.hypot(width - ox, oy),
         Math.hypot(ox, height - oy),
-        Math.hypot(width - ox, height - oy)
-      );
-      const paths = new Map<number, Path2D>();
+        Math.hypot(width - ox, height - oy),
+      )
+      const paths = new Map<number, Path2D>()
 
       for (let row = 0; row < rows; row++) {
-        const y0 = top + row * cell;
-        const cy = y0 + cell / 2;
+        const y0 = top + row * cell
+        const cy = y0 + cell / 2
         for (let col = 0; col < cols; col++) {
-          const x0 = col * cell;
-          const cx = x0 + cell / 2;
-          const noise = hash(col, row, state.seed);
-          let delay = noise;
-          if (s.pattern === 'dither') delay = (BAYER[(row & 3) * 4 + (col & 3)] + noise) / 16;
+          const x0 = col * cell
+          const cx = x0 + cell / 2
+          const noise = hash(col, row, state.seed)
+          let delay = noise
+          if (s.pattern === 'dither') delay = (BAYER[(row & 3) * 4 + (col & 3)] + noise) / 16
           else if (s.pattern !== 'random') {
-            let base;
-            if (s.pattern === 'ripple') base = Math.hypot(cx - ox, cy - oy) / Math.max(1, far);
-            else if (state.edge === 'left') base = cx / width;
-            else if (state.edge === 'right') base = 1 - cx / width;
-            else if (state.edge === 'top') base = cy / height;
-            else base = 1 - cy / height;
-            delay = clamp(base, 0, 1) * (1 - s.randomness) + noise * s.randomness;
+            let base
+            if (s.pattern === 'ripple') base = Math.hypot(cx - ox, cy - oy) / Math.max(1, far)
+            else if (state.edge === 'left') base = cx / width
+            else if (state.edge === 'right') base = 1 - cx / width
+            else if (state.edge === 'top') base = cy / height
+            else base = 1 - cy / height
+            delay = clamp(base, 0, 1) * (1 - s.randomness) + noise * s.randomness
           }
 
-          let amount;
-          if (s.animation === 'pop') amount = local >= delay === covering ? 1 : 0;
+          let amount
+          if (s.animation === 'pop') amount = local >= delay === covering ? 1 : 0
           else {
-            const t = smooth(clamp((local - delay * (1 - WINDOW)) / WINDOW, 0, 1));
-            amount = covering ? t : 1 - t;
+            const t = smooth(clamp((local - delay * (1 - WINDOW)) / WINDOW, 0, 1))
+            amount = covering ? t : 1 - t
           }
-          if (amount <= 0.002) continue;
+          if (amount <= 0.002) continue
 
-          const size = (s.animation === 'grow' ? cell * amount : cell) - gap;
-          if (size <= 0) continue;
-          const level = s.animation === 'fade' ? Math.max(1, Math.round(amount * LEVELS)) : LEVELS;
-          const tone = s.mosaic > 0 ? Math.floor(hash(col, row, 7) * TONES) : 0;
-          const key = tone * (LEVELS + 1) + level;
-          let path = paths.get(key);
+          const size = (s.animation === 'grow' ? cell * amount : cell) - gap
+          if (size <= 0) continue
+          const level = s.animation === 'fade' ? Math.max(1, Math.round(amount * LEVELS)) : LEVELS
+          const tone = s.mosaic > 0 ? Math.floor(hash(col, row, 7) * TONES) : 0
+          const key = tone * (LEVELS + 1) + level
+          let path = paths.get(key)
           if (!path) {
-            path = new Path2D();
-            paths.set(key, path);
+            path = new Path2D()
+            paths.set(key, path)
           }
 
           if (s.shape === 'circle') {
-            const radius = (size / 2) * (1 + 0.45 * seal);
-            path.moveTo(cx + radius, cy);
-            path.arc(cx, cy, radius, 0, Math.PI * 2);
+            const radius = (size / 2) * (1 + 0.45 * seal)
+            path.moveTo(cx + radius, cy)
+            path.arc(cx, cy, radius, 0, Math.PI * 2)
           } else if (s.shape === 'rounded' && seal < 1 && path.roundRect) {
-            path.roundRect(cx - size / 2, cy - size / 2, size, size, size * 0.3 * (1 - seal));
+            path.roundRect(cx - size / 2, cy - size / 2, size, size, size * 0.3 * (1 - seal))
           } else if (size >= cell - 0.01) {
-            const left = Math.round(x0);
-            const upper = Math.round(y0);
-            path.rect(left, upper, Math.round(x0 + cell) - left, Math.round(y0 + cell) - upper);
+            const left = Math.round(x0)
+            const upper = Math.round(y0)
+            path.rect(left, upper, Math.round(x0 + cell) - left, Math.round(y0 + cell) - upper)
           } else {
-            path.rect(cx - size / 2, cy - size / 2, size, size);
+            path.rect(cx - size / 2, cy - size / 2, size, size)
           }
         }
       }
 
       paths.forEach((path, key) => {
-        ctx.globalAlpha = (key % (LEVELS + 1)) / LEVELS;
-        ctx.fillStyle = state.tones[Math.floor(key / (LEVELS + 1))] ?? state.tones[0];
-        ctx.fill(path);
-      });
-      ctx.globalAlpha = 1;
-    };
+        ctx.globalAlpha = (key % (LEVELS + 1)) / LEVELS
+        ctx.fillStyle = state.tones[Math.floor(key / (LEVELS + 1))] ?? state.tones[0]
+        ctx.fill(path)
+      })
+      ctx.globalAlpha = 1
+    }
 
     const paint = () => {
-      const index = state.progress >= 0.5 ? 1 - state.base : state.base;
-      if (index !== state.shown) show(index);
-      draw();
-    };
+      const index = state.progress >= 0.5 ? 1 - state.base : state.base
+      if (index !== state.shown) show(index)
+      draw()
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive) return;
-      const s = settingsRef.current;
-      const dt = last ? Math.min(0.1, (now - last) / 1000) : 1 / 60;
-      last = now;
-      const aim = state.goal === state.base ? 0 : 1;
-      const step = reduce ? 1 : dt / (2 * s.duration);
+      raf = 0
+      if (!alive) return
+      const s = settingsRef.current
+      const dt = last ? Math.min(0.1, (now - last) / 1000) : 1 / 60
+      last = now
+      const aim = state.goal === state.base ? 0 : 1
+      const step = reduce ? 1 : dt / (2 * s.duration)
       state.progress =
-        aim > state.progress ? Math.min(aim, state.progress + step) : Math.max(aim, state.progress - step);
-      const settled = state.progress === aim;
+        aim > state.progress
+          ? Math.min(aim, state.progress + step)
+          : Math.max(aim, state.progress - step)
+      const settled = state.progress === aim
       if (settled && aim === 1) {
-        state.base = 1 - state.base;
-        state.progress = 0;
+        state.base = 1 - state.base
+        state.progress = 0
       }
       if (settled || !s.fps || now - drawnAt >= 1000 / s.fps - 2) {
-        drawnAt = now;
-        paint();
+        drawnAt = now
+        paint()
       }
-      if (!settled) raf = requestAnimationFrame(frame);
-    };
+      if (!settled) raf = requestAnimationFrame(frame)
+    }
 
     const start = (point: Point | null) => {
-      const rect = root.getBoundingClientRect();
-      const x = point ? clamp((point.x - rect.left) / Math.max(1, rect.width), 0, 1) : 0.5;
-      const y = point ? clamp((point.y - rect.top) / Math.max(1, rect.height), 0, 1) : 0.5;
-      state.originX = x;
-      state.originY = y;
-      state.seed = Math.floor(Math.random() * 65536);
-      if (!point) state.edge = 'left';
+      const rect = root.getBoundingClientRect()
+      const x = point ? clamp((point.x - rect.left) / Math.max(1, rect.width), 0, 1) : 0.5
+      const y = point ? clamp((point.y - rect.top) / Math.max(1, rect.height), 0, 1) : 0.5
+      state.originX = x
+      state.originY = y
+      state.seed = Math.floor(Math.random() * 65536)
+      if (!point) state.edge = 'left'
       else {
         const sides: ['left' | 'right' | 'top' | 'bottom', number][] = [
           ['left', x * rect.width],
           ['right', (1 - x) * rect.width],
           ['top', y * rect.height],
-          ['bottom', (1 - y) * rect.height]
-        ];
-        state.edge = sides.reduce((best, side) => (side[1] < best[1] ? side : best))[0];
+          ['bottom', (1 - y) * rect.height],
+        ]
+        state.edge = sides.reduce((best, side) => (side[1] < best[1] ? side : best))[0]
       }
-      resolveTones();
-    };
+      resolveTones()
+    }
 
     const go = (next: boolean, point: Point | null) => {
-      const goal = next ? 1 : 0;
-      if (goal === state.goal) return;
-      if (!goal && settingsRef.current.once) return;
-      state.goal = goal;
-      if (state.progress === 0 && goal !== state.base) start(point);
-      if (raf) return;
-      last = 0;
-      drawnAt = 0;
-      raf = requestAnimationFrame(frame);
-    };
+      const goal = next ? 1 : 0
+      if (goal === state.goal) return
+      if (!goal && settingsRef.current.once) return
+      state.goal = goal
+      if (state.progress === 0 && goal !== state.base) start(point)
+      if (raf) return
+      last = 0
+      drawnAt = 0
+      raf = requestAnimationFrame(frame)
+    }
 
-    control = { go, goal: () => state.goal };
+    control = { go, goal: () => state.goal }
 
     const resize = () => {
-      state.dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(root.clientWidth * state.dpr));
-      canvas.height = Math.max(1, Math.round(root.clientHeight * state.dpr));
-      draw();
-    };
+      state.dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = Math.max(1, Math.round(root.clientWidth * state.dpr))
+      canvas.height = Math.max(1, Math.round(root.clientHeight * state.dpr))
+      draw()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(root);
-    resize();
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(root)
+    resize()
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      control = null;
-      resizeObserver.disconnect();
-    });
-  });
+      alive = false
+      cancelAnimationFrame(raf)
+      control = null
+      resizeObserver.disconnect()
+    })
+  })
 
   // Upstream deps: [active]
   createEffect(() => {
-    const active = props.active;
-    if (active === undefined) return;
-    untrack(() => control?.go(active, pointValue));
-    pointValue = null;
-  });
+    const active = props.active
+    if (active === undefined) return
+    untrack(() => control?.go(active, pointValue))
+    pointValue = null
+  })
 
-  const hoverTrigger = () => (props.trigger ?? 'hover') !== 'click';
+  const hoverTrigger = () => (props.trigger ?? 'hover') !== 'click'
 
   const request = (next: boolean, point: Point | null) => {
-    const ctl = control;
-    if (!ctl || (!next && (props.once ?? false) && ctl.goal() === 1)) return;
-    if (props.active === undefined) ctl.go(next, point);
-    else pointValue = point;
-    props.onActiveChange?.(next);
-  };
+    const ctl = control
+    if (!ctl || (!next && (props.once ?? false) && ctl.goal() === 1)) return
+    if (props.active === undefined) ctl.go(next, point)
+    else pointValue = point
+    props.onActiveChange?.(next)
+  }
 
-  const pointOf = (event: PointerEvent | MouseEvent): Point => ({ x: event.clientX, y: event.clientY });
+  const pointOf = (event: PointerEvent | MouseEvent): Point => ({
+    x: event.clientX,
+    y: event.clientY,
+  })
 
   const onPointerEnter = (event: PointerEvent) => {
-    if (event.pointerType === 'touch') return;
-    hovered = true;
-    if (hoverTrigger()) request(true, pointOf(event));
-  };
+    if (event.pointerType === 'touch') return
+    hovered = true
+    if (hoverTrigger()) request(true, pointOf(event))
+  }
 
   const onPointerLeave = (event: PointerEvent) => {
-    if (event.pointerType === 'touch') return;
-    hovered = false;
-    if (hoverTrigger() && !focused) request(false, pointOf(event));
-  };
+    if (event.pointerType === 'touch') return
+    hovered = false
+    if (hoverTrigger() && !focused) request(false, pointOf(event))
+  }
 
   const onPointerDown = (event: PointerEvent) => {
-    pointerKind = event.pointerType;
-  };
+    pointerKind = event.pointerType
+  }
 
   const onClick = (event: MouseEvent) => {
-    if (hoverTrigger() && pointerKind !== 'touch') return;
-    request(control?.goal() !== 1, pointOf(event));
-  };
+    if (hoverTrigger() && pointerKind !== 'touch') return
+    request(control?.goal() !== 1, pointOf(event))
+  }
 
   const onFocus = (event: FocusEvent) => {
-    const el = event.currentTarget as HTMLDivElement | null;
-    if (!hoverTrigger() || !el || el.contains(event.relatedTarget as Node | null)) return;
-    if (!(event.target as HTMLElement).matches(':focus-visible')) return;
-    focused = true;
-    request(true, null);
-  };
+    const el = event.currentTarget as HTMLDivElement | null
+    if (!hoverTrigger() || !el || el.contains(event.relatedTarget as Node | null)) return
+    if (!(event.target as HTMLElement).matches(':focus-visible')) return
+    focused = true
+    request(true, null)
+  }
 
   const onBlur = (event: FocusEvent) => {
-    const el = event.currentTarget as HTMLDivElement | null;
-    if (!focused || !el || el.contains(event.relatedTarget as Node | null)) return;
-    focused = false;
-    if (!hovered) request(false, null);
-  };
+    const el = event.currentTarget as HTMLDivElement | null
+    if (!focused || !el || el.contains(event.relatedTarget as Node | null)) return
+    focused = false
+    if (!hovered) request(false, null)
+  }
 
   const onKeyDown = (event: KeyboardEvent) => {
-    const el = event.currentTarget as HTMLDivElement | null;
-    if (hoverTrigger() || event.target !== el) return;
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    event.preventDefault();
-    request(control?.goal() !== 1, null);
-  };
+    const el = event.currentTarget as HTMLDivElement | null
+    if (hoverTrigger() || event.target !== el) return
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    request(control?.goal() !== 1, null)
+  }
 
-  const ratio = () => String(props.aspectRatio ?? '100%').trim();
-  const padded = () => ratio().endsWith('%');
+  const ratio = () => String(props.aspectRatio ?? '100%').trim()
+  const padded = () => ratio().endsWith('%')
 
   return (
     <div
       ref={root}
       class={`${ROOT}${props.class ? ` ${props.class}` : ''}${props.className ? ` ${props.className}` : ''}`}
-      style={padded() ? props.style : ({ 'aspect-ratio': ratio(), ...props.style } as JSX.CSSProperties)}
+      style={
+        padded() ? props.style : ({ 'aspect-ratio': ratio(), ...props.style } as JSX.CSSProperties)
+      }
       tabIndex={0}
       role={hoverTrigger() ? undefined : 'button'}
       onPointerEnter={onPointerEnter}
@@ -412,15 +422,23 @@ const PixelTransition = (props: PixelTransitionProps) => {
       onKeyDown={onKeyDown}
     >
       {padded() && <div style={{ 'padding-top': ratio() }} />}
-      <div ref={firstLayer} class={LAYER} style={{ visibility: initial === 0 ? undefined : 'hidden' }}>
+      <div
+        ref={firstLayer}
+        class={LAYER}
+        style={{ visibility: initial === 0 ? undefined : 'hidden' }}
+      >
         {props.firstContent}
       </div>
-      <div ref={secondLayer} class={LAYER} style={{ visibility: initial === 1 ? undefined : 'hidden' }}>
+      <div
+        ref={secondLayer}
+        class={LAYER}
+        style={{ visibility: initial === 1 ? undefined : 'hidden' }}
+      >
         {props.secondContent}
       </div>
-      <canvas ref={canvasEl} class={PIXELS} aria-hidden="true" />
+      <canvas ref={canvasEl} class={PIXELS} />
     </div>
-  );
-};
+  )
+}
 
-export default PixelTransition;
+export default PixelTransition

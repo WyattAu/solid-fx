@@ -1,4 +1,4 @@
-import HoloCard from './HoloCard';
+import HoloCard from './HoloCard'
 
 function HoloCardDemo() {
   return (
@@ -11,7 +11,7 @@ function HoloCardDemo() {
         width={260}
       />
     </div>
-  );
+  )
 }
 
-export default HoloCardDemo;
+export default HoloCardDemo

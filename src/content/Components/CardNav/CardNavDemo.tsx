@@ -1,4 +1,4 @@
-import CardNav from './CardNav';
+import CardNav from './CardNav'
 
 function CardNavDemo() {
   return (
@@ -11,27 +11,27 @@ function CardNavDemo() {
             description: 'The people and the story.',
             links: [
               { label: 'Company', href: '#' },
-              { label: 'Careers', href: '#' }
-            ]
+              { label: 'Careers', href: '#' },
+            ],
           },
           {
             label: 'Projects',
             description: 'Selected work.',
             links: [
               { label: 'Featured', href: '#' },
-              { label: 'Case studies', href: '#' }
-            ]
+              { label: 'Case studies', href: '#' },
+            ],
           },
           {
             label: 'Contact',
             description: 'Say hello.',
-            links: [{ label: 'Email', href: '#' }]
-          }
+            links: [{ label: 'Email', href: '#' }],
+          },
         ]}
         cta={{ label: 'Get started', href: '#' }}
       />
     </div>
-  );
+  )
 }
 
-export default CardNavDemo;
+export default CardNavDemo

@@ -1,78 +1,78 @@
-import { createEffect, createSignal, onCleanup, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface LineWavesProps {
-  color1?: string;
-  color2?: string;
-  color3?: string;
-  colorCycleSpeed?: number;
-  speed?: number;
-  lineCount?: number;
-  lineWidth?: number;
-  glow?: number;
-  brightness?: number;
-  highlight?: number;
-  highlightWidth?: number;
-  warpIntensity?: number;
-  warpScale?: number;
-  rotation?: number;
-  edgeFade?: number;
-  enableMouseInteraction?: boolean;
-  mouseInfluence?: number;
-  clickRipple?: boolean;
-  intro?: boolean;
-  lightMode?: boolean;
-  opacity?: number;
-  maxDevicePixelRatio?: number;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  color1?: string
+  color2?: string
+  color3?: string
+  colorCycleSpeed?: number
+  speed?: number
+  lineCount?: number
+  lineWidth?: number
+  glow?: number
+  brightness?: number
+  highlight?: number
+  highlightWidth?: number
+  warpIntensity?: number
+  warpScale?: number
+  rotation?: number
+  edgeFade?: number
+  enableMouseInteraction?: boolean
+  mouseInfluence?: number
+  clickRipple?: boolean
+  intro?: boolean
+  lightMode?: boolean
+  opacity?: number
+  maxDevicePixelRatio?: number
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 interface Settings {
-  color1: number[];
-  color2: number[];
-  color3: number[];
-  cycleSpeed: number;
-  speed: number;
-  lines: number;
-  width: number;
-  glow: number;
-  brightness: number;
-  highlight: number;
-  highlightWidth: number;
-  warp: number;
-  scale: number;
-  rotation: number;
-  edge: number;
-  mouse: boolean;
-  influence: number;
-  clickRipple: boolean;
-  intro: boolean;
-  light: boolean;
-  opacity: number;
-  maxRatio: number;
+  color1: number[]
+  color2: number[]
+  color3: number[]
+  cycleSpeed: number
+  speed: number
+  lines: number
+  width: number
+  glow: number
+  brightness: number
+  highlight: number
+  highlightWidth: number
+  warp: number
+  scale: number
+  rotation: number
+  edge: number
+  mouse: boolean
+  influence: number
+  clickRipple: boolean
+  intro: boolean
+  light: boolean
+  opacity: number
+  maxRatio: number
 }
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
+  program: WebGLProgram
+  uniforms: Record<string, WebGLUniformLocation | null>
 }
 
 interface Ripple {
-  x: number;
-  y: number;
-  age: number;
+  x: number
+  y: number
+  age: number
 }
 
-const PIXEL_BUDGET = 2.4e6;
-const MAX_RIPPLES = 4;
+const PIXEL_BUDGET = 2.4e6
+const MAX_RIPPLES = 4
 
 const VERTEX = `#version 300 es
 const vec2 corners[3] = vec2[3](vec2(-1.0, -1.0), vec2(3.0, -1.0), vec2(-1.0, 3.0));
 void main() {
   gl_Position = vec4(corners[gl_VertexID], 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -219,68 +219,68 @@ void main() {
   float alpha = max(color.r, max(color.g, color.b));
   color = clamp(color + grain, 0.0, 1.0);
   fragColor = vec4(min(color, vec3(alpha)), alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const parseColor = (value: string): number[] => {
-  const text = String(value || '').trim();
-  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
+  const text = String(value || '').trim()
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text)
   if (hex) {
-    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1];
-    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255);
+    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1]
+    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255)
   }
-  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
-  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1));
-  return [1, 1, 1];
-};
+  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text)
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1))
+  return [1, 1, 1]
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+    console.error(gl.getShaderInfoLog(shader))
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = vertex && fragment ? gl.createProgram() : null;
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = vertex && fragment ? gl.createProgram() : null
   if (!vertex || !fragment || !program) {
-    if (vertex) gl.deleteShader(vertex);
-    if (fragment) gl.deleteShader(fragment);
-    return null;
+    if (vertex) gl.deleteShader(vertex)
+    if (fragment) gl.deleteShader(fragment)
+    return null
   }
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
+    console.error(gl.getProgramInfoLog(program))
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Program['uniforms'] = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Program['uniforms'] = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let index = 0; index < count; index++) {
-    const info = gl.getActiveUniform(program, index);
-    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, index)
+    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const LineWaves = (props: LineWavesProps) => {
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
   // Upstream rebuilt this object each render and read it back through
   // settingsRef.current; re-reading props per call has the same freshness.
@@ -306,16 +306,16 @@ const LineWaves = (props: LineWavesProps) => {
     intro: props.intro ?? true,
     light: props.lightMode ?? false,
     opacity: clamp(props.opacity ?? 1, 0, 1),
-    maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3)
-  });
+    maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3),
+  })
 
   // Upstream rebuilt the whole pipeline keyed on [generation] after context restore.
   createEffect(() => {
-    const gen = generation();
+    const gen = generation()
     untrack(() => {
-      const container = containerRef;
-      const canvas = canvasRef;
-      if (!container || !canvas) return;
+      const container = containerRef
+      const canvas = canvasRef
+      if (!container || !canvas) return
 
       const gl = canvas.getContext('webgl2', {
         alpha: true,
@@ -323,137 +323,138 @@ const LineWaves = (props: LineWavesProps) => {
         antialias: false,
         depth: false,
         stencil: false,
-        powerPreference: 'high-performance'
-      });
-      const shader = gl ? link(gl) : null;
-      if (!gl || !shader) return;
+        powerPreference: 'high-performance',
+      })
+      const shader = gl ? link(gl) : null
+      if (!gl || !shader) return
 
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const vao = gl.createVertexArray();
-      const size = { width: 1, height: 1, ratio: 1 };
-      const pointer = { x: 0, y: 0, inside: false };
-      const lens = { x: 0, y: 0, presence: 0, ready: false };
-      const ripples: Ripple[] = [];
-      const rippleData = new Float32Array(MAX_RIPPLES * 4);
-      let time = Math.random() * 60;
-      let cycle = 0;
-      let reveal = settings().intro && !reduced && gen === 0 ? 0 : 1;
-      let raf = 0;
-      let last = 0;
-      let visible = true;
-      let pageVisible = document.visibilityState !== 'hidden';
-      let lost = false;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const vao = gl.createVertexArray()
+      const size = { width: 1, height: 1, ratio: 1 }
+      const pointer = { x: 0, y: 0, inside: false }
+      const lens = { x: 0, y: 0, presence: 0, ready: false }
+      const ripples: Ripple[] = []
+      const rippleData = new Float32Array(MAX_RIPPLES * 4)
+      let time = Math.random() * 60
+      let cycle = 0
+      let reveal = settings().intro && !reduced && gen === 0 ? 0 : 1
+      let raf = 0
+      let last = 0
+      let visible = true
+      let pageVisible = document.visibilityState !== 'hidden'
+      let lost = false
 
       const resize = () => {
-        const s = settings();
-        const rect = container.getBoundingClientRect();
-        const cssWidth = Math.max(1, rect.width);
-        const cssHeight = Math.max(1, rect.height);
+        const s = settings()
+        const rect = container.getBoundingClientRect()
+        const cssWidth = Math.max(1, rect.width)
+        const cssHeight = Math.max(1, rect.height)
         const ratio = Math.min(
           window.devicePixelRatio || 1,
           s.maxRatio,
-          Math.sqrt(PIXEL_BUDGET / (cssWidth * cssHeight))
-        );
-        const width = Math.max(1, Math.round(cssWidth * ratio));
-        const height = Math.max(1, Math.round(cssHeight * ratio));
+          Math.sqrt(PIXEL_BUDGET / (cssWidth * cssHeight)),
+        )
+        const width = Math.max(1, Math.round(cssWidth * ratio))
+        const height = Math.max(1, Math.round(cssHeight * ratio))
         if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = width
+          canvas.height = height
         }
-        size.width = cssWidth;
-        size.height = cssHeight;
-        size.ratio = width / cssWidth;
-      };
+        size.width = cssWidth
+        size.height = cssHeight
+        size.ratio = width / cssWidth
+      }
 
       const toField = (x: number, y: number) => [
         (x - size.width / 2) / size.height,
-        (size.height / 2 - y) / size.height
-      ];
+        (size.height / 2 - y) / size.height,
+      ]
 
       const frame = (now: number) => {
-        raf = 0;
-        if (lost) return;
-        const s = settings();
-        const dt = clamp((now - last) / 1000 || 0, 0, 0.05);
-        last = Math.max(last, now);
-        time += dt * s.speed * 2.5 * (reduced ? 0.25 : 1);
-        cycle += dt * s.speed * s.cycleSpeed * 0.05;
-        if (reveal < 1) reveal = Math.min(1, reveal + dt / 1.8);
+        raf = 0
+        if (lost) return
+        const s = settings()
+        const dt = clamp((now - last) / 1000 || 0, 0, 0.05)
+        last = Math.max(last, now)
+        time += dt * s.speed * 2.5 * (reduced ? 0.25 : 1)
+        cycle += dt * s.speed * s.cycleSpeed * 0.05
+        if (reveal < 1) reveal = Math.min(1, reveal + dt / 1.8)
 
-        const tracking = s.mouse && pointer.inside && !reduced;
+        const tracking = s.mouse && pointer.inside && !reduced
         if (tracking) {
-          const [x, y] = toField(pointer.x, pointer.y);
+          const [x, y] = toField(pointer.x, pointer.y)
           if (!lens.ready) {
-            lens.x = x;
-            lens.y = y;
-            lens.ready = true;
+            lens.x = x
+            lens.y = y
+            lens.ready = true
           }
-          const follow = 1 - Math.exp(-dt * 10);
-          lens.x += (x - lens.x) * follow;
-          lens.y += (y - lens.y) * follow;
+          const follow = 1 - Math.exp(-dt * 10)
+          lens.x += (x - lens.x) * follow
+          lens.y += (y - lens.y) * follow
         }
-        const presence = tracking ? 1 : 0;
-        lens.presence += (presence - lens.presence) * (1 - Math.exp(-dt * 5));
-        if (lens.presence < 0.002 && !tracking) lens.ready = false;
+        const presence = tracking ? 1 : 0
+        lens.presence += (presence - lens.presence) * (1 - Math.exp(-dt * 5))
+        if (lens.presence < 0.002 && !tracking) lens.ready = false
 
         for (let index = ripples.length - 1; index >= 0; index--) {
-          ripples[index].age += dt;
-          if (ripples[index].age > 2.6) ripples.splice(index, 1);
+          ripples[index].age += dt
+          if (ripples[index].age > 2.6) ripples.splice(index, 1)
         }
-        rippleData.fill(0);
+        rippleData.fill(0)
         ripples.forEach((ripple, index) => {
-          rippleData[index * 4] = ripple.x;
-          rippleData[index * 4 + 1] = ripple.y;
-          rippleData[index * 4 + 2] = ripple.age;
-          rippleData[index * 4 + 3] = 1;
-        });
+          rippleData[index * 4] = ripple.x
+          rippleData[index * 4 + 1] = ripple.y
+          rippleData[index * 4 + 2] = ripple.age
+          rippleData[index * 4 + 3] = 1
+        })
 
-        const eased = 1 - Math.pow(1 - reveal, 3);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        gl.useProgram(shader.program);
-        gl.bindVertexArray(vao);
-        const u = shader.uniforms;
-        gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-        gl.uniform1f(u.uPixel, size.ratio);
-        gl.uniform1f(u.uTime, time);
-        gl.uniform1f(u.uLines, s.lines);
-        gl.uniform1f(u.uWidth, s.width);
-        gl.uniform1f(u.uGlow, s.glow);
-        gl.uniform1f(u.uBrightness, s.brightness);
-        gl.uniform1f(u.uHighlight, s.highlight);
-        gl.uniform1f(u.uHighlightWidth, s.highlightWidth);
-        gl.uniform1f(u.uWarp, s.warp * (0.25 + 0.75 * eased));
-        gl.uniform1f(u.uScale, s.scale);
-        gl.uniform1f(u.uRotation, s.rotation);
-        gl.uniform3f(u.uColor1, s.color1[0], s.color1[1], s.color1[2]);
-        gl.uniform3f(u.uColor2, s.color2[0], s.color2[1], s.color2[2]);
-        gl.uniform3f(u.uColor3, s.color3[0], s.color3[1], s.color3[2]);
-        gl.uniform1f(u.uCycle, cycle);
-        gl.uniform1f(u.uEdge, s.edge);
-        gl.uniform4f(u.uMouse, lens.x, lens.y, lens.presence * s.influence * 0.16, 0.2);
-        gl.uniform4fv(u.uRipples, rippleData);
-        gl.uniform1f(u.uReveal, eased);
-        gl.uniform1f(u.uLight, s.light ? 1 : 0);
-        gl.uniform1f(u.uOpacity, s.opacity);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        const eased = 1 - (1 - reveal) ** 3
+        gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.useProgram(shader.program)
+        gl.bindVertexArray(vao)
+        const u = shader.uniforms
+        gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+        gl.uniform1f(u.uPixel, size.ratio)
+        gl.uniform1f(u.uTime, time)
+        gl.uniform1f(u.uLines, s.lines)
+        gl.uniform1f(u.uWidth, s.width)
+        gl.uniform1f(u.uGlow, s.glow)
+        gl.uniform1f(u.uBrightness, s.brightness)
+        gl.uniform1f(u.uHighlight, s.highlight)
+        gl.uniform1f(u.uHighlightWidth, s.highlightWidth)
+        gl.uniform1f(u.uWarp, s.warp * (0.25 + 0.75 * eased))
+        gl.uniform1f(u.uScale, s.scale)
+        gl.uniform1f(u.uRotation, s.rotation)
+        gl.uniform3f(u.uColor1, s.color1[0], s.color1[1], s.color1[2])
+        gl.uniform3f(u.uColor2, s.color2[0], s.color2[1], s.color2[2])
+        gl.uniform3f(u.uColor3, s.color3[0], s.color3[1], s.color3[2])
+        gl.uniform1f(u.uCycle, cycle)
+        gl.uniform1f(u.uEdge, s.edge)
+        gl.uniform4f(u.uMouse, lens.x, lens.y, lens.presence * s.influence * 0.16, 0.2)
+        gl.uniform4fv(u.uRipples, rippleData)
+        gl.uniform1f(u.uReveal, eased)
+        gl.uniform1f(u.uLight, s.light ? 1 : 0)
+        gl.uniform1f(u.uOpacity, s.opacity)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-        const settling = Math.abs(presence - lens.presence) > 0.002;
-        const busy = (s.speed > 0 && !reduced) || reveal < 1 || settling || ripples.length > 0 || tracking;
-        if (busy && visible && pageVisible) raf = requestAnimationFrame(frame);
-      };
+        const settling = Math.abs(presence - lens.presence) > 0.002
+        const busy =
+          (s.speed > 0 && !reduced) || reveal < 1 || settling || ripples.length > 0 || tracking
+        if (busy && visible && pageVisible) raf = requestAnimationFrame(frame)
+      }
 
       const wake = () => {
-        if (raf || lost || !visible || !pageVisible) return;
-        last = performance.now();
-        raf = requestAnimationFrame(frame);
-      };
+        if (raf || lost || !visible || !pageVisible) return
+        last = performance.now()
+        raf = requestAnimationFrame(frame)
+      }
       wakeRef = () => {
-        resize();
-        wake();
-      };
+        resize()
+        wake()
+      }
 
       const locate = (event: PointerEvent) => {
-        const rect = container.getBoundingClientRect();
+        const rect = container.getBoundingClientRect()
         return {
           x: event.clientX - rect.left,
           y: event.clientY - rect.top,
@@ -461,97 +462,97 @@ const LineWaves = (props: LineWavesProps) => {
             event.clientX >= rect.left &&
             event.clientX <= rect.right &&
             event.clientY >= rect.top &&
-            event.clientY <= rect.bottom
-        };
-      };
+            event.clientY <= rect.bottom,
+        }
+      }
 
       const onPointerMove = (event: PointerEvent) => {
-        const spot = locate(event);
-        pointer.x = spot.x;
-        pointer.y = spot.y;
-        pointer.inside = spot.inside;
-        wake();
-      };
+        const spot = locate(event)
+        pointer.x = spot.x
+        pointer.y = spot.y
+        pointer.inside = spot.inside
+        wake()
+      }
       const onPointerDown = (event: PointerEvent) => {
-        const s = settings();
-        const spot = locate(event);
-        if (!spot.inside || !s.clickRipple || reduced) return;
-        const [x, y] = toField(spot.x, spot.y);
-        ripples.push({ x, y, age: 0 });
-        if (ripples.length > MAX_RIPPLES) ripples.shift();
-        wake();
-      };
+        const s = settings()
+        const spot = locate(event)
+        if (!spot.inside || !s.clickRipple || reduced) return
+        const [x, y] = toField(spot.x, spot.y)
+        ripples.push({ x, y, age: 0 })
+        if (ripples.length > MAX_RIPPLES) ripples.shift()
+        wake()
+      }
       const onLeave = () => {
-        pointer.inside = false;
-        wake();
-      };
+        pointer.inside = false
+        wake()
+      }
       const onPointerUp = (event: PointerEvent) => {
-        if (event.pointerType !== 'mouse') onLeave();
-      };
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      window.addEventListener('pointerdown', onPointerDown, { passive: true });
-      window.addEventListener('pointerup', onPointerUp, { passive: true });
-      window.addEventListener('pointercancel', onPointerUp, { passive: true });
-      document.documentElement.addEventListener('pointerleave', onLeave);
+        if (event.pointerType !== 'mouse') onLeave()
+      }
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { passive: true })
+      window.addEventListener('pointercancel', onPointerUp, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onLeave)
 
       const onLost = (event: Event) => {
-        event.preventDefault();
-        lost = true;
-        cancelAnimationFrame(raf);
-        raf = 0;
-      };
-      const onRestored = () => setGeneration(generation() + 1);
-      canvas.addEventListener('webglcontextlost', onLost);
-      canvas.addEventListener('webglcontextrestored', onRestored);
+        event.preventDefault()
+        lost = true
+        cancelAnimationFrame(raf)
+        raf = 0
+      }
+      const onRestored = () => setGeneration(generation() + 1)
+      canvas.addEventListener('webglcontextlost', onLost)
+      canvas.addEventListener('webglcontextrestored', onRestored)
 
       const resizeObserver = new ResizeObserver(() => {
-        resize();
-        wake();
-      });
-      resizeObserver.observe(container);
+        resize()
+        wake()
+      })
+      resizeObserver.observe(container)
 
       const intersection = new IntersectionObserver(entries => {
-        visible = entries.some(entry => entry.isIntersecting);
-        wake();
-      });
-      intersection.observe(container);
+        visible = entries.some(entry => entry.isIntersecting)
+        wake()
+      })
+      intersection.observe(container)
 
       const onVisibility = () => {
-        pageVisible = document.visibilityState !== 'hidden';
-        wake();
-      };
-      document.addEventListener('visibilitychange', onVisibility);
+        pageVisible = document.visibilityState !== 'hidden'
+        wake()
+      }
+      document.addEventListener('visibilitychange', onVisibility)
 
-      resize();
-      wake();
+      resize()
+      wake()
 
       onCleanup(() => {
-        cancelAnimationFrame(raf);
-        wakeRef = null;
-        resizeObserver.disconnect();
-        intersection.disconnect();
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerdown', onPointerDown);
-        window.removeEventListener('pointerup', onPointerUp);
-        window.removeEventListener('pointercancel', onPointerUp);
-        document.documentElement.removeEventListener('pointerleave', onLeave);
-        document.removeEventListener('visibilitychange', onVisibility);
-        canvas.removeEventListener('webglcontextlost', onLost);
-        canvas.removeEventListener('webglcontextrestored', onRestored);
+        cancelAnimationFrame(raf)
+        wakeRef = null
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointerup', onPointerUp)
+        window.removeEventListener('pointercancel', onPointerUp)
+        document.documentElement.removeEventListener('pointerleave', onLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        canvas.removeEventListener('webglcontextlost', onLost)
+        canvas.removeEventListener('webglcontextrestored', onRestored)
         if (!gl.isContextLost()) {
-          gl.deleteVertexArray(vao);
-          gl.deleteProgram(shader.program);
+          gl.deleteVertexArray(vao)
+          gl.deleteProgram(shader.program)
         }
-      });
-    });
-  });
+      })
+    })
+  })
 
   // Upstream's dependency-free effect nudged the renderer after every render;
   // tracking every prop read reproduces that wake-on-any-change behavior.
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
@@ -559,9 +560,9 @@ const LineWaves = (props: LineWavesProps) => {
       class={`relative h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default LineWaves;
+export default LineWaves

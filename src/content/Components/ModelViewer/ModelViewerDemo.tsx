@@ -1,4 +1,4 @@
-import ModelViewer from './ModelViewer';
+import ModelViewer from './ModelViewer'
 
 // Self-contained demo: an octahedron OBJ embedded as a data URL so the smoke
 // test never touches the network.
@@ -16,16 +16,16 @@ const OBJ = [
   'f 6 3 2',
   'f 6 4 3',
   'f 6 5 4',
-  'f 6 2 5'
-].join('\n');
-const URL = `data:model/obj,${encodeURIComponent(OBJ)}`;
+  'f 6 2 5',
+].join('\n')
+const URL = `data:model/obj,${encodeURIComponent(OBJ)}`
 
 function ModelViewerDemo() {
   return (
     <div class="flex h-96 w-full items-center justify-center overflow-hidden bg-gray-950">
       <ModelViewer url={URL} width={320} height={320} autoRotate intro="rise" float={0.3} />
     </div>
-  );
+  )
 }
 
-export default ModelViewerDemo;
+export default ModelViewerDemo

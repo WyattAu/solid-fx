@@ -1,4 +1,4 @@
-import Dither from './Dither';
+import Dither from './Dither'
 
 function DitherDemo() {
   return (
@@ -18,7 +18,7 @@ function DitherDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default DitherDemo;
+export default DitherDemo

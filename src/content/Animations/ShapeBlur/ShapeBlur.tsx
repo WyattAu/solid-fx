@@ -1,15 +1,15 @@
-import { createEffect, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-const ROOT = 'relative h-full w-full';
-const CANVAS = 'pointer-events-none absolute inset-0 block h-full w-full';
-const CONTENT = 'relative z-[1] flex h-full w-full items-center justify-center';
+const ROOT = 'relative h-full w-full'
+const CANVAS = 'pointer-events-none absolute inset-0 block h-full w-full'
+const CONTENT = 'relative z-[1] flex h-full w-full items-center justify-center'
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const SHAPE = `#version 300 es
 precision highp float;
@@ -86,7 +86,7 @@ void main() {
     cover = max(cover, clamp((hw - abs(x)) / aa + 0.5, 0.0, 1.0));
   }
   outColor = vec4(cover, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const BLUR = `#version 300 es
 precision highp float;
@@ -105,7 +105,7 @@ void main() {
   sum += textureLod(uSource, (center - 2.0 * uStep) / size, uLod).r;
   sum += textureLod(uSource, (center + 2.0 * uStep) / size, uLod).r;
   outColor = vec4(sum / 16.0, 0.0, 0.0, 1.0);
-}`;
+}`
 
 const COMPOSITE = `#version 300 es
 precision highp float;
@@ -185,94 +185,94 @@ void main() {
   cover = clamp(cover + grain / 255.0, 0.0, 1.0);
   float alpha = max(max(cover.r, cover.g), cover.b);
   outColor = vec4(uColor * cover + (alpha - cover) * uBackdrop, alpha);
-}`;
+}`
 
-export type ShapeBlurShape = 'rect' | 'circle' | 'polygon' | 'star';
+export type ShapeBlurShape = 'rect' | 'circle' | 'polygon' | 'star'
 
 export interface ShapeBlurProps {
-  shape?: ShapeBlurShape;
-  src?: string;
-  sides?: number;
-  size?: number;
-  roundness?: number;
-  thickness?: number;
-  fill?: boolean;
-  echoes?: number;
-  spacing?: number;
-  color?: string;
-  blur?: number;
-  lensSize?: number;
-  lensSoftness?: number;
-  focus?: boolean;
-  chroma?: number;
-  rotation?: number;
-  spin?: number;
-  idle?: boolean;
-  children?: JSX.Element;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  shape?: ShapeBlurShape
+  src?: string
+  sides?: number
+  size?: number
+  roundness?: number
+  thickness?: number
+  fill?: boolean
+  echoes?: number
+  spacing?: number
+  color?: string
+  blur?: number
+  lensSize?: number
+  lensSoftness?: number
+  focus?: boolean
+  chroma?: number
+  rotation?: number
+  spin?: number
+  idle?: boolean
+  children?: JSX.Element
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Control = { load: (value: string) => void; wake: () => void };
+type Control = { load: (value: string) => void; wake: () => void }
 
 interface Settings {
-  shape: number;
-  src: string;
-  sides: number;
-  size: number;
-  roundness: number;
-  thickness: number;
-  fill: boolean;
-  echoes: number;
-  spacing: number;
-  color: string;
-  blur: number;
-  lensSize: number;
-  lensSoftness: number;
-  focus: boolean;
-  chroma: number;
-  rotation: number;
-  spin: number;
-  idle: boolean;
+  shape: number
+  src: string
+  sides: number
+  size: number
+  roundness: number
+  thickness: number
+  fill: boolean
+  echoes: number
+  spacing: number
+  color: string
+  blur: number
+  lensSize: number
+  lensSoftness: number
+  focus: boolean
+  chroma: number
+  rotation: number
+  spin: number
+  idle: boolean
 }
 
-const SHAPES: ShapeBlurShape[] = ['rect', 'circle', 'polygon', 'star'];
-const FIELD = 512;
-const PAD = 0.35;
-const FAR = 1e20;
+const SHAPES: ShapeBlurShape[] = ['rect', 'circle', 'polygon', 'star']
+const FIELD = 512
+const PAD = 0.35
+const FAR = 1e20
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, vertex: WebGLShader, source: string) => {
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, source);
-  const program = gl.createProgram();
-  if (!fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(fragment);
-  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program;
-  gl.deleteProgram(program);
-  return null;
-};
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, source)
+  const program = gl.createProgram()
+  if (!fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(fragment)
+  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program
+  gl.deleteProgram(program)
+  return null
+}
 
 const locate = (gl: WebGL2RenderingContext, program: WebGLProgram, names: string[]) => {
-  const map: Record<string, WebGLUniformLocation | null> = {};
-  for (const name of names) map[name] = gl.getUniformLocation(program, name);
-  return map;
-};
+  const map: Record<string, WebGLUniformLocation | null> = {}
+  for (const name of names) map[name] = gl.getUniformLocation(program, name)
+  return map
+}
 
 const sweep = (
   grid: Float64Array,
@@ -281,76 +281,82 @@ const sweep = (
   length: number,
   f: Float64Array,
   v: Int32Array,
-  z: Float64Array
+  z: Float64Array,
 ) => {
-  for (let q = 0; q < length; q++) f[q] = grid[offset + q * stride];
-  let k = 0;
-  v[0] = 0;
-  z[0] = -FAR;
-  z[1] = FAR;
+  for (let q = 0; q < length; q++) f[q] = grid[offset + q * stride]
+  let k = 0
+  v[0] = 0
+  z[0] = -FAR
+  z[1] = FAR
   for (let q = 1; q < length; q++) {
-    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * (q - v[k]));
+    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * (q - v[k]))
     while (s <= z[k]) {
-      k--;
-      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * (q - v[k]));
+      k--
+      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * (q - v[k]))
     }
-    k++;
-    v[k] = q;
-    z[k] = s;
-    z[k + 1] = FAR;
+    k++
+    v[k] = q
+    z[k] = s
+    z[k + 1] = FAR
   }
-  k = 0;
+  k = 0
   for (let q = 0; q < length; q++) {
-    while (z[k + 1] < q) k++;
-    const gap = q - v[k];
-    grid[offset + q * stride] = gap * gap + f[v[k]];
+    while (z[k + 1] < q) k++
+    const gap = q - v[k]
+    grid[offset + q * stride] = gap * gap + f[v[k]]
   }
-};
+}
 
 const distanceTransform = (grid: Float64Array, size: number) => {
-  const f = new Float64Array(size);
-  const v = new Int32Array(size);
-  const z = new Float64Array(size + 1);
-  for (let x = 0; x < size; x++) sweep(grid, x, size, size, f, v, z);
-  for (let y = 0; y < size; y++) sweep(grid, y * size, 1, size, f, v, z);
-};
+  const f = new Float64Array(size)
+  const v = new Int32Array(size)
+  const z = new Float64Array(size + 1)
+  for (let x = 0; x < size; x++) sweep(grid, x, size, size, f, v, z)
+  for (let y = 0; y < size; y++) sweep(grid, y * size, 1, size, f, v, z)
+}
 
 const buildField = (image: HTMLImageElement) => {
-  const raster = document.createElement('canvas');
-  raster.width = FIELD;
-  raster.height = FIELD;
-  const ctx = raster.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return null;
-  const width = image.naturalWidth || FIELD;
-  const height = image.naturalHeight || FIELD;
-  const scale = FIELD / (1 + PAD) / Math.max(width, height);
-  ctx.drawImage(image, (FIELD - width * scale) / 2, (FIELD - height * scale) / 2, width * scale, height * scale);
-  const pixels = ctx.getImageData(0, 0, FIELD, FIELD).data;
-  const outside = new Float64Array(FIELD * FIELD);
-  const inside = new Float64Array(FIELD * FIELD);
+  const raster = document.createElement('canvas')
+  raster.width = FIELD
+  raster.height = FIELD
+  const ctx = raster.getContext('2d', { willReadFrequently: true })
+  if (!ctx) return null
+  const width = image.naturalWidth || FIELD
+  const height = image.naturalHeight || FIELD
+  const scale = FIELD / (1 + PAD) / Math.max(width, height)
+  ctx.drawImage(
+    image,
+    (FIELD - width * scale) / 2,
+    (FIELD - height * scale) / 2,
+    width * scale,
+    height * scale,
+  )
+  const pixels = ctx.getImageData(0, 0, FIELD, FIELD).data
+  const outside = new Float64Array(FIELD * FIELD)
+  const inside = new Float64Array(FIELD * FIELD)
   for (let i = 0; i < FIELD * FIELD; i++) {
-    const alpha = pixels[i * 4 + 3] / 255;
-    const edge = 0.5 - alpha;
-    outside[i] = alpha >= 0.999 ? 0 : alpha <= 0.001 ? FAR : edge > 0 ? edge * edge : 0;
-    inside[i] = alpha >= 0.999 ? FAR : alpha <= 0.001 ? 0 : edge < 0 ? edge * edge : 0;
+    const alpha = pixels[i * 4 + 3] / 255
+    const edge = 0.5 - alpha
+    outside[i] = alpha >= 0.999 ? 0 : alpha <= 0.001 ? FAR : edge > 0 ? edge * edge : 0
+    inside[i] = alpha >= 0.999 ? FAR : alpha <= 0.001 ? 0 : edge < 0 ? edge * edge : 0
   }
-  distanceTransform(outside, FIELD);
-  distanceTransform(inside, FIELD);
-  const field = new Float32Array(FIELD * FIELD);
-  for (let i = 0; i < FIELD * FIELD; i++) field[i] = Math.sqrt(outside[i]) - Math.sqrt(inside[i]);
-  return field;
-};
+  distanceTransform(outside, FIELD)
+  distanceTransform(inside, FIELD)
+  const field = new Float32Array(FIELD * FIELD)
+  for (let i = 0; i < FIELD * FIELD; i++) field[i] = Math.sqrt(outside[i]) - Math.sqrt(inside[i])
+  return field
+}
 
 const ShapeBlur = (props: ShapeBlurProps) => {
-  let root!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let control: Control | null = null;
+  let root!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let control: Control | null = null
 
-  const settingsRef: { current: Settings } = { current: {} as Settings };
+  const settingsRef: { current: Settings } = { current: {} as Settings }
   // Upstream rebuilt settings every render and woke the loop in a trailing
   // effect; both collapse into this tracked effect.
   createEffect(() => {
-    const shape = props.shape ?? 'rect';
+    const shape = props.shape ?? 'rect'
     settingsRef.current = {
       shape: Math.max(0, SHAPES.indexOf(shape)),
       src: props.src || '',
@@ -369,33 +375,37 @@ const ShapeBlur = (props: ShapeBlurProps) => {
       chroma: clamp(props.chroma ?? 0.3, 0, 1),
       rotation: props.rotation ?? 0,
       spin: props.spin ?? 0,
-      idle: props.idle ?? true
-    };
-    control?.wake();
-  });
+      idle: props.idle ?? true,
+    }
+    control?.wake()
+  })
 
   // Upstream deps: [src]
   createEffect(() => {
-    const src = props.src ?? '';
-    untrack(() => control?.load(src));
-  });
+    const src = props.src ?? ''
+    untrack(() => control?.load(src))
+  })
 
   onMount(() => {
-    const canvas = canvasEl;
-    const gl = canvas?.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    if (!root || !canvas || !gl) return;
+    const canvas = canvasEl
+    const gl = canvas?.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    if (!root || !canvas || !gl) return
 
-    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-    if (!vertex) return;
-    const shapeProgram = link(gl, vertex, SHAPE);
-    const blurProgram = link(gl, vertex, BLUR);
-    const compositeProgram = link(gl, vertex, COMPOSITE);
+    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+    if (!vertex) return
+    const shapeProgram = link(gl, vertex, SHAPE)
+    const blurProgram = link(gl, vertex, BLUR)
+    const compositeProgram = link(gl, vertex, COMPOSITE)
     if (!shapeProgram || !blurProgram || !compositeProgram) {
-      if (shapeProgram) gl.deleteProgram(shapeProgram);
-      if (blurProgram) gl.deleteProgram(blurProgram);
-      if (compositeProgram) gl.deleteProgram(compositeProgram);
-      gl.deleteShader(vertex);
-      return;
+      if (shapeProgram) gl.deleteProgram(shapeProgram)
+      if (blurProgram) gl.deleteProgram(blurProgram)
+      if (compositeProgram) gl.deleteProgram(compositeProgram)
+      gl.deleteShader(vertex)
+      return
     }
 
     const shapeUniforms = locate(gl, shapeProgram, [
@@ -412,9 +422,9 @@ const ShapeBlur = (props: ShapeBlurProps) => {
       'uFill',
       'uEchoes',
       'uSpacing',
-      'uAngle'
-    ]);
-    const blurUniforms = locate(gl, blurProgram, ['uSource', 'uLod', 'uStep', 'uScale']);
+      'uAngle',
+    ])
+    const blurUniforms = locate(gl, blurProgram, ['uSource', 'uLod', 'uStep', 'uScale'])
     const compositeUniforms = locate(gl, compositeProgram, [
       'uPyramid',
       'uMaxLod',
@@ -430,44 +440,44 @@ const ShapeBlur = (props: ShapeBlurProps) => {
       'uLens',
       'uLensShape',
       'uFocus',
-      'uChroma'
-    ]);
+      'uChroma',
+    ])
 
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    const buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-    const precise = Boolean(gl.getExtension('EXT_color_buffer_float'));
-    const format = precise ? gl.R16F : gl.R8;
-    const framebuffer = gl.createFramebuffer();
+    const precise = Boolean(gl.getExtension('EXT_color_buffer_float'))
+    const format = precise ? gl.R16F : gl.R8
+    const framebuffer = gl.createFramebuffer()
 
-    const fieldTexture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, fieldTexture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, 1, 1, 0, gl.RED, gl.FLOAT, new Float32Array([1e4]));
+    const fieldTexture = gl.createTexture()
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, fieldTexture)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, 1, 1, 0, gl.RED, gl.FLOAT, new Float32Array([1e4]))
 
-    const probe = document.createElement('canvas');
-    probe.width = 1;
-    probe.height = 1;
-    const probeCtx = probe.getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const pointer = { x: 0, y: 0, active: false };
-    const lens = { x: 0, y: 0, power: 0, placed: false };
+    const probe = document.createElement('canvas')
+    probe.width = 1
+    probe.height = 1
+    const probeCtx = probe.getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const pointer = { x: 0, y: 0, active: false }
+    const lens = { x: 0, y: 0, power: 0, placed: false }
     const pyramid = {
       texture: null as WebGLTexture | null,
       temps: [] as (WebGLTexture | null)[],
       sizes: [] as number[][],
       levels: 0,
-      key: ''
-    };
+      key: '',
+    }
     const state = {
       width: 1,
       height: 1,
@@ -478,88 +488,89 @@ const ShapeBlur = (props: ShapeBlurProps) => {
       backdrop: 0,
       colorKey: '',
       image: 'none' as 'none' | 'loading' | 'ready' | 'failed',
-      request: 0
-    };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let alive = true;
+      request: 0,
+    }
+    let raf = 0
+    let last = 0
+    let visible = true
+    let alive = true
 
     const allocate = () => {
-      if (pyramid.texture) gl.deleteTexture(pyramid.texture);
-      pyramid.temps.forEach(texture => texture && gl.deleteTexture(texture));
-      const width = canvas.width;
-      const height = canvas.height;
-      pyramid.levels = Math.min(10, Math.floor(Math.log2(Math.max(width, height))) + 1);
-      pyramid.sizes = [];
+      if (pyramid.texture) gl.deleteTexture(pyramid.texture)
+      pyramid.temps.forEach(texture => texture && gl.deleteTexture(texture))
+      const width = canvas.width
+      const height = canvas.height
+      pyramid.levels = Math.min(10, Math.floor(Math.log2(Math.max(width, height))) + 1)
+      pyramid.sizes = []
       for (let k = 0; k < pyramid.levels; k++) {
-        pyramid.sizes.push([Math.max(1, width >> k), Math.max(1, height >> k)]);
+        pyramid.sizes.push([Math.max(1, width >> k), Math.max(1, height >> k)])
       }
       const configure = () => {
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      };
-      pyramid.texture = gl.createTexture();
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, pyramid.texture);
-      gl.texStorage2D(gl.TEXTURE_2D, pyramid.levels, format, width, height);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-      configure();
-      pyramid.temps = [null];
-      for (let k = 1; k < pyramid.levels; k++) {
-        const texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texStorage2D(gl.TEXTURE_2D, 1, format, pyramid.sizes[k][0], pyramid.sizes[k - 1][1]);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        configure();
-        pyramid.temps.push(texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
       }
-      pyramid.key = '';
-    };
+      pyramid.texture = gl.createTexture()
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, pyramid.texture)
+      gl.texStorage2D(gl.TEXTURE_2D, pyramid.levels, format, width, height)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST)
+      configure()
+      pyramid.temps = [null]
+      for (let k = 1; k < pyramid.levels; k++) {
+        const texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texStorage2D(gl.TEXTURE_2D, 1, format, pyramid.sizes[k][0], pyramid.sizes[k - 1][1])
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        configure()
+        pyramid.temps.push(texture)
+      }
+      pyramid.key = ''
+    }
 
     const resolveColor = (value: string) => {
-      if (value === state.colorKey) return;
-      state.colorKey = value;
-      canvas.style.color = value;
-      const computed = getComputedStyle(canvas).color;
-      canvas.style.color = '';
-      if (!probeCtx) return;
-      probeCtx.clearRect(0, 0, 1, 1);
-      probeCtx.fillStyle = computed;
-      probeCtx.fillRect(0, 0, 1, 1);
-      const [r, g, b] = probeCtx.getImageData(0, 0, 1, 1).data;
-      state.color = [r / 255, g / 255, b / 255];
-      state.backdrop = 0.2126 * state.color[0] + 0.7152 * state.color[1] + 0.0722 * state.color[2] < 0.5 ? 1 : 0;
-    };
+      if (value === state.colorKey) return
+      state.colorKey = value
+      canvas.style.color = value
+      const computed = getComputedStyle(canvas).color
+      canvas.style.color = ''
+      if (!probeCtx) return
+      probeCtx.clearRect(0, 0, 1, 1)
+      probeCtx.fillStyle = computed
+      probeCtx.fillRect(0, 0, 1, 1)
+      const [r, g, b] = probeCtx.getImageData(0, 0, 1, 1).data
+      state.color = [r / 255, g / 255, b / 255]
+      state.backdrop =
+        0.2126 * state.color[0] + 0.7152 * state.color[1] + 0.0722 * state.color[2] < 0.5 ? 1 : 0
+    }
 
     const wander = (t: number) => {
-      const s = settingsRef.current;
-      const minHalf = Math.min(state.width, state.height) / 2;
-      const inset = (1 - s.size) * minHalf;
-      const reachX = s.shape === 0 && !s.src ? state.width / 2 - inset : s.size * minHalf;
-      const reachY = s.shape === 0 && !s.src ? state.height / 2 - inset : s.size * minHalf;
+      const s = settingsRef.current
+      const minHalf = Math.min(state.width, state.height) / 2
+      const inset = (1 - s.size) * minHalf
+      const reachX = s.shape === 0 && !s.src ? state.width / 2 - inset : s.size * minHalf
+      const reachY = s.shape === 0 && !s.src ? state.height / 2 - inset : s.size * minHalf
       return [
         reachX * (0.75 * Math.sin(t * 0.37) + 0.2 * Math.sin(t * 1.13 + 1.7)),
-        reachY * (0.7 * Math.sin(t * 0.53 + 0.9) + 0.2 * Math.cos(t * 0.91 + 0.4))
-      ];
-    };
+        reachY * (0.7 * Math.sin(t * 0.53 + 0.9) + 0.2 * Math.cos(t * 0.91 + 0.4)),
+      ]
+    }
 
     const drawShape = (s: Settings) => {
-      const { width, height } = state;
-      const minHalf = Math.min(width, height) / 2;
-      const inset = (1 - s.size) * minHalf;
-      const halfX = Math.max(1, width / 2 - inset);
-      const halfY = Math.max(1, height / 2 - inset);
-      const radius = s.size * minHalf;
-      const fieldHalf = radius * (1 + PAD);
-      let shapeIndex = s.shape;
-      if (s.src) shapeIndex = state.image === 'ready' ? 4 : state.image === 'failed' ? s.shape : -1;
+      const { width, height } = state
+      const minHalf = Math.min(width, height) / 2
+      const inset = (1 - s.size) * minHalf
+      const halfX = Math.max(1, width / 2 - inset)
+      const halfY = Math.max(1, height / 2 - inset)
+      const radius = s.size * minHalf
+      const fieldHalf = radius * (1 + PAD)
+      let shapeIndex = s.shape
+      if (s.src) shapeIndex = state.image === 'ready' ? 4 : state.image === 'failed' ? s.shape : -1
       const round =
         shapeIndex === 0
           ? s.roundness * Math.min(halfX, halfY)
-          : s.roundness * radius * (shapeIndex === 3 ? 0.12 : 0.3);
-      const angle = ((s.rotation + state.angle) * Math.PI) / 180;
+          : s.roundness * radius * (shapeIndex === 3 ? 0.12 : 0.3)
+      const angle = ((s.rotation + state.angle) * Math.PI) / 180
       const key = [
         canvas.width,
         canvas.height,
@@ -573,231 +584,254 @@ const ShapeBlur = (props: ShapeBlurProps) => {
         s.fill,
         s.echoes,
         s.spacing,
-        angle.toFixed(5)
-      ].join('|');
-      if (key === pyramid.key || !pyramid.texture) return;
-      pyramid.key = key;
+        angle.toFixed(5),
+      ].join('|')
+      if (key === pyramid.key || !pyramid.texture) return
+      pyramid.key = key
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, pyramid.texture, 0);
-      gl.viewport(0, 0, pyramid.sizes[0][0], pyramid.sizes[0][1]);
-      gl.useProgram(shapeProgram);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, fieldTexture);
-      gl.uniform1i(shapeUniforms.uFieldTexture, 0);
-      gl.uniform2f(shapeUniforms.uResolution, width, height);
-      gl.uniform1f(shapeUniforms.uDpr, state.dpr);
-      gl.uniform1i(shapeUniforms.uShape, shapeIndex);
-      gl.uniform1f(shapeUniforms.uSides, s.sides);
-      gl.uniform2f(shapeUniforms.uHalf, halfX, halfY);
-      gl.uniform1f(shapeUniforms.uRadius, radius);
-      gl.uniform1f(shapeUniforms.uRound, round);
-      gl.uniform2f(shapeUniforms.uField, fieldHalf, (2 * fieldHalf) / FIELD);
-      gl.uniform1f(shapeUniforms.uThickness, s.thickness);
-      gl.uniform1f(shapeUniforms.uFill, s.fill ? 1 : 0);
-      gl.uniform1f(shapeUniforms.uEchoes, s.echoes);
-      gl.uniform1f(shapeUniforms.uSpacing, s.spacing);
-      gl.uniform1f(shapeUniforms.uAngle, angle);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        pyramid.texture,
+        0,
+      )
+      gl.viewport(0, 0, pyramid.sizes[0][0], pyramid.sizes[0][1])
+      gl.useProgram(shapeProgram)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, fieldTexture)
+      gl.uniform1i(shapeUniforms.uFieldTexture, 0)
+      gl.uniform2f(shapeUniforms.uResolution, width, height)
+      gl.uniform1f(shapeUniforms.uDpr, state.dpr)
+      gl.uniform1i(shapeUniforms.uShape, shapeIndex)
+      gl.uniform1f(shapeUniforms.uSides, s.sides)
+      gl.uniform2f(shapeUniforms.uHalf, halfX, halfY)
+      gl.uniform1f(shapeUniforms.uRadius, radius)
+      gl.uniform1f(shapeUniforms.uRound, round)
+      gl.uniform2f(shapeUniforms.uField, fieldHalf, (2 * fieldHalf) / FIELD)
+      gl.uniform1f(shapeUniforms.uThickness, s.thickness)
+      gl.uniform1f(shapeUniforms.uFill, s.fill ? 1 : 0)
+      gl.uniform1f(shapeUniforms.uEchoes, s.echoes)
+      gl.uniform1f(shapeUniforms.uSpacing, s.spacing)
+      gl.uniform1f(shapeUniforms.uAngle, angle)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      gl.useProgram(blurProgram);
-      gl.uniform1i(blurUniforms.uSource, 0);
+      gl.useProgram(blurProgram)
+      gl.uniform1i(blurUniforms.uSource, 0)
       for (let k = 1; k < pyramid.levels; k++) {
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, pyramid.temps[k], 0);
-        gl.viewport(0, 0, pyramid.sizes[k][0], pyramid.sizes[k - 1][1]);
-        gl.bindTexture(gl.TEXTURE_2D, pyramid.texture);
-        gl.uniform1f(blurUniforms.uLod, k - 1);
-        gl.uniform2f(blurUniforms.uStep, 1, 0);
-        gl.uniform2f(blurUniforms.uScale, 2, 1);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          gl.COLOR_ATTACHMENT0,
+          gl.TEXTURE_2D,
+          pyramid.temps[k],
+          0,
+        )
+        gl.viewport(0, 0, pyramid.sizes[k][0], pyramid.sizes[k - 1][1])
+        gl.bindTexture(gl.TEXTURE_2D, pyramid.texture)
+        gl.uniform1f(blurUniforms.uLod, k - 1)
+        gl.uniform2f(blurUniforms.uStep, 1, 0)
+        gl.uniform2f(blurUniforms.uScale, 2, 1)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, pyramid.texture, k);
-        gl.viewport(0, 0, pyramid.sizes[k][0], pyramid.sizes[k][1]);
-        gl.bindTexture(gl.TEXTURE_2D, pyramid.temps[k]);
-        gl.uniform1f(blurUniforms.uLod, 0);
-        gl.uniform2f(blurUniforms.uStep, 0, 1);
-        gl.uniform2f(blurUniforms.uScale, 1, 2);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.framebufferTexture2D(
+          gl.FRAMEBUFFER,
+          gl.COLOR_ATTACHMENT0,
+          gl.TEXTURE_2D,
+          pyramid.texture,
+          k,
+        )
+        gl.viewport(0, 0, pyramid.sizes[k][0], pyramid.sizes[k][1])
+        gl.bindTexture(gl.TEXTURE_2D, pyramid.temps[k])
+        gl.uniform1f(blurUniforms.uLod, 0)
+        gl.uniform2f(blurUniforms.uStep, 0, 1)
+        gl.uniform2f(blurUniforms.uScale, 1, 2)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
       }
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    };
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    }
 
     const render = () => {
-      const s = settingsRef.current;
-      if (!pyramid.texture) return;
-      resolveColor(s.color);
-      gl.bindVertexArray(vao);
-      gl.disable(gl.BLEND);
-      drawShape(s);
+      const s = settingsRef.current
+      if (!pyramid.texture) return
+      resolveColor(s.color)
+      gl.bindVertexArray(vao)
+      gl.disable(gl.BLEND)
+      drawShape(s)
 
-      const { width, height } = state;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(compositeProgram);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, pyramid.texture);
-      gl.uniform1i(compositeUniforms.uPyramid, 0);
-      gl.uniform1f(compositeUniforms.uMaxLod, pyramid.levels - 1);
-      gl.uniform2f(compositeUniforms.uResolution, width, height);
-      gl.uniform1f(compositeUniforms.uDpr, state.dpr);
-      gl.uniform1f(compositeUniforms.uThickness, s.thickness);
-      gl.uniform1f(compositeUniforms.uFill, s.fill ? 1 : 0);
-      gl.uniform1f(compositeUniforms.uEchoes, s.echoes);
-      gl.uniform1f(compositeUniforms.uSpacing, s.spacing);
-      gl.uniform3f(compositeUniforms.uColor, state.color[0], state.color[1], state.color[2]);
-      gl.uniform1f(compositeUniforms.uBackdrop, state.backdrop);
-      gl.uniform1f(compositeUniforms.uBlur, s.blur);
-      gl.uniform3f(compositeUniforms.uLens, lens.x, lens.y, lens.power);
-      gl.uniform2f(compositeUniforms.uLensShape, s.lensSize * Math.min(width, height), s.lensSoftness);
-      gl.uniform1f(compositeUniforms.uFocus, s.focus ? 1 : 0);
-      gl.uniform1f(compositeUniforms.uChroma, s.chroma);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+      const { width, height } = state
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(compositeProgram)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, pyramid.texture)
+      gl.uniform1i(compositeUniforms.uPyramid, 0)
+      gl.uniform1f(compositeUniforms.uMaxLod, pyramid.levels - 1)
+      gl.uniform2f(compositeUniforms.uResolution, width, height)
+      gl.uniform1f(compositeUniforms.uDpr, state.dpr)
+      gl.uniform1f(compositeUniforms.uThickness, s.thickness)
+      gl.uniform1f(compositeUniforms.uFill, s.fill ? 1 : 0)
+      gl.uniform1f(compositeUniforms.uEchoes, s.echoes)
+      gl.uniform1f(compositeUniforms.uSpacing, s.spacing)
+      gl.uniform3f(compositeUniforms.uColor, state.color[0], state.color[1], state.color[2])
+      gl.uniform1f(compositeUniforms.uBackdrop, state.backdrop)
+      gl.uniform1f(compositeUniforms.uBlur, s.blur)
+      gl.uniform3f(compositeUniforms.uLens, lens.x, lens.y, lens.power)
+      gl.uniform2f(
+        compositeUniforms.uLensShape,
+        s.lensSize * Math.min(width, height),
+        s.lensSoftness,
+      )
+      gl.uniform1f(compositeUniforms.uFocus, s.focus ? 1 : 0)
+      gl.uniform1f(compositeUniforms.uChroma, s.chroma)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive || !visible) return;
-      const s = settingsRef.current;
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
-      state.time += dt;
-      if (!reduce) state.angle = (state.angle + s.spin * dt) % 360;
+      raf = 0
+      if (!alive || !visible) return
+      const s = settingsRef.current
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      state.time += dt
+      if (!reduce) state.angle = (state.angle + s.spin * dt) % 360
 
-      const drifting = !pointer.active && s.idle && !reduce;
-      let targetX = lens.x;
-      let targetY = lens.y;
-      let targetPower = 0;
+      const drifting = !pointer.active && s.idle && !reduce
+      let targetX = lens.x
+      let targetY = lens.y
+      let targetPower = 0
       if (pointer.active) {
-        targetX = pointer.x;
-        targetY = pointer.y;
-        targetPower = 1;
+        targetX = pointer.x
+        targetY = pointer.y
+        targetPower = 1
       } else if (drifting) {
-        [targetX, targetY] = wander(state.time);
-        targetPower = 0.85;
+        ;[targetX, targetY] = wander(state.time)
+        targetPower = 0.85
       }
       if (!lens.placed) {
-        lens.x = targetX;
-        lens.y = targetY;
-        lens.placed = true;
+        lens.x = targetX
+        lens.y = targetY
+        lens.placed = true
       }
-      const follow = 1 - Math.exp(-dt * (pointer.active ? 10 : 3));
-      lens.x += (targetX - lens.x) * follow;
-      lens.y += (targetY - lens.y) * follow;
-      lens.power += (targetPower - lens.power) * (1 - Math.exp(-dt * 4));
+      const follow = 1 - Math.exp(-dt * (pointer.active ? 10 : 3))
+      lens.x += (targetX - lens.x) * follow
+      lens.y += (targetY - lens.y) * follow
+      lens.power += (targetPower - lens.power) * (1 - Math.exp(-dt * 4))
 
-      render();
+      render()
 
       const settled =
         Math.abs(targetX - lens.x) < 0.1 &&
         Math.abs(targetY - lens.y) < 0.1 &&
-        Math.abs(targetPower - lens.power) < 0.002;
-      if (!settled || drifting || (s.spin && !reduce)) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+        Math.abs(targetPower - lens.power) < 0.002
+      if (!settled || drifting || (s.spin && !reduce)) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (raf || !alive || !visible) return;
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || !alive || !visible) return
+      raf = requestAnimationFrame(frame)
+    }
 
     const load = (value: string) => {
-      const request = ++state.request;
-      state.image = value ? 'loading' : 'none';
-      wake();
-      if (!value) return;
-      const image = new Image();
-      image.crossOrigin = 'anonymous';
+      const request = ++state.request
+      state.image = value ? 'loading' : 'none'
+      wake()
+      if (!value) return
+      const image = new Image()
+      image.crossOrigin = 'anonymous'
       image.onload = () => {
-        if (!alive || request !== state.request) return;
-        let field: Float32Array | null = null;
+        if (!alive || request !== state.request) return
+        let field: Float32Array | null = null
         try {
-          field = buildField(image);
+          field = buildField(image)
         } catch {
-          field = null;
+          field = null
         }
         if (!field) {
-          state.image = 'failed';
-          wake();
-          return;
+          state.image = 'failed'
+          wake()
+          return
         }
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, fieldTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, FIELD, FIELD, 0, gl.RED, gl.FLOAT, field);
-        state.image = 'ready';
-        wake();
-      };
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, fieldTexture)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, FIELD, FIELD, 0, gl.RED, gl.FLOAT, field)
+        state.image = 'ready'
+        wake()
+      }
       image.onerror = () => {
-        if (!alive || request !== state.request) return;
-        state.image = 'failed';
-        wake();
-      };
-      image.src = value;
-    };
+        if (!alive || request !== state.request) return
+        state.image = 'failed'
+        wake()
+      }
+      image.src = value
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = root.getBoundingClientRect();
-      const margin = settingsRef.current.lensSize * Math.min(rect.width, rect.height);
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      pointer.active = x > -margin && y > -margin && x < rect.width + margin && y < rect.height + margin;
-      pointer.x = x - rect.width / 2;
-      pointer.y = rect.height / 2 - y;
-      wake();
-    };
+      const rect = root.getBoundingClientRect()
+      const margin = settingsRef.current.lensSize * Math.min(rect.width, rect.height)
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      pointer.active =
+        x > -margin && y > -margin && x < rect.width + margin && y < rect.height + margin
+      pointer.x = x - rect.width / 2
+      pointer.y = rect.height / 2 - y
+      wake()
+    }
 
     const onPointerLeave = () => {
-      pointer.active = false;
-      wake();
-    };
+      pointer.active = false
+      wake()
+    }
 
     const resize = () => {
-      state.dpr = Math.min(window.devicePixelRatio || 1, 2);
-      state.width = Math.max(1, root.clientWidth);
-      state.height = Math.max(1, root.clientHeight);
-      canvas.width = Math.round(state.width * state.dpr);
-      canvas.height = Math.round(state.height * state.dpr);
-      allocate();
-      render();
-      wake();
-    };
+      state.dpr = Math.min(window.devicePixelRatio || 1, 2)
+      state.width = Math.max(1, root.clientWidth)
+      state.height = Math.max(1, root.clientHeight)
+      canvas.width = Math.round(state.width * state.dpr)
+      canvas.height = Math.round(state.height * state.dpr)
+      allocate()
+      render()
+      wake()
+    }
 
-    control = { load, wake };
+    control = { load, wake }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(root);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(root)
     const visibility = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    visibility.observe(root);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    resize();
+    })
+    visibility.observe(root)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    resize()
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      control = null;
-      resizeObserver.disconnect();
-      visibility.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      if (pyramid.texture) gl.deleteTexture(pyramid.texture);
-      pyramid.temps.forEach(texture => texture && gl.deleteTexture(texture));
-      if (fieldTexture) gl.deleteTexture(fieldTexture);
-      if (framebuffer) gl.deleteFramebuffer(framebuffer);
-      if (buffer) gl.deleteBuffer(buffer);
-      if (vao) gl.deleteVertexArray(vao);
-      gl.deleteProgram(shapeProgram);
-      gl.deleteProgram(blurProgram);
-      gl.deleteProgram(compositeProgram);
-      gl.deleteShader(vertex);
-    });
-  });
+      alive = false
+      cancelAnimationFrame(raf)
+      control = null
+      resizeObserver.disconnect()
+      visibility.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      if (pyramid.texture) gl.deleteTexture(pyramid.texture)
+      pyramid.temps.forEach(texture => texture && gl.deleteTexture(texture))
+      if (fieldTexture) gl.deleteTexture(fieldTexture)
+      if (framebuffer) gl.deleteFramebuffer(framebuffer)
+      if (buffer) gl.deleteBuffer(buffer)
+      if (vao) gl.deleteVertexArray(vao)
+      gl.deleteProgram(shapeProgram)
+      gl.deleteProgram(blurProgram)
+      gl.deleteProgram(compositeProgram)
+      gl.deleteShader(vertex)
+    })
+  })
 
   return (
     <div
@@ -805,10 +839,10 @@ const ShapeBlur = (props: ShapeBlurProps) => {
       class={`${ROOT}${props.class ? ` ${props.class}` : ''}${props.className ? ` ${props.className}` : ''}`}
       style={props.style}
     >
-      <canvas ref={canvasEl} class={CANVAS} aria-hidden="true" />
+      <canvas ref={canvasEl} class={CANVAS} />
       {props.children && <div class={CONTENT}>{props.children}</div>}
     </div>
-  );
-};
+  )
+}
 
-export default ShapeBlur;
+export default ShapeBlur

@@ -1,98 +1,108 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type PixelBlastVariant = 'square' | 'circle' | 'triangle' | 'diamond' | 'cross' | 'ring';
-export type PixelBlastHoverEffect = 'reveal' | 'grow' | 'none';
+export type PixelBlastVariant = 'square' | 'circle' | 'triangle' | 'diamond' | 'cross' | 'ring'
+export type PixelBlastHoverEffect = 'reveal' | 'grow' | 'none'
 
 export interface PixelBlastProps {
-  variant?: PixelBlastVariant;
-  pixelSize?: number;
-  color?: string;
-  accentColor?: string;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
-  patternScale?: number;
-  patternDensity?: number;
-  pixelSizeJitter?: number;
-  enableRipples?: boolean;
-  rippleIntensityScale?: number;
-  rippleThickness?: number;
-  rippleSpeed?: number;
-  autoPauseOffscreen?: boolean;
-  speed?: number;
-  transparent?: boolean;
-  edgeFade?: number;
-  noiseAmount?: number;
-  softness?: number;
-  smoothing?: number;
-  glow?: number;
-  twinkle?: number;
-  drift?: number;
-  driftAngle?: number;
-  hoverEffect?: PixelBlastHoverEffect;
-  hoverRadius?: number;
-  autoRipple?: number;
-  tiltX?: number;
-  tiltY?: number;
-  intro?: boolean;
-  variation?: number;
-  lightMode?: boolean;
-  dpr?: number;
+  variant?: PixelBlastVariant
+  pixelSize?: number
+  color?: string
+  accentColor?: string
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
+  patternScale?: number
+  patternDensity?: number
+  pixelSizeJitter?: number
+  enableRipples?: boolean
+  rippleIntensityScale?: number
+  rippleThickness?: number
+  rippleSpeed?: number
+  autoPauseOffscreen?: boolean
+  speed?: number
+  transparent?: boolean
+  edgeFade?: number
+  noiseAmount?: number
+  softness?: number
+  smoothing?: number
+  glow?: number
+  twinkle?: number
+  drift?: number
+  driftAngle?: number
+  hoverEffect?: PixelBlastHoverEffect
+  hoverRadius?: number
+  autoRipple?: number
+  tiltX?: number
+  tiltY?: number
+  intro?: boolean
+  variation?: number
+  lightMode?: boolean
+  dpr?: number
 }
 
 type Settings = {
-  variant: number;
-  pixelSize: number;
-  color: string;
-  accentColor: string;
-  patternScale: number;
-  patternDensity: number;
-  pixelSizeJitter: number;
-  enableRipples: boolean;
-  rippleIntensityScale: number;
-  rippleThickness: number;
-  rippleSpeed: number;
-  autoPauseOffscreen: boolean;
-  speed: number;
-  transparent: boolean;
-  edgeFade: number;
-  noiseAmount: number;
-  softness: number;
-  smoothing: number;
-  glow: number;
-  twinkle: number;
-  drift: number;
-  driftAngle: number;
-  hoverEffect: number;
-  hoverRadius: number;
-  autoRipple: number;
-  tiltX: number;
-  tiltY: number;
-  intro: boolean;
-  variation?: number;
-  lightMode: boolean;
-  dpr?: number;
-};
+  variant: number
+  pixelSize: number
+  color: string
+  accentColor: string
+  patternScale: number
+  patternDensity: number
+  pixelSizeJitter: number
+  enableRipples: boolean
+  rippleIntensityScale: number
+  rippleThickness: number
+  rippleSpeed: number
+  autoPauseOffscreen: boolean
+  speed: number
+  transparent: boolean
+  edgeFade: number
+  noiseAmount: number
+  softness: number
+  smoothing: number
+  glow: number
+  twinkle: number
+  drift: number
+  driftAngle: number
+  hoverEffect: number
+  hoverRadius: number
+  autoRipple: number
+  tiltX: number
+  tiltY: number
+  intro: boolean
+  variation?: number
+  lightMode: boolean
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-const MAX_CLICKS = 10;
-const INTRO_SECONDS = 1.8;
-const SHAPES: Record<string, number> = { square: 0, circle: 1, triangle: 2, diamond: 3, cross: 4, ring: 5 };
-const HOVERS: Record<string, number> = { none: 0, grow: 1, reveal: 2 };
-const bayer2 = (x: number, y: number): number => (Math.floor(x) / 2 + Math.floor(y) * Math.floor(y) * 0.75) % 1;
+const MAX_CLICKS = 10
+const INTRO_SECONDS = 1.8
+const SHAPES: Record<string, number> = {
+  square: 0,
+  circle: 1,
+  triangle: 2,
+  diamond: 3,
+  cross: 4,
+  ring: 5,
+}
+const HOVERS: Record<string, number> = { none: 0, grow: 1, reveal: 2 }
+const bayer2 = (x: number, y: number): number =>
+  (Math.floor(x) / 2 + Math.floor(y) * Math.floor(y) * 0.75) % 1
 const bayer8 = (x: number, y: number): number =>
-  (bayer2(x / 4, y / 4) * 0.25 + bayer2(x / 2, y / 2)) * 0.25 + bayer2(x, y);
-const BAYER_TABLE = Array.from({ length: 64 }, (_, i) => bayer8(i % 8, Math.floor(i / 8)).toFixed(6)).join(', ');
-const RANGE_MIN = -6;
-const RANGE_MAX = 10;
+  (bayer2(x / 4, y / 4) * 0.25 + bayer2(x / 2, y / 2)) * 0.25 + bayer2(x, y)
+const BAYER_TABLE = Array.from({ length: 64 }, (_, i) =>
+  bayer8(i % 8, Math.floor(i / 8)).toFixed(6),
+).join(', ')
+const RANGE_MIN = -6
+const RANGE_MAX = 10
 
 const VERTEX = `#version 300 es
 void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
-}`;
+}`
 
 const PACKING = `
 const float RANGE_MIN = ${RANGE_MIN.toFixed(1)};
@@ -108,7 +118,7 @@ float unpack16(vec2 c) {
   float x = floor(c.x * 255.0 + 0.5) * 256.0 + floor(c.y * 255.0 + 0.5);
   return RANGE_MIN + x / 65535.0 * (RANGE_MAX - RANGE_MIN);
 }
-`;
+`
 
 const CELL_FRAGMENT = `#version 300 es
 precision highp float;
@@ -221,7 +231,7 @@ void main() {
   if (uHover == 2) feed += trail * 0.9;
 
   outCell = vec4(pack16(feed), clamp((feed + 0.5) * 0.5, 0.0, 1.0), trail);
-}`;
+}`
 
 const MAIN_FRAGMENT = `#version 300 es
 precision highp float;
@@ -446,87 +456,87 @@ void main() {
     return;
   }
   fragColor = vec4(premul, alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (!info) continue;
-    const name = info.name.replace(/\[0\]$/, '');
-    uniforms[name] = gl.getUniformLocation(program, name);
+    const info = gl.getActiveUniform(program, i)
+    if (!info) continue
+    const name = info.name.replace(/\[0\]$/, '')
+    uniforms[name] = gl.getUniformLocation(program, name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
-const colorCache = new Map<string, number[]>();
+const colorCache = new Map<string, number[]>()
 
 const hexToRgb = (hex: string): number[] => {
-  const key = String(hex);
-  const cached = colorCache.get(key);
-  if (cached) return cached;
-  const rgb = parseHex(hex);
-  if (colorCache.size > 64) colorCache.clear();
-  colorCache.set(key, rgb);
-  return rgb;
-};
+  const key = String(hex)
+  const cached = colorCache.get(key)
+  if (cached) return cached
+  const rgb = parseHex(hex)
+  if (colorCache.size > 64) colorCache.clear()
+  colorCache.set(key, rgb)
+  return rgb
+}
 
 const parseHex = (hex: string): number[] => {
   let h = String(hex || '#ffffff')
     .replace('#', '')
-    .trim();
+    .trim()
   if (h.length === 3 || h.length === 4)
     h = h
       .slice(0, 3)
       .split('')
       .map(c => c + c)
-      .join('');
-  const num = parseInt(h.slice(0, 6), 16);
-  if (Number.isNaN(num)) return [1, 1, 1];
-  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
-};
+      .join('')
+  const num = parseInt(h.slice(0, 6), 16)
+  if (Number.isNaN(num)) return [1, 1, 1]
+  return [((num >> 16) & 255) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255]
+}
 
 const randomFloat = () => {
   if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
-    const u32 = new Uint32Array(1);
-    window.crypto.getRandomValues(u32);
-    return u32[0] / 0xffffffff;
+    const u32 = new Uint32Array(1)
+    window.crypto.getRandomValues(u32)
+    return u32[0] / 0xffffffff
   }
-  return Math.random();
-};
+  return Math.random()
+}
 
 const invert3 = (m: number[]): number[] => {
-  const [a, b, c, d, e, f, g, h, i] = m;
-  const A = e * i - f * h;
-  const B = -(d * i - f * g);
-  const C = d * h - e * g;
-  const det = a * A + b * B + c * C || 1;
+  const [a, b, c, d, e, f, g, h, i] = m
+  const A = e * i - f * h
+  const B = -(d * i - f * g)
+  const C = d * h - e * g
+  const det = a * A + b * B + c * C || 1
   return [
     A / det,
     -(b * i - c * h) / det,
@@ -536,26 +546,26 @@ const invert3 = (m: number[]): number[] => {
     -(a * f - c * d) / det,
     C / det,
     -(a * h - b * g) / det,
-    (a * e - b * d) / det
-  ];
-};
+    (a * e - b * d) / det,
+  ]
+}
 
 const multiply3 = (x: number[], y: number[]): number[] => {
-  const out: number[] = new Array(9);
+  const out: number[] = new Array(9)
   for (let r = 0; r < 3; r++) {
     for (let c = 0; c < 3; c++) {
-      out[r * 3 + c] = x[r * 3] * y[c] + x[r * 3 + 1] * y[3 + c] + x[r * 3 + 2] * y[6 + c];
+      out[r * 3 + c] = x[r * 3] * y[c] + x[r * 3 + 1] * y[3 + c] + x[r * 3 + 2] * y[6 + c]
     }
   }
-  return out;
-};
+  return out
+}
 
 const planeFor = (tiltX: number, tiltY: number, width: number, height: number) => {
-  const ax = (tiltX * Math.PI) / 180;
-  const ay = (tiltY * Math.PI) / 180;
-  const depth = Math.max(width, height) * 1.25;
-  const cx = width / 2;
-  const cy = height / 2;
+  const ax = (tiltX * Math.PI) / 180
+  const ay = (tiltY * Math.PI) / 180
+  const depth = Math.max(width, height) * 1.25
+  const cx = width / 2
+  const cy = height / 2
   const tilt = [
     Math.cos(ay),
     0,
@@ -565,17 +575,27 @@ const planeFor = (tiltX: number, tiltY: number, width: number, height: number) =
     0,
     (Math.sin(ay) * Math.cos(ax)) / depth,
     -Math.sin(ax) / depth,
-    1
-  ];
-  const forward = multiply3(multiply3([1, 0, cx, 0, 1, cy, 0, 0, 1], tilt), [1, 0, -cx, 0, 1, -cy, 0, 0, 1]);
-  return invert3(forward);
-};
+    1,
+  ]
+  const forward = multiply3(multiply3([1, 0, cx, 0, 1, cy, 0, 0, 1], tilt), [
+    1,
+    0,
+    -cx,
+    0,
+    1,
+    -cy,
+    0,
+    0,
+    1,
+  ])
+  return invert3(forward)
+}
 
 const PixelBlast = (props: PixelBlastProps) => {
-  const [own] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = createMemo(
     (): Settings => ({
@@ -609,89 +629,95 @@ const PixelBlast = (props: PixelBlastProps) => {
       intro: props.intro ?? true,
       variation: props.variation,
       lightMode: props.lightMode ?? false,
-      dpr: props.dpr
-    })
-  );
+      dpr: props.dpr,
+    }),
+  )
 
   onMount(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
+    const container = containerRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return;
-    const cellShader = link(gl, CELL_FRAGMENT);
-    const mainShader = link(gl, MAIN_FRAGMENT);
-    if (!cellShader || !mainShader) return;
-    const cu = cellShader.uniforms;
-    const mu = mainShader.uniforms;
-    const vao = gl.createVertexArray();
+      stencil: false,
+    })
+    if (!container || !canvas || !gl) return
+    const cellShader = link(gl, CELL_FRAGMENT)
+    const mainShader = link(gl, MAIN_FRAGMENT)
+    if (!cellShader || !mainShader) return
+    const cu = cellShader.uniforms
+    const mu = mainShader.uniforms
+    const vao = gl.createVertexArray()
 
     const makeTexture = (filter: number) => {
-      const texture = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-      return texture;
-    };
+      const texture = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+      return texture
+    }
     const targets = [0, 1].map(() => {
-      const texture = makeTexture(gl.LINEAR);
-      const framebuffer = gl.createFramebuffer();
-      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-      return { texture, framebuffer };
-    });
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      const texture = makeTexture(gl.LINEAR)
+      const framebuffer = gl.createFramebuffer()
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+      return { texture, framebuffer }
+    })
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const view: { width: number; height: number; ratio: number; plane: number[] | null; tiltKey: string } = {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const view: {
+      width: number
+      height: number
+      ratio: number
+      plane: number[] | null
+      tiltKey: string
+    } = {
       width: 1,
       height: 1,
       ratio: 1,
       plane: null,
-      tiltKey: ''
-    };
-    const cells = { x: 0, y: 0, w: 1, h: 1, key: '' };
-    const pointer = { x: 0, y: 0, inside: false };
-    const mouse = { x: 0, y: 0, ready: false };
-    const clickPos = new Float32Array(MAX_CLICKS * 2).fill(-1);
-    const clickAt = new Float32Array(MAX_CLICKS);
-    const clickAge = new Float32Array(MAX_CLICKS);
-    let clickIndex = 0;
-    let current = 0;
-    let fresh = true;
-    const seedOffset = settings().variation;
-    const timeOffset = typeof seedOffset === 'number' ? seedOffset * 37 : randomFloat() * 1000;
-    let elapsed = 0;
-    let clock = 0;
-    let presence = 0;
-    let driftX = 0;
-    let driftY = 0;
-    let introClock = settings().intro && !reduce ? 0 : 1;
-    let nextAuto = 1.2;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let quiet = 0;
+      tiltKey: '',
+    }
+    const cells = { x: 0, y: 0, w: 1, h: 1, key: '' }
+    const pointer = { x: 0, y: 0, inside: false }
+    const mouse = { x: 0, y: 0, ready: false }
+    const clickPos = new Float32Array(MAX_CLICKS * 2).fill(-1)
+    const clickAt = new Float32Array(MAX_CLICKS)
+    const clickAge = new Float32Array(MAX_CLICKS)
+    let clickIndex = 0
+    let current = 0
+    let fresh = true
+    const seedOffset = settings().variation
+    const timeOffset = typeof seedOffset === 'number' ? seedOffset * 37 : randomFloat() * 1000
+    let elapsed = 0
+    let clock = 0
+    let presence = 0
+    let driftX = 0
+    let driftY = 0
+    let introClock = settings().intro && !reduce ? 0 : 1
+    let nextAuto = 1.2
+    let raf = 0
+    let last = 0
+    let visible = true
+    let quiet = 0
 
-    const patternTime = (s: Settings) => timeOffset + elapsed * s.speed;
+    const patternTime = (s: Settings) => timeOffset + elapsed * s.speed
 
     const layoutCells = (s: Settings) => {
-      const ps = s.pixelSize * view.ratio;
-      const cps = 8 * ps;
-      const w = canvas.width;
-      const h = canvas.height;
-      let minX = -w / 2;
-      let maxX = w / 2;
-      let minY = -h / 2;
-      let maxY = h / 2;
+      const ps = s.pixelSize * view.ratio
+      const cps = 8 * ps
+      const w = canvas.width
+      const h = canvas.height
+      let minX = -w / 2
+      let maxX = w / 2
+      let minY = -h / 2
+      let maxY = h / 2
       if (view.plane) {
         const corners = [
           [0, 0],
@@ -701,315 +727,333 @@ const PixelBlast = (props: PixelBlastProps) => {
           [w / 2, 0],
           [w / 2, h],
           [0, h / 2],
-          [w, h / 2]
-        ];
-        minX = Infinity;
-        maxX = -Infinity;
-        minY = Infinity;
-        maxY = -Infinity;
+          [w, h / 2],
+        ]
+        minX = Infinity
+        maxX = -Infinity
+        minY = Infinity
+        maxY = -Infinity
         for (const [x, y] of corners) {
-          const [qx, qy] = toPlane(x, y);
-          if (qx < -1e5) continue;
-          minX = Math.min(minX, qx - w / 2);
-          maxX = Math.max(maxX, qx - w / 2);
-          minY = Math.min(minY, qy - h / 2);
-          maxY = Math.max(maxY, qy - h / 2);
+          const [qx, qy] = toPlane(x, y)
+          if (qx < -1e5) continue
+          minX = Math.min(minX, qx - w / 2)
+          maxX = Math.max(maxX, qx - w / 2)
+          minY = Math.min(minY, qy - h / 2)
+          maxY = Math.max(maxY, qy - h / 2)
         }
         if (!Number.isFinite(minX)) {
-          minX = -w / 2;
-          maxX = w / 2;
-          minY = -h / 2;
-          maxY = h / 2;
+          minX = -w / 2
+          maxX = w / 2
+          minY = -h / 2
+          maxY = h / 2
         }
       }
-      const pad = cps;
-      const x0 = Math.floor((minX - pad) / cps);
-      const x1 = Math.floor((maxX + pad) / cps);
-      const y0 = Math.floor((minY - pad) / cps);
-      const y1 = Math.floor((maxY + pad) / cps);
-      const width = Math.max(1, Math.min(2048, x1 - x0 + 1));
-      const height = Math.max(1, Math.min(2048, y1 - y0 + 1));
-      const key = `${x0}:${y0}:${width}:${height}`;
-      if (key === cells.key) return;
-      cells.key = key;
-      cells.x = x0;
-      cells.y = y0;
-      cells.w = width;
-      cells.h = height;
+      const pad = cps
+      const x0 = Math.floor((minX - pad) / cps)
+      const x1 = Math.floor((maxX + pad) / cps)
+      const y0 = Math.floor((minY - pad) / cps)
+      const y1 = Math.floor((maxY + pad) / cps)
+      const width = Math.max(1, Math.min(2048, x1 - x0 + 1))
+      const height = Math.max(1, Math.min(2048, y1 - y0 + 1))
+      const key = `${x0}:${y0}:${width}:${height}`
+      if (key === cells.key) return
+      cells.key = key
+      cells.x = x0
+      cells.y = y0
+      cells.w = width
+      cells.h = height
       for (const target of targets) {
-        gl.bindTexture(gl.TEXTURE_2D, target.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.bindTexture(gl.TEXTURE_2D, target.texture)
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
       }
-      fresh = true;
-    };
+      fresh = true
+    }
 
-    const planeClicks = new Float32Array(MAX_CLICKS * 2);
+    const planeClicks = new Float32Array(MAX_CLICKS * 2)
 
     const stepCells = (s: Settings, decay: number) => {
       for (let k = 0; k < MAX_CLICKS; k++) {
         if (clickPos[k * 2] < 0) {
-          planeClicks[k * 2] = -1;
-          planeClicks[k * 2 + 1] = -1;
-          continue;
+          planeClicks[k * 2] = -1
+          planeClicks[k * 2 + 1] = -1
+          continue
         }
-        const [px, py] = toPlane(clickPos[k * 2], clickPos[k * 2 + 1]);
-        planeClicks[k * 2] = Math.max(px, 0);
-        planeClicks[k * 2 + 1] = py;
+        const [px, py] = toPlane(clickPos[k * 2], clickPos[k * 2 + 1])
+        planeClicks[k * 2] = Math.max(px, 0)
+        planeClicks[k * 2 + 1] = py
       }
-      const [mx, my] = toPlane(mouse.x, mouse.y);
-      const source = targets[current];
-      const target = targets[1 - current];
-      gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
-      gl.viewport(0, 0, cells.w, cells.h);
-      gl.disable(gl.BLEND);
-      gl.useProgram(cellShader.program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, source.texture);
-      gl.uniform1i(cu.uPrev, 0);
-      gl.uniform2f(cu.uResolution, canvas.width, canvas.height);
-      gl.uniform1f(cu.uTime, patternTime(s));
-      gl.uniform1f(cu.uPixelSize, s.pixelSize * view.ratio);
-      gl.uniform1f(cu.uScale, s.patternScale);
-      gl.uniform1f(cu.uDensity, s.patternDensity);
-      gl.uniform1i(cu.uEnableRipples, s.enableRipples ? 1 : 0);
-      gl.uniform1f(cu.uRippleSpeed, s.rippleSpeed);
-      gl.uniform1f(cu.uRippleThickness, s.rippleThickness);
-      gl.uniform1f(cu.uRippleIntensity, s.rippleIntensityScale);
-      gl.uniform2fv(cu.uClickPos, planeClicks);
-      gl.uniform1fv(cu.uClickAge, clickAge);
-      gl.uniform2i(cu.uOrigin, cells.x, cells.y);
-      gl.uniform2f(cu.uDrift, driftX, driftY);
-      gl.uniform1i(cu.uHover, s.hoverEffect);
-      gl.uniform2f(cu.uMouse, mx, my);
-      gl.uniform1f(cu.uMouseRadius, s.hoverRadius * view.ratio);
-      gl.uniform1f(cu.uMousePresence, presence);
-      gl.uniform1f(cu.uIntro, introClock);
-      gl.uniform1f(cu.uDecay, decay);
-      gl.uniform1f(cu.uFresh, fresh ? 1 : 0);
-      gl.bindVertexArray(vao);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      current = 1 - current;
-      fresh = false;
-    };
+      const [mx, my] = toPlane(mouse.x, mouse.y)
+      const source = targets[current]
+      const target = targets[1 - current]
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer)
+      gl.viewport(0, 0, cells.w, cells.h)
+      gl.disable(gl.BLEND)
+      gl.useProgram(cellShader.program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, source.texture)
+      gl.uniform1i(cu.uPrev, 0)
+      gl.uniform2f(cu.uResolution, canvas.width, canvas.height)
+      gl.uniform1f(cu.uTime, patternTime(s))
+      gl.uniform1f(cu.uPixelSize, s.pixelSize * view.ratio)
+      gl.uniform1f(cu.uScale, s.patternScale)
+      gl.uniform1f(cu.uDensity, s.patternDensity)
+      gl.uniform1i(cu.uEnableRipples, s.enableRipples ? 1 : 0)
+      gl.uniform1f(cu.uRippleSpeed, s.rippleSpeed)
+      gl.uniform1f(cu.uRippleThickness, s.rippleThickness)
+      gl.uniform1f(cu.uRippleIntensity, s.rippleIntensityScale)
+      gl.uniform2fv(cu.uClickPos, planeClicks)
+      gl.uniform1fv(cu.uClickAge, clickAge)
+      gl.uniform2i(cu.uOrigin, cells.x, cells.y)
+      gl.uniform2f(cu.uDrift, driftX, driftY)
+      gl.uniform1i(cu.uHover, s.hoverEffect)
+      gl.uniform2f(cu.uMouse, mx, my)
+      gl.uniform1f(cu.uMouseRadius, s.hoverRadius * view.ratio)
+      gl.uniform1f(cu.uMousePresence, presence)
+      gl.uniform1f(cu.uIntro, introClock)
+      gl.uniform1f(cu.uDecay, decay)
+      gl.uniform1f(cu.uFresh, fresh ? 1 : 0)
+      gl.bindVertexArray(vao)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      current = 1 - current
+      fresh = false
+    }
 
     const draw = () => {
-      const s = settings();
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(mainShader.program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, targets[current].texture);
-      gl.uniform1i(mu.uCells, 0);
-      gl.uniform3fv(mu.uColor, hexToRgb(s.color));
-      gl.uniform3fv(mu.uAccent, hexToRgb(s.accentColor));
-      gl.uniform2f(mu.uResolution, canvas.width, canvas.height);
-      gl.uniform1f(mu.uTime, patternTime(s));
-      gl.uniform1f(mu.uClock, clock);
-      gl.uniform1f(mu.uPixelSize, s.pixelSize * view.ratio);
-      gl.uniform1f(mu.uPixelJitter, s.pixelSizeJitter);
-      gl.uniform1f(mu.uEdgeFade, s.edgeFade);
-      gl.uniform1i(mu.uShapeType, s.variant);
-      gl.uniform2i(mu.uOrigin, cells.x, cells.y);
-      gl.uniform2i(mu.uCellCount, cells.w, cells.h);
-      gl.uniform1f(mu.uSoftness, s.softness);
-      gl.uniform1f(mu.uSmoothing, s.smoothing);
-      gl.uniform1f(mu.uGlow, s.glow);
-      gl.uniform1f(mu.uTwinkle, reduce ? 0 : s.twinkle);
-      gl.uniform1f(mu.uLightMode, s.lightMode ? 1 : 0);
-      gl.uniform1f(mu.uTransparent, s.transparent ? 1 : 0);
-      gl.uniform1f(mu.uNoise, s.noiseAmount);
-      gl.uniform1i(mu.uHover, s.hoverEffect);
-      gl.uniform1f(mu.uTilted, view.plane ? 1 : 0);
+      const s = settings()
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(mainShader.program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, targets[current].texture)
+      gl.uniform1i(mu.uCells, 0)
+      gl.uniform3fv(mu.uColor, hexToRgb(s.color))
+      gl.uniform3fv(mu.uAccent, hexToRgb(s.accentColor))
+      gl.uniform2f(mu.uResolution, canvas.width, canvas.height)
+      gl.uniform1f(mu.uTime, patternTime(s))
+      gl.uniform1f(mu.uClock, clock)
+      gl.uniform1f(mu.uPixelSize, s.pixelSize * view.ratio)
+      gl.uniform1f(mu.uPixelJitter, s.pixelSizeJitter)
+      gl.uniform1f(mu.uEdgeFade, s.edgeFade)
+      gl.uniform1i(mu.uShapeType, s.variant)
+      gl.uniform2i(mu.uOrigin, cells.x, cells.y)
+      gl.uniform2i(mu.uCellCount, cells.w, cells.h)
+      gl.uniform1f(mu.uSoftness, s.softness)
+      gl.uniform1f(mu.uSmoothing, s.smoothing)
+      gl.uniform1f(mu.uGlow, s.glow)
+      gl.uniform1f(mu.uTwinkle, reduce ? 0 : s.twinkle)
+      gl.uniform1f(mu.uLightMode, s.lightMode ? 1 : 0)
+      gl.uniform1f(mu.uTransparent, s.transparent ? 1 : 0)
+      gl.uniform1f(mu.uNoise, s.noiseAmount)
+      gl.uniform1i(mu.uHover, s.hoverEffect)
+      gl.uniform1f(mu.uTilted, view.plane ? 1 : 0)
       if (view.plane) {
-        const m = view.plane;
-        gl.uniformMatrix3fv(mu.uPlane, false, [m[0], m[3], m[6], m[1], m[4], m[7], m[2], m[5], m[8]]);
+        const m = view.plane
+        gl.uniformMatrix3fv(mu.uPlane, false, [
+          m[0],
+          m[3],
+          m[6],
+          m[1],
+          m[4],
+          m[7],
+          m[2],
+          m[5],
+          m[8],
+        ])
       }
-      gl.bindVertexArray(vao);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.bindVertexArray(null);
-    };
+      gl.bindVertexArray(vao)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      gl.bindVertexArray(null)
+    }
 
     const toPlane = (x: number, y: number): number[] => {
-      const m = view.plane;
-      if (!m) return [x, y];
-      const h = canvas.height;
-      const cy = h - y;
-      const z = m[6] * x + m[7] * cy + m[8];
-      if (z <= 1e-4) return [-1e6, -1e6];
-      return [(m[0] * x + m[1] * cy + m[2]) / z, h - (m[3] * x + m[4] * cy + m[5]) / z];
-    };
+      const m = view.plane
+      if (!m) return [x, y]
+      const h = canvas.height
+      const cy = h - y
+      const z = m[6] * x + m[7] * cy + m[8]
+      if (z <= 1e-4) return [-1e6, -1e6]
+      return [(m[0] * x + m[1] * cy + m[2]) / z, h - (m[3] * x + m[4] * cy + m[5]) / z]
+    }
 
     const updatePlane = (s: Settings) => {
-      view.plane = s.tiltX || s.tiltY ? planeFor(s.tiltX, s.tiltY, canvas.width, canvas.height) : null;
-      view.tiltKey = `${s.tiltX}:${s.tiltY}:${canvas.width}:${canvas.height}`;
-    };
+      view.plane =
+        s.tiltX || s.tiltY ? planeFor(s.tiltX, s.tiltY, canvas.width, canvas.height) : null
+      view.tiltKey = `${s.tiltX}:${s.tiltY}:${canvas.width}:${canvas.height}`
+    }
 
     const resize = () => {
-      const s = settings();
-      view.width = Math.max(1, container.clientWidth);
-      view.height = Math.max(1, container.clientHeight);
-      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(view.width * view.ratio));
-      canvas.height = Math.max(1, Math.round(view.height * view.ratio));
+      const s = settings()
+      view.width = Math.max(1, container.clientWidth)
+      view.height = Math.max(1, container.clientHeight)
+      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      canvas.width = Math.max(1, Math.round(view.width * view.ratio))
+      canvas.height = Math.max(1, Math.round(view.height * view.ratio))
       if (!mouse.ready) {
-        mouse.ready = true;
-        mouse.x = canvas.width / 2;
-        mouse.y = canvas.height / 2;
+        mouse.ready = true
+        mouse.x = canvas.width / 2
+        mouse.y = canvas.height / 2
       }
-      updatePlane(s);
-      layoutCells(s);
-      stepCells(s, 0);
-      draw();
-      wake();
-    };
+      updatePlane(s)
+      layoutCells(s)
+      stepCells(s, 0)
+      draw()
+      wake()
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      const s = settings();
-      if (!visible && s.autoPauseOffscreen) return;
-      if (document.hidden) return;
-      const dt = last ? clamp((now - last) / 1000, 0, 1 / 20) : 0;
-      last = now;
-      if (!reduce) elapsed += dt;
-      clock += dt;
+      raf = 0
+      const s = settings()
+      if (!visible && s.autoPauseOffscreen) return
+      if (document.hidden) return
+      const dt = last ? clamp((now - last) / 1000, 0, 1 / 20) : 0
+      last = now
+      if (!reduce) elapsed += dt
+      clock += dt
       if (!reduce && s.drift) {
-        const angle = (s.driftAngle * Math.PI) / 180;
-        driftX += Math.cos(angle) * s.drift * dt * 0.05;
-        driftY += Math.sin(angle) * s.drift * dt * 0.05;
+        const angle = (s.driftAngle * Math.PI) / 180
+        driftX += Math.cos(angle) * s.drift * dt * 0.05
+        driftY += Math.sin(angle) * s.drift * dt * 0.05
       }
       if (!reduce && s.enableRipples && s.autoRipple > 0 && introClock >= 1) {
-        nextAuto -= dt;
+        nextAuto -= dt
         if (nextAuto <= 0) {
-          nextAuto = s.autoRipple * (0.7 + Math.random() * 0.6);
-          addRipple((0.15 + Math.random() * 0.7) * view.width, (0.15 + Math.random() * 0.7) * view.height);
+          nextAuto = s.autoRipple * (0.7 + Math.random() * 0.6)
+          addRipple(
+            (0.15 + Math.random() * 0.7) * view.width,
+            (0.15 + Math.random() * 0.7) * view.height,
+          )
         }
       }
-      for (let k = 0; k < MAX_CLICKS; k++) clickAge[k] = (clock - clickAt[k]) * 0.5;
-      const targetX = pointer.x * view.ratio;
-      const targetY = (view.height - pointer.y) * view.ratio;
-      const follow = 1 - Math.exp(-dt / 0.08);
+      for (let k = 0; k < MAX_CLICKS; k++) clickAge[k] = (clock - clickAt[k]) * 0.5
+      const targetX = pointer.x * view.ratio
+      const targetY = (view.height - pointer.y) * view.ratio
+      const follow = 1 - Math.exp(-dt / 0.08)
       if (pointer.inside) {
-        mouse.x += (targetX - mouse.x) * follow;
-        mouse.y += (targetY - mouse.y) * follow;
+        mouse.x += (targetX - mouse.x) * follow
+        mouse.y += (targetY - mouse.y) * follow
       }
-      presence += ((pointer.inside ? 1 : 0) - presence) * (1 - Math.exp(-dt / 0.25));
-      const key = `${s.tiltX}:${s.tiltY}:${canvas.width}:${canvas.height}`;
-      if (key !== view.tiltKey) updatePlane(s);
-      layoutCells(s);
-      const decay = s.hoverEffect ? Math.exp(-dt / 0.45) : 0;
-      stepCells(s, decay);
-      draw();
-      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS);
-      let busy = !reduce && (s.speed !== 0 || s.drift !== 0 || s.twinkle > 0 || (s.autoRipple > 0 && s.enableRipples));
-      busy = busy || introClock < 1 || presence > 0.001;
-      for (let k = 0; k < MAX_CLICKS; k++) busy = busy || (clickPos[k * 2] >= 0 && clickAge[k] < 8);
-      quiet = busy ? 0 : quiet + dt;
-      if (quiet < 1.5) raf = requestAnimationFrame(frame);
-    };
+      presence += ((pointer.inside ? 1 : 0) - presence) * (1 - Math.exp(-dt / 0.25))
+      const key = `${s.tiltX}:${s.tiltY}:${canvas.width}:${canvas.height}`
+      if (key !== view.tiltKey) updatePlane(s)
+      layoutCells(s)
+      const decay = s.hoverEffect ? Math.exp(-dt / 0.45) : 0
+      stepCells(s, decay)
+      draw()
+      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS)
+      let busy =
+        !reduce &&
+        (s.speed !== 0 || s.drift !== 0 || s.twinkle > 0 || (s.autoRipple > 0 && s.enableRipples))
+      busy = busy || introClock < 1 || presence > 0.001
+      for (let k = 0; k < MAX_CLICKS; k++) busy = busy || (clickPos[k * 2] >= 0 && clickAge[k] < 8)
+      quiet = busy ? 0 : quiet + dt
+      if (quiet < 1.5) raf = requestAnimationFrame(frame)
+    }
 
     function wake() {
-      quiet = 0;
+      quiet = 0
       if (!raf && (visible || !settings().autoPauseOffscreen) && !document.hidden) {
-        last = 0;
-        raf = requestAnimationFrame(frame);
+        last = 0
+        raf = requestAnimationFrame(frame)
       }
     }
 
     const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height };
-    };
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      return { x, y, inside: x >= 0 && y >= 0 && x <= rect.width && y <= rect.height }
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const { x, y, inside } = locate(event);
-      const was = pointer.inside;
-      pointer.inside = inside;
+      const { x, y, inside } = locate(event)
+      const was = pointer.inside
+      pointer.inside = inside
       if (inside) {
-        pointer.x = x;
-        pointer.y = y;
+        pointer.x = x
+        pointer.y = y
         if (!was) {
-          mouse.x = x * view.ratio;
-          mouse.y = (view.height - y) * view.ratio;
+          mouse.x = x * view.ratio
+          mouse.y = (view.height - y) * view.ratio
         }
       }
-      if (inside || was) wake();
-    };
+      if (inside || was) wake()
+    }
 
     function addRipple(x: number, y: number) {
-      clickPos[clickIndex * 2] = x * view.ratio;
-      clickPos[clickIndex * 2 + 1] = (view.height - y) * view.ratio;
-      clickAt[clickIndex] = clock;
-      clickIndex = (clickIndex + 1) % MAX_CLICKS;
-      wake();
+      clickPos[clickIndex * 2] = x * view.ratio
+      clickPos[clickIndex * 2 + 1] = (view.height - y) * view.ratio
+      clickAt[clickIndex] = clock
+      clickIndex = (clickIndex + 1) % MAX_CLICKS
+      wake()
     }
 
     const onPointerDown = (event: PointerEvent) => {
-      const s = settings();
-      const { x, y, inside } = locate(event);
-      if (!inside || reduce || !s.enableRipples) return;
-      addRipple(x, y);
-    };
+      const s = settings()
+      const { x, y, inside } = locate(event)
+      if (!inside || reduce || !s.enableRipples) return
+      addRipple(x, y)
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
 
-    const onVisibility = () => wake();
+    const onVisibility = () => wake()
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      if (visible) wake();
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
-    wakeRef = wake;
+      visible = entries.some(entry => entry.isIntersecting)
+      if (visible) wake()
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
+    wakeRef = wake
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
       for (const target of targets) {
-        gl.deleteTexture(target.texture);
-        gl.deleteFramebuffer(target.framebuffer);
+        gl.deleteTexture(target.texture)
+        gl.deleteFramebuffer(target.framebuffer)
       }
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(cellShader.program);
-      gl.deleteProgram(mainShader.program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(cellShader.program)
+      gl.deleteProgram(mainShader.program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       style={own.style}
       aria-label="PixelBlast interactive background"
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default PixelBlast;
+export default PixelBlast

@@ -1,4 +1,4 @@
-import PillNav from './PillNav';
+import PillNav from './PillNav'
 
 function PillNavDemo() {
   return (
@@ -10,7 +10,7 @@ function PillNavDemo() {
         theme="dark"
       />
     </div>
-  );
+  )
 }
 
-export default PillNavDemo;
+export default PillNavDemo

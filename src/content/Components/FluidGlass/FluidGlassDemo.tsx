@@ -1,4 +1,4 @@
-import FluidGlass from './FluidGlass';
+import FluidGlass from './FluidGlass'
 
 function FluidGlassDemo() {
   return (
@@ -17,7 +17,7 @@ function FluidGlassDemo() {
         interaction="follow"
       />
     </div>
-  );
+  )
 }
 
-export default FluidGlassDemo;
+export default FluidGlassDemo

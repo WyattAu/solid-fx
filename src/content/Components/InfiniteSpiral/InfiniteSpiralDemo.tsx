@@ -1,4 +1,4 @@
-import InfiniteSpiral from './InfiniteSpiral';
+import InfiniteSpiral from './InfiniteSpiral'
 
 function InfiniteSpiralDemo() {
   return (
@@ -10,7 +10,7 @@ function InfiniteSpiralDemo() {
         cardHeight={110}
       />
     </div>
-  );
+  )
 }
 
-export default InfiniteSpiralDemo;
+export default InfiniteSpiralDemo

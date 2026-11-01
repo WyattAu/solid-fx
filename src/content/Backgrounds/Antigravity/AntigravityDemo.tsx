@@ -1,4 +1,4 @@
-import Antigravity from './Antigravity';
+import Antigravity from './Antigravity'
 
 const AntigravityDemo = () => (
   <div class="h-96 w-full">
@@ -10,6 +10,6 @@ const AntigravityDemo = () => (
       colorMode="conic"
     />
   </div>
-);
+)
 
-export default AntigravityDemo;
+export default AntigravityDemo

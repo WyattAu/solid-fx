@@ -1,4 +1,4 @@
-import ParticleText from './ParticleText';
+import ParticleText from './ParticleText'
 
 function ParticleTextDemo() {
   return (
@@ -13,7 +13,7 @@ function ParticleTextDemo() {
         className="text-white"
       />
     </div>
-  );
+  )
 }
 
-export default ParticleTextDemo;
+export default ParticleTextDemo

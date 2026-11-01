@@ -1,4 +1,4 @@
-import SwipeToast from './SwipeToast';
+import SwipeToast from './SwipeToast'
 
 function SwipeToastDemo() {
   return (
@@ -11,7 +11,7 @@ function SwipeToastDemo() {
         duration={12000}
       />
     </div>
-  );
+  )
 }
 
-export default SwipeToastDemo;
+export default SwipeToastDemo

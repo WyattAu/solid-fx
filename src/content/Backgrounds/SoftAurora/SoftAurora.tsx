@@ -1,73 +1,73 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface SoftAuroraProps {
-  speed?: number;
-  scale?: number;
-  brightness?: number;
-  color1?: string;
-  color2?: string;
-  noiseFrequency?: number;
-  noiseAmplitude?: number;
-  bandHeight?: number;
-  bandSpread?: number;
-  octaveDecay?: number;
-  layerOffset?: number;
-  colorSpeed?: number;
-  spectrum?: number;
-  tilt?: number;
-  enableMouseInteraction?: boolean;
-  mouseInfluence?: number;
-  clickPulse?: boolean;
-  intro?: boolean;
-  lightMode?: boolean;
-  opacity?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  speed?: number
+  scale?: number
+  brightness?: number
+  color1?: string
+  color2?: string
+  noiseFrequency?: number
+  noiseAmplitude?: number
+  bandHeight?: number
+  bandSpread?: number
+  octaveDecay?: number
+  layerOffset?: number
+  colorSpeed?: number
+  spectrum?: number
+  tilt?: number
+  enableMouseInteraction?: boolean
+  mouseInfluence?: number
+  clickPulse?: boolean
+  intro?: boolean
+  lightMode?: boolean
+  opacity?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface Settings {
-  speed: number;
-  scale: number;
-  brightness: number;
-  color1: number[];
-  color2: number[];
-  noiseFrequency: number;
-  noiseAmplitude: number;
-  bandHeight: number;
-  bandSpread: number;
-  octaveDecay: number;
-  layerOffset: number;
-  colorSpeed: number;
-  spectrum: number;
-  tilt: number;
-  mouse: boolean;
-  influence: number;
-  clickPulse: boolean;
-  intro: boolean;
-  light: boolean;
-  opacity: number;
+  speed: number
+  scale: number
+  brightness: number
+  color1: number[]
+  color2: number[]
+  noiseFrequency: number
+  noiseAmplitude: number
+  bandHeight: number
+  bandSpread: number
+  octaveDecay: number
+  layerOffset: number
+  colorSpeed: number
+  spectrum: number
+  tilt: number
+  mouse: boolean
+  influence: number
+  clickPulse: boolean
+  intro: boolean
+  light: boolean
+  opacity: number
 }
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
+  program: WebGLProgram
+  uniforms: Record<string, WebGLUniformLocation | null>
 }
 
 interface Pulse {
-  x: number;
-  y: number;
-  age: number;
+  x: number
+  y: number
+  age: number
 }
 
-const MAX_PULSES = 4;
+const MAX_PULSES = 4
 
 const VERTEX = `#version 300 es
 const vec2 corners[3] = vec2[3](vec2(-1.0, -1.0), vec2(3.0, -1.0), vec2(-1.0, 3.0));
 void main() {
   gl_Position = vec4(corners[gl_VertexID], 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -236,74 +236,74 @@ void main() {
     vec3 color = clamp(col, 0.0, 1.0);
     fragColor = vec4(clamp(color * alpha + grain, 0.0, alpha) * uOpacity, alpha * uOpacity);
   }
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const parseColor = (value: string): number[] | null => {
-  const text = String(value || '').trim();
-  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
+  const text = String(value || '').trim()
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text)
   if (hex) {
-    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1];
-    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255);
+    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1]
+    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255)
   }
-  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
-  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1));
-  return null;
-};
+  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text)
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1))
+  return null
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+    console.error(gl.getShaderInfoLog(shader))
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = vertex && fragment ? gl.createProgram() : null;
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = vertex && fragment ? gl.createProgram() : null
   if (!vertex || !fragment || !program) {
-    if (vertex) gl.deleteShader(vertex);
-    if (fragment) gl.deleteShader(fragment);
-    return null;
+    if (vertex) gl.deleteShader(vertex)
+    if (fragment) gl.deleteShader(fragment)
+    return null
   }
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
+    console.error(gl.getProgramInfoLog(program))
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Program['uniforms'] = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Program['uniforms'] = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let index = 0; index < count; index++) {
-    const info = gl.getActiveUniform(program, index);
-    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, index)
+    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const smoother = (t: number) => {
-  const x = clamp(t, 0, 1);
-  return x * x * x * (x * (x * 6 - 15) + 10);
-};
+  const x = clamp(t, 0, 1)
+  return x * x * x * (x * (x * 6 - 15) + 10)
+}
 
 const SoftAurora = (props: SoftAuroraProps) => {
-  const [own] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wake: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  const [own] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wake: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
   // Upstream rebuilt this object each render and kept it in a ref; the memo
   // tracks the same props so per-render effects fire on the same changes.
@@ -328,246 +328,253 @@ const SoftAurora = (props: SoftAuroraProps) => {
       clickPulse: props.clickPulse ?? true,
       intro: props.intro ?? true,
       light: props.lightMode ?? false,
-      opacity: clamp(props.opacity ?? 1, 0, 1)
-    })
-  );
+      opacity: clamp(props.opacity ?? 1, 0, 1),
+    }),
+  )
 
   // Upstream main effect deps: [generation] — re-creates the pipeline after a
   // WebGL context restore. Only the generation signal re-runs this effect;
   // every settings read below stays untracked (upstream read settingsRef).
   createEffect(() => {
-    const gen = generation();
+    const gen = generation()
     untrack(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
-    if (!container || !canvas) return;
+      const container = containerRef
+      const canvas = canvasRef
+      if (!container || !canvas) return
 
-    const gl = canvas.getContext('webgl2', {
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      powerPreference: 'high-performance'
-    });
-    const shader = gl ? link(gl) : null;
-    if (!gl || !shader) return;
+      const gl = canvas.getContext('webgl2', {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        powerPreference: 'high-performance',
+      })
+      const shader = gl ? link(gl) : null
+      if (!gl || !shader) return
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const vao = gl.createVertexArray();
-    const size = { width: 1, height: 1 };
-    const pointer = { x: 0.5, y: 0.5, inside: false };
-    const mouse = { x: 0.5, y: 0.5, presence: 0 };
-    const pulses: Pulse[] = [];
-    const pulseData = new Float32Array(MAX_PULSES * 4);
-    let flow = 0;
-    let hue = 0;
-    let opening = settings().intro && !reduced && gen === 0 ? 0 : 1;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let pageVisible = document.visibilityState !== 'hidden';
-    let lost = false;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const vao = gl.createVertexArray()
+      const size = { width: 1, height: 1 }
+      const pointer = { x: 0.5, y: 0.5, inside: false }
+      const mouse = { x: 0.5, y: 0.5, presence: 0 }
+      const pulses: Pulse[] = []
+      const pulseData = new Float32Array(MAX_PULSES * 4)
+      let flow = 0
+      let hue = 0
+      let opening = settings().intro && !reduced && gen === 0 ? 0 : 1
+      let raf = 0
+      let last = 0
+      let visible = true
+      let pageVisible = document.visibilityState !== 'hidden'
+      let lost = false
 
-    const resize = () => {
-      const s = settings();
-      const rect = container.getBoundingClientRect();
-      const cssWidth = Math.max(1, rect.width);
-      const cssHeight = Math.max(1, rect.height);
-      const ratio = clamp(0.35 + 0.04 * s.noiseFrequency * s.scale, 0.5, 1);
-      const width = Math.max(1, Math.round(cssWidth * ratio));
-      const height = Math.max(1, Math.round(cssHeight * ratio));
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+      const resize = () => {
+        const s = settings()
+        const rect = container.getBoundingClientRect()
+        const cssWidth = Math.max(1, rect.width)
+        const cssHeight = Math.max(1, rect.height)
+        const ratio = clamp(0.35 + 0.04 * s.noiseFrequency * s.scale, 0.5, 1)
+        const width = Math.max(1, Math.round(cssWidth * ratio))
+        const height = Math.max(1, Math.round(cssHeight * ratio))
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width
+          canvas.height = height
+        }
+        size.width = cssWidth
+        size.height = cssHeight
       }
-      size.width = cssWidth;
-      size.height = cssHeight;
-    };
 
-    const frame = (now: number) => {
-      raf = 0;
-      if (lost) return;
-      const s = settings();
-      const dt = clamp((now - last) / 1000 || 0, 0, 0.05);
-      last = Math.max(last, now);
-      const pace = reduced ? 0.35 : 1;
-      flow += dt * s.speed * pace;
-      hue += dt * s.speed * s.colorSpeed * pace;
-      if (opening < 1) opening = Math.min(1, opening + dt / 2);
+      const frame = (now: number) => {
+        raf = 0
+        if (lost) return
+        const s = settings()
+        const dt = clamp((now - last) / 1000 || 0, 0, 0.05)
+        last = Math.max(last, now)
+        const pace = reduced ? 0.35 : 1
+        flow += dt * s.speed * pace
+        hue += dt * s.speed * s.colorSpeed * pace
+        if (opening < 1) opening = Math.min(1, opening + dt / 2)
 
-      const tracking = s.mouse && pointer.inside;
-      const follow = 1 - Math.exp(-dt / 0.325);
-      mouse.x += ((tracking ? pointer.x : 0.5) - mouse.x) * follow;
-      mouse.y += ((tracking ? pointer.y : 0.5) - mouse.y) * follow;
-      mouse.presence += ((tracking ? 1 : 0) - mouse.presence) * (1 - Math.exp(-dt / (tracking ? 0.45 : 0.8)));
+        const tracking = s.mouse && pointer.inside
+        const follow = 1 - Math.exp(-dt / 0.325)
+        mouse.x += ((tracking ? pointer.x : 0.5) - mouse.x) * follow
+        mouse.y += ((tracking ? pointer.y : 0.5) - mouse.y) * follow
+        mouse.presence +=
+          ((tracking ? 1 : 0) - mouse.presence) * (1 - Math.exp(-dt / (tracking ? 0.45 : 0.8)))
 
-      for (let index = pulses.length - 1; index >= 0; index--) {
-        pulses[index].age += dt;
-        if (pulses[index].age >= 2.6) pulses.splice(index, 1);
+        for (let index = pulses.length - 1; index >= 0; index--) {
+          pulses[index].age += dt
+          if (pulses[index].age >= 2.6) pulses.splice(index, 1)
+        }
+        pulseData.fill(0)
+        pulses.forEach((pulse, index) => {
+          pulseData[index * 4] = pulse.x
+          pulseData[index * 4 + 1] = pulse.y
+          pulseData[index * 4 + 2] =
+            smoother(pulse.age / 0.18) * (1 - smoother((pulse.age - 0.18) / 2.42))
+          pulseData[index * 4 + 3] = pulse.age
+        })
+
+        const eased = 1 - (1 - opening) ** 3
+        const aspect = size.width / size.height
+        const strength = Math.min(1, s.influence * 4) * mouse.presence
+        gl.viewport(0, 0, canvas.width, canvas.height)
+        gl.clearColor(0, 0, 0, 0)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.useProgram(shader.program)
+        gl.bindVertexArray(vao)
+        const u = shader.uniforms
+        gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+        gl.uniform1f(u.uFlow, flow)
+        gl.uniform1f(u.uHue, hue)
+        gl.uniform1f(u.uScale, s.scale)
+        gl.uniform1f(u.uBrightness, s.brightness)
+        gl.uniform3f(u.uColor1, s.color1[0], s.color1[1], s.color1[2])
+        gl.uniform3f(u.uColor2, s.color2[0], s.color2[1], s.color2[2])
+        gl.uniform1f(u.uNoiseFreq, s.noiseFrequency)
+        gl.uniform1f(u.uNoiseAmp, s.noiseAmplitude)
+        gl.uniform1f(u.uBandHeight, s.bandHeight)
+        gl.uniform1f(u.uBandSpread, s.bandSpread)
+        gl.uniform1f(u.uOctaveDecay, s.octaveDecay)
+        gl.uniform1f(u.uLayerOffset, s.layerOffset)
+        gl.uniform2f(
+          u.uShift,
+          (mouse.x - 0.5) * s.influence * (s.mouse ? 1 : 0),
+          (mouse.y - 0.5) * s.influence * (s.mouse ? 1 : 0),
+        )
+        gl.uniform4f(u.uCursor, mouse.x * aspect, mouse.y, strength, 0)
+        gl.uniform4fv(u.uPulses, pulseData)
+        gl.uniform1f(u.uSpectrum, s.spectrum)
+        gl.uniform1f(u.uTilt, s.tilt)
+        gl.uniform3f(
+          u.uIntro,
+          smoother(opening / 0.7),
+          1 + 3 * (1 - eased) * (1 - eased),
+          0.25 + 0.75 * eased,
+        )
+        gl.uniform1f(u.uLightMode, s.light ? 1 : 0)
+        gl.uniform1f(u.uOpacity, s.opacity)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+
+        const settling =
+          Math.abs(mouse.x - (tracking ? pointer.x : 0.5)) > 1e-4 ||
+          Math.abs(mouse.y - (tracking ? pointer.y : 0.5)) > 1e-4 ||
+          Math.abs((tracking ? 1 : 0) - mouse.presence) > 1e-3 ||
+          pulses.length > 0
+        const busy = s.speed > 0 || opening < 1 || settling
+        if (busy && visible && pageVisible) raf = requestAnimationFrame(frame)
       }
-      pulseData.fill(0);
-      pulses.forEach((pulse, index) => {
-        pulseData[index * 4] = pulse.x;
-        pulseData[index * 4 + 1] = pulse.y;
-        pulseData[index * 4 + 2] = smoother(pulse.age / 0.18) * (1 - smoother((pulse.age - 0.18) / 2.42));
-        pulseData[index * 4 + 3] = pulse.age;
-      });
 
-      const eased = 1 - Math.pow(1 - opening, 3);
-      const aspect = size.width / size.height;
-      const strength = Math.min(1, s.influence * 4) * mouse.presence;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(shader.program);
-      gl.bindVertexArray(vao);
-      const u = shader.uniforms;
-      gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-      gl.uniform1f(u.uFlow, flow);
-      gl.uniform1f(u.uHue, hue);
-      gl.uniform1f(u.uScale, s.scale);
-      gl.uniform1f(u.uBrightness, s.brightness);
-      gl.uniform3f(u.uColor1, s.color1[0], s.color1[1], s.color1[2]);
-      gl.uniform3f(u.uColor2, s.color2[0], s.color2[1], s.color2[2]);
-      gl.uniform1f(u.uNoiseFreq, s.noiseFrequency);
-      gl.uniform1f(u.uNoiseAmp, s.noiseAmplitude);
-      gl.uniform1f(u.uBandHeight, s.bandHeight);
-      gl.uniform1f(u.uBandSpread, s.bandSpread);
-      gl.uniform1f(u.uOctaveDecay, s.octaveDecay);
-      gl.uniform1f(u.uLayerOffset, s.layerOffset);
-      gl.uniform2f(
-        u.uShift,
-        (mouse.x - 0.5) * s.influence * (s.mouse ? 1 : 0),
-        (mouse.y - 0.5) * s.influence * (s.mouse ? 1 : 0)
-      );
-      gl.uniform4f(u.uCursor, mouse.x * aspect, mouse.y, strength, 0);
-      gl.uniform4fv(u.uPulses, pulseData);
-      gl.uniform1f(u.uSpectrum, s.spectrum);
-      gl.uniform1f(u.uTilt, s.tilt);
-      gl.uniform3f(u.uIntro, smoother(opening / 0.7), 1 + 3 * (1 - eased) * (1 - eased), 0.25 + 0.75 * eased);
-      gl.uniform1f(u.uLightMode, s.light ? 1 : 0);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-      const settling =
-        Math.abs(mouse.x - (tracking ? pointer.x : 0.5)) > 1e-4 ||
-        Math.abs(mouse.y - (tracking ? pointer.y : 0.5)) > 1e-4 ||
-        Math.abs((tracking ? 1 : 0) - mouse.presence) > 1e-3 ||
-        pulses.length > 0;
-      const busy = s.speed > 0 || opening < 1 || settling;
-      if (busy && visible && pageVisible) raf = requestAnimationFrame(frame);
-    };
-
-    const wakeFrame = () => {
-      if (raf || lost || !visible || !pageVisible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-    wake = () => {
-      resize();
-      wakeFrame();
-    };
-
-    const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      return {
-        x: (event.clientX - rect.left) / Math.max(1, rect.width),
-        y: 1 - (event.clientY - rect.top) / Math.max(1, rect.height),
-        inside:
-          event.clientX >= rect.left &&
-          event.clientX <= rect.right &&
-          event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-      };
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      const spot = locate(event);
-      pointer.x = spot.x;
-      pointer.y = spot.y;
-      pointer.inside = spot.inside;
-      wakeFrame();
-    };
-    const onPointerDown = (event: PointerEvent) => {
-      const s = settings();
-      const spot = locate(event);
-      if (!spot.inside || !s.clickPulse || reduced) return;
-      pulses.push({ x: spot.x * (size.width / size.height), y: spot.y, age: 0 });
-      if (pulses.length > MAX_PULSES) pulses.shift();
-      wakeFrame();
-    };
-    const onLeave = () => {
-      pointer.inside = false;
-      wakeFrame();
-    };
-    const onPointerUp = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') onLeave();
-    };
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    window.addEventListener('pointerup', onPointerUp, { passive: true });
-    window.addEventListener('pointercancel', onPointerUp, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onLeave);
-
-    const onLost = (event: Event) => {
-      event.preventDefault();
-      lost = true;
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-    const onRestored = () => setGeneration(value => value + 1);
-    canvas.addEventListener('webglcontextlost', onLost);
-    canvas.addEventListener('webglcontextrestored', onRestored);
-
-    const resizeObserver = new ResizeObserver(() => {
-      resize();
-      wakeFrame();
-    });
-    resizeObserver.observe(container);
-
-    const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      wakeFrame();
-    });
-    intersection.observe(container);
-
-    const onVisibility = () => {
-      pageVisible = document.visibilityState !== 'hidden';
-      wakeFrame();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-
-    resize();
-    wakeFrame();
-
-    onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wake = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      canvas.removeEventListener('webglcontextlost', onLost);
-      canvas.removeEventListener('webglcontextrestored', onRestored);
-      if (!gl.isContextLost()) {
-        gl.deleteVertexArray(vao);
-        gl.deleteProgram(shader.program);
+      const wakeFrame = () => {
+        if (raf || lost || !visible || !pageVisible) return
+        last = performance.now()
+        raf = requestAnimationFrame(frame)
       }
-    });
-    });
-  });
+      wake = () => {
+        resize()
+        wakeFrame()
+      }
+
+      const locate = (event: PointerEvent) => {
+        const rect = container.getBoundingClientRect()
+        return {
+          x: (event.clientX - rect.left) / Math.max(1, rect.width),
+          y: 1 - (event.clientY - rect.top) / Math.max(1, rect.height),
+          inside:
+            event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom,
+        }
+      }
+
+      const onPointerMove = (event: PointerEvent) => {
+        const spot = locate(event)
+        pointer.x = spot.x
+        pointer.y = spot.y
+        pointer.inside = spot.inside
+        wakeFrame()
+      }
+      const onPointerDown = (event: PointerEvent) => {
+        const s = settings()
+        const spot = locate(event)
+        if (!spot.inside || !s.clickPulse || reduced) return
+        pulses.push({ x: spot.x * (size.width / size.height), y: spot.y, age: 0 })
+        if (pulses.length > MAX_PULSES) pulses.shift()
+        wakeFrame()
+      }
+      const onLeave = () => {
+        pointer.inside = false
+        wakeFrame()
+      }
+      const onPointerUp = (event: PointerEvent) => {
+        if (event.pointerType !== 'mouse') onLeave()
+      }
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      window.addEventListener('pointerdown', onPointerDown, { passive: true })
+      window.addEventListener('pointerup', onPointerUp, { passive: true })
+      window.addEventListener('pointercancel', onPointerUp, { passive: true })
+      document.documentElement.addEventListener('pointerleave', onLeave)
+
+      const onLost = (event: Event) => {
+        event.preventDefault()
+        lost = true
+        cancelAnimationFrame(raf)
+        raf = 0
+      }
+      const onRestored = () => setGeneration(value => value + 1)
+      canvas.addEventListener('webglcontextlost', onLost)
+      canvas.addEventListener('webglcontextrestored', onRestored)
+
+      const resizeObserver = new ResizeObserver(() => {
+        resize()
+        wakeFrame()
+      })
+      resizeObserver.observe(container)
+
+      const intersection = new IntersectionObserver(entries => {
+        visible = entries.some(entry => entry.isIntersecting)
+        wakeFrame()
+      })
+      intersection.observe(container)
+
+      const onVisibility = () => {
+        pageVisible = document.visibilityState !== 'hidden'
+        wakeFrame()
+      }
+      document.addEventListener('visibilitychange', onVisibility)
+
+      resize()
+      wakeFrame()
+
+      onCleanup(() => {
+        cancelAnimationFrame(raf)
+        wake = null
+        resizeObserver.disconnect()
+        intersection.disconnect()
+        window.removeEventListener('pointermove', onPointerMove)
+        window.removeEventListener('pointerdown', onPointerDown)
+        window.removeEventListener('pointerup', onPointerUp)
+        window.removeEventListener('pointercancel', onPointerUp)
+        document.documentElement.removeEventListener('pointerleave', onLeave)
+        document.removeEventListener('visibilitychange', onVisibility)
+        canvas.removeEventListener('webglcontextlost', onLost)
+        canvas.removeEventListener('webglcontextrestored', onRestored)
+        if (!gl.isContextLost()) {
+          gl.deleteVertexArray(vao)
+          gl.deleteProgram(shader.program)
+        }
+      })
+    })
+  })
 
   // Upstream woke the renderer after every render; this fires on the same
   // prop changes (everything the settings memo reads).
   createEffect(() => {
-    settings();
-    wake?.();
-  });
+    settings()
+    wake?.()
+  })
 
   return (
     <div
@@ -575,7 +582,7 @@ const SoftAurora = (props: SoftAuroraProps) => {
       class={`relative h-full w-full overflow-hidden ${own.class ?? ''} ${own.className ?? ''}`.trim()}
       style={own.style}
     />
-  );
-};
+  )
+}
 
-export default SoftAurora;
+export default SoftAurora

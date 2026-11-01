@@ -1,4 +1,4 @@
-import TearTicket from './TearTicket';
+import TearTicket from './TearTicket'
 
 function TearTicketDemo() {
   return (
@@ -22,7 +22,7 @@ function TearTicketDemo() {
         </div>
       </TearTicket>
     </div>
-  );
+  )
 }
 
-export default TearTicketDemo;
+export default TearTicketDemo

@@ -34,31 +34,31 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
 
 ## 2. Core mapping
 
-| React | Solid |
-| --- | --- |
-| `useState(s)` | `createSignal(s)` — **reads become calls**: `count()` in JSX/effects |
-| `useEffect(fn, [])` | `onMount(fn)`; put cleanup inside via `onCleanup(() => ...)` |
-| `useEffect(fn, [a, b])` | `createEffect(() => { ... a() ... b() ... })` (signals auto-track) or `onMount` + explicit signal watchers if simpler |
-| `useLayoutEffect` | same as above (Solid effects run after DOM update) |
-| `useRef<HTMLDivElement>(null)` (DOM) | `let el!: HTMLDivElement;` + `ref={el}` |
-| `useRef<T>(x)` (mutable value) | plain `let value = x;` closure variable (component body runs once per instance) |
-| `useCallback(fn, deps)` | plain function or `const fn = () => ...` |
-| `useMemo(() => v, deps)` | `createMemo(() => v)` or plain computation if inputs aren't reactive |
-| `useContext` | `useContext` from `solid-js` (rare; only 2 upstream uses) |
-| React "latest callback" ref pattern (`useRef` holding a mutating callback, called at event time) | import `untrack` from `solid-js` (**it is `untrack`, NOT `untracked`**) and wrap the call: `untrack(() => props.onX?.())` |
-| `useReducedMotion()` (motion/react) | `useReducedMotion()` from `@/lib/reducedMotion` — **returns an accessor**, call it: `const reduced = useReducedMotion(); if (reduced()) ...` |
-| `{arr.map(x => <X ... />)}` | `<For each={arr}>{(x) => <X ... />}</For>` — never `.map` in JSX |
-| `{cond && <X/>}` / ternaries | fine, or `<Show when={cond}>` |
-| `key={...}` | delete — `<For>`/`<Index>` handle identity |
-| `className` | `class` |
-| `dangerouslySetInnerHTML={{ __html: h }}` | `innerHTML={h}` |
-| `onChange` on text inputs | `onInput` (Solid fires per keystroke on `onInput` like React `onChange`) |
-| `createPortal(node, target)` (react-dom) | `<Portal mount={target}>{node}</Portal>` from `solid-js/web` |
-| `forwardRef` | not needed — accept `ref` through `props.ref` if upstream exposes one |
-| `React.memo` / `useMemo`-on-component | drop entirely |
-| `children` prop | `props.children` works directly in JSX: `<div>{props.children}</div>` |
-| destructure `({ title, size = 16 })` | **FORBIDDEN** — access `props.title`, `props.size ?? 16`. Destructuring kills reactivity. In non-reactive one-shot positions (e.g. inside `onMount`) it is tolerated but avoid. |
-| default param `function X({ a = 1 })` | `function X(props: XProps)` + `const a = () => props.a ?? 1;` or inline `props.a ?? 1` |
+| React                                                                                            | Solid                                                                                                                                                                           |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useState(s)`                                                                                    | `createSignal(s)` — **reads become calls**: `count()` in JSX/effects                                                                                                            |
+| `useEffect(fn, [])`                                                                              | `onMount(fn)`; put cleanup inside via `onCleanup(() => ...)`                                                                                                                    |
+| `useEffect(fn, [a, b])`                                                                          | `createEffect(() => { ... a() ... b() ... })` (signals auto-track) or `onMount` + explicit signal watchers if simpler                                                           |
+| `useLayoutEffect`                                                                                | same as above (Solid effects run after DOM update)                                                                                                                              |
+| `useRef<HTMLDivElement>(null)` (DOM)                                                             | `let el!: HTMLDivElement;` + `ref={el}`                                                                                                                                         |
+| `useRef<T>(x)` (mutable value)                                                                   | plain `let value = x;` closure variable (component body runs once per instance)                                                                                                 |
+| `useCallback(fn, deps)`                                                                          | plain function or `const fn = () => ...`                                                                                                                                        |
+| `useMemo(() => v, deps)`                                                                         | `createMemo(() => v)` or plain computation if inputs aren't reactive                                                                                                            |
+| `useContext`                                                                                     | `useContext` from `solid-js` (rare; only 2 upstream uses)                                                                                                                       |
+| React "latest callback" ref pattern (`useRef` holding a mutating callback, called at event time) | import `untrack` from `solid-js` (**it is `untrack`, NOT `untracked`**) and wrap the call: `untrack(() => props.onX?.())`                                                       |
+| `useReducedMotion()` (motion/react)                                                              | `useReducedMotion()` from `@/lib/reducedMotion` — **returns an accessor**, call it: `const reduced = useReducedMotion(); if (reduced()) ...`                                    |
+| `{arr.map(x => <X ... />)}`                                                                      | `<For each={arr}>{(x) => <X ... />}</For>` — never `.map` in JSX                                                                                                                |
+| `{cond && <X/>}` / ternaries                                                                     | fine, or `<Show when={cond}>`                                                                                                                                                   |
+| `key={...}`                                                                                      | delete — `<For>`/`<Index>` handle identity                                                                                                                                      |
+| `className`                                                                                      | `class`                                                                                                                                                                         |
+| `dangerouslySetInnerHTML={{ __html: h }}`                                                        | `innerHTML={h}`                                                                                                                                                                 |
+| `onChange` on text inputs                                                                        | `onInput` (Solid fires per keystroke on `onInput` like React `onChange`)                                                                                                        |
+| `createPortal(node, target)` (react-dom)                                                         | `<Portal mount={target}>{node}</Portal>` from `solid-js/web`                                                                                                                    |
+| `forwardRef`                                                                                     | not needed — accept `ref` through `props.ref` if upstream exposes one                                                                                                           |
+| `React.memo` / `useMemo`-on-component                                                            | drop entirely                                                                                                                                                                   |
+| `children` prop                                                                                  | `props.children` works directly in JSX: `<div>{props.children}</div>`                                                                                                           |
+| destructure `({ title, size = 16 })`                                                             | **FORBIDDEN** — access `props.title`, `props.size ?? 16`. Destructuring kills reactivity. In non-reactive one-shot positions (e.g. inside `onMount`) it is tolerated but avoid. |
+| default param `function X({ a = 1 })`                                                            | `function X(props: XProps)` + `const a = () => props.a ?? 1;` or inline `props.a ?? 1`                                                                                          |
 
 ## 3. JSX specifics
 
@@ -80,7 +80,7 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
   assignment `!` because TS can't see the assignment). For elements rendered
   conditionally inside `<Show>`, prefer callback refs:
   `ref={(el) => { local = el; onCleanup(() => ...); }}`.
-- Anything you'd do with `useEffect` *just* to read the DOM after mount belongs
+- Anything you'd do with `useEffect` _just_ to read the DOM after mount belongs
   in `onMount` — but prefer real refs over querySelector.
 - Dynamic class toggling: `classList={{ active: isActive() }}`.
 - Merging caller classes: components accept `class?: string` (upstream used

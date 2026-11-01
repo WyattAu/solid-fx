@@ -1,4 +1,4 @@
-import DepthCarousel from './DepthCarousel';
+import DepthCarousel from './DepthCarousel'
 
 function DepthCarouselDemo() {
   return (
@@ -9,7 +9,7 @@ function DepthCarouselDemo() {
           'https://picsum.photos/seed/depth2/800/1000',
           'https://picsum.photos/seed/depth3/800/1000',
           'https://picsum.photos/seed/depth4/800/1000',
-          'https://picsum.photos/seed/depth5/800/1000'
+          'https://picsum.photos/seed/depth5/800/1000',
         ]}
         cardWidth={260}
         cardHeight={330}
@@ -18,7 +18,7 @@ function DepthCarouselDemo() {
         showIndicators
       />
     </div>
-  );
+  )
 }
 
-export default DepthCarouselDemo;
+export default DepthCarouselDemo

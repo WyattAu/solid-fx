@@ -1,4 +1,4 @@
-import GlareHover from './GlareHover';
+import GlareHover from './GlareHover'
 
 function GlareHoverDemo() {
   return (
@@ -22,7 +22,7 @@ function GlareHoverDemo() {
         />
       </GlareHover>
     </div>
-  );
+  )
 }
 
-export default GlareHoverDemo;
+export default GlareHoverDemo

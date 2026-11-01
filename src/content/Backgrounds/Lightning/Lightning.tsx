@@ -1,17 +1,17 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-const MAX_BOLTS = 4;
-const MAX_STRIKES = 4;
-const LEADER = 0.11;
-const LIFE = 1.3;
+const MAX_BOLTS = 4
+const MAX_STRIKES = 4
+const LEADER = 0.11
+const LIFE = 1.3
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
 }
-`;
+`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -275,61 +275,65 @@ void main() {
   float keep = fade * uOpacity;
   outColor = vec4(rgb * keep, alpha * keep);
 }
-`;
+`
 
 interface LightningProps {
-  color?: string;
-  bolts?: number;
-  spread?: number;
-  branches?: number;
-  xOffset?: number;
-  angle?: number;
-  size?: number;
-  thickness?: number;
-  glow?: number;
-  intensity?: number;
-  speed?: number;
-  flicker?: number;
-  mouseInteraction?: boolean;
-  mouseStrength?: number;
-  clickStrike?: boolean;
-  intro?: boolean;
-  fade?: number;
-  opacity?: number;
-  lightMode?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  color?: string
+  bolts?: number
+  spread?: number
+  branches?: number
+  xOffset?: number
+  angle?: number
+  size?: number
+  thickness?: number
+  glow?: number
+  intensity?: number
+  speed?: number
+  flicker?: number
+  mouseInteraction?: boolean
+  mouseStrength?: number
+  clickStrike?: boolean
+  intro?: boolean
+  fade?: number
+  opacity?: number
+  lightMode?: boolean
+  paused?: boolean
+  dpr?: number
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 interface Strike {
-  x: number;
-  y: number;
-  born: number;
-  seed: number;
-  reach: number;
+  x: number
+  y: number
+  born: number
+  seed: number
+  reach: number
 }
 
 const toRgb = (color: string): [number, number, number] => {
-  const match = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color).trim());
-  if (!match) return [0.5, 0.6, 1];
-  const hex = match[1].length === 3 ? match[1].replace(/./g, digit => digit + digit) : match[1];
-  return [0, 2, 4].map(index => parseInt(hex.slice(index, index + 2), 16) / 255) as [number, number, number];
-};
+  const match = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(color).trim())
+  if (!match) return [0.5, 0.6, 1]
+  const hex = match[1].length === 3 ? match[1].replace(/./g, digit => digit + digit) : match[1]
+  return [0, 2, 4].map(index => parseInt(hex.slice(index, index + 2), 16) / 255) as [
+    number,
+    number,
+    number,
+  ]
+}
 
 const smootherstep = (t: number) => {
-  const x = Math.min(1, Math.max(0, t));
-  return x * x * x * (x * (x * 6 - 15) + 10);
-};
+  const x = Math.min(1, Math.max(0, t))
+  return x * x * x * (x * (x * 6 - 15) + 10)
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type) as WebGLShader;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  return shader;
-};
+  const shader = gl.createShader(type) as WebGLShader
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  return shader
+}
 
 const UNIFORMS = [
   'uResolution',
@@ -352,288 +356,300 @@ const UNIFORMS = [
   'uIntro',
   'uLight',
   'uFade',
-  'uOpacity'
-];
+  'uOpacity',
+]
 
 const Lightning = (props: LightningProps) => {
-  let canvasRef!: HTMLCanvasElement;
-  let engineRef: { refresh: () => void } | null = null;
+  let canvasRef!: HTMLCanvasElement
+  let engineRef: { refresh: () => void } | null = null
   // Upstream defaulted these to true at destructure time.
-  const mouseInteraction = () => props.mouseInteraction ?? true;
-  const clickStrike = () => props.clickStrike ?? true;
-  const intro = () => props.intro ?? true;
+  const mouseInteraction = () => props.mouseInteraction ?? true
+  const clickStrike = () => props.clickStrike ?? true
+  const intro = () => props.intro ?? true
 
   onMount(() => {
-    const canvas = canvasRef;
-    if (!canvas) return;
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    if (!gl) return;
+    const canvas = canvasRef
+    if (!canvas) return
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    if (!gl) return
 
-    const program = gl.createProgram() as WebGLProgram;
-    gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERTEX));
-    gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAGMENT));
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-    const uniforms = Object.fromEntries(UNIFORMS.map(name => [name, gl.getUniformLocation(program, name)]));
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const position = gl.getAttribLocation(program, 'aPosition');
+    const program = gl.createProgram() as WebGLProgram
+    gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERTEX))
+    gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAGMENT))
+    gl.linkProgram(program)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
+    const uniforms = Object.fromEntries(
+      UNIFORMS.map(name => [name, gl.getUniformLocation(program, name)]),
+    )
+    const buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
+    const position = gl.getAttribLocation(program, 'aPosition')
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const view = { width: 1, height: 1, left: 0, top: 0 };
-    const pointer = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, presence: 0, inside: false };
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const view = { width: 1, height: 1, left: 0, top: 0 }
+    const pointer = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, presence: 0, inside: false }
     const strikes: Strike[] = Array.from({ length: MAX_STRIKES }, () => ({
       x: 0,
       y: 0,
       born: -1,
       seed: 0,
-      reach: 2
-    }));
-    const strikeData = new Float32Array(MAX_STRIKES * 4);
-    const infoData = new Float32Array(MAX_STRIKES * 4);
-    let next = 0;
-    let phase = 0.21;
-    let introStart: number | null = intro() && !reduced ? -1 : null;
-    let visible = true;
-    let raf = 0;
-    let last = 0;
-    let disposed = false;
+      reach: 2,
+    }))
+    const strikeData = new Float32Array(MAX_STRIKES * 4)
+    const infoData = new Float32Array(MAX_STRIKES * 4)
+    let next = 0
+    let phase = 0.21
+    let introStart: number | null = intro() && !reduced ? -1 : null
+    let visible = true
+    let raf = 0
+    let last = 0
+    let disposed = false
 
     const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const ratio = Math.min(props.dpr ?? window.devicePixelRatio ?? 1, 2);
-      view.width = Math.max(1, rect.width);
-      view.height = Math.max(1, rect.height);
-      view.left = rect.left;
-      view.top = rect.top;
-      const width = Math.max(1, Math.round(view.width * ratio));
-      const height = Math.max(1, Math.round(view.height * ratio));
+      const rect = canvas.getBoundingClientRect()
+      const ratio = Math.min(props.dpr ?? window.devicePixelRatio ?? 1, 2)
+      view.width = Math.max(1, rect.width)
+      view.height = Math.max(1, rect.height)
+      view.left = rect.left
+      view.top = rect.top
+      const width = Math.max(1, Math.round(view.width * ratio))
+      const height = Math.max(1, Math.round(view.height * ratio))
       if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = width
+        canvas.height = height
       }
-    };
+    }
 
     const toUv = (x: number, y: number): [number, number] => [
       (2 * x - view.width) / view.height,
-      (view.height - 2 * y) / view.height
-    ];
+      (view.height - 2 * y) / view.height,
+    ]
 
     const draw = (now: number) => {
-      const s = props;
-      const rgb = toRgb(s.color ?? '#4d6bff');
-      let flash = 0;
+      const s = props
+      const rgb = toRgb(s.color ?? '#4d6bff')
+      let flash = 0
       for (let j = 0; j < MAX_STRIKES; j++) {
-        const strike = strikes[j];
-        const age = strike.born < 0 ? -1 : (now - strike.born) / 1000;
-        const base = j * 4;
+        const strike = strikes[j]
+        const age = strike.born < 0 ? -1 : (now - strike.born) / 1000
+        const base = j * 4
         if (age < 0 || age > LIFE) {
-          strikeData.fill(0, base, base + 4);
-          infoData.fill(0, base, base + 4);
-          continue;
+          strikeData.fill(0, base, base + 4)
+          infoData.fill(0, base, base + 4)
+          continue
         }
-        const progress = Math.min(1, age / LEADER);
-        const since = age - LEADER;
-        let env = 0.45 + 0.35 * progress;
+        const progress = Math.min(1, age / LEADER)
+        const since = age - LEADER
+        let env = 0.45 + 0.35 * progress
         if (since >= 0) {
-          env = 1.8 * Math.exp(-since * 5.5) * (0.85 + 0.2 * Math.sin(since * 70));
-          if (since > 0.17) env += Math.exp(-(since - 0.17) * 9);
-          if (since > 0.33) env += 0.7 * Math.exp(-(since - 0.33) * 10);
-          flash += 0.5 * Math.exp(-since * 9);
-          if (since > 0.17) flash += 0.25 * Math.exp(-(since - 0.17) * 12);
+          env = 1.8 * Math.exp(-since * 5.5) * (0.85 + 0.2 * Math.sin(since * 70))
+          if (since > 0.17) env += Math.exp(-(since - 0.17) * 9)
+          if (since > 0.33) env += 0.7 * Math.exp(-(since - 0.33) * 10)
+          flash += 0.5 * Math.exp(-since * 9)
+          if (since > 0.17) flash += 0.25 * Math.exp(-(since - 0.17) * 12)
         }
-        env *= 1 - smootherstep((age - (LIFE - 0.4)) / 0.4);
-        strikeData[base] = strike.x;
-        strikeData[base + 1] = strike.y;
-        strikeData[base + 2] = strike.reach * (1 - progress ** 1.6);
-        strikeData[base + 3] = env;
-        infoData[base] = strike.seed;
-        infoData[base + 1] = strike.reach;
-        infoData[base + 2] = since >= 0 ? 1 : 0;
-        infoData[base + 3] = 0;
+        env *= 1 - smootherstep((age - (LIFE - 0.4)) / 0.4)
+        strikeData[base] = strike.x
+        strikeData[base + 1] = strike.y
+        strikeData[base + 2] = strike.reach * (1 - progress ** 1.6)
+        strikeData[base + 3] = env
+        infoData[base] = strike.seed
+        infoData[base + 1] = strike.reach
+        infoData[base + 2] = since >= 0 ? 1 : 0
+        infoData[base + 3] = 0
       }
-      const introAmount = introStart === null ? 1 : introStart < 0 ? 0 : Math.min(1, (now - introStart) / 420);
-      const [px, py] = toUv(pointer.x, pointer.y);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.enableVertexAttribArray(position);
-      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-      gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height);
-      gl.uniform1f(uniforms.uPhase, phase);
-      gl.uniform3f(uniforms.uColor, rgb[0], rgb[1], rgb[2]);
-      gl.uniform1f(uniforms.uIntensity, Math.max(0, s.intensity ?? 1));
-      gl.uniform1f(uniforms.uSize, Math.max(0.05, s.size ?? 1));
-      gl.uniform1f(uniforms.uThickness, Math.max(0, s.thickness ?? 1));
-      gl.uniform1f(uniforms.uGlow, Math.max(0.01, s.glow ?? 1));
-      gl.uniform1f(uniforms.uFlicker, reduced ? 0 : Math.min(1, Math.max(0, s.flicker ?? 0.6)));
-      gl.uniform1f(uniforms.uBranches, Math.min(1, Math.max(0, s.branches ?? 0.5)));
-      gl.uniform1f(uniforms.uXOffset, s.xOffset ?? 0);
-      gl.uniform1f(uniforms.uAngle, ((s.angle ?? 0) * Math.PI) / 180);
-      gl.uniform1f(uniforms.uSpread, s.spread ?? 0.6);
-      gl.uniform1i(uniforms.uBolts, Math.min(MAX_BOLTS, Math.max(1, Math.round(s.bolts ?? 1))));
-      gl.uniform4f(uniforms.uPointer, px, py, pointer.presence, Math.max(0, s.mouseStrength ?? 1));
-      gl.uniform4fv(uniforms.uStrikes, strikeData);
-      gl.uniform4fv(uniforms.uStrikeInfo, infoData);
-      gl.uniform1f(uniforms.uFlash, Math.min(1, flash));
-      gl.uniform1f(uniforms.uIntro, introAmount);
-      gl.uniform1f(uniforms.uLight, s.lightMode ? 1 : 0);
-      gl.uniform1f(uniforms.uFade, Math.min(1, Math.max(0, s.fade ?? 0)));
-      gl.uniform1f(uniforms.uOpacity, Math.min(1, Math.max(0, s.opacity ?? 1)));
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    };
+      const introAmount =
+        introStart === null ? 1 : introStart < 0 ? 0 : Math.min(1, (now - introStart) / 420)
+      const [px, py] = toUv(pointer.x, pointer.y)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(program)
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.enableVertexAttribArray(position)
+      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+      gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height)
+      gl.uniform1f(uniforms.uPhase, phase)
+      gl.uniform3f(uniforms.uColor, rgb[0], rgb[1], rgb[2])
+      gl.uniform1f(uniforms.uIntensity, Math.max(0, s.intensity ?? 1))
+      gl.uniform1f(uniforms.uSize, Math.max(0.05, s.size ?? 1))
+      gl.uniform1f(uniforms.uThickness, Math.max(0, s.thickness ?? 1))
+      gl.uniform1f(uniforms.uGlow, Math.max(0.01, s.glow ?? 1))
+      gl.uniform1f(uniforms.uFlicker, reduced ? 0 : Math.min(1, Math.max(0, s.flicker ?? 0.6)))
+      gl.uniform1f(uniforms.uBranches, Math.min(1, Math.max(0, s.branches ?? 0.5)))
+      gl.uniform1f(uniforms.uXOffset, s.xOffset ?? 0)
+      gl.uniform1f(uniforms.uAngle, ((s.angle ?? 0) * Math.PI) / 180)
+      gl.uniform1f(uniforms.uSpread, s.spread ?? 0.6)
+      gl.uniform1i(uniforms.uBolts, Math.min(MAX_BOLTS, Math.max(1, Math.round(s.bolts ?? 1))))
+      gl.uniform4f(uniforms.uPointer, px, py, pointer.presence, Math.max(0, s.mouseStrength ?? 1))
+      gl.uniform4fv(uniforms.uStrikes, strikeData)
+      gl.uniform4fv(uniforms.uStrikeInfo, infoData)
+      gl.uniform1f(uniforms.uFlash, Math.min(1, flash))
+      gl.uniform1f(uniforms.uIntro, introAmount)
+      gl.uniform1f(uniforms.uLight, s.lightMode ? 1 : 0)
+      gl.uniform1f(uniforms.uFade, Math.min(1, Math.max(0, s.fade ?? 0)))
+      gl.uniform1f(uniforms.uOpacity, Math.min(1, Math.max(0, s.opacity ?? 1)))
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (disposed || !visible || document.hidden) return;
-      const s = props;
-      const dt = Math.min(0.05, (now - last) / 1000 || 0);
-      last = now;
-      if (introStart !== null && introStart < 0) introStart = now;
-      if (!s.paused && !reduced) phase = (phase + (dt * Math.max(0, s.speed ?? 1)) / 10) % 1;
-      const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
-      const h = dt / steps;
+      raf = 0
+      if (disposed || !visible || document.hidden) return
+      const s = props
+      const dt = Math.min(0.05, (now - last) / 1000 || 0)
+      last = now
+      if (introStart !== null && introStart < 0) introStart = now
+      if (!s.paused && !reduced) phase = (phase + (dt * Math.max(0, s.speed ?? 1)) / 10) % 1
+      const steps = Math.max(1, Math.ceil(dt / (1 / 120)))
+      const h = dt / steps
       for (let n = 0; n < steps; n++) {
-        pointer.vx += (120 * (pointer.tx - pointer.x) - 19 * pointer.vx) * h;
-        pointer.vy += (120 * (pointer.ty - pointer.y) - 19 * pointer.vy) * h;
-        pointer.x += pointer.vx * h;
-        pointer.y += pointer.vy * h;
+        pointer.vx += (120 * (pointer.tx - pointer.x) - 19 * pointer.vx) * h
+        pointer.vy += (120 * (pointer.ty - pointer.y) - 19 * pointer.vy) * h
+        pointer.x += pointer.vx * h
+        pointer.y += pointer.vy * h
       }
-      const goal = mouseInteraction() && pointer.inside && !reduced ? 1 : 0;
-      pointer.presence += (goal - pointer.presence) * (1 - Math.exp(-dt / (goal > pointer.presence ? 0.3 : 0.55)));
-      draw(now);
-      const striking = strikes.some(strike => strike.born >= 0 && now - strike.born < LIFE * 1000 + 50);
-      const introducing = introStart !== null && now - introStart < 450;
-      const moving = !s.paused && !reduced && (s.speed ?? 1) > 0;
-      const settling = Math.abs(goal - pointer.presence) > 0.002 || Math.abs(pointer.vx) + Math.abs(pointer.vy) > 0.5;
-      if (moving || striking || introducing || settling) raf = requestAnimationFrame(frame);
-    };
+      const goal = mouseInteraction() && pointer.inside && !reduced ? 1 : 0
+      pointer.presence +=
+        (goal - pointer.presence) * (1 - Math.exp(-dt / (goal > pointer.presence ? 0.3 : 0.55)))
+      draw(now)
+      const striking = strikes.some(
+        strike => strike.born >= 0 && now - strike.born < LIFE * 1000 + 50,
+      )
+      const introducing = introStart !== null && now - introStart < 450
+      const moving = !s.paused && !reduced && (s.speed ?? 1) > 0
+      const settling =
+        Math.abs(goal - pointer.presence) > 0.002 ||
+        Math.abs(pointer.vx) + Math.abs(pointer.vy) > 0.5
+      if (moving || striking || introducing || settling) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || disposed || !visible || document.hidden) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || disposed || !visible || document.hidden) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
 
     const locate = (event: PointerEvent): [number, number, boolean] => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      return [x, y, x >= 0 && y >= 0 && x <= rect.width && y <= rect.height];
-    };
+      const rect = canvas.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      return [x, y, x >= 0 && y >= 0 && x <= rect.width && y <= rect.height]
+    }
 
     const onMove = (event: PointerEvent) => {
-      const [x, y, inside] = locate(event);
+      const [x, y, inside] = locate(event)
       if (inside && !pointer.inside && pointer.presence < 0.02) {
-        pointer.x = x;
-        pointer.y = y;
-        pointer.vx = pointer.vy = 0;
+        pointer.x = x
+        pointer.y = y
+        pointer.vx = pointer.vy = 0
       }
-      pointer.tx = x;
-      pointer.ty = y;
-      pointer.inside = inside;
-      if (mouseInteraction() && pointer.inside) wake();
-    };
+      pointer.tx = x
+      pointer.ty = y
+      pointer.inside = inside
+      if (mouseInteraction() && pointer.inside) wake()
+    }
 
     const onLeave = (event: PointerEvent) => {
-      if (event.relatedTarget) return;
-      pointer.inside = false;
-      wake();
-    };
+      if (event.relatedTarget) return
+      pointer.inside = false
+      wake()
+    }
 
     const onDown = (event: PointerEvent) => {
-      if (!clickStrike() || reduced) return;
-      const [x, y, inside] = locate(event);
-      if (!inside) return;
-      const [ux, uy] = toUv(x, y);
-      const radians = ((props.angle ?? 0) * Math.PI) / 180;
-      const sa = Math.sin(radians);
-      const ca = Math.cos(radians);
-      const top = (view.width / view.height) * Math.abs(sa) + Math.abs(ca);
-      const strike = strikes[next];
-      next = (next + 1) % MAX_STRIKES;
-      strike.x = ux;
-      strike.y = uy;
-      strike.reach = top - (-sa * ux + ca * uy) + 0.2;
-      strike.born = performance.now();
-      strike.seed = Math.random() * 100;
-      wake();
-    };
+      if (!clickStrike() || reduced) return
+      const [x, y, inside] = locate(event)
+      if (!inside) return
+      const [ux, uy] = toUv(x, y)
+      const radians = ((props.angle ?? 0) * Math.PI) / 180
+      const sa = Math.sin(radians)
+      const ca = Math.cos(radians)
+      const top = (view.width / view.height) * Math.abs(sa) + Math.abs(ca)
+      const strike = strikes[next]
+      next = (next + 1) % MAX_STRIKES
+      strike.x = ux
+      strike.y = uy
+      strike.reach = top - (-sa * ux + ca * uy) + 0.2
+      strike.born = performance.now()
+      strike.seed = Math.random() * 100
+      wake()
+    }
 
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onDown, { passive: true });
-    window.addEventListener('pointerout', onLeave);
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown, { passive: true })
+    window.addEventListener('pointerout', onLeave)
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      draw(performance.now());
-      wake();
-    });
-    resizeObserver.observe(canvas);
+      resize()
+      draw(performance.now())
+      wake()
+    })
+    resizeObserver.observe(canvas)
 
     const visibilityObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      if (visible) wake();
-    });
-    visibilityObserver.observe(canvas);
+      visible = entry.isIntersecting
+      if (visible) wake()
+    })
+    visibilityObserver.observe(canvas)
 
     const onVisibility = () => {
-      if (!document.hidden) wake();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+      if (!document.hidden) wake()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
 
-    resize();
-    draw(performance.now());
-    wake();
+    resize()
+    draw(performance.now())
+    wake()
 
     engineRef = {
       refresh: () => {
-        resize();
-        draw(performance.now());
-        wake();
-      }
-    };
+        resize()
+        draw(performance.now())
+        wake()
+      },
+    }
 
     onCleanup(() => {
-      disposed = true;
-      cancelAnimationFrame(raf);
-      resizeObserver.disconnect();
-      visibilityObserver.disconnect();
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerdown', onDown);
-      window.removeEventListener('pointerout', onLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteBuffer(buffer);
-      gl.deleteProgram(program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      engineRef = null;
-    });
-  });
+      disposed = true
+      cancelAnimationFrame(raf)
+      resizeObserver.disconnect()
+      visibilityObserver.disconnect()
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('pointerout', onLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteBuffer(buffer)
+      gl.deleteProgram(program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      engineRef = null
+    })
+  })
 
   createEffect(() => {
     // Upstream refreshed on exactly these prop changes.
-    props.color;
-    props.bolts;
-    props.spread;
-    props.branches;
-    props.xOffset;
-    props.angle;
-    props.size;
-    props.thickness;
-    props.glow;
-    props.intensity;
-    props.speed;
-    props.flicker;
-    props.fade;
-    props.opacity;
-    props.lightMode;
-    props.paused;
-    props.dpr;
-    engineRef?.refresh();
-  });
+    props.color
+    props.bolts
+    props.spread
+    props.branches
+    props.xOffset
+    props.angle
+    props.size
+    props.thickness
+    props.glow
+    props.intensity
+    props.speed
+    props.flicker
+    props.fade
+    props.opacity
+    props.lightMode
+    props.paused
+    props.dpr
+    engineRef?.refresh()
+  })
 
   return (
     <canvas
@@ -641,7 +657,7 @@ const Lightning = (props: LightningProps) => {
       class={`relative block h-full w-full ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     />
-  );
-};
+  )
+}
 
-export default Lightning;
+export default Lightning

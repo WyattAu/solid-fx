@@ -1,78 +1,78 @@
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { Renderer, Program, Mesh, Triangle, Texture, type OGLRenderingContext } from 'ogl';
+import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { Renderer, Program, Mesh, Triangle, Texture, type OGLRenderingContext } from 'ogl'
 
-export type WarpTextLens = 'bulge' | 'pinch' | 'swirl';
+export type WarpTextLens = 'bulge' | 'pinch' | 'swirl'
 
 export interface Props {
-  text?: string;
-  color?: string;
-  warpStrength?: number;
-  warpScale?: number;
-  speed?: number;
-  pointerInfluence?: number;
-  pointerStrength?: number;
-  refraction?: number;
-  chromatic?: number;
-  ripple?: boolean;
-  clickRipple?: boolean;
-  idleDrift?: number;
-  lens?: WarpTextLens;
-  intro?: boolean;
-  fontSize?: string | number;
-  fontWeight?: string | number;
-  fontFamily?: string;
-  letterSpacing?: string | number;
-  lineHeight?: string | number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  text?: string
+  color?: string
+  warpStrength?: number
+  warpScale?: number
+  speed?: number
+  pointerInfluence?: number
+  pointerStrength?: number
+  refraction?: number
+  chromatic?: number
+  ripple?: boolean
+  clickRipple?: boolean
+  idleDrift?: number
+  lens?: WarpTextLens
+  intro?: boolean
+  fontSize?: string | number
+  fontWeight?: string | number
+  fontFamily?: string
+  letterSpacing?: string | number
+  lineHeight?: string | number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface RuntimeProps {
-  text: string;
-  color: string;
-  fontSize: string | number;
-  fontWeight: string | number;
-  fontFamily: string;
-  letterSpacing: string | number;
-  lineHeight: string | number;
-  warpStrength: number;
-  warpScale: number;
-  speed: number;
-  pointerInfluence: number;
-  pointerStrength: number;
-  refraction: number;
-  chromatic: number;
-  ripple: boolean;
-  clickRipple: boolean;
-  idleDrift: number;
-  lens: WarpTextLens;
-  intro: boolean;
+  text: string
+  color: string
+  fontSize: string | number
+  fontWeight: string | number
+  fontFamily: string
+  letterSpacing: string | number
+  lineHeight: string | number
+  warpStrength: number
+  warpScale: number
+  speed: number
+  pointerInfluence: number
+  pointerStrength: number
+  refraction: number
+  chromatic: number
+  ripple: boolean
+  clickRipple: boolean
+  idleDrift: number
+  lens: WarpTextLens
+  intro: boolean
 }
 
 interface RuntimeContext {
-  program: Program;
-  rasterize: () => void;
+  program: Program
+  rasterize: () => void
 }
 
 interface BuildTextCanvasArgs {
-  container: HTMLElement;
-  width: number;
-  height: number;
-  dpr: number;
-  props: RuntimeProps;
+  container: HTMLElement
+  width: number
+  height: number
+  dpr: number
+  props: RuntimeProps
 }
 
 interface TextRaster {
-  canvas: HTMLCanvasElement;
-  ink: string;
+  canvas: HTMLCanvasElement
+  ink: string
 }
 
-const LENS_MODES: Record<WarpTextLens, number> = { bulge: 0, pinch: 1, swirl: 2 };
-const INTRO_MS = 1600;
-const RIPPLE_LIFE = 1.6;
-const MAX_CLICKS = 4;
+const LENS_MODES: Record<WarpTextLens, number> = { bulge: 0, pinch: 1, swirl: 2 }
+const INTRO_MS = 1600
+const RIPPLE_LIFE = 1.6
+const MAX_CLICKS = 4
 
 const vertex = `#version 300 es
 in vec2 position;
@@ -82,7 +82,7 @@ void main() {
   vUv = uv;
   gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const fragment = `#version 300 es
 precision highp float;
@@ -225,50 +225,67 @@ void main() {
   color = min(color + (lens + shockLight * 0.5) * cover.g * 0.055, vec3(a));
   fragColor = vec4(color, a) * uReveal;
 }
-`;
+`
 
-const getFontValue = (value: string | number): string => (typeof value === 'number' ? `${value}px` : value);
+const getFontValue = (value: string | number): string =>
+  typeof value === 'number' ? `${value}px` : value
 
-const smooth = (value: number): number => value * value * (3 - 2 * value);
+const smooth = (value: number): number => value * value * (3 - 2 * value)
 
 const getLuminance = (color: string): number => {
-  const probe = document.createElement('canvas');
-  probe.width = 1;
-  probe.height = 1;
-  const ctx = probe.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return 1;
-  ctx.fillStyle = color;
-  ctx.fillRect(0, 0, 1, 1);
-  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-};
+  const probe = document.createElement('canvas')
+  probe.width = 1
+  probe.height = 1
+  const ctx = probe.getContext('2d', { willReadFrequently: true })
+  if (!ctx) return 1
+  ctx.fillStyle = color
+  ctx.fillRect(0, 0, 1, 1)
+  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+}
 
-const measureLine = (ctx: CanvasRenderingContext2D, line: string, letterSpacing: number): number => {
-  const chars = Array.from(line);
-  const textWidth = chars.reduce((width, char) => width + ctx.measureText(char).width, 0);
-  return textWidth + Math.max(0, chars.length - 1) * letterSpacing;
-};
+const measureLine = (
+  ctx: CanvasRenderingContext2D,
+  line: string,
+  letterSpacing: number,
+): number => {
+  const chars = Array.from(line)
+  const textWidth = chars.reduce((width, char) => width + ctx.measureText(char).width, 0)
+  return textWidth + Math.max(0, chars.length - 1) * letterSpacing
+}
 
-const drawLine = (ctx: CanvasRenderingContext2D, line: string, x: number, y: number, letterSpacing: number): void => {
-  const chars = Array.from(line);
-  let cursor = x - measureLine(ctx, line, letterSpacing) / 2;
+const drawLine = (
+  ctx: CanvasRenderingContext2D,
+  line: string,
+  x: number,
+  y: number,
+  letterSpacing: number,
+): void => {
+  const chars = Array.from(line)
+  let cursor = x - measureLine(ctx, line, letterSpacing) / 2
 
   chars.forEach((char, index) => {
-    ctx.fillText(char, cursor, y);
-    cursor += ctx.measureText(char).width + (index === chars.length - 1 ? 0 : letterSpacing);
-  });
-};
+    ctx.fillText(char, cursor, y)
+    cursor += ctx.measureText(char).width + (index === chars.length - 1 ? 0 : letterSpacing)
+  })
+}
 
-const buildTextCanvas = ({ container, width, height, dpr, props }: BuildTextCanvasArgs): TextRaster => {
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.floor(width * dpr));
-  canvas.height = Math.max(1, Math.floor(height * dpr));
+const buildTextCanvas = ({
+  container,
+  width,
+  height,
+  dpr,
+  props,
+}: BuildTextCanvasArgs): TextRaster => {
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.floor(width * dpr))
+  canvas.height = Math.max(1, Math.floor(height * dpr))
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return { canvas, ink: props.color };
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return { canvas, ink: props.color }
 
-  const probe = document.createElement('span');
-  probe.textContent = props.text;
+  const probe = document.createElement('span')
+  probe.textContent = props.text
   Object.assign(probe.style, {
     position: 'absolute',
     visibility: 'hidden',
@@ -280,77 +297,80 @@ const buildTextCanvas = ({ container, width, height, dpr, props }: BuildTextCanv
     fontSize: getFontValue(props.fontSize),
     fontWeight: String(props.fontWeight),
     letterSpacing: getFontValue(props.letterSpacing),
-    lineHeight: typeof props.lineHeight === 'number' ? String(props.lineHeight) : props.lineHeight
-  });
-  container.appendChild(probe);
-  const computed = window.getComputedStyle(probe);
-  let fontSizePx = parseFloat(computed.fontSize) || 96;
-  const ink = computed.color || props.color;
-  const fontFamily = computed.fontFamily || 'sans-serif';
-  const fontWeight = computed.fontWeight || String(props.fontWeight);
-  let letterSpacing = computed.letterSpacing === 'normal' ? 0 : parseFloat(computed.letterSpacing) || 0;
-  let lineHeight = parseFloat(computed.lineHeight);
+    lineHeight: typeof props.lineHeight === 'number' ? String(props.lineHeight) : props.lineHeight,
+  })
+  container.appendChild(probe)
+  const computed = window.getComputedStyle(probe)
+  let fontSizePx = parseFloat(computed.fontSize) || 96
+  const ink = computed.color || props.color
+  const fontFamily = computed.fontFamily || 'sans-serif'
+  const fontWeight = computed.fontWeight || String(props.fontWeight)
+  let letterSpacing =
+    computed.letterSpacing === 'normal' ? 0 : parseFloat(computed.letterSpacing) || 0
+  let lineHeight = parseFloat(computed.lineHeight)
   if (!Number.isFinite(lineHeight)) {
-    lineHeight = fontSizePx * (typeof props.lineHeight === 'number' ? props.lineHeight : 0.92);
+    lineHeight = fontSizePx * (typeof props.lineHeight === 'number' ? props.lineHeight : 0.92)
   }
-  probe.remove();
+  probe.remove()
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, width, height);
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = ink;
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  ctx.clearRect(0, 0, width, height)
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = ink
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
 
-  const lines = String(props.text || '').split('\n');
+  const lines = String(props.text || '').split('\n')
   const applyFont = () => {
-    ctx.font = `${fontWeight} ${fontSizePx}px ${fontFamily}`;
-  };
-  applyFont();
+    ctx.font = `${fontWeight} ${fontSizePx}px ${fontFamily}`
+  }
+  applyFont()
 
-  const maxWidth = width * 0.86;
-  const maxHeight = height * 0.78;
-  const widest = Math.max(...lines.map(line => measureLine(ctx, line, letterSpacing)), 1);
-  const blockHeight = Math.max(lineHeight * lines.length, 1);
-  const fit = Math.min(1, maxWidth / widest, maxHeight / blockHeight);
+  const maxWidth = width * 0.86
+  const maxHeight = height * 0.78
+  const widest = Math.max(...lines.map(line => measureLine(ctx, line, letterSpacing)), 1)
+  const blockHeight = Math.max(lineHeight * lines.length, 1)
+  const fit = Math.min(1, maxWidth / widest, maxHeight / blockHeight)
 
   if (fit < 1) {
-    fontSizePx *= fit;
-    letterSpacing *= fit;
-    lineHeight *= fit;
-    applyFont();
+    fontSizePx *= fit
+    letterSpacing *= fit
+    lineHeight *= fit
+    applyFont()
   }
 
-  const startY = height / 2 - (lineHeight * (lines.length - 1)) / 2;
-  lines.forEach((line, index) => drawLine(ctx, line, width / 2, startY + index * lineHeight, letterSpacing));
+  const startY = height / 2 - (lineHeight * (lines.length - 1)) / 2
+  lines.forEach((line, index) =>
+    drawLine(ctx, line, width / 2, startY + index * lineHeight, letterSpacing),
+  )
 
-  return { canvas, ink };
-};
+  return { canvas, ink }
+}
 
 const syncUniforms = (program: Program, props: RuntimeProps): void => {
-  const uniforms = program.uniforms;
-  uniforms.uWarpStrength.value = props.warpStrength;
-  uniforms.uWarpScale.value = props.warpScale;
-  uniforms.uSpeed.value = props.speed;
-  uniforms.uPointerInfluence.value = props.pointerInfluence;
-  uniforms.uPointerStrength.value = props.pointerStrength;
-  uniforms.uRefraction.value = props.refraction;
-  uniforms.uChromatic.value = props.chromatic;
-  uniforms.uRipple.value = props.ripple ? 1 : 0;
-  uniforms.uLens.value = LENS_MODES[props.lens] ?? 0;
-};
+  const uniforms = program.uniforms
+  uniforms.uWarpStrength.value = props.warpStrength
+  uniforms.uWarpScale.value = props.warpScale
+  uniforms.uSpeed.value = props.speed
+  uniforms.uPointerInfluence.value = props.pointerInfluence
+  uniforms.uPointerStrength.value = props.pointerStrength
+  uniforms.uRefraction.value = props.refraction
+  uniforms.uChromatic.value = props.chromatic
+  uniforms.uRipple.value = props.ripple ? 1 : 0
+  uniforms.uLens.value = LENS_MODES[props.lens] ?? 0
+}
 
 const WarpText = (props: Props) => {
-  const text = () => props.text ?? 'Bend the moment';
-  const color = () => props.color ?? 'currentColor';
-  const fontSize = () => props.fontSize ?? 'clamp(3rem, 10vw, 9rem)';
-  const fontWeight = () => props.fontWeight ?? 800;
-  const fontFamily = () => props.fontFamily ?? 'inherit';
-  const letterSpacing = () => props.letterSpacing ?? '-0.06em';
-  const lineHeight = () => props.lineHeight ?? 0.9;
+  const text = () => props.text ?? 'Bend the moment'
+  const color = () => props.color ?? 'currentColor'
+  const fontSize = () => props.fontSize ?? 'clamp(3rem, 10vw, 9rem)'
+  const fontWeight = () => props.fontWeight ?? 800
+  const fontFamily = () => props.fontFamily ?? 'inherit'
+  const letterSpacing = () => props.letterSpacing ?? '-0.06em'
+  const lineHeight = () => props.lineHeight ?? 0.9
 
-  let container!: HTMLDivElement;
+  let container!: HTMLDivElement
   // Upstream's propsRef: a mutable snapshot the rAF loop reads at frame time.
   const runtime: RuntimeProps = {
     text: text(),
@@ -371,78 +391,78 @@ const WarpText = (props: Props) => {
     clickRipple: props.clickRipple ?? true,
     idleDrift: props.idleDrift ?? 0.2,
     lens: props.lens ?? 'bulge',
-    intro: props.intro ?? true
-  };
-  let context: RuntimeContext | null = null;
-  const [failed, setFailed] = createSignal(false);
+    intro: props.intro ?? true,
+  }
+  let context: RuntimeContext | null = null
+  const [failed, setFailed] = createSignal(false)
 
   // Upstream: useEffect syncing propsRef then re-syncing uniforms.
   createEffect(() => {
-    runtime.text = text();
-    runtime.color = color();
-    runtime.fontSize = fontSize();
-    runtime.fontWeight = fontWeight();
-    runtime.fontFamily = fontFamily();
-    runtime.letterSpacing = letterSpacing();
-    runtime.lineHeight = lineHeight();
-    runtime.warpStrength = props.warpStrength ?? 0.08;
-    runtime.warpScale = props.warpScale ?? 1.7;
-    runtime.speed = props.speed ?? 0.55;
-    runtime.pointerInfluence = props.pointerInfluence ?? 0.42;
-    runtime.pointerStrength = props.pointerStrength ?? 0.38;
-    runtime.refraction = props.refraction ?? 0.018;
-    runtime.chromatic = props.chromatic ?? 0;
-    runtime.ripple = props.ripple ?? true;
-    runtime.clickRipple = props.clickRipple ?? true;
-    runtime.idleDrift = props.idleDrift ?? 0.2;
-    runtime.lens = props.lens ?? 'bulge';
-    runtime.intro = props.intro ?? true;
+    runtime.text = text()
+    runtime.color = color()
+    runtime.fontSize = fontSize()
+    runtime.fontWeight = fontWeight()
+    runtime.fontFamily = fontFamily()
+    runtime.letterSpacing = letterSpacing()
+    runtime.lineHeight = lineHeight()
+    runtime.warpStrength = props.warpStrength ?? 0.08
+    runtime.warpScale = props.warpScale ?? 1.7
+    runtime.speed = props.speed ?? 0.55
+    runtime.pointerInfluence = props.pointerInfluence ?? 0.42
+    runtime.pointerStrength = props.pointerStrength ?? 0.38
+    runtime.refraction = props.refraction ?? 0.018
+    runtime.chromatic = props.chromatic ?? 0
+    runtime.ripple = props.ripple ?? true
+    runtime.clickRipple = props.clickRipple ?? true
+    runtime.idleDrift = props.idleDrift ?? 0.2
+    runtime.lens = props.lens ?? 'bulge'
+    runtime.intro = props.intro ?? true
 
-    if (context) syncUniforms(context.program, runtime);
-  });
+    if (context) syncUniforms(context.program, runtime)
+  })
 
   // Upstream: useEffect([text, color, fontSize, fontWeight, fontFamily,
   // letterSpacing, lineHeight]) re-rasterizing the text canvas.
   createEffect(() => {
-    text();
-    color();
-    fontSize();
-    fontWeight();
-    fontFamily();
-    letterSpacing();
-    lineHeight();
-    context?.rasterize();
-  });
+    text()
+    color()
+    fontSize()
+    fontWeight()
+    fontFamily()
+    letterSpacing()
+    lineHeight()
+    context?.rasterize()
+  })
 
   onMount(() => {
-    const el = container;
-    if (!el) return;
+    const el = container
+    if (!el) return
 
-    let renderer: Renderer;
-    let gl: OGLRenderingContext;
-    let program: Program;
-    let geometry: Triangle;
-    let mesh: Mesh;
-    let texture: Texture;
-    let resizeObserver: ResizeObserver | null = null;
-    let intersectionObserver: IntersectionObserver | null = null;
-    let raf = 0;
-    let disposed = false;
-    let contextLost = false;
-    let visible = true;
-    let pageVisible = !document.hidden;
-    let reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    let rasterVersion = 0;
-    let textReady = false;
-    let introProgress = runtime.intro && !reduceMotion ? 0 : 1;
-    let lastFrame = 0;
-    let frame = 0;
-    let lastInk = '';
+    let renderer: Renderer
+    let gl: OGLRenderingContext
+    let program: Program
+    let geometry: Triangle
+    let mesh: Mesh
+    let texture: Texture
+    let resizeObserver: ResizeObserver | null = null
+    let intersectionObserver: IntersectionObserver | null = null
+    let raf = 0
+    let disposed = false
+    let contextLost = false
+    let visible = true
+    let pageVisible = !document.hidden
+    let reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    let rasterVersion = 0
+    let textReady = false
+    let introProgress = runtime.intro && !reduceMotion ? 0 : 1
+    let lastFrame = 0
+    let frame = 0
+    let lastInk = ''
 
-    const pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, active: 0, activeTarget: 0 };
-    const clicks = Array.from({ length: MAX_CLICKS }, () => [0.5, 0.5, 0, 0]);
-    let clickSlot = 0;
-    const startTime = performance.now();
+    const pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, active: 0, activeTarget: 0 }
+    const clicks = Array.from({ length: MAX_CLICKS }, () => [0.5, 0.5, 0, 0])
+    let clickSlot = 0
+    const startTime = performance.now()
 
     try {
       renderer = new Renderer({
@@ -450,24 +470,24 @@ const WarpText = (props: Props) => {
         alpha: true,
         premultipliedAlpha: true,
         antialias: true,
-        dpr: Math.min(window.devicePixelRatio || 1, 2)
-      });
-      gl = renderer.gl;
+        dpr: Math.min(window.devicePixelRatio || 1, 2),
+      })
+      gl = renderer.gl
     } catch (error) {
-      console.warn('WarpText: WebGL could not be initialized.', error);
-      setFailed(true);
-      return;
+      console.warn('WarpText: WebGL could not be initialized.', error)
+      setFailed(true)
+      return
     }
 
-    gl.clearColor(0, 0, 0, 0);
-    const canvas = gl.canvas;
-    canvas.style.position = 'absolute';
-    canvas.style.inset = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.display = 'block';
-    canvas.setAttribute('aria-hidden', 'true');
-    el.appendChild(canvas);
+    gl.clearColor(0, 0, 0, 0)
+    const canvas = gl.canvas
+    canvas.style.position = 'absolute'
+    canvas.style.inset = '0'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
+    canvas.style.display = 'block'
+    canvas.setAttribute('aria-hidden', 'true')
+    el.appendChild(canvas)
 
     texture = new Texture(gl, {
       generateMipmaps: false,
@@ -475,10 +495,10 @@ const WarpText = (props: Props) => {
       minFilter: gl.LINEAR,
       magFilter: gl.LINEAR,
       wrapS: gl.CLAMP_TO_EDGE,
-      wrapT: gl.CLAMP_TO_EDGE
-    });
+      wrapT: gl.CLAMP_TO_EDGE,
+    })
 
-    geometry = new Triangle(gl);
+    geometry = new Triangle(gl)
     program = new Program(gl, {
       vertex,
       fragment,
@@ -504,203 +524,205 @@ const WarpText = (props: Props) => {
         uIntro: { value: 0 },
         uReveal: { value: 0 },
         uBackdrop: { value: 0 },
-        uClicks: { value: clicks }
-      }
-    });
-    mesh = new Mesh(gl, { geometry, program });
+        uClicks: { value: clicks },
+      },
+    })
+    mesh = new Mesh(gl, { geometry, program })
 
     const renderOnce = () => {
-      if (disposed || contextLost) return;
-      renderer.render({ scene: mesh });
-    };
+      if (disposed || contextLost) return
+      renderer.render({ scene: mesh })
+    }
 
     const rasterize = async () => {
-      const version = ++rasterVersion;
+      const version = ++rasterVersion
       if (document.fonts?.ready) {
         try {
-          await document.fonts.ready;
+          await document.fonts.ready
         } catch (error) {
-          void error;
+          void error
         }
       }
-      if (disposed || contextLost || version !== rasterVersion) return;
+      if (disposed || contextLost || version !== rasterVersion) return
 
-      const rect = el.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
+      const rect = el.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      lastInk = window.getComputedStyle(el).color;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      lastInk = window.getComputedStyle(el).color
       const raster = buildTextCanvas({
         container: el,
         width: rect.width,
         height: rect.height,
         dpr,
-        props: runtime
-      });
-      texture.image = raster.canvas;
-      texture.needsUpdate = true;
-      program.uniforms.uBackdrop.value = getLuminance(raster.ink) < 0.5 ? 1 : 0;
-      textReady = true;
-      renderOnce();
-    };
+        props: runtime,
+      })
+      texture.image = raster.canvas
+      texture.needsUpdate = true
+      program.uniforms.uBackdrop.value = getLuminance(raster.ink) < 0.5 ? 1 : 0
+      textReady = true
+      renderOnce()
+    }
 
     const resize = () => {
-      if (disposed || contextLost) return;
-      const rect = el.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
+      if (disposed || contextLost) return
+      const rect = el.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
 
-      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2);
-      renderer.setSize(rect.width, rect.height);
-      program.uniforms.uResolution.value[0] = gl.drawingBufferWidth;
-      program.uniforms.uResolution.value[1] = gl.drawingBufferHeight;
-      rasterize();
-    };
+      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2)
+      renderer.setSize(rect.width, rect.height)
+      program.uniforms.uResolution.value[0] = gl.drawingBufferWidth
+      program.uniforms.uResolution.value[1] = gl.drawingBufferHeight
+      rasterize()
+    }
 
     const onPointerMove = (event: PointerEvent): void => {
-      if (event.pointerType === 'touch') return;
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
-      pointer.tx = (event.clientX - rect.left) / rect.width;
-      pointer.ty = 1 - (event.clientY - rect.top) / rect.height;
-      pointer.activeTarget = 1;
-    };
+      if (event.pointerType === 'touch') return
+      const rect = canvas.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
+      pointer.tx = (event.clientX - rect.left) / rect.width
+      pointer.ty = 1 - (event.clientY - rect.top) / rect.height
+      pointer.activeTarget = 1
+    }
 
     const onPointerLeave = (): void => {
-      pointer.activeTarget = 0;
-    };
+      pointer.activeTarget = 0
+    }
 
     const onPointerDown = (event: PointerEvent): void => {
-      if (!runtime.clickRipple) return;
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return;
-      const click = clicks[clickSlot];
-      clickSlot = (clickSlot + 1) % clicks.length;
-      click[0] = (event.clientX - rect.left) / rect.width;
-      click[1] = 1 - (event.clientY - rect.top) / rect.height;
-      click[2] = 0;
-      click[3] = reduceMotion ? 0.35 : 1;
-    };
+      if (!runtime.clickRipple) return
+      const rect = canvas.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
+      const click = clicks[clickSlot]
+      clickSlot = (clickSlot + 1) % clicks.length
+      click[0] = (event.clientX - rect.left) / rect.width
+      click[1] = 1 - (event.clientY - rect.top) / rect.height
+      click[2] = 0
+      click[3] = reduceMotion ? 0.35 : 1
+    }
 
     const onContextLost = (event: Event): void => {
-      event.preventDefault();
-      contextLost = true;
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      setFailed(true);
-    };
+      event.preventDefault()
+      contextLost = true
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+      setFailed(true)
+    }
 
     const onVisibility = (): void => {
-      pageVisible = !document.hidden;
-      if (pageVisible && visible && !raf) raf = requestAnimationFrame(loop);
+      pageVisible = !document.hidden
+      if (pageVisible && visible && !raf) raf = requestAnimationFrame(loop)
       if (!pageVisible && raf) {
-        cancelAnimationFrame(raf);
-        raf = 0;
+        cancelAnimationFrame(raf)
+        raf = 0
       }
-    };
+    }
 
-    const mediaQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const mediaQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     const onReducedMotion = (event: MediaQueryListEvent): void => {
-      reduceMotion = event.matches;
-      if (reduceMotion) introProgress = 1;
-      program.uniforms.uMotion.value = reduceMotion ? 0 : 1;
-      renderOnce();
-    };
+      reduceMotion = event.matches
+      if (reduceMotion) introProgress = 1
+      program.uniforms.uMotion.value = reduceMotion ? 0 : 1
+      renderOnce()
+    }
 
     const loop = (now: number): void => {
-      if (disposed || contextLost) return;
+      if (disposed || contextLost) return
 
-      const elapsed = (now - startTime) * 0.001;
-      const delta = lastFrame ? Math.min(now - lastFrame, 50) : 16;
-      lastFrame = now;
-      frame += 1;
+      const elapsed = (now - startTime) * 0.001
+      const delta = lastFrame ? Math.min(now - lastFrame, 50) : 16
+      lastFrame = now
+      frame += 1
 
-      if (textReady && introProgress < 1) introProgress = Math.min(1, introProgress + delta / INTRO_MS);
-      const settle = 1 - introProgress;
+      if (textReady && introProgress < 1)
+        introProgress = Math.min(1, introProgress + delta / INTRO_MS)
+      const settle = 1 - introProgress
 
-      if (textReady && frame % 15 === 0 && window.getComputedStyle(el).color !== lastInk) rasterize();
+      if (textReady && frame % 15 === 0 && window.getComputedStyle(el).color !== lastInk)
+        rasterize()
 
-      const drift = Math.min(Math.max(runtime.idleDrift, 0), 1);
-      const engaged = pointer.activeTarget > 0;
-      const idleX = 0.5 + Math.sin(elapsed * 0.33) * (0.08 + drift * 0.2);
-      const idleY = 0.5 + Math.cos(elapsed * 0.27) * (0.06 + drift * 0.2);
-      const follow = 1 - Math.exp(-delta / (engaged ? 130 : 470));
+      const drift = Math.min(Math.max(runtime.idleDrift, 0), 1)
+      const engaged = pointer.activeTarget > 0
+      const idleX = 0.5 + Math.sin(elapsed * 0.33) * (0.08 + drift * 0.2)
+      const idleY = 0.5 + Math.cos(elapsed * 0.27) * (0.06 + drift * 0.2)
+      const follow = 1 - Math.exp(-delta / (engaged ? 130 : 470))
 
-      pointer.x += ((engaged ? pointer.tx : idleX) - pointer.x) * follow;
-      pointer.y += ((engaged ? pointer.ty : idleY) - pointer.y) * follow;
-      pointer.active += ((engaged ? 1 : drift) - pointer.active) * (1 - Math.exp(-delta / 270));
+      pointer.x += ((engaged ? pointer.tx : idleX) - pointer.x) * follow
+      pointer.y += ((engaged ? pointer.ty : idleY) - pointer.y) * follow
+      pointer.active += ((engaged ? 1 : drift) - pointer.active) * (1 - Math.exp(-delta / 270))
 
       clicks.forEach(click => {
-        if (click[3] <= 0) return;
-        click[2] += delta / 1000;
-        if (click[2] > RIPPLE_LIFE) click[3] = 0;
-      });
+        if (click[3] <= 0) return
+        click[2] += delta / 1000
+        if (click[2] > RIPPLE_LIFE) click[3] = 0
+      })
 
-      program.uniforms.uPointer.value[0] = pointer.x;
-      program.uniforms.uPointer.value[1] = pointer.y;
-      program.uniforms.uPointerActive.value = reduceMotion ? pointer.active * 0.35 : pointer.active;
-      program.uniforms.uTime.value = reduceMotion ? 0 : elapsed;
-      program.uniforms.uIntro.value = settle * settle * settle;
-      program.uniforms.uReveal.value = textReady ? smooth(Math.min(1, introProgress / 0.45)) : 0;
+      program.uniforms.uPointer.value[0] = pointer.x
+      program.uniforms.uPointer.value[1] = pointer.y
+      program.uniforms.uPointerActive.value = reduceMotion ? pointer.active * 0.35 : pointer.active
+      program.uniforms.uTime.value = reduceMotion ? 0 : elapsed
+      program.uniforms.uIntro.value = settle * settle * settle
+      program.uniforms.uReveal.value = textReady ? smooth(Math.min(1, introProgress / 0.45)) : 0
 
-      renderOnce();
-      raf = requestAnimationFrame(loop);
-    };
+      renderOnce()
+      raf = requestAnimationFrame(loop)
+    }
 
-    resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(el);
+    resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(el)
 
     intersectionObserver = new IntersectionObserver(
       ([entry]: IntersectionObserverEntry[]) => {
-        visible = entry.isIntersecting;
-        if (visible && pageVisible && !raf) raf = requestAnimationFrame(loop);
+        visible = entry.isIntersecting
+        if (visible && pageVisible && !raf) raf = requestAnimationFrame(loop)
         if (!visible && raf) {
-          cancelAnimationFrame(raf);
-          raf = 0;
+          cancelAnimationFrame(raf)
+          raf = 0
         }
       },
-      { threshold: 0 }
-    );
-    intersectionObserver.observe(el);
+      { threshold: 0 },
+    )
+    intersectionObserver.observe(el)
 
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerleave', onPointerLeave);
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('webglcontextlost', onContextLost, false);
-    document.addEventListener('visibilitychange', onVisibility);
-    mediaQuery?.addEventListener('change', onReducedMotion);
+    canvas.addEventListener('pointermove', onPointerMove)
+    canvas.addEventListener('pointerleave', onPointerLeave)
+    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('webglcontextlost', onContextLost, false)
+    document.addEventListener('visibilitychange', onVisibility)
+    mediaQuery?.addEventListener('change', onReducedMotion)
 
-    syncUniforms(program, runtime);
-    context = { program, rasterize };
-    resize();
-    raf = requestAnimationFrame(loop);
+    syncUniforms(program, runtime)
+    context = { program, rasterize }
+    resize()
+    raf = requestAnimationFrame(loop)
 
     onCleanup(() => {
-      disposed = true;
-      context = null;
-      if (raf) cancelAnimationFrame(raf);
-      resizeObserver?.disconnect();
-      intersectionObserver?.disconnect();
-      canvas.removeEventListener('pointermove', onPointerMove);
-      canvas.removeEventListener('pointerleave', onPointerLeave);
-      canvas.removeEventListener('pointerdown', onPointerDown);
-      canvas.removeEventListener('webglcontextlost', onContextLost);
-      document.removeEventListener('visibilitychange', onVisibility);
-      mediaQuery?.removeEventListener('change', onReducedMotion);
+      disposed = true
+      context = null
+      if (raf) cancelAnimationFrame(raf)
+      resizeObserver?.disconnect()
+      intersectionObserver?.disconnect()
+      canvas.removeEventListener('pointermove', onPointerMove)
+      canvas.removeEventListener('pointerleave', onPointerLeave)
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('webglcontextlost', onContextLost)
+      document.removeEventListener('visibilitychange', onVisibility)
+      mediaQuery?.removeEventListener('change', onReducedMotion)
 
       if (!contextLost) {
         try {
-          if (texture?.texture) gl.deleteTexture(texture.texture);
-          geometry?.remove?.();
-          program?.remove?.();
-          gl.getExtension('WEBGL_lose_context')?.loseContext();
+          if (texture?.texture) gl.deleteTexture(texture.texture)
+          geometry?.remove?.()
+          program?.remove?.()
+          gl.getExtension('WEBGL_lose_context')?.loseContext()
         } catch (error) {
-          void error;
+          void error
         }
       }
 
-      if (canvas.parentNode === el) el.removeChild(canvas);
-    });
-  });
+      if (canvas.parentNode === el) el.removeChild(canvas)
+    })
+  })
 
   return (
     <div
@@ -720,14 +742,14 @@ const WarpText = (props: Props) => {
             'font-weight': `${fontWeight()}`,
             'font-size': getFontValue(fontSize()),
             'letter-spacing': getFontValue(letterSpacing()),
-            'line-height': typeof lineHeight() === 'number' ? `${lineHeight()}` : `${lineHeight()}`
+            'line-height': typeof lineHeight() === 'number' ? `${lineHeight()}` : `${lineHeight()}`,
           }}
         >
           {text()}
         </span>
       </Show>
     </div>
-  );
-};
+  )
+}
 
-export default WarpText;
+export default WarpText

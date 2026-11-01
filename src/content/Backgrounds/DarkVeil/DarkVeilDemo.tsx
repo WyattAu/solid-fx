@@ -1,4 +1,4 @@
-import DarkVeil from './DarkVeil';
+import DarkVeil from './DarkVeil'
 
 function DarkVeilDemo() {
   return (
@@ -18,7 +18,7 @@ function DarkVeilDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default DarkVeilDemo;
+export default DarkVeilDemo

@@ -1,4 +1,4 @@
-import DotGrid from './DotGrid';
+import DotGrid from './DotGrid'
 
 function DotGridDemo() {
   return (
@@ -15,7 +15,7 @@ function DotGridDemo() {
         move your pointer across the grid
       </div>
     </div>
-  );
+  )
 }
 
-export default DotGridDemo;
+export default DotGridDemo

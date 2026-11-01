@@ -1,54 +1,54 @@
-import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-type Motion = 'pulse' | 'ripple' | 'breathe';
-type Pass = 'glow' | 'compose' | 'line';
-type Matrix = number[];
+type Motion = 'pulse' | 'ripple' | 'breathe'
+type Pass = 'glow' | 'compose' | 'line'
+type Matrix = number[]
 
 export interface MagicRingsProps {
-  color?: string;
-  colorTwo?: string;
-  ringCount?: number;
-  motion?: Motion;
-  speed?: number;
-  lineThickness?: number;
-  glow?: number;
-  baseRadius?: number;
-  radiusStep?: number;
-  expansion?: number;
-  taper?: number;
-  rotation?: number;
-  spin?: number;
-  tilt?: number;
-  dispersion?: number;
-  grain?: number;
-  opacity?: number;
-  followMouse?: boolean;
-  mouseInfluence?: number;
-  hoverScale?: number;
-  hoverIntensity?: number;
-  parallax?: number;
-  clickBurst?: boolean;
-  intro?: boolean;
-  theme?: 'dark' | 'light';
-  maxDevicePixelRatio?: number;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  color?: string
+  colorTwo?: string
+  ringCount?: number
+  motion?: Motion
+  speed?: number
+  lineThickness?: number
+  glow?: number
+  baseRadius?: number
+  radiusStep?: number
+  expansion?: number
+  taper?: number
+  rotation?: number
+  spin?: number
+  tilt?: number
+  dispersion?: number
+  grain?: number
+  opacity?: number
+  followMouse?: boolean
+  mouseInfluence?: number
+  hoverScale?: number
+  hoverIntensity?: number
+  parallax?: number
+  clickBurst?: boolean
+  intro?: boolean
+  theme?: 'dark' | 'light'
+  maxDevicePixelRatio?: number
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 const MagicRings = (props: MagicRingsProps) => {
-  let container!: HTMLDivElement;
-  let canvas!: HTMLCanvasElement;
-  let wakeHook: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  let container!: HTMLDivElement
+  let canvas!: HTMLCanvasElement
+  let wakeHook: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
   // Upstream rebuilt a settings object each render; the memo tracks the same props.
   const settings = createMemo((): Settings => {
-    const light = (props.theme ?? 'dark') === 'light';
-    const first = parseColor(props.color ?? '#A855F7');
-    const second = parseColor(props.colorTwo ?? '#6366F1');
-    const motion = props.motion ?? 'pulse';
+    const light = (props.theme ?? 'dark') === 'light'
+    const first = parseColor(props.color ?? '#A855F7')
+    const second = parseColor(props.colorTwo ?? '#6366F1')
+    const motion = props.motion ?? 'pulse'
     return {
       color: light ? first : first.map(toLinear),
       colorTwo: light ? second : second.map(toLinear),
@@ -75,70 +75,70 @@ const MagicRings = (props: MagicRingsProps) => {
       clickBurst: props.clickBurst ?? true,
       intro: props.intro ?? true,
       light,
-      maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3)
-    };
-  });
+      maxRatio: clamp(props.maxDevicePixelRatio ?? 2, 0.5, 3),
+    }
+  })
 
-interface Settings {
-  color: number[];
-  colorTwo: number[];
-  ringCount: number;
-  motion: Motion;
-  speed: number;
-  lineThickness: number;
-  glow: number;
-  baseRadius: number;
-  radiusStep: number;
-  expansion: number;
-  taper: number;
-  rotation: number;
-  spin: number;
-  tilt: number;
-  dispersion: number;
-  grain: number;
-  opacity: number;
-  followMouse: boolean;
-  mouseInfluence: number;
-  hoverScale: number;
-  hoverIntensity: number;
-  parallax: number;
-  clickBurst: boolean;
-  intro: boolean;
-  light: boolean;
-  maxRatio: number;
-}
+  interface Settings {
+    color: number[]
+    colorTwo: number[]
+    ringCount: number
+    motion: Motion
+    speed: number
+    lineThickness: number
+    glow: number
+    baseRadius: number
+    radiusStep: number
+    expansion: number
+    taper: number
+    rotation: number
+    spin: number
+    tilt: number
+    dispersion: number
+    grain: number
+    opacity: number
+    followMouse: boolean
+    mouseInfluence: number
+    hoverScale: number
+    hoverIntensity: number
+    parallax: number
+    clickBurst: boolean
+    intro: boolean
+    light: boolean
+    maxRatio: number
+  }
 
-interface Program {
-  program: WebGLProgram;
-  uniforms: Record<string, WebGLUniformLocation | null>;
-}
+  interface Program {
+    program: WebGLProgram
+    uniforms: Record<string, WebGLUniformLocation | null>
+  }
 
-interface RingState {
-  radius: number;
-  life: number;
-  virtual: number;
-  mix: number;
-  opening: number;
-}
+  interface RingState {
+    radius: number
+    life: number
+    virtual: number
+    mix: number
+    opening: number
+  }
 
-interface Burst {
-  start: number;
-  radius: number;
-}
+  interface Burst {
+    start: number
+    radius: number
+  }
 
-const MAX_RINGS = 12;
-const MAX_BURSTS = 3;
-const SLOTS = MAX_RINGS + MAX_BURSTS;
+  const MAX_RINGS = 12
+  const MAX_BURSTS = 3
+  const SLOTS = MAX_RINGS + MAX_BURSTS
 
-const SEGMENTS = 128;
+  const SEGMENTS = 128
 
-const FULLSCREEN = `
+  const FULLSCREEN = `
 const vec2 corners[3] = vec2[3](vec2(-1.0, -1.0), vec2(3.0, -1.0), vec2(-1.0, 3.0));
 void main() {
   gl_Position = vec4(corners[gl_VertexID], 0.0, 1.0);
-}`;
+}`
 
-const STRIP = `
+  const STRIP = `
 layout(location = 0) in vec2 aSegment;
 uniform mat3 uForward;
 uniform vec2 uResolution;
@@ -164,9 +164,9 @@ void main() {
   gl_Position = vec4(screen.xy * (2.0 * uUnit / uResolution), 0.0, screen.z);
   vPlane = plane;
   vSlot = gl_InstanceID;
-}`;
+}`
 
-const COMMON = `
+  const COMMON = `
 uniform vec2 uResolution;
 uniform vec2 uScale;
 uniform float uUnit;
@@ -212,9 +212,9 @@ vec4 toneMap(vec3 light) {
   vec3 color = mix(light * (level / peak), vec3(level), smoothstep(1.4, 3.6, peak) * 0.4);
   return vec4(color, level);
 }
-`;
+`
 
-const GLOW = `
+  const GLOW = `
 uniform vec4 uHalo;
 uniform vec3 uRange;
 
@@ -276,9 +276,9 @@ void main() {
 #else
   fragColor = vec4(light, 1.0);
 #endif
-}`;
+}`
 
-const COMPOSE = `
+  const COMPOSE = `
 uniform sampler2D uGlow;
 uniform float uGrain;
 uniform float uTime;
@@ -311,9 +311,9 @@ void main() {
   float alpha = clamp(color.a + dither, 0.0, 1.0);
   fragColor = vec4(min(color.rgb, vec3(alpha)), alpha) * uOpacity;
 #endif
-}`;
+}`
 
-const LINE = `
+  const LINE = `
 flat in int vSlot;
 in vec2 vPlane;
 uniform float uWidth;
@@ -364,131 +364,145 @@ void main() {
   if (color.a <= 0.0) discard;
   fragColor = color * uOpacity;
 #endif
-}`;
+}`
 
-const shaderSource = (body: string, flags: string[]) =>
-  [
-    '#version 300 es',
-    'precision highp float;',
-    `#define SLOTS ${SLOTS}`,
-    ...flags.map(flag => `#define ${flag}`),
-    body
-  ].join('\n');
+  const shaderSource = (body: string, flags: string[]) =>
+    [
+      '#version 300 es',
+      'precision highp float;',
+      `#define SLOTS ${SLOTS}`,
+      ...flags.map(flag => `#define ${flag}`),
+      body,
+    ].join('\n')
 
-const FRAGMENTS: Record<Pass, string> = { glow: GLOW, compose: COMPOSE, line: LINE };
+  const FRAGMENTS: Record<Pass, string> = { glow: GLOW, compose: COMPOSE, line: LINE }
 
-const MOTIONS: Motion[] = ['pulse', 'ripple', 'breathe'];
-const CYCLE = 3.45;
-const STAGGER = 0.5;
-const DEPTH = 2.6;
-const BURST_LIFE = 1.1;
-const BURST_SPEED = 0.9;
+  const MOTIONS: Motion[] = ['pulse', 'ripple', 'breathe']
+  const CYCLE = 3.45
+  const STAGGER = 0.5
+  const DEPTH = 2.6
+  const BURST_LIFE = 1.1
+  const BURST_SPEED = 0.9
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const smoothstep = (from: number, to: number, value: number) => {
-  const t = clamp((value - from) / (to - from), 0, 1);
-  return t * t * (3 - 2 * t);
-};
-
-const pulseLife = (t: number) => Math.min(smoothstep(0, 0.7, t), 1 - smoothstep(0.5, 3.25, t));
-
-const toLinear = (channel: number) => (channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4));
-
-const parseColor = (value: string): number[] => {
-  const text = String(value || '').trim();
-  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
-  if (hex) {
-    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1];
-    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255);
+  const smoothstep = (from: number, to: number, value: number) => {
+    const t = clamp((value - from) / (to - from), 0, 1)
+    return t * t * (3 - 2 * t)
   }
-  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
-  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1));
-  if (typeof document !== 'undefined') {
-    const context = document.createElement('canvas').getContext('2d');
-    if (context) {
-      context.fillStyle = '#000000';
-      context.fillStyle = text;
-      const normal = String(context.fillStyle);
-      if (normal !== '#000000' || /^(#0{3}|#0{6}|black)$/i.test(text)) return parseColor(normal);
+
+  const pulseLife = (t: number) => Math.min(smoothstep(0, 0.7, t), 1 - smoothstep(0.5, 3.25, t))
+
+  const toLinear = (channel: number) =>
+    channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+
+  const parseColor = (value: string): number[] => {
+    const text = String(value || '').trim()
+    const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text)
+    if (hex) {
+      const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1]
+      return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255)
     }
+    const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text)
+    if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1))
+    if (typeof document !== 'undefined') {
+      const context = document.createElement('canvas').getContext('2d')
+      if (context) {
+        context.fillStyle = '#000000'
+        context.fillStyle = text
+        const normal = String(context.fillStyle)
+        if (normal !== '#000000' || /^(#0{3}|#0{6}|black)$/i.test(text)) return parseColor(normal)
+      }
+    }
+    return [0.66, 0.33, 0.97]
   }
-  return [0.66, 0.33, 0.97];
-};
 
-const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+  const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
+    const shader = gl.createShader(type)
+    if (!shader) return null
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(shader))
+      gl.deleteShader(shader)
+      return null
+    }
+    return shader
   }
-  return shader;
-};
 
-const link = (gl: WebGL2RenderingContext, vertexSource: string, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = vertex && fragment ? gl.createProgram() : null;
-  if (!vertex || !fragment || !program) {
-    if (vertex) gl.deleteShader(vertex);
-    if (fragment) gl.deleteShader(fragment);
-    return null;
+  const link = (
+    gl: WebGL2RenderingContext,
+    vertexSource: string,
+    fragmentSource: string,
+  ): Program | null => {
+    const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource)
+    const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+    const program = vertex && fragment ? gl.createProgram() : null
+    if (!vertex || !fragment || !program) {
+      if (vertex) gl.deleteShader(vertex)
+      if (fragment) gl.deleteShader(fragment)
+      return null
+    }
+    gl.attachShader(program, vertex)
+    gl.attachShader(program, fragment)
+    gl.linkProgram(program)
+    gl.deleteShader(vertex)
+    gl.deleteShader(fragment)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(program))
+      gl.deleteProgram(program)
+      return null
+    }
+    const uniforms: Program['uniforms'] = {}
+    const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+    for (let index = 0; index < count; index++) {
+      const info = gl.getActiveUniform(program, index)
+      if (info)
+        uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name)
+    }
+    return { program, uniforms }
   }
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
+
+  const invert = (m: Matrix): Matrix => {
+    const [a, b, c, d, e, f, g, h, i] = m
+    const A = e * i - f * h
+    const B = f * g - d * i
+    const C = d * h - e * g
+    const det = a * A + b * B + c * C
+    return [
+      A,
+      c * h - b * i,
+      b * f - c * e,
+      B,
+      a * i - c * g,
+      c * d - a * f,
+      C,
+      b * g - a * h,
+      a * e - b * d,
+    ].map(value => value / det)
   }
-  const uniforms: Program['uniforms'] = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-  for (let index = 0; index < count; index++) {
-    const info = gl.getActiveUniform(program, index);
-    if (info) uniforms[info.name.replace(/\[0\]$/, '')] = gl.getUniformLocation(program, info.name);
+
+  const planeFor = (tiltX: number, tiltY: number) => {
+    const ax = (tiltX * Math.PI) / 180
+    const ay = (tiltY * Math.PI) / 180
+    const cx = Math.cos(ax)
+    const sx = Math.sin(ax)
+    const cy = Math.cos(ay)
+    const sy = Math.sin(ay)
+    const forward = [cy, sy * sx, 0, 0, cx, 0, (sy * cx) / DEPTH, -sx / DEPTH, 1]
+    return { forward, inverse: invert(forward) }
   }
-  return { program, uniforms };
-};
 
-const invert = (m: Matrix): Matrix => {
-  const [a, b, c, d, e, f, g, h, i] = m;
-  const A = e * i - f * h;
-  const B = f * g - d * i;
-  const C = d * h - e * g;
-  const det = a * A + b * B + c * C;
-  return [A, c * h - b * i, b * f - c * e, B, a * i - c * g, c * d - a * f, C, b * g - a * h, a * e - b * d].map(
-    value => value / det
-  );
-};
-
-const planeFor = (tiltX: number, tiltY: number) => {
-  const ax = (tiltX * Math.PI) / 180;
-  const ay = (tiltY * Math.PI) / 180;
-  const cx = Math.cos(ax);
-  const sx = Math.sin(ax);
-  const cy = Math.cos(ay);
-  const sy = Math.sin(ay);
-  const forward = [cy, sy * sx, 0, 0, cx, 0, (sy * cx) / DEPTH, -sx / DEPTH, 1];
-  return { forward, inverse: invert(forward) };
-};
-
-const project = (m: Matrix, x: number, y: number) => {
-  const w = m[6] * x + m[7] * y + m[8];
-  return [(m[0] * x + m[1] * y + m[2]) / w, (m[3] * x + m[4] * y + m[5]) / w, w];
-};
+  const project = (m: Matrix, x: number, y: number) => {
+    const w = m[6] * x + m[7] * y + m[8]
+    return [(m[0] * x + m[1] * y + m[2]) / w, (m[3] * x + m[4] * y + m[5]) / w, w]
+  }
 
   createEffect(() => {
     // Upstream dep: [generation] — rebuild after WebGL context restore.
-    const gen = generation();
-    const initial = untrack(settings);
-    if (!container || !canvas) return;
+    const gen = generation()
+    const initial = untrack(settings)
+    if (!container || !canvas) return
 
     const gl = canvas.getContext('webgl2', {
       alpha: true,
@@ -496,71 +510,71 @@ const project = (m: Matrix, x: number, y: number) => {
       antialias: false,
       depth: false,
       stencil: false,
-      powerPreference: 'default'
-    });
-    if (!gl) return;
-    const programs = new Map<string, Program | null>();
+      powerPreference: 'default',
+    })
+    if (!gl) return
+    const programs = new Map<string, Program | null>()
     const programFor = (name: Pass, flags: string[]) => {
-      const key = `${name}|${flags.join(',')}`;
+      const key = `${name}|${flags.join(',')}`
       if (!programs.has(key)) {
-        const vertex = shaderSource(name === 'line' ? STRIP : FULLSCREEN, flags);
-        programs.set(key, link(gl, vertex, shaderSource(`${COMMON}${FRAGMENTS[name]}`, flags)));
+        const vertex = shaderSource(name === 'line' ? STRIP : FULLSCREEN, flags)
+        programs.set(key, link(gl, vertex, shaderSource(`${COMMON}${FRAGMENTS[name]}`, flags)))
       }
-      return programs.get(key);
-    };
-    if (!programFor('glow', []) || !programFor('compose', []) || !programFor('line', [])) return;
-
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const vao = gl.createVertexArray();
-    const stripVao = gl.createVertexArray();
-    const stripBuffer = gl.createBuffer();
-    const strip = new Float32Array((SEGMENTS + 1) * 4);
-    for (let index = 0; index <= SEGMENTS; index++) {
-      strip.set([index / SEGMENTS, -1, index / SEGMENTS, 1], index * 4);
+      return programs.get(key)
     }
-    gl.bindVertexArray(stripVao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, stripBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, strip, gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    gl.bindVertexArray(null);
-    const glowTexture = gl.createTexture();
-    const glowBuffer = gl.createFramebuffer();
-    const glowSize = { width: 0, height: 0 };
-    let floatGlow = Boolean(gl.getExtension('EXT_color_buffer_float'));
-    const shape = new Float32Array(SLOTS * 4);
-    const frameData = new Float32Array(SLOTS * 4);
-    const tints = new Float32Array(SLOTS * 4);
-    const size = { width: 1, height: 1, ratio: 1, unit: 1 };
-    const pointer = { x: 0, y: 0, inside: false, touch: false };
-    const spring = { x: 0, y: 0, vx: 0, vy: 0, hover: 0, hoverVelocity: 0 };
-    const bursts: Burst[] = [];
-    let introLive = initial.intro && initial.speed > 0 && !reduced && gen === 0;
-    let time = introLive ? 0 : 1.6;
-    let clock = 0;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let pageVisible = document.visibilityState !== 'hidden';
-    let lost = false;
+    if (!programFor('glow', []) || !programFor('compose', []) || !programFor('line', [])) return
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const vao = gl.createVertexArray()
+    const stripVao = gl.createVertexArray()
+    const stripBuffer = gl.createBuffer()
+    const strip = new Float32Array((SEGMENTS + 1) * 4)
+    for (let index = 0; index <= SEGMENTS; index++) {
+      strip.set([index / SEGMENTS, -1, index / SEGMENTS, 1], index * 4)
+    }
+    gl.bindVertexArray(stripVao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, stripBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, strip, gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+    gl.bindVertexArray(null)
+    const glowTexture = gl.createTexture()
+    const glowBuffer = gl.createFramebuffer()
+    const glowSize = { width: 0, height: 0 }
+    let floatGlow = Boolean(gl.getExtension('EXT_color_buffer_float'))
+    const shape = new Float32Array(SLOTS * 4)
+    const frameData = new Float32Array(SLOTS * 4)
+    const tints = new Float32Array(SLOTS * 4)
+    const size = { width: 1, height: 1, ratio: 1, unit: 1 }
+    const pointer = { x: 0, y: 0, inside: false, touch: false }
+    const spring = { x: 0, y: 0, vx: 0, vy: 0, hover: 0, hoverVelocity: 0 }
+    const bursts: Burst[] = []
+    let introLive = initial.intro && initial.speed > 0 && !reduced && gen === 0
+    let time = introLive ? 0 : 1.6
+    let clock = 0
+    let raf = 0
+    let last = 0
+    let visible = true
+    let pageVisible = document.visibilityState !== 'hidden'
+    let lost = false
 
     const resize = () => {
-      const s = settings();
-      const rect = container.getBoundingClientRect();
-      const ratio = Math.min(window.devicePixelRatio || 1, s.maxRatio);
-      const width = Math.max(1, Math.round(rect.width * ratio));
-      const height = Math.max(1, Math.round(rect.height * ratio));
+      const s = settings()
+      const rect = container.getBoundingClientRect()
+      const ratio = Math.min(window.devicePixelRatio || 1, s.maxRatio)
+      const width = Math.max(1, Math.round(rect.width * ratio))
+      const height = Math.max(1, Math.round(rect.height * ratio))
       if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = width
+        canvas.height = height
       }
-      Object.assign(size, { width, height, ratio, unit: Math.max(1, Math.min(width, height)) });
-      const glowWidth = Math.max(1, Math.ceil(width / 2));
-      const glowHeight = Math.max(1, Math.ceil(height / 2));
-      if (glowSize.width === glowWidth && glowSize.height === glowHeight) return;
-      Object.assign(glowSize, { width: glowWidth, height: glowHeight });
+      Object.assign(size, { width, height, ratio, unit: Math.max(1, Math.min(width, height)) })
+      const glowWidth = Math.max(1, Math.ceil(width / 2))
+      const glowHeight = Math.max(1, Math.ceil(height / 2))
+      if (glowSize.width === glowWidth && glowSize.height === glowHeight) return
+      Object.assign(glowSize, { width: glowWidth, height: glowHeight })
       const allocate = (useFloat: boolean) => {
-        gl.bindTexture(gl.TEXTURE_2D, glowTexture);
+        gl.bindTexture(gl.TEXTURE_2D, glowTexture)
         gl.texImage2D(
           gl.TEXTURE_2D,
           0,
@@ -570,77 +584,84 @@ const project = (m: Matrix, x: number, y: number) => {
           0,
           gl.RGBA,
           useFloat ? gl.HALF_FLOAT : gl.UNSIGNED_BYTE,
-          null
-        );
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, glowBuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, glowTexture, 0);
-        const complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        return complete;
-      };
-      if (!allocate(floatGlow)) {
-        floatGlow = false;
-        allocate(false);
+          null,
+        )
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, glowBuffer)
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, glowTexture, 0)
+        const complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+        return complete
       }
-    };
+      if (!allocate(floatGlow)) {
+        floatGlow = false
+        allocate(false)
+      }
+    }
 
     const ringState = (s: Settings, index: number, count: number): RingState => {
-      const mix = count > 1 ? index / (count - 1) : 0;
+      const mix = count > 1 ? index / (count - 1) : 0
       if (s.motion === 'ripple') {
-        const span = count * s.radiusStep + s.expansion;
-        const period = CYCLE * Math.max(1, count) * 0.32;
-        const phase = time / period + index / count;
-        const progress = phase - Math.floor(phase);
-        const born = time - progress * period >= -1e-4 || !introLive;
-        const life = born ? smoothstep(0, 0.12, progress) * (1 - smoothstep(0.62, 1, progress)) : 0;
-        const position = progress * Math.max(1, count - 1);
-        return { radius: s.baseRadius + progress * span, life, virtual: position, mix: progress, opening: 1 };
+        const span = count * s.radiusStep + s.expansion
+        const period = CYCLE * Math.max(1, count) * 0.32
+        const phase = time / period + index / count
+        const progress = phase - Math.floor(phase)
+        const born = time - progress * period >= -1e-4 || !introLive
+        const life = born ? smoothstep(0, 0.12, progress) * (1 - smoothstep(0.62, 1, progress)) : 0
+        const position = progress * Math.max(1, count - 1)
+        return {
+          radius: s.baseRadius + progress * span,
+          life,
+          virtual: position,
+          mix: progress,
+          opening: 1,
+        }
       }
       if (s.motion === 'breathe') {
-        const wave = Math.sin((time / 4) * Math.PI * 2 - index * 0.55);
-        const rise = introLive ? smoothstep(index * 0.12, index * 0.12 + 0.9, time) : 1;
+        const wave = Math.sin((time / 4) * Math.PI * 2 - index * 0.55)
+        const rise = introLive ? smoothstep(index * 0.12, index * 0.12 + 0.9, time) : 1
         return {
           radius: s.baseRadius + index * s.radiusStep + s.expansion * 0.5 * (1 + wave),
           life: (0.78 + 0.22 * wave) * rise,
           virtual: index,
           mix,
-          opening: 1
-        };
+          opening: 1,
+        }
       }
-      const local = time - index * STAGGER;
-      const t = ((local % CYCLE) + CYCLE) % CYCLE;
-      const life = introLive && local < 0 ? 0 : pulseLife(t);
+      const local = time - index * STAGGER
+      const t = ((local % CYCLE) + CYCLE) % CYCLE
+      const life = introLive && local < 0 ? 0 : pulseLife(t)
       return {
-        radius: s.baseRadius + index * s.radiusStep + (1 - Math.pow(1 - t / CYCLE, 2)) * s.expansion,
+        radius:
+          s.baseRadius + index * s.radiusStep + (1 - (1 - t / CYCLE) ** 2) * s.expansion,
         life,
         virtual: index,
         mix,
-        opening: introLive && local < CYCLE ? smoothstep(0, 0.9, local) : 1
-      };
-    };
+        opening: introLive && local < CYCLE ? smoothstep(0, 0.9, local) : 1,
+      }
+    }
 
     const render = () => {
-      const s = settings();
-      const count = s.ringCount;
-      const hover = spring.hover;
-      const still = reduced ? 0 : 1;
-      const scale = 1 + (s.hoverScale - 1) * hover * still;
-      const mouseX = spring.x * still;
-      const mouseY = spring.y * still;
-      const leanX = s.tilt - mouseY * s.parallax * 260;
-      const leanY = mouseX * s.parallax * 260;
-      const view = planeFor(leanX, leanY);
-      const center = s.followMouse ? [mouseX * s.mouseInfluence, mouseY * s.mouseInfluence] : [0, 0];
-      const spinBase = s.spin * time * 0.6;
+      const s = settings()
+      const count = s.ringCount
+      const hover = spring.hover
+      const still = reduced ? 0 : 1
+      const scale = 1 + (s.hoverScale - 1) * hover * still
+      const mouseX = spring.x * still
+      const mouseY = spring.y * still
+      const leanX = s.tilt - mouseY * s.parallax * 260
+      const leanY = mouseX * s.parallax * 260
+      const view = planeFor(leanX, leanY)
+      const center = s.followMouse ? [mouseX * s.mouseInfluence, mouseY * s.mouseInfluence] : [0, 0]
+      const spinBase = s.spin * time * 0.6
 
-      let slots = 0;
-      let lowest = Infinity;
-      let highest = 0;
-      let shiftMax = 0;
+      let slots = 0
+      let lowest = Infinity
+      let highest = 0
+      let shiftMax = 0
       const place = (
         radius: number,
         life: number,
@@ -649,294 +670,314 @@ const project = (m: Matrix, x: number, y: number) => {
         shiftX: number,
         shiftY: number,
         mix: number,
-        width: number
+        width: number,
       ) => {
-        if (life <= 0.002) return;
-        const gain = 10 * radius * cut * cut * cut;
-        shape.set([radius, life, gain, gain > 6.2 ? Math.cbrt(6.2 / gain) : 2], slots * 4);
-        frameData.set([shiftX, shiftY, Math.cos(angle), Math.sin(angle)], slots * 4);
+        if (life <= 0.002) return
+        const gain = 10 * radius * cut * cut * cut
+        shape.set([radius, life, gain, gain > 6.2 ? Math.cbrt(6.2 / gain) : 2], slots * 4)
+        frameData.set([shiftX, shiftY, Math.cos(angle), Math.sin(angle)], slots * 4)
         tints.set(
           [
             s.color[0] + (s.colorTwo[0] - s.color[0]) * mix,
             s.color[1] + (s.colorTwo[1] - s.color[1]) * mix,
             s.color[2] + (s.colorTwo[2] - s.color[2]) * mix,
-            width
+            width,
           ],
-          slots * 4
-        );
-        lowest = Math.min(lowest, radius);
-        highest = Math.max(highest, radius);
-        shiftMax = Math.max(shiftMax, Math.hypot(shiftX, shiftY));
-        slots++;
-      };
+          slots * 4,
+        )
+        lowest = Math.min(lowest, radius)
+        highest = Math.max(highest, radius)
+        shiftMax = Math.max(shiftMax, Math.hypot(shiftX, shiftY))
+        slots++
+      }
 
       for (let index = 0; index < count; index++) {
-        const state = ringState(s, index, count);
-        let radius = state.radius * scale;
-        let life = state.life;
+        const state = ringState(s, index, count)
+        let radius = state.radius * scale
+        let life = state.life
         for (const burst of bursts) {
-          const age = clock - burst.start;
-          const wave = (burst.radius + age * BURST_SPEED) * scale;
-          const fade = Math.pow(Math.max(0, 1 - age / BURST_LIFE), 1.5);
-          const gap = (wave - radius) / 0.08;
-          radius += 0.04 * Math.exp(-gap * gap) * fade;
-          life = Math.min(1.6, life + 0.9 * Math.exp(-gap * gap * 1.6) * fade);
+          const age = clock - burst.start
+          const wave = (burst.radius + age * BURST_SPEED) * scale
+          const fade = Math.max(0, 1 - age / BURST_LIFE) ** 1.5
+          const gap = (wave - radius) / 0.08
+          radius += 0.04 * Math.exp(-gap * gap) * fade
+          life = Math.min(1.6, life + 0.9 * Math.exp(-gap * gap * 1.6) * fade)
         }
-        const cut = Math.pow(s.taper, state.virtual) / Math.max(0.08, state.opening);
-        const angle = s.rotation + spinBase * (index % 2 ? -1 : 1) * (1 + index * 0.15);
-        place(radius, life, cut, angle, index * s.parallax * mouseX, index * s.parallax * mouseY, state.mix, 1);
+        const cut = s.taper ** state.virtual / Math.max(0.08, state.opening)
+        const angle = s.rotation + spinBase * (index % 2 ? -1 : 1) * (1 + index * 0.15)
+        place(
+          radius,
+          life,
+          cut,
+          angle,
+          index * s.parallax * mouseX,
+          index * s.parallax * mouseY,
+          state.mix,
+          1,
+        )
       }
       for (const burst of bursts) {
-        const age = clock - burst.start;
-        const fade = Math.pow(Math.max(0, 1 - age / BURST_LIFE), 1.5);
-        const radius = (burst.radius + age * BURST_SPEED) * scale;
-        place(radius, 1.5 * fade, 0.85, s.rotation, 0, 0, clamp(age / BURST_LIFE, 0, 1), 1.15);
+        const age = clock - burst.start
+        const fade = Math.max(0, 1 - age / BURST_LIFE) ** 1.5
+        const radius = (burst.radius + age * BURST_SPEED) * scale
+        place(radius, 1.5 * fade, 0.85, s.rotation, 0, 0, clamp(age / BURST_LIFE, 0, 1), 1.15)
       }
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      if (!slots) return;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      if (!slots) return
 
-      const flags: string[] = [];
-      if (s.light) flags.push('LIGHT');
-      if (s.dispersion > 0) flags.push('PRISM');
-      if (!floatGlow) flags.push('PACKED');
-      const glowProgram = programFor('glow', flags);
-      const composeProgram = programFor('compose', flags);
-      const lineProgram = programFor('line', flags);
-      if (!glowProgram || !composeProgram || !lineProgram) return;
+      const flags: string[] = []
+      if (s.light) flags.push('LIGHT')
+      if (s.dispersion > 0) flags.push('PRISM')
+      if (!floatGlow) flags.push('PACKED')
+      const glowProgram = programFor('glow', flags)
+      const composeProgram = programFor('compose', flags)
+      const lineProgram = programFor('line', flags)
+      if (!glowProgram || !composeProgram || !lineProgram) return
 
-      const glowScale = (s.light ? 0.3 : 1) * (1 - s.dispersion * 0.45);
-      const outer = 0.012 + 0.033 * s.glow;
-      const innerAmount = 0.5 * Math.min(1, s.glow) * glowScale;
-      const outerAmount = 0.9 * s.glow * glowScale;
-      const range = outer * 4.5 + 0.008;
-      const split = s.dispersion * 0.03;
-      const margin = range + split * highest + shiftMax + 0.01;
-      const width = s.lineThickness * size.ratio;
-      const reach = width * (1 + 0.45 * s.hoverIntensity) * 1.15 + 1.5;
-      const cursor = project(view.inverse, pointer.x, pointer.y);
+      const glowScale = (s.light ? 0.3 : 1) * (1 - s.dispersion * 0.45)
+      const outer = 0.012 + 0.033 * s.glow
+      const innerAmount = 0.5 * Math.min(1, s.glow) * glowScale
+      const outerAmount = 0.9 * s.glow * glowScale
+      const range = outer * 4.5 + 0.008
+      const split = s.dispersion * 0.03
+      const margin = range + split * highest + shiftMax + 0.01
+      const width = s.lineThickness * size.ratio
+      const reach = width * (1 + 0.45 * s.hoverIntensity) * 1.15 + 1.5
+      const cursor = project(view.inverse, pointer.x, pointer.y)
 
       const shared = (program: Program) => {
-        const u = program.uniforms;
-        gl.useProgram(program.program);
-        gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-        gl.uniform1f(u.uUnit, size.unit);
-        gl.uniform2f(u.uCenter, center[0], center[1]);
-        gl.uniform1i(u.uCount, slots);
-        gl.uniform4fv(u.uShape, shape);
-        gl.uniform4fv(u.uFrame, frameData);
-        gl.uniform4fv(u.uTint, tints);
-        gl.uniform4f(u.uHover, cursor[0] - center[0], cursor[1] - center[1], hover * s.hoverIntensity, 1 / 0.03);
-        gl.uniform1f(u.uSplit, split);
-        gl.uniform1f(u.uOpacity, s.opacity);
-        return u;
-      };
+        const u = program.uniforms
+        gl.useProgram(program.program)
+        gl.uniform2f(u.uResolution, canvas.width, canvas.height)
+        gl.uniform1f(u.uUnit, size.unit)
+        gl.uniform2f(u.uCenter, center[0], center[1])
+        gl.uniform1i(u.uCount, slots)
+        gl.uniform4fv(u.uShape, shape)
+        gl.uniform4fv(u.uFrame, frameData)
+        gl.uniform4fv(u.uTint, tints)
+        gl.uniform4f(
+          u.uHover,
+          cursor[0] - center[0],
+          cursor[1] - center[1],
+          hover * s.hoverIntensity,
+          1 / 0.03,
+        )
+        gl.uniform1f(u.uSplit, split)
+        gl.uniform1f(u.uOpacity, s.opacity)
+        return u
+      }
 
-      gl.bindVertexArray(vao);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, glowBuffer);
-      gl.viewport(0, 0, glowSize.width, glowSize.height);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      const glowUniforms = shared(glowProgram);
-      gl.uniform2f(glowUniforms.uScale, canvas.width / glowSize.width, canvas.height / glowSize.height);
-      gl.uniformMatrix3fv(glowUniforms.uInverse, true, view.inverse);
-      gl.uniform2f(glowUniforms.uBounds, Math.max(0, lowest - margin), highest + margin);
-      gl.uniform4f(glowUniforms.uHalo, 0, 1 / outer, innerAmount, outerAmount);
-      gl.uniform3f(glowUniforms.uRange, range * 0.45, 1 / (range * 0.55), range);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindVertexArray(vao)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, glowBuffer)
+      gl.viewport(0, 0, glowSize.width, glowSize.height)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      const glowUniforms = shared(glowProgram)
+      gl.uniform2f(
+        glowUniforms.uScale,
+        canvas.width / glowSize.width,
+        canvas.height / glowSize.height,
+      )
+      gl.uniformMatrix3fv(glowUniforms.uInverse, true, view.inverse)
+      gl.uniform2f(glowUniforms.uBounds, Math.max(0, lowest - margin), highest + margin)
+      gl.uniform4f(glowUniforms.uHalo, 0, 1 / outer, innerAmount, outerAmount)
+      gl.uniform3f(glowUniforms.uRange, range * 0.45, 1 / (range * 0.55), range)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      const composeUniforms = shared(composeProgram);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, glowTexture);
-      gl.uniform1i(composeUniforms.uGlow, 0);
-      gl.uniform1f(composeUniforms.uGrain, s.grain);
-      gl.uniform1f(composeUniforms.uTime, clock);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      const composeUniforms = shared(composeProgram)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, glowTexture)
+      gl.uniform1i(composeUniforms.uGlow, 0)
+      gl.uniform1f(composeUniforms.uGrain, s.grain)
+      gl.uniform1f(composeUniforms.uTime, clock)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      const lineUniforms = shared(lineProgram);
-      gl.uniformMatrix3fv(lineUniforms.uForward, true, view.forward);
-      gl.uniform1f(lineUniforms.uReach, reach);
-      gl.uniform1f(lineUniforms.uWidth, width);
-      gl.enable(gl.BLEND);
-      if (s.light) gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      else gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.bindVertexArray(stripVao);
-      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, (SEGMENTS + 1) * 2, slots);
-      gl.disable(gl.BLEND);
-      gl.bindVertexArray(null);
-    };
+      const lineUniforms = shared(lineProgram)
+      gl.uniformMatrix3fv(lineUniforms.uForward, true, view.forward)
+      gl.uniform1f(lineUniforms.uReach, reach)
+      gl.uniform1f(lineUniforms.uWidth, width)
+      gl.enable(gl.BLEND)
+      if (s.light) gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+      else gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+      gl.bindVertexArray(stripVao)
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, (SEGMENTS + 1) * 2, slots)
+      gl.disable(gl.BLEND)
+      gl.bindVertexArray(null)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (lost) return;
-      const s = settings();
-      const dt = clamp((now - last) / 1000 || 0, 0, 0.05);
-      last = Math.max(last, now);
-      clock += dt;
-      if (!reduced) time += dt * s.speed;
+      raf = 0
+      if (lost) return
+      const s = settings()
+      const dt = clamp((now - last) / 1000 || 0, 0, 0.05)
+      last = Math.max(last, now)
+      clock += dt
+      if (!reduced) time += dt * s.speed
 
-      const targetX = pointer.inside ? pointer.x / Math.max(1e-6, size.width / size.unit) : 0;
-      const targetY = pointer.inside ? pointer.y / Math.max(1e-6, size.height / size.unit) : 0;
-      const stiffness = 70;
-      const damping = 2 * Math.sqrt(stiffness) * 0.9;
-      const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
-      const h = dt / steps;
+      const targetX = pointer.inside ? pointer.x / Math.max(1e-6, size.width / size.unit) : 0
+      const targetY = pointer.inside ? pointer.y / Math.max(1e-6, size.height / size.unit) : 0
+      const stiffness = 70
+      const damping = 2 * Math.sqrt(stiffness) * 0.9
+      const steps = Math.max(1, Math.ceil(dt / (1 / 240)))
+      const h = dt / steps
       for (let step = 0; step < steps; step++) {
-        spring.vx += (stiffness * (targetX - spring.x) - damping * spring.vx) * h;
-        spring.vy += (stiffness * (targetY - spring.y) - damping * spring.vy) * h;
-        spring.x += spring.vx * h;
-        spring.y += spring.vy * h;
-        const hoverTarget = pointer.inside ? 1 : 0;
-        spring.hoverVelocity += (40 * (hoverTarget - spring.hover) - 2 * Math.sqrt(40) * spring.hoverVelocity) * h;
-        spring.hover += spring.hoverVelocity * h;
+        spring.vx += (stiffness * (targetX - spring.x) - damping * spring.vx) * h
+        spring.vy += (stiffness * (targetY - spring.y) - damping * spring.vy) * h
+        spring.x += spring.vx * h
+        spring.y += spring.vy * h
+        const hoverTarget = pointer.inside ? 1 : 0
+        spring.hoverVelocity +=
+          (40 * (hoverTarget - spring.hover) - 2 * Math.sqrt(40) * spring.hoverVelocity) * h
+        spring.hover += spring.hoverVelocity * h
       }
 
       for (let index = bursts.length - 1; index >= 0; index--) {
-        if (clock - bursts[index].start > BURST_LIFE) bursts.splice(index, 1);
+        if (clock - bursts[index].start > BURST_LIFE) bursts.splice(index, 1)
       }
-      if (introLive && time > (s.ringCount + 2) * STAGGER + CYCLE) introLive = false;
+      if (introLive && time > (s.ringCount + 2) * STAGGER + CYCLE) introLive = false
 
-      render();
+      render()
 
       const settling =
         Math.abs(spring.vx) + Math.abs(spring.vy) + Math.abs(spring.hoverVelocity) > 1e-4 ||
-        Math.abs((pointer.inside ? 1 : 0) - spring.hover) > 1e-3;
-      const busy = (s.speed > 0 && !reduced) || settling || bursts.length > 0 || introLive;
-      if (busy && visible && pageVisible) raf = requestAnimationFrame(frame);
-    };
+        Math.abs((pointer.inside ? 1 : 0) - spring.hover) > 1e-3
+      const busy = (s.speed > 0 && !reduced) || settling || bursts.length > 0 || introLive
+      if (busy && visible && pageVisible) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || lost || !visible || !pageVisible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || lost || !visible || !pageVisible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
     wakeHook = () => {
-      resize();
-      wake();
-    };
+      resize()
+      wake()
+    }
 
     const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
+      const rect = container.getBoundingClientRect()
       const inside =
         event.clientX >= rect.left &&
         event.clientX <= rect.right &&
         event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
-      const unit = Math.max(1, Math.min(rect.width, rect.height));
+        event.clientY <= rect.bottom
+      const unit = Math.max(1, Math.min(rect.width, rect.height))
       return {
         x: (event.clientX - rect.left - rect.width / 2) / unit,
         y: (rect.top + rect.height / 2 - event.clientY) / unit,
-        inside
-      };
-    };
+        inside,
+      }
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      if (event.pointerType === 'touch' && !pointer.touch) return;
-      const spot = locate(event);
-      pointer.x = spot.x;
-      pointer.y = spot.y;
-      pointer.inside = spot.inside;
-      wake();
-    };
+      if (event.pointerType === 'touch' && !pointer.touch) return
+      const spot = locate(event)
+      pointer.x = spot.x
+      pointer.y = spot.y
+      pointer.inside = spot.inside
+      wake()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      const spot = locate(event);
-      if (!spot.inside) return;
-      pointer.x = spot.x;
-      pointer.y = spot.y;
-      pointer.inside = true;
-      pointer.touch = event.pointerType === 'touch';
-      const s = settings();
+      const spot = locate(event)
+      if (!spot.inside) return
+      pointer.x = spot.x
+      pointer.y = spot.y
+      pointer.inside = true
+      pointer.touch = event.pointerType === 'touch'
+      const s = settings()
       if (s.clickBurst && !reduced) {
-        bursts.push({ start: clock, radius: Math.max(0.04, s.baseRadius * 0.45) });
-        if (bursts.length > MAX_BURSTS) bursts.shift();
+        bursts.push({ start: clock, radius: Math.max(0.04, s.baseRadius * 0.45) })
+        if (bursts.length > MAX_BURSTS) bursts.shift()
       }
-      wake();
-    };
+      wake()
+    }
 
     const onPointerUp = (event: PointerEvent) => {
-      if (event.pointerType !== 'touch') return;
-      pointer.touch = false;
-      pointer.inside = false;
-      wake();
-    };
+      if (event.pointerType !== 'touch') return
+      pointer.touch = false
+      pointer.inside = false
+      wake()
+    }
 
     const onLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    window.addEventListener('pointerup', onPointerUp, { passive: true });
-    window.addEventListener('pointercancel', onPointerUp, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onLeave);
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    window.addEventListener('pointerup', onPointerUp, { passive: true })
+    window.addEventListener('pointercancel', onPointerUp, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onLeave)
 
     const onLost = (event: Event) => {
-      event.preventDefault();
-      lost = true;
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-    const onRestored = () => setGeneration(value => value + 1);
-    canvas.addEventListener('webglcontextlost', onLost);
-    canvas.addEventListener('webglcontextrestored', onRestored);
+      event.preventDefault()
+      lost = true
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const onRestored = () => setGeneration(value => value + 1)
+    canvas.addEventListener('webglcontextlost', onLost)
+    canvas.addEventListener('webglcontextrestored', onRestored)
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      wake();
-    });
-    resizeObserver.observe(container);
+      resize()
+      wake()
+    })
+    resizeObserver.observe(container)
 
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
-      wake();
-    });
-    intersection.observe(container);
+      visible = entries.some(entry => entry.isIntersecting)
+      wake()
+    })
+    intersection.observe(container)
 
     const onVisibility = () => {
-      pageVisible = document.visibilityState !== 'hidden';
-      wake();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+      pageVisible = document.visibilityState !== 'hidden'
+      wake()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
 
-    resize();
-    wake();
+    resize()
+    wake()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeHook = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      canvas.removeEventListener('webglcontextlost', onLost);
-      canvas.removeEventListener('webglcontextrestored', onRestored);
+      cancelAnimationFrame(raf)
+      wakeHook = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerUp)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      canvas.removeEventListener('webglcontextlost', onLost)
+      canvas.removeEventListener('webglcontextrestored', onRestored)
       if (!gl.isContextLost()) {
-        gl.deleteVertexArray(vao);
-        gl.deleteTexture(glowTexture);
-        gl.deleteFramebuffer(glowBuffer);
-        programs.forEach(entry => entry && gl.deleteProgram(entry.program));
-        gl.deleteVertexArray(stripVao);
-        gl.deleteBuffer(stripBuffer);
+        gl.deleteVertexArray(vao)
+        gl.deleteTexture(glowTexture)
+        gl.deleteFramebuffer(glowBuffer)
+        programs.forEach(entry => entry && gl.deleteProgram(entry.program))
+        gl.deleteVertexArray(stripVao)
+        gl.deleteBuffer(stripBuffer)
       }
-    });
-  });
+    })
+  })
 
   // Upstream woke the render loop after every render; tracking the settings
   // memo covers the same prop changes.
   createEffect(() => {
-    settings();
-    wakeHook?.();
-  });
+    settings()
+    wakeHook?.()
+  })
 
   return (
     <div
@@ -947,10 +988,9 @@ const project = (m: Matrix, x: number, y: number) => {
       <canvas
         ref={canvas}
         class="pointer-events-none absolute inset-0 block h-full w-full"
-        aria-hidden="true"
       />
     </div>
-  );
-};
+  )
+}
 
-export default MagicRings;
+export default MagicRings

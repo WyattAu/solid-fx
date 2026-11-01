@@ -1,4 +1,4 @@
-import MicroSlats from './MicroSlats';
+import MicroSlats from './MicroSlats'
 
 function MicroSlatsDemo() {
   return (
@@ -19,7 +19,7 @@ function MicroSlatsDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default MicroSlatsDemo;
+export default MicroSlatsDemo

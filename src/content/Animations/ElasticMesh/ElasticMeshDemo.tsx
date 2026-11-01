@@ -1,4 +1,4 @@
-import ElasticMesh from './ElasticMesh';
+import ElasticMesh from './ElasticMesh'
 
 function ElasticMeshDemo() {
   return (
@@ -7,7 +7,7 @@ function ElasticMeshDemo() {
         <ElasticMesh text="Squish" color="#8b5cf6" material="balloon" />
       </div>
     </div>
-  );
+  )
 }
 
-export default ElasticMeshDemo;
+export default ElasticMeshDemo

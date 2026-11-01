@@ -1,63 +1,63 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface MetallicPaintProps {
-  imageSrc?: string;
-  text?: string;
-  fontFamily?: string;
-  fontWeight?: number | string;
-  color?: string;
-  backgroundColor?: string;
-  density?: number;
-  softness?: number;
-  dispersion?: number;
-  distortion?: number;
-  edgeBend?: number;
-  angle?: number;
-  speed?: number;
-  scale?: number;
-  rotation?: number;
-  mouseTilt?: number;
-  lightMode?: boolean;
-  intro?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  imageSrc?: string
+  text?: string
+  fontFamily?: string
+  fontWeight?: number | string
+  color?: string
+  backgroundColor?: string
+  density?: number
+  softness?: number
+  dispersion?: number
+  distortion?: number
+  edgeBend?: number
+  angle?: number
+  speed?: number
+  scale?: number
+  rotation?: number
+  mouseTilt?: number
+  lightMode?: boolean
+  intro?: boolean
+  paused?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Rgba = number[];
+type Rgba = number[]
 
 interface Settings {
-  tint: Rgba;
-  back: Rgba;
-  density: number;
-  softness: number;
-  dispersion: number;
-  distortion: number;
-  edgeBend: number;
-  angle: number;
-  speed: number;
-  scale: number;
-  rotation: number;
-  mouseTilt: number;
-  lightMode: boolean;
-  intro: boolean;
-  paused: boolean;
-  dpr?: number;
+  tint: Rgba
+  back: Rgba
+  density: number
+  softness: number
+  dispersion: number
+  distortion: number
+  edgeBend: number
+  angle: number
+  speed: number
+  scale: number
+  rotation: number
+  mouseTilt: number
+  lightMode: boolean
+  intro: boolean
+  paused: boolean
+  dpr?: number
 }
 
 interface Engine {
-  setPending: (value: boolean) => void;
-  setImage: (data: ImageData | null) => void;
-  wake: () => void;
-  redraw: () => void;
+  setPending: (value: boolean) => void
+  setImage: (data: ImageData | null) => void
+  wake: () => void
+  redraw: () => void
 }
 
-const WORKING_SIZE = 512;
-const MAX_SIDE = 2048;
-const MAX_PIXELS = 2560 * 1600 * 2;
+const WORKING_SIZE = 512
+const MAX_SIDE = 2048
+const MAX_PIXELS = 2560 * 1600 * 2
 
 const VERTEX = `#version 300 es
 layout(location = 0) in vec2 a_position;
@@ -81,7 +81,7 @@ void main() {
   v_imageUV.x /= u_imageAspect;
   v_imageUV += 0.5;
   v_imageUV.y = 1.0 - v_imageUV.y;
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -288,113 +288,113 @@ void main() {
   opacity += u_colorBack.a * (1.0 - opacity);
   color += 1.0 / 256.0 * (fract(sin(dot(0.014 * gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453123) - 0.5);
   fragColor = vec4(color, opacity);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const parseColor = (() => {
-  let context: CanvasRenderingContext2D | null = null;
+  let context: CanvasRenderingContext2D | null = null
   return (value: string, fallback: Rgba): Rgba => {
-    if (typeof document === 'undefined') return fallback;
-    context ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    if (!context) return fallback;
-    context.clearRect(0, 0, 1, 1);
-    context.fillStyle = 'rgba(0, 0, 0, 0)';
-    context.fillStyle = String(value);
-    context.fillRect(0, 0, 1, 1);
-    const [r, g, b, a] = context.getImageData(0, 0, 1, 1).data;
-    return [r / 255, g / 255, b / 255, a / 255];
-  };
-})();
+    if (typeof document === 'undefined') return fallback
+    context ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    if (!context) return fallback
+    context.clearRect(0, 0, 1, 1)
+    context.fillStyle = 'rgba(0, 0, 0, 0)'
+    context.fillStyle = String(value)
+    context.fillRect(0, 0, 1, 1)
+    const [r, g, b, a] = context.getImageData(0, 0, 1, 1).data
+    return [r / 255, g / 255, b / 255, a / 255]
+  }
+})()
 
 const loadImage = (src: string) =>
   new Promise<HTMLImageElement>((resolve, reject) => {
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('MetallicPaint: failed to load the image'));
-    image.src = src;
-  });
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.onload = () => resolve(image)
+    image.onerror = () => reject(new Error('MetallicPaint: failed to load the image'))
+    image.src = src
+  })
 
 const isVector = async (src: string): Promise<boolean> => {
-  if (/\.svg($|[?#])/i.test(src) || src.startsWith('data:image/svg+xml')) return true;
-  if (!src.startsWith('blob:')) return false;
+  if (/\.svg($|[?#])/i.test(src) || src.startsWith('data:image/svg+xml')) return true
+  if (!src.startsWith('blob:')) return false
   try {
-    const blob = await (await fetch(src)).blob();
-    return blob.type === 'image/svg+xml';
+    const blob = await (await fetch(src)).blob()
+    return blob.type === 'image/svg+xml'
   } catch {
-    return false;
+    return false
   }
-};
+}
 
 const drawImageSource = async (src: string): Promise<HTMLCanvasElement> => {
-  const [image, vector] = await Promise.all([loadImage(src), isVector(src)]);
-  let width = image.naturalWidth || image.width || MAX_SIDE;
-  let height = image.naturalHeight || image.height || MAX_SIDE;
-  const longest = Math.max(width, height);
-  const fit = vector ? MAX_SIDE / longest : clamp(1024 / longest, 1, MAX_SIDE / longest);
-  width = Math.max(1, Math.round(width * fit));
-  height = Math.max(1, Math.round(height * fit));
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-  ctx.drawImage(image, 0, 0, width, height);
-  const data = ctx.getImageData(0, 0, width, height);
-  let opaque = true;
+  const [image, vector] = await Promise.all([loadImage(src), isVector(src)])
+  let width = image.naturalWidth || image.width || MAX_SIDE
+  let height = image.naturalHeight || image.height || MAX_SIDE
+  const longest = Math.max(width, height)
+  const fit = vector ? MAX_SIDE / longest : clamp(1024 / longest, 1, MAX_SIDE / longest)
+  width = Math.max(1, Math.round(width * fit))
+  height = Math.max(1, Math.round(height * fit))
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  ctx.drawImage(image, 0, 0, width, height)
+  const data = ctx.getImageData(0, 0, width, height)
+  let opaque = true
   for (let i = 3; i < data.data.length; i += 4) {
     if (data.data[i] < 250) {
-      opaque = false;
-      break;
+      opaque = false
+      break
     }
   }
   if (opaque) {
     for (let i = 0; i < data.data.length; i += 4) {
-      const light = Math.min(data.data[i], data.data[i + 1], data.data[i + 2]);
-      data.data[i + 3] = Math.round(clamp((250 - light) / 30, 0, 1) * 255);
+      const light = Math.min(data.data[i], data.data[i + 1], data.data[i + 2])
+      data.data[i + 3] = Math.round(clamp((250 - light) / 30, 0, 1) * 255)
     }
-    ctx.putImageData(data, 0, 0);
+    ctx.putImageData(data, 0, 0)
   }
-  return canvas;
-};
+  return canvas
+}
 
 const drawTextSource = async (
   text: string,
   fontFamily: string,
-  fontWeight: number | string
+  fontWeight: number | string,
 ): Promise<HTMLCanvasElement | null> => {
-  const size = 320;
-  const font = `${fontWeight} ${size}px ${fontFamily}`;
+  const size = 320
+  const font = `${fontWeight} ${size}px ${fontFamily}`
   try {
-    await document.fonts?.load(font, text);
+    await document.fonts?.load(font, text)
   } catch {
-    return null;
+    return null
   }
-  const probe = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
-  probe.font = font;
-  const metrics = probe.measureText(text);
-  const ascent = metrics.actualBoundingBoxAscent || size * 0.8;
-  const descent = metrics.actualBoundingBoxDescent || size * 0.2;
-  const left = metrics.actualBoundingBoxLeft || 0;
-  const right = metrics.actualBoundingBoxRight || metrics.width;
-  const pad = size * 0.12;
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.ceil(left + right + pad * 2);
-  canvas.height = Math.ceil(ascent + descent + pad * 2);
-  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-  ctx.font = font;
-  ctx.fillStyle = '#000';
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillText(text, pad + left, pad + ascent);
-  return canvas;
-};
+  const probe = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D
+  probe.font = font
+  const metrics = probe.measureText(text)
+  const ascent = metrics.actualBoundingBoxAscent || size * 0.8
+  const descent = metrics.actualBoundingBoxDescent || size * 0.2
+  const left = metrics.actualBoundingBoxLeft || 0
+  const right = metrics.actualBoundingBoxRight || metrics.width
+  const pad = size * 0.12
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.ceil(left + right + pad * 2)
+  canvas.height = Math.ceil(ascent + descent + pad * 2)
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+  ctx.font = font
+  ctx.fillStyle = '#000'
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillText(text, pad + left, pad + ascent)
+  return canvas
+}
 
 const solvePoisson = (mask: Uint8Array, width: number, height: number) => {
-  const interior: number[] = [];
+  const interior: number[] = []
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const i = y * width + x;
-      if (!mask[i]) continue;
+      const i = y * width + x
+      if (!mask[i]) continue
       const boundary =
         x === 0 ||
         y === 0 ||
@@ -407,107 +407,104 @@ const solvePoisson = (mask: Uint8Array, width: number, height: number) => {
         !mask[i - width - 1] ||
         !mask[i - width + 1] ||
         !mask[i + width - 1] ||
-        !mask[i + width + 1];
-      if (!boundary) interior.push(i);
+        !mask[i + width + 1]
+      if (!boundary) interior.push(i)
     }
   }
-  const field = new Float32Array(width * height);
-  const red: number[] = [];
-  const black: number[] = [];
+  const field = new Float32Array(width * height)
+  const red: number[] = []
+  const black: number[] = []
   interior.forEach(i => {
-    if (((i % width) + Math.floor(i / width)) % 2 === 0) red.push(i);
-    else black.push(i);
-  });
+    if (((i % width) + Math.floor(i / width)) % 2 === 0) red.push(i)
+    else black.push(i)
+  })
   const relax = (list: number[]) => {
     for (let k = 0; k < list.length; k++) {
-      const i = list[k];
-      const sum = field[i + 1] + field[i - 1] + field[i - width] + field[i + width];
-      field[i] = 1.9 * ((0.01 + sum) / 4) - 0.9 * field[i];
+      const i = list[k]
+      const sum = field[i + 1] + field[i - 1] + field[i - width] + field[i + width]
+      field[i] = 1.9 * ((0.01 + sum) / 4) - 0.9 * field[i]
     }
-  };
-  for (let iteration = 0; iteration < 40; iteration++) {
-    relax(red);
-    relax(black);
   }
-  let peak = 0;
+  for (let iteration = 0; iteration < 40; iteration++) {
+    relax(red)
+    relax(black)
+  }
+  let peak = 0
   interior.forEach(i => {
-    if (field[i] > peak) peak = field[i];
-  });
-  return { field, peak: peak || 1 };
-};
+    if (field[i] > peak) peak = field[i]
+  })
+  return { field, peak: peak || 1 }
+}
 
 const processShape = (source: HTMLCanvasElement): ImageData => {
-  const width = source.width;
-  const height = source.height;
-  const fit = WORKING_SIZE / Math.min(width, height);
-  const workW = Math.max(2, Math.round(width * fit));
-  const workH = Math.max(2, Math.round(height * fit));
+  const width = source.width
+  const height = source.height
+  const fit = WORKING_SIZE / Math.min(width, height)
+  const workW = Math.max(2, Math.round(width * fit))
+  const workH = Math.max(2, Math.round(height * fit))
 
-  const small = document.createElement('canvas');
-  small.width = workW;
-  small.height = workH;
-  const smallCtx = small.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-  smallCtx.drawImage(source, 0, 0, workW, workH);
-  const smallData = smallCtx.getImageData(0, 0, workW, workH).data;
-  const mask = new Uint8Array(workW * workH);
-  for (let i = 0; i < mask.length; i++) mask[i] = smallData[i * 4 + 3] > 0 ? 1 : 0;
+  const small = document.createElement('canvas')
+  small.width = workW
+  small.height = workH
+  const smallCtx = small.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  smallCtx.drawImage(source, 0, 0, workW, workH)
+  const smallData = smallCtx.getImageData(0, 0, workW, workH).data
+  const mask = new Uint8Array(workW * workH)
+  for (let i = 0; i < mask.length; i++) mask[i] = smallData[i * 4 + 3] > 0 ? 1 : 0
 
-  const { field, peak } = solvePoisson(mask, workW, workH);
-  const gradient = smallCtx.createImageData(workW, workH);
+  const { field, peak } = solvePoisson(mask, workW, workH)
+  const gradient = smallCtx.createImageData(workW, workH)
   for (let i = 0; i < mask.length; i++) {
-    const p = i * 4;
-    const value = mask[i] ? 255 * (1 - field[i] / peak) : 255;
-    gradient.data[p] = value;
-    gradient.data[p + 1] = value;
-    gradient.data[p + 2] = value;
-    gradient.data[p + 3] = mask[i] ? 255 : 0;
+    const p = i * 4
+    const value = mask[i] ? 255 * (1 - field[i] / peak) : 255
+    gradient.data[p] = value
+    gradient.data[p + 1] = value
+    gradient.data[p + 2] = value
+    gradient.data[p + 3] = mask[i] ? 255 : 0
   }
-  smallCtx.putImageData(gradient, 0, 0);
+  smallCtx.putImageData(gradient, 0, 0)
 
-  const out = document.createElement('canvas');
-  out.width = width;
-  out.height = height;
-  const outCtx = out.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-  outCtx.imageSmoothingEnabled = true;
-  outCtx.imageSmoothingQuality = 'high';
-  outCtx.drawImage(small, 0, 0, workW, workH, 0, 0, width, height);
-  const result = outCtx.getImageData(0, 0, width, height);
-  const original = (source.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D).getImageData(
-    0,
-    0,
-    width,
-    height
-  ).data;
+  const out = document.createElement('canvas')
+  out.width = width
+  out.height = height
+  const outCtx = out.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  outCtx.imageSmoothingEnabled = true
+  outCtx.imageSmoothingQuality = 'high'
+  outCtx.drawImage(small, 0, 0, workW, workH, 0, 0, width, height)
+  const result = outCtx.getImageData(0, 0, width, height)
+  const original = (
+    source.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  ).getImageData(0, 0, width, height).data
   for (let i = 0; i < result.data.length; i += 4) {
-    const alpha = original[i + 3];
+    const alpha = original[i + 3]
     if (alpha === 0) {
-      result.data[i] = 255;
-      result.data[i + 1] = 0;
+      result.data[i] = 255
+      result.data[i + 1] = 0
     } else {
-      result.data[i] = result.data[i + 3] === 0 ? 0 : result.data[i];
-      result.data[i + 1] = alpha;
+      result.data[i] = result.data[i + 3] === 0 ? 0 : result.data[i]
+      result.data[i + 1] = alpha
     }
-    result.data[i + 2] = 255;
-    result.data[i + 3] = 255;
+    result.data[i + 2] = 255
+    result.data[i + 3] = 255
   }
-  return result;
-};
+  return result
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 export default function MetallicPaint(props: MetallicPaintProps) {
-  let container!: HTMLDivElement;
-  let canvas!: HTMLCanvasElement;
-  let engine: Engine | null = null;
-  const settingsRef: { current: Settings } = { current: {} as Settings };
+  let container!: HTMLDivElement
+  let canvas!: HTMLCanvasElement
+  let engine: Engine | null = null
+  const settingsRef: { current: Settings } = { current: {} as Settings }
 
   const buildSettings = (): Settings => ({
     tint: parseColor(props.color ?? '#ffffff', [1, 1, 1, 1]),
@@ -525,58 +522,72 @@ export default function MetallicPaint(props: MetallicPaintProps) {
     lightMode: props.lightMode ?? false,
     intro: props.intro ?? true,
     paused: props.paused ?? false,
-    dpr: props.dpr
-  });
+    dpr: props.dpr,
+  })
 
   // Upstream reassigned settings every render and redrew in a trailing effect;
   // both collapse into this tracked effect (runs before mount so engine init
   // sees `intro`).
   createEffect(() => {
-    settingsRef.current = buildSettings();
-    engine?.redraw();
-  });
+    settingsRef.current = buildSettings()
+    engine?.redraw()
+  })
 
   onMount(() => {
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    if (!gl) return;
-    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-    const program = gl.createProgram();
-    if (!vertex || !fragment || !program) return;
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.linkProgram(program);
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-    gl.useProgram(program);
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    if (!gl) return
+    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+    const program = gl.createProgram()
+    if (!vertex || !fragment || !program) return
+    gl.attachShader(program, vertex)
+    gl.attachShader(program, fragment)
+    gl.linkProgram(program)
+    gl.deleteShader(vertex)
+    gl.deleteShader(fragment)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
+    gl.useProgram(program)
 
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
-    const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+    const uniforms: Record<string, WebGLUniformLocation | null> = {}
+    const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
     for (let i = 0; i < count; i++) {
-      const info = gl.getActiveUniform(program, i);
-      if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name);
+      const info = gl.getActiveUniform(program, i)
+      if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name)
     }
 
-    const vao = gl.createVertexArray();
-    const buffer = gl.createBuffer();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const vao = gl.createVertexArray()
+    const buffer = gl.createBuffer()
+    gl.bindVertexArray(vao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-    const texture = gl.createTexture();
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 255, 255]));
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.uniform1i(uniforms.u_image, 0);
+    const texture = gl.createTexture()
+    gl.activeTexture(gl.TEXTURE0)
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      1,
+      1,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      new Uint8Array([255, 0, 255, 255]),
+    )
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.uniform1i(uniforms.u_image, 0)
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
     const state = {
       raf: 0,
       last: 0,
@@ -595,151 +606,153 @@ export default function MetallicPaint(props: MetallicPaintProps) {
       velocityY: 0,
       targetX: 0,
       targetY: 0,
-      alive: true
-    };
+      alive: true,
+    }
 
     const resize = () => {
-      const s = settingsRef.current;
-      const rect = container.getBoundingClientRect();
-      const base = s.dpr ?? Math.min(window.devicePixelRatio || 1, 2);
-      let ratio = Math.max(base, 2);
-      const pixels = rect.width * rect.height * ratio * ratio;
-      if (pixels > MAX_PIXELS) ratio *= Math.sqrt(MAX_PIXELS / pixels);
-      const width = Math.max(1, Math.round(rect.width * ratio));
-      const height = Math.max(1, Math.round(rect.height * ratio));
-      if (width === state.width && height === state.height) return;
-      state.width = width;
-      state.height = height;
-      canvas.width = width;
-      canvas.height = height;
-      gl.viewport(0, 0, width, height);
-    };
+      const s = settingsRef.current
+      const rect = container.getBoundingClientRect()
+      const base = s.dpr ?? Math.min(window.devicePixelRatio || 1, 2)
+      let ratio = Math.max(base, 2)
+      const pixels = rect.width * rect.height * ratio * ratio
+      if (pixels > MAX_PIXELS) ratio *= Math.sqrt(MAX_PIXELS / pixels)
+      const width = Math.max(1, Math.round(rect.width * ratio))
+      const height = Math.max(1, Math.round(rect.height * ratio))
+      if (width === state.width && height === state.height) return
+      state.width = width
+      state.height = height
+      canvas.width = width
+      canvas.height = height
+      gl.viewport(0, 0, width, height)
+    }
 
     const draw = () => {
-      const s = settingsRef.current;
+      const s = settingsRef.current
       if (state.pending || !state.hasImage) {
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        return;
+        gl.clearColor(0, 0, 0, 0)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        return
       }
-      gl.useProgram(program);
-      gl.uniform2f(uniforms.u_resolution, state.width, state.height);
-      gl.uniform1f(uniforms.u_time, state.time);
-      gl.uniform1f(uniforms.u_imageAspect, state.imageAspect);
-      gl.uniform1f(uniforms.u_scale, s.scale);
-      gl.uniform1f(uniforms.u_rotation, s.rotation);
-      gl.uniform4f(uniforms.u_colorBack, s.back[0], s.back[1], s.back[2], s.back[3]);
-      gl.uniform4f(uniforms.u_colorTint, s.tint[0], s.tint[1], s.tint[2], s.tint[3]);
-      gl.uniform1f(uniforms.u_softness, s.softness);
-      gl.uniform1f(uniforms.u_repetition, s.density);
-      gl.uniform1f(uniforms.u_shiftRed, s.dispersion);
-      gl.uniform1f(uniforms.u_shiftBlue, s.dispersion);
-      gl.uniform1f(uniforms.u_distortion, s.distortion);
-      gl.uniform1f(uniforms.u_contour, s.edgeBend);
-      gl.uniform1f(uniforms.u_angle, s.angle);
-      gl.uniform2f(uniforms.u_tilt, state.tiltX, state.tiltY);
-      gl.uniform1f(uniforms.u_reveal, state.reveal);
-      gl.uniform1f(uniforms.u_light, s.lightMode ? 1 : 0);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.bindVertexArray(vao);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    };
+      gl.useProgram(program)
+      gl.uniform2f(uniforms.u_resolution, state.width, state.height)
+      gl.uniform1f(uniforms.u_time, state.time)
+      gl.uniform1f(uniforms.u_imageAspect, state.imageAspect)
+      gl.uniform1f(uniforms.u_scale, s.scale)
+      gl.uniform1f(uniforms.u_rotation, s.rotation)
+      gl.uniform4f(uniforms.u_colorBack, s.back[0], s.back[1], s.back[2], s.back[3])
+      gl.uniform4f(uniforms.u_colorTint, s.tint[0], s.tint[1], s.tint[2], s.tint[3])
+      gl.uniform1f(uniforms.u_softness, s.softness)
+      gl.uniform1f(uniforms.u_repetition, s.density)
+      gl.uniform1f(uniforms.u_shiftRed, s.dispersion)
+      gl.uniform1f(uniforms.u_shiftBlue, s.dispersion)
+      gl.uniform1f(uniforms.u_distortion, s.distortion)
+      gl.uniform1f(uniforms.u_contour, s.edgeBend)
+      gl.uniform1f(uniforms.u_angle, s.angle)
+      gl.uniform2f(uniforms.u_tilt, state.tiltX, state.tiltY)
+      gl.uniform1f(uniforms.u_reveal, state.reveal)
+      gl.uniform1f(uniforms.u_light, s.lightMode ? 1 : 0)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.bindVertexArray(vao)
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    }
 
     const frame = (now: number) => {
-      state.raf = 0;
-      if (!state.alive) return;
-      const s = settingsRef.current;
-      const dt = state.last ? Math.min(0.05, (now - state.last) / 1000) : 1 / 60;
-      state.last = now;
-      const moving = !s.paused && !reduce && s.speed !== 0;
-      if (moving) state.time += dt * s.speed;
+      state.raf = 0
+      if (!state.alive) return
+      const s = settingsRef.current
+      const dt = state.last ? Math.min(0.05, (now - state.last) / 1000) : 1 / 60
+      state.last = now
+      const moving = !s.paused && !reduce && s.speed !== 0
+      if (moving) state.time += dt * s.speed
 
-      let busy = moving;
+      let busy = moving
       if (state.reveal < 1 && !state.pending) {
-        if (state.revealStart < 0) state.revealStart = now;
-        const progress = clamp((now - state.revealStart) / 1600, 0, 1);
-        state.reveal = 1 - (1 - progress) ** 3;
-        if (moving) state.time += dt * 2.4 * (1 - progress) ** 2;
-        busy = true;
+        if (state.revealStart < 0) state.revealStart = now
+        const progress = clamp((now - state.revealStart) / 1600, 0, 1)
+        state.reveal = 1 - (1 - progress) ** 3
+        if (moving) state.time += dt * 2.4 * (1 - progress) ** 2
+        busy = true
       }
 
-      const stiffness = 60;
-      const damping = 14;
-      const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
-      const h = dt / steps;
+      const stiffness = 60
+      const damping = 14
+      const steps = Math.max(1, Math.ceil(dt / (1 / 240)))
+      const h = dt / steps
       for (let i = 0; i < steps; i++) {
-        state.velocityX += (stiffness * (state.targetX * s.mouseTilt - state.tiltX) - damping * state.velocityX) * h;
-        state.velocityY += (stiffness * (state.targetY * s.mouseTilt - state.tiltY) - damping * state.velocityY) * h;
-        state.tiltX += state.velocityX * h;
-        state.tiltY += state.velocityY * h;
+        state.velocityX +=
+          (stiffness * (state.targetX * s.mouseTilt - state.tiltX) - damping * state.velocityX) * h
+        state.velocityY +=
+          (stiffness * (state.targetY * s.mouseTilt - state.tiltY) - damping * state.velocityY) * h
+        state.tiltX += state.velocityX * h
+        state.tiltY += state.velocityY * h
       }
       if (
         Math.abs(state.targetX * s.mouseTilt - state.tiltX) > 0.0005 ||
         Math.abs(state.targetY * s.mouseTilt - state.tiltY) > 0.0005 ||
         Math.abs(state.velocityX) + Math.abs(state.velocityY) > 0.0005
       ) {
-        busy = true;
+        busy = true
       }
 
-      draw();
-      if (busy && state.visible) state.raf = requestAnimationFrame(frame);
-      else state.last = 0;
-    };
+      draw()
+      if (busy && state.visible) state.raf = requestAnimationFrame(frame)
+      else state.last = 0
+    }
 
     const wake = () => {
-      if (!state.raf && state.alive && state.visible) state.raf = requestAnimationFrame(frame);
-    };
+      if (!state.raf && state.alive && state.visible) state.raf = requestAnimationFrame(frame)
+    }
 
     const onMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      state.targetX = clamp(((event.clientX - rect.left) / rect.width) * 2 - 1, -1.2, 1.2);
-      state.targetY = clamp(((event.clientY - rect.top) / rect.height) * 2 - 1, -1.2, 1.2);
-      wake();
-    };
+      const rect = container.getBoundingClientRect()
+      state.targetX = clamp(((event.clientX - rect.left) / rect.width) * 2 - 1, -1.2, 1.2)
+      state.targetY = clamp(((event.clientY - rect.top) / rect.height) * 2 - 1, -1.2, 1.2)
+      wake()
+    }
 
     const onLeave = () => {
-      state.targetX = 0;
-      state.targetY = 0;
-      wake();
-    };
+      state.targetX = 0
+      state.targetY = 0
+      wake()
+    }
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      draw();
-    });
-    resizeObserver.observe(container);
+      resize()
+      draw()
+    })
+    resizeObserver.observe(container)
 
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-      if (state.visible) wake();
-    });
-    visibility.observe(container);
+      state.visible = entries.some(entry => entry.isIntersecting)
+      if (state.visible) wake()
+    })
+    visibility.observe(container)
 
     const onLost = (event: Event) => {
-      event.preventDefault();
-      state.alive = false;
-      cancelAnimationFrame(state.raf);
-    };
+      event.preventDefault()
+      state.alive = false
+      cancelAnimationFrame(state.raf)
+    }
 
-    canvas.addEventListener('webglcontextlost', onLost);
-    container.addEventListener('pointermove', onMove);
-    container.addEventListener('pointerleave', onLeave);
+    canvas.addEventListener('webglcontextlost', onLost)
+    container.addEventListener('pointermove', onMove)
+    container.addEventListener('pointerleave', onLeave)
 
     engine = {
       setPending: (value: boolean) => {
-        state.pending = value;
-        draw();
+        state.pending = value
+        draw()
       },
       setImage: (data: ImageData | null) => {
-        state.pending = false;
-        gl.bindTexture(gl.TEXTURE_2D, texture);
+        state.pending = false
+        gl.bindTexture(gl.TEXTURE_2D, texture)
         if (data) {
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data);
-          gl.generateMipmap(gl.TEXTURE_2D);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-          state.imageAspect = data.width / data.height;
-          state.hasImage = true;
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data)
+          gl.generateMipmap(gl.TEXTURE_2D)
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+          state.imageAspect = data.width / data.height
+          state.hasImage = true
         } else {
           gl.texImage2D(
             gl.TEXTURE_2D,
@@ -750,75 +763,83 @@ export default function MetallicPaint(props: MetallicPaintProps) {
             0,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            new Uint8Array([255, 0, 255, 255])
-          );
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-          state.imageAspect = 1;
-          state.hasImage = false;
+            new Uint8Array([255, 0, 255, 255]),
+          )
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+          state.imageAspect = 1
+          state.hasImage = false
         }
-        draw();
-        wake();
+        draw()
+        wake()
       },
       wake,
       redraw: () => {
-        resize();
-        draw();
-        wake();
-      }
-    };
+        resize()
+        draw()
+        wake()
+      },
+    }
 
-    resize();
-    draw();
-    wake();
+    resize()
+    draw()
+    wake()
 
     onCleanup(() => {
-      state.alive = false;
-      cancelAnimationFrame(state.raf);
-      resizeObserver.disconnect();
-      visibility.disconnect();
-      canvas.removeEventListener('webglcontextlost', onLost);
-      container.removeEventListener('pointermove', onMove);
-      container.removeEventListener('pointerleave', onLeave);
-      engine = null;
-      gl.deleteTexture(texture);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      state.alive = false
+      cancelAnimationFrame(state.raf)
+      resizeObserver.disconnect()
+      visibility.disconnect()
+      canvas.removeEventListener('webglcontextlost', onLost)
+      container.removeEventListener('pointermove', onMove)
+      container.removeEventListener('pointerleave', onLeave)
+      engine = null
+      gl.deleteTexture(texture)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   // Upstream deps: [imageSrc, text, fontFamily, fontWeight] — rebuild the
   // shape source whenever any of them changes.
   createEffect(() => {
-    const text = props.text;
-    const imageSrc = props.imageSrc;
-    const fontFamily = props.fontFamily ?? 'system-ui, sans-serif';
-    const fontWeight = props.fontWeight ?? 800;
-    let active = true;
+    const text = props.text
+    const imageSrc = props.imageSrc
+    const fontFamily = props.fontFamily ?? 'system-ui, sans-serif'
+    const fontWeight = props.fontWeight ?? 800
+    let active = true
     onCleanup(() => {
-      active = false;
-    });
-    const source = text ? drawTextSource(text, fontFamily, fontWeight) : imageSrc ? drawImageSource(imageSrc) : null;
+      active = false
+    })
+    const source = text
+      ? drawTextSource(text, fontFamily, fontWeight)
+      : imageSrc
+        ? drawImageSource(imageSrc)
+        : null
     if (!source) {
-      engine?.setImage(null);
-      return;
+      engine?.setImage(null)
+      return
     }
-    engine?.setPending(true);
+    engine?.setPending(true)
     source
       .then(canvasResult => {
-        if (!active || !canvasResult) return;
-        const data = processShape(canvasResult);
-        if (active) engine?.setImage(data);
+        if (!active || !canvasResult) return
+        const data = processShape(canvasResult)
+        if (active) engine?.setImage(data)
       })
       .catch(() => {
-        if (active) engine?.setImage(null);
-      });
-  });
+        if (active) engine?.setImage(null)
+      })
+  })
 
   return (
-    <div ref={container} class={`relative h-full w-full ${props.className ?? ''} ${props.class ?? ''}`.trim()} style={props.style}>
+    <div
+      ref={container}
+      class={`relative h-full w-full ${props.className ?? ''} ${props.class ?? ''}`.trim()}
+      style={props.style}
+    >
       <canvas ref={canvas} class="block h-full w-full" />
     </div>
-  );
+  )
 }

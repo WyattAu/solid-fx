@@ -1,4 +1,4 @@
-import EvilEye from './EvilEye';
+import EvilEye from './EvilEye'
 
 function EvilEyeDemo() {
   return (
@@ -16,7 +16,7 @@ function EvilEyeDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default EvilEyeDemo;
+export default EvilEyeDemo

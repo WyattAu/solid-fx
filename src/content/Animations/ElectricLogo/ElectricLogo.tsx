@@ -1,314 +1,336 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl'
 
 const BOLT = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M39 3 12 37h17l-4 24 27-34H35z" fill="#fff"/></svg>'
-)}`;
-const RASTER = 560;
-const CELL = 4;
-const FAR = 1e20;
-const ARCS = 5;
-const PULSES = 3;
-const PIXEL_BUDGET = 4e6;
+  '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M39 3 12 37h17l-4 24 27-34H35z" fill="#fff"/></svg>',
+)}`
+const RASTER = 560
+const CELL = 4
+const FAR = 1e20
+const ARCS = 5
+const PULSES = 3
+const PIXEL_BUDGET = 4e6
 
-type Rgb = [number, number, number];
+type Rgb = [number, number, number]
 
 export interface ElectricLogoProps {
-  src?: string;
-  color?: string;
-  glowColor?: string;
-  scale?: number;
-  intensity?: number;
-  glow?: number;
-  thickness?: number;
-  strands?: number;
-  bend?: number;
-  crackle?: number;
-  arcs?: number;
-  flicker?: number;
-  fill?: number;
-  speed?: number;
-  interactive?: boolean;
-  cursorIntensity?: number;
-  cursorRadius?: number;
-  theme?: 'dark' | 'light';
-  onRender?: (canvas: HTMLCanvasElement) => void;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  src?: string
+  color?: string
+  glowColor?: string
+  scale?: number
+  intensity?: number
+  glow?: number
+  thickness?: number
+  strands?: number
+  bend?: number
+  crackle?: number
+  arcs?: number
+  flicker?: number
+  fill?: number
+  speed?: number
+  interactive?: boolean
+  cursorIntensity?: number
+  cursorRadius?: number
+  theme?: 'dark' | 'light'
+  onRender?: (canvas: HTMLCanvasElement) => void
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Settings = Required<Omit<ElectricLogoProps, 'src' | 'className' | 'class' | 'style' | 'onRender'>> &
-  Pick<ElectricLogoProps, 'onRender'>;
+type Settings = Required<
+  Omit<ElectricLogoProps, 'src' | 'className' | 'class' | 'style' | 'onRender'>
+> &
+  Pick<ElectricLogoProps, 'onRender'>
 
 interface Shape {
-  field: Float32Array;
-  edges: number[];
-  width: number;
-  height: number;
-  pad: number;
-  logoWidth: number;
-  logoHeight: number;
-  glow: Float32Array;
-  glowWidth: number;
-  glowHeight: number;
-  glowOffset: number;
+  field: Float32Array
+  edges: number[]
+  width: number
+  height: number
+  pad: number
+  logoWidth: number
+  logoHeight: number
+  glow: Float32Array
+  glowWidth: number
+  glowHeight: number
+  glowOffset: number
 }
 
 interface Slot {
-  shape: Shape | null;
-  field: Texture;
-  glow: Texture;
+  shape: Shape | null
+  field: Texture
+  glow: Texture
 }
 
 interface Pulse {
-  x: number;
-  y: number;
-  born: number;
+  x: number
+  y: number
+  born: number
 }
 
 interface Point {
-  x: number;
-  y: number;
+  x: number
+  y: number
 }
 
 interface Focus {
-  x: number;
-  y: number;
-  radius: number;
+  x: number
+  y: number
+  radius: number
 }
 
 interface Spark {
-  ax: number;
-  ay: number;
-  bx: number;
-  by: number;
-  bow: number;
-  seed: number;
-  born: number;
-  life: number;
+  ax: number
+  ay: number
+  bx: number
+  by: number
+  bow: number
+  seed: number
+  born: number
+  life: number
 }
 
 const hexToRgb = (hex: string): Rgb => {
-  let h = String(hex || '').replace('#', '');
-  if (h.length === 3) h = h.replace(/./g, c => c + c);
-  const n = parseInt(h.slice(0, 6), 16);
-  return Number.isNaN(n) ? [1, 1, 1] : [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
-};
+  let h = String(hex || '').replace('#', '')
+  if (h.length === 3) h = h.replace(/./g, c => c + c)
+  const n = parseInt(h.slice(0, 6), 16)
+  return Number.isNaN(n)
+    ? [1, 1, 1]
+    : [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+}
 
-const transformLine = (f: Float64Array, d: Float64Array, v: Int32Array, z: Float64Array, n: number) => {
-  let k = 0;
-  v[0] = 0;
-  z[0] = -FAR;
-  z[1] = FAR;
+const transformLine = (
+  f: Float64Array,
+  d: Float64Array,
+  v: Int32Array,
+  z: Float64Array,
+  n: number,
+) => {
+  let k = 0
+  v[0] = 0
+  z[0] = -FAR
+  z[1] = FAR
   for (let q = 1; q < n; q++) {
-    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+    let s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
     while (s <= z[k]) {
-      k--;
-      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+      k--
+      s = (f[q] + q * q - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
     }
-    k++;
-    v[k] = q;
-    z[k] = s;
-    z[k + 1] = FAR;
+    k++
+    v[k] = q
+    z[k] = s
+    z[k + 1] = FAR
   }
-  k = 0;
+  k = 0
   for (let q = 0; q < n; q++) {
-    while (z[k + 1] < q) k++;
-    d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
+    while (z[k + 1] < q) k++
+    d[q] = (q - v[k]) * (q - v[k]) + f[v[k]]
   }
-};
+}
 
 const transformGrid = (grid: Float32Array, w: number, h: number) => {
-  const n = Math.max(w, h);
-  const f = new Float64Array(n);
-  const d = new Float64Array(n);
-  const v = new Int32Array(n);
-  const z = new Float64Array(n + 1);
+  const n = Math.max(w, h)
+  const f = new Float64Array(n)
+  const d = new Float64Array(n)
+  const v = new Int32Array(n)
+  const z = new Float64Array(n + 1)
   for (let x = 0; x < w; x++) {
-    for (let y = 0; y < h; y++) f[y] = grid[y * w + x];
-    transformLine(f, d, v, z, h);
-    for (let y = 0; y < h; y++) grid[y * w + x] = d[y];
+    for (let y = 0; y < h; y++) f[y] = grid[y * w + x]
+    transformLine(f, d, v, z, h)
+    for (let y = 0; y < h; y++) grid[y * w + x] = d[y]
   }
   for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) f[x] = grid[y * w + x];
-    transformLine(f, d, v, z, w);
-    for (let x = 0; x < w; x++) grid[y * w + x] = d[x];
+    for (let x = 0; x < w; x++) f[x] = grid[y * w + x]
+    transformLine(f, d, v, z, w)
+    for (let x = 0; x < w; x++) grid[y * w + x] = d[x]
   }
-};
+}
 
-const blurLine = (src: Float32Array, dst: Float32Array, offset: number, stride: number, n: number, r: number) => {
-  const scale = 1 / (2 * r + 1);
-  let sum = 0;
-  for (let i = 0; i <= r && i < n; i++) sum += src[offset + i * stride];
+const blurLine = (
+  src: Float32Array,
+  dst: Float32Array,
+  offset: number,
+  stride: number,
+  n: number,
+  r: number,
+) => {
+  const scale = 1 / (2 * r + 1)
+  let sum = 0
+  for (let i = 0; i <= r && i < n; i++) sum += src[offset + i * stride]
   for (let i = 0; i < n; i++) {
-    dst[offset + i * stride] = sum * scale;
-    if (i + r + 1 < n) sum += src[offset + (i + r + 1) * stride];
-    if (i - r >= 0) sum -= src[offset + (i - r) * stride];
+    dst[offset + i * stride] = sum * scale
+    if (i + r + 1 < n) sum += src[offset + (i + r + 1) * stride]
+    if (i - r >= 0) sum -= src[offset + (i - r) * stride]
   }
-};
+}
 
 const blurGrid = (grid: Float32Array, w: number, h: number, r: number) => {
-  const tmp = new Float32Array(w * h);
+  const tmp = new Float32Array(w * h)
   for (let pass = 0; pass < 3; pass++) {
-    for (let y = 0; y < h; y++) blurLine(grid, tmp, y * w, 1, w, r);
-    for (let x = 0; x < w; x++) blurLine(tmp, grid, x, w, h, r);
+    for (let y = 0; y < h; y++) blurLine(grid, tmp, y * w, 1, w, r)
+    for (let x = 0; x < w; x++) blurLine(tmp, grid, x, w, h, r)
   }
-};
+}
 
 const readCoverage = (data: Uint8ClampedArray, w: number, h: number) => {
-  const coverage = new Float32Array(w * h);
-  let clear = 0;
-  for (let i = 0; i < w * h; i++) if (data[i * 4 + 3] < 250) clear++;
+  const coverage = new Float32Array(w * h)
+  let clear = 0
+  for (let i = 0; i < w * h; i++) if (data[i * 4 + 3] < 250) clear++
   if (clear > w * h * 0.01) {
-    for (let i = 0; i < w * h; i++) coverage[i] = data[i * 4 + 3] / 255;
-    return coverage;
+    for (let i = 0; i < w * h; i++) coverage[i] = data[i * 4 + 3] / 255
+    return coverage
   }
-  let r = 0;
-  let g = 0;
-  let b = 0;
-  let n = 0;
+  let r = 0
+  let g = 0
+  let b = 0
+  let n = 0
   const sample = (i: number) => {
-    r += data[i * 4];
-    g += data[i * 4 + 1];
-    b += data[i * 4 + 2];
-    n++;
-  };
+    r += data[i * 4]
+    g += data[i * 4 + 1]
+    b += data[i * 4 + 2]
+    n++
+  }
   for (let x = 0; x < w; x++) {
-    sample(x);
-    sample((h - 1) * w + x);
+    sample(x)
+    sample((h - 1) * w + x)
   }
   for (let y = 0; y < h; y++) {
-    sample(y * w);
-    sample(y * w + w - 1);
+    sample(y * w)
+    sample(y * w + w - 1)
   }
-  r /= n;
-  g /= n;
-  b /= n;
+  r /= n
+  g /= n
+  b /= n
   for (let i = 0; i < w * h; i++) {
-    const diff = Math.max(Math.abs(data[i * 4] - r), Math.abs(data[i * 4 + 1] - g), Math.abs(data[i * 4 + 2] - b));
-    coverage[i] = Math.min(1, Math.max(0, (diff - 24) / 48));
+    const diff = Math.max(
+      Math.abs(data[i * 4] - r),
+      Math.abs(data[i * 4 + 1] - g),
+      Math.abs(data[i * 4 + 2] - b),
+    )
+    coverage[i] = Math.min(1, Math.max(0, (diff - 24) / 48))
   }
-  return coverage;
-};
+  return coverage
+}
 
 const sampleField = (shape: Shape, x: number, y: number) => {
-  const { field, width, height } = shape;
-  const cx = Math.min(Math.max(x, 0.5), width - 0.5);
-  const cy = Math.min(Math.max(y, 0.5), height - 0.5);
-  const x0 = Math.min(Math.floor(cx - 0.5), width - 2);
-  const y0 = Math.min(Math.floor(cy - 0.5), height - 2);
-  const tx = cx - 0.5 - x0;
-  const ty = cy - 0.5 - y0;
-  const i = y0 * width + x0;
-  const top = field[i] + (field[i + 1] - field[i]) * tx;
-  const bottom = field[i + width] + (field[i + width + 1] - field[i + width]) * tx;
-  return top + (bottom - top) * ty + Math.hypot(x - cx, y - cy);
-};
+  const { field, width, height } = shape
+  const cx = Math.min(Math.max(x, 0.5), width - 0.5)
+  const cy = Math.min(Math.max(y, 0.5), height - 0.5)
+  const x0 = Math.min(Math.floor(cx - 0.5), width - 2)
+  const y0 = Math.min(Math.floor(cy - 0.5), height - 2)
+  const tx = cx - 0.5 - x0
+  const ty = cy - 0.5 - y0
+  const i = y0 * width + x0
+  const top = field[i] + (field[i + 1] - field[i]) * tx
+  const bottom = field[i + width] + (field[i + width + 1] - field[i + width]) * tx
+  return top + (bottom - top) * ty + Math.hypot(x - cx, y - cy)
+}
 
 const traceShape = (image: HTMLImageElement): Shape | null => {
-  const iw = image.naturalWidth || image.width;
-  const ih = image.naturalHeight || image.height;
-  if (!iw || !ih) return null;
-  const fit = RASTER / Math.max(iw, ih);
-  const w = Math.max(2, Math.round(iw * fit));
-  const h = Math.max(2, Math.round(ih * fit));
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  if (!ctx) return null;
-  ctx.drawImage(image, 0, 0, w, h);
-  const coverage = readCoverage(ctx.getImageData(0, 0, w, h).data, w, h);
+  const iw = image.naturalWidth || image.width
+  const ih = image.naturalHeight || image.height
+  if (!iw || !ih) return null
+  const fit = RASTER / Math.max(iw, ih)
+  const w = Math.max(2, Math.round(iw * fit))
+  const h = Math.max(2, Math.round(ih * fit))
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+  if (!ctx) return null
+  ctx.drawImage(image, 0, 0, w, h)
+  const coverage = readCoverage(ctx.getImageData(0, 0, w, h).data, w, h)
 
-  let left = w;
-  let top = h;
-  let right = -1;
-  let bottom = -1;
+  let left = w
+  let top = h
+  let right = -1
+  let bottom = -1
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      if (coverage[y * w + x] <= 0.01) continue;
-      if (x < left) left = x;
-      if (x > right) right = x;
-      if (y < top) top = y;
-      if (y > bottom) bottom = y;
+      if (coverage[y * w + x] <= 0.01) continue
+      if (x < left) left = x
+      if (x > right) right = x
+      if (y < top) top = y
+      if (y > bottom) bottom = y
     }
   }
-  if (right < 0) return null;
+  if (right < 0) return null
 
-  const logoWidth = right - left + 1;
-  const logoHeight = bottom - top + 1;
-  const pad = Math.ceil(Math.max(logoWidth, logoHeight) * 0.25) + 2;
-  const width = logoWidth + pad * 2;
-  const height = logoHeight + pad * 2;
-  const outer = new Float32Array(width * height);
-  const inner = new Float32Array(width * height);
+  const logoWidth = right - left + 1
+  const logoHeight = bottom - top + 1
+  const pad = Math.ceil(Math.max(logoWidth, logoHeight) * 0.25) + 2
+  const width = logoWidth + pad * 2
+  const height = logoHeight + pad * 2
+  const outer = new Float32Array(width * height)
+  const inner = new Float32Array(width * height)
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const sx = x - pad + left;
-      const sy = y - pad + top;
-      const a = sx >= 0 && sy >= 0 && sx < w && sy < h ? coverage[sy * w + sx] : 0;
-      const i = y * width + x;
+      const sx = x - pad + left
+      const sy = y - pad + top
+      const a = sx >= 0 && sy >= 0 && sx < w && sy < h ? coverage[sy * w + sx] : 0
+      const i = y * width + x
       if (a >= 1) {
-        outer[i] = 0;
-        inner[i] = FAR;
+        outer[i] = 0
+        inner[i] = FAR
       } else if (a <= 0) {
-        outer[i] = FAR;
-        inner[i] = 0;
+        outer[i] = FAR
+        inner[i] = 0
       } else {
-        const e = 0.5 - a;
-        outer[i] = e > 0 ? e * e : 0;
-        inner[i] = e < 0 ? e * e : 0;
+        const e = 0.5 - a
+        outer[i] = e > 0 ? e * e : 0
+        inner[i] = e < 0 ? e * e : 0
       }
     }
   }
-  transformGrid(outer, width, height);
-  transformGrid(inner, width, height);
+  transformGrid(outer, width, height)
+  transformGrid(inner, width, height)
 
-  const field = new Float32Array(width * height);
-  for (let i = 0; i < width * height; i++) field[i] = Math.sqrt(outer[i]) - Math.sqrt(inner[i]);
+  const field = new Float32Array(width * height)
+  for (let i = 0; i < width * height; i++) field[i] = Math.sqrt(outer[i]) - Math.sqrt(inner[i])
 
-  const points: number[] = [];
+  const points: number[] = []
   for (let y = 1; y < height - 1; y++) {
     for (let x = 1; x < width - 1; x++) {
-      const i = y * width + x;
-      const d = field[i];
-      if (d > 0) continue;
-      if (field[i - 1] <= 0 && field[i + 1] <= 0 && field[i - width] <= 0 && field[i + width] <= 0) continue;
-      const gx = field[i + 1] - field[i - 1];
-      const gy = field[i + width] - field[i - width];
-      const len = Math.hypot(gx, gy) || 1;
-      points.push(x + 0.5 - (d * gx) / len, y + 0.5 - (d * gy) / len);
+      const i = y * width + x
+      const d = field[i]
+      if (d > 0) continue
+      if (field[i - 1] <= 0 && field[i + 1] <= 0 && field[i - width] <= 0 && field[i + width] <= 0)
+        continue
+      const gx = field[i + 1] - field[i - 1]
+      const gy = field[i + width] - field[i - width]
+      const len = Math.hypot(gx, gy) || 1
+      points.push(x + 0.5 - (d * gx) / len, y + 0.5 - (d * gy) / len)
     }
   }
-  const stride = Math.max(1, Math.ceil(points.length / 2 / 3000)) * 2;
-  const edges: number[] = [];
-  for (let i = 0; i < points.length; i += stride) edges.push(points[i], points[i + 1]);
+  const stride = Math.max(1, Math.ceil(points.length / 2 / 3000)) * 2
+  const edges: number[] = []
+  for (let i = 0; i < points.length; i += stride) edges.push(points[i], points[i + 1])
 
-  const size = Math.max(logoWidth, logoHeight);
-  const glowPad = Math.ceil((size * 0.7) / CELL);
-  const glowWidth = Math.ceil(logoWidth / CELL) + glowPad * 2;
-  const glowHeight = Math.ceil(logoHeight / CELL) + glowPad * 2;
-  const tight = new Float32Array(glowWidth * glowHeight);
+  const size = Math.max(logoWidth, logoHeight)
+  const glowPad = Math.ceil((size * 0.7) / CELL)
+  const glowWidth = Math.ceil(logoWidth / CELL) + glowPad * 2
+  const glowHeight = Math.ceil(logoHeight / CELL) + glowPad * 2
+  const tight = new Float32Array(glowWidth * glowHeight)
   for (let y = 0; y < height; y++) {
-    const gy = Math.floor((y - pad) / CELL) + glowPad;
+    const gy = Math.floor((y - pad) / CELL) + glowPad
     for (let x = 0; x < width; x++) {
-      const gx = Math.floor((x - pad) / CELL) + glowPad;
-      tight[gy * glowWidth + gx] += Math.exp(-Math.abs(field[y * width + x]) / 1.5) / (CELL * CELL);
+      const gx = Math.floor((x - pad) / CELL) + glowPad
+      tight[gy * glowWidth + gx] += Math.exp(-Math.abs(field[y * width + x]) / 1.5) / (CELL * CELL)
     }
   }
-  const wide = tight.slice();
-  const tightRadius = Math.max(1, Math.round((size * 0.035) / CELL));
-  const wideRadius = Math.max(2, Math.round((size * 0.13) / CELL));
-  blurGrid(tight, glowWidth, glowHeight, tightRadius);
-  blurGrid(wide, glowWidth, glowHeight, wideRadius);
-  const tightNorm = (Math.sqrt(2 * Math.PI * (tightRadius * tightRadius + tightRadius)) * CELL) / 3;
-  const wideNorm = (Math.sqrt(2 * Math.PI * (wideRadius * wideRadius + wideRadius)) * CELL) / 3;
-  const glow = new Float32Array(glowWidth * glowHeight * 2);
+  const wide = tight.slice()
+  const tightRadius = Math.max(1, Math.round((size * 0.035) / CELL))
+  const wideRadius = Math.max(2, Math.round((size * 0.13) / CELL))
+  blurGrid(tight, glowWidth, glowHeight, tightRadius)
+  blurGrid(wide, glowWidth, glowHeight, wideRadius)
+  const tightNorm = (Math.sqrt(2 * Math.PI * (tightRadius * tightRadius + tightRadius)) * CELL) / 3
+  const wideNorm = (Math.sqrt(2 * Math.PI * (wideRadius * wideRadius + wideRadius)) * CELL) / 3
+  const glow = new Float32Array(glowWidth * glowHeight * 2)
   for (let i = 0; i < glowWidth * glowHeight; i++) {
-    glow[i * 2] = tight[i] * tightNorm;
-    glow[i * 2 + 1] = wide[i] * wideNorm;
+    glow[i * 2] = tight[i] * tightNorm
+    glow[i * 2 + 1] = wide[i] * wideNorm
   }
 
   return {
@@ -322,43 +344,43 @@ const traceShape = (image: HTMLImageElement): Shape | null => {
     glow,
     glowWidth,
     glowHeight,
-    glowOffset: pad - glowPad * CELL
-  };
-};
+    glowOffset: pad - glowPad * CELL,
+  }
+}
 
 const spawnArc = (shape: Shape, time: number, focus: Focus | null): Spark | null => {
-  const { edges, logoWidth, logoHeight } = shape;
-  const count = edges.length / 2;
-  if (count < 2) return null;
-  const size = Math.max(logoWidth, logoHeight);
-  let i = Math.floor(Math.random() * count);
+  const { edges, logoWidth, logoHeight } = shape
+  const count = edges.length / 2
+  if (count < 2) return null
+  const size = Math.max(logoWidth, logoHeight)
+  let i = Math.floor(Math.random() * count)
   if (focus) {
-    let found = false;
+    let found = false
     for (let attempt = 0; attempt < 40 && !found; attempt++) {
-      const j = Math.floor(Math.random() * count);
+      const j = Math.floor(Math.random() * count)
       if (Math.hypot(edges[j * 2] - focus.x, edges[j * 2 + 1] - focus.y) < focus.radius) {
-        i = j;
-        found = true;
+        i = j
+        found = true
       }
     }
-    if (!found) return null;
+    if (!found) return null
   }
-  const ax = edges[i * 2];
-  const ay = edges[i * 2 + 1];
+  const ax = edges[i * 2]
+  const ay = edges[i * 2 + 1]
   for (let attempt = 0; attempt < 24; attempt++) {
-    const j = Math.floor(Math.random() * count);
-    const bx = edges[j * 2];
-    const by = edges[j * 2 + 1];
-    const len = Math.hypot(bx - ax, by - ay);
-    if (len < size * 0.08 || len > size * 0.3) continue;
-    const nx = -(by - ay) / len;
-    const ny = (bx - ax) / len;
-    const bow = len * (0.2 + Math.random() * 0.3);
-    const mx = (ax + bx) / 2;
-    const my = (ay + by) / 2;
-    const left = sampleField(shape, mx + nx * bow, my + ny * bow);
-    const right = sampleField(shape, mx - nx * bow, my - ny * bow);
-    if (Math.max(left, right) <= 0) continue;
+    const j = Math.floor(Math.random() * count)
+    const bx = edges[j * 2]
+    const by = edges[j * 2 + 1]
+    const len = Math.hypot(bx - ax, by - ay)
+    if (len < size * 0.08 || len > size * 0.3) continue
+    const nx = -(by - ay) / len
+    const ny = (bx - ax) / len
+    const bow = len * (0.2 + Math.random() * 0.3)
+    const mx = (ax + bx) / 2
+    const my = (ay + by) / 2
+    const left = sampleField(shape, mx + nx * bow, my + ny * bow)
+    const right = sampleField(shape, mx - nx * bow, my - ny * bow)
+    if (Math.max(left, right) <= 0) continue
     return {
       ax,
       ay,
@@ -367,11 +389,11 @@ const spawnArc = (shape: Shape, time: number, focus: Focus | null): Spark | null
       bow: left >= right ? bow : -bow,
       seed: 1 + Math.random() * 60,
       born: time,
-      life: 0.35 + Math.random() * 0.45
-    };
+      life: 0.35 + Math.random() * 0.45,
+    }
   }
-  return null;
-};
+  return null
+}
 
 const vertex = `#version 300 es
 in vec2 position;
@@ -381,7 +403,7 @@ void main() {
   vUv = uv;
   gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const fragment = `#version 300 es
 precision highp float;
@@ -650,12 +672,12 @@ void main() {
   alpha = clamp(alpha + grain, 0.0, 1.0);
   fragColor = vec4(clamp(color + grain, 0.0, alpha), alpha);
 }
-`;
+`
 
 const ElectricLogo = (props: ElectricLogoProps) => {
-  let container!: HTMLDivElement;
-  let settings: Settings | null = null;
-  let shape: Shape | null = null;
+  let container!: HTMLDivElement
+  let settings: Settings | null = null
+  let shape: Shape | null = null
 
   const computeSettings = (): Settings => ({
     color: props.color ?? '#ecc7ff',
@@ -675,60 +697,60 @@ const ElectricLogo = (props: ElectricLogoProps) => {
     cursorIntensity: props.cursorIntensity ?? 0.75,
     cursorRadius: props.cursorRadius ?? 100,
     theme: props.theme ?? 'dark',
-    onRender: props.onRender
-  });
+    onRender: props.onRender,
+  })
 
   // Upstream re-assigned settingsRef.current every render; this effect tracks
   // every prop so the frame loop always reads fresh settings.
   createEffect(() => {
-    settings = computeSettings();
-  });
+    settings = computeSettings()
+  })
 
   createEffect(() => {
-    const src = props.src;
-    let alive = true;
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.decoding = 'async';
+    const src = props.src
+    let alive = true
+    const image = new Image()
+    image.crossOrigin = 'anonymous'
+    image.decoding = 'async'
     image.onload = () => {
-      if (!alive) return;
-      let traced: Shape | null = null;
+      if (!alive) return
+      let traced: Shape | null = null
       try {
-        traced = traceShape(image);
+        traced = traceShape(image)
       } catch {
-        traced = null;
+        traced = null
       }
-      if (traced) shape = traced;
-    };
-    image.src = src || BOLT;
+      if (traced) shape = traced
+    }
+    image.src = src || BOLT
     onCleanup(() => {
-      alive = false;
-      image.onload = null;
-    });
-  });
+      alive = false
+      image.onload = null
+    })
+  })
 
   onMount(() => {
-    const containerEl = container;
-    if (!containerEl) return;
+    const containerEl = container
+    if (!containerEl) return
 
     const renderer = new Renderer({
       dpr: Math.min(window.devicePixelRatio || 1, 2),
       alpha: true,
       premultipliedAlpha: true,
-      antialias: false
-    });
-    const gl = renderer.gl;
-    const gl2 = gl as WebGL2RenderingContext;
+      antialias: false,
+    })
+    const gl = renderer.gl
+    const gl2 = gl as WebGL2RenderingContext
     if (!renderer.isWebgl2) {
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      return;
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      return
     }
-    gl.clearColor(0, 0, 0, 0);
-    const canvas = gl.canvas;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    containerEl.appendChild(canvas);
+    gl.clearColor(0, 0, 0, 0)
+    const canvas = gl.canvas
+    canvas.style.display = 'block'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
+    containerEl.appendChild(canvas)
 
     const makeSlot = (): Slot => ({
       shape: null,
@@ -743,7 +765,7 @@ const ElectricLogo = (props: ElectricLogoProps) => {
         magFilter: gl.LINEAR,
         generateMipmaps: false,
         flipY: false,
-        unpackAlignment: 1
+        unpackAlignment: 1,
       }),
       glow: new Texture(gl, {
         image: new Float32Array([0, 0]),
@@ -756,14 +778,14 @@ const ElectricLogo = (props: ElectricLogoProps) => {
         magFilter: gl.LINEAR,
         generateMipmaps: false,
         flipY: false,
-        unpackAlignment: 1
-      })
-    });
-    const slots = [makeSlot(), makeSlot()];
+        unpackAlignment: 1,
+      }),
+    })
+    const slots = [makeSlot(), makeSlot()]
 
-    const arcEnds = Array.from({ length: ARCS * 4 }, () => 0);
-    const arcShape = Array.from({ length: ARCS * 4 }, () => 0);
-    const pulseData = Array.from({ length: PULSES * 4 }, () => 0);
+    const arcEnds = Array.from({ length: ARCS * 4 }, () => 0)
+    const arcShape = Array.from({ length: ARCS * 4 }, () => 0)
+    const pulseData = Array.from({ length: PULSES * 4 }, () => 0)
     const uniforms = {
       tFieldFrom: { value: slots[1].field },
       tGlowFrom: { value: slots[1].glow },
@@ -795,282 +817,292 @@ const ElectricLogo = (props: ElectricLogoProps) => {
       uFill: { value: 0.5 },
       uInk: { value: 0 },
       uArcEnds: { value: arcEnds },
-      uArcShape: { value: arcShape }
-    };
+      uArcShape: { value: arcShape },
+    }
     const mesh = new Mesh(gl, {
       geometry: new Triangle(gl),
-      program: new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false })
-    });
+      program: new Program(gl, { vertex, fragment, uniforms, depthTest: false, depthWrite: false }),
+    })
 
-    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const pointer = { x: 0, y: 0, over: false };
-    const hover = { x: 0, y: 0, vx: 0, vy: 0, power: 0 };
-    const sparks: Spark[] = [];
-    const pulses: Pulse[] = [];
-    let target = 0;
-    let pending: Shape | null = null;
-    let morph = 1;
-    let burst: Point | null = null;
-    let progress = 0;
-    let ink = 0;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const pointer = { x: 0, y: 0, over: false }
+    const hover = { x: 0, y: 0, vx: 0, vy: 0, power: 0 }
+    const sparks: Spark[] = []
+    const pulses: Pulse[] = []
+    let target = 0
+    let pending: Shape | null = null
+    let morph = 1
+    let burst: Point | null = null
+    let progress = 0
+    let ink = 0
     const hues = [
       [1, 1, 1],
-      [1, 1, 1]
-    ];
-    let settled = false;
-    let time = 0;
-    let width = 1;
-    let height = 1;
-    let raf = 0;
-    let last = performance.now();
-    let visible = true;
+      [1, 1, 1],
+    ]
+    let settled = false
+    let time = 0
+    let width = 1
+    let height = 1
+    let raf = 0
+    let last = performance.now()
+    let visible = true
 
     const load = (slot: Slot, next: Shape) => {
-      slot.shape = next;
-      slot.field.image = next.field;
-      slot.field.width = next.width;
-      slot.field.height = next.height;
-      slot.field.needsUpdate = true;
-      slot.glow.image = next.glow;
-      slot.glow.width = next.glowWidth;
-      slot.glow.height = next.glowHeight;
-      slot.glow.needsUpdate = true;
-    };
+      slot.shape = next
+      slot.field.image = next.field
+      slot.field.width = next.width
+      slot.field.height = next.height
+      slot.field.needsUpdate = true
+      slot.glow.image = next.glow
+      slot.glow.width = next.glowWidth
+      slot.glow.height = next.glowHeight
+      slot.glow.needsUpdate = true
+    }
 
     const place = (targetShape: Shape, s: Settings) => {
       const fit = Math.max(
         1e-4,
-        Math.min((width * s.scale) / targetShape.logoWidth, (height * s.scale) / targetShape.logoHeight)
-      );
+        Math.min(
+          (width * s.scale) / targetShape.logoWidth,
+          (height * s.scale) / targetShape.logoHeight,
+        ),
+      )
       return {
         fit,
         ox: width / 2 - (targetShape.pad + targetShape.logoWidth / 2) * fit,
         oy: height / 2 - (targetShape.pad + targetShape.logoHeight / 2) * fit,
-        unit: (Math.max(targetShape.logoWidth, targetShape.logoHeight) * fit) / 100
-      };
-    };
+        unit: (Math.max(targetShape.logoWidth, targetShape.logoHeight) * fit) / 100,
+      }
+    }
 
     const resize = () => {
-      width = Math.max(1, containerEl.clientWidth);
-      height = Math.max(1, containerEl.clientHeight);
-      renderer.dpr = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(PIXEL_BUDGET / (width * height)));
-      renderer.setSize(width, height);
-      uniforms.uResolution.value = [width, height];
-    };
+      width = Math.max(1, containerEl.clientWidth)
+      height = Math.max(1, containerEl.clientHeight)
+      renderer.dpr = Math.min(
+        window.devicePixelRatio || 1,
+        2,
+        Math.sqrt(PIXEL_BUDGET / (width * height)),
+      )
+      renderer.setSize(width, height)
+      uniforms.uResolution.value = [width, height]
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      const s = settings;
-      const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
-      last = now;
+      raf = 0
+      const s = settings
+      const dt = Math.min(0.05, Math.max(0, (now - last) / 1000))
+      last = now
 
-      const incoming = shape;
-      if (incoming && incoming !== slots[target].shape) pending = incoming;
+      const incoming = shape
+      if (incoming && incoming !== slots[target].shape) pending = incoming
       if (pending && morph >= 1) {
         if (slots[target].shape) {
-          target = 1 - target;
-          morph = 0;
-          sparks.length = 0;
+          target = 1 - target
+          morph = 0
+          sparks.length = 0
         }
-        load(slots[target], pending);
-        pending = null;
+        load(slots[target], pending)
+        pending = null
       }
-      if (morph < 1) morph = Math.min(1, morph + dt / (pending ? 0.3 : 1.6));
+      if (morph < 1) morph = Math.min(1, morph + dt / (pending ? 0.3 : 1.6))
 
-      const to = slots[target].shape;
-      const from = morph < 1 ? slots[1 - target].shape : null;
-      if (to) progress = Math.min(1, progress + dt / 1.4);
-      const presence = progress * progress * (3 - 2 * progress);
+      const to = slots[target].shape
+      const from = morph < 1 ? slots[1 - target].shape : null
+      if (to) progress = Math.min(1, progress + dt / 1.4)
+      const presence = progress * progress * (3 - 2 * progress)
 
       if (to && s) {
-        const near = place(to, s);
-        const far = from ? place(from, s) : near;
-        const blend = morph * morph * (3 - 2 * morph);
-        const unit = far.unit + (near.unit - far.unit) * blend;
+        const near = place(to, s)
+        const far = from ? place(from, s) : near
+        const blend = morph * morph * (3 - 2 * morph)
+        const unit = far.unit + (near.unit - far.unit) * blend
 
-        const engaged = s.interactive && pointer.over;
+        const engaged = s.interactive && pointer.over
         if (engaged && hover.power < 0.01) {
-          hover.x = pointer.x;
-          hover.y = pointer.y;
-          hover.vx = 0;
-          hover.vy = 0;
+          hover.x = pointer.x
+          hover.y = pointer.y
+          hover.vx = 0
+          hover.vy = 0
         }
-        hover.vx += ((pointer.x - hover.x) * 120 - hover.vx * 19) * dt;
-        hover.vy += ((pointer.y - hover.y) * 120 - hover.vy * 19) * dt;
-        hover.x += hover.vx * dt;
-        hover.y += hover.vy * dt;
-        hover.power += ((engaged ? 1 : 0) - hover.power) * (1 - Math.exp(-dt / (engaged ? 0.3 : 0.55)));
+        hover.vx += ((pointer.x - hover.x) * 120 - hover.vx * 19) * dt
+        hover.vy += ((pointer.y - hover.y) * 120 - hover.vy * 19) * dt
+        hover.x += hover.vx * dt
+        hover.y += hover.vy * dt
+        hover.power +=
+          ((engaged ? 1 : 0) - hover.power) * (1 - Math.exp(-dt / (engaged ? 0.3 : 0.55)))
 
-        const motion = reducedMotion ? 0.2 : 1;
-        time += dt * s.speed * motion;
+        const motion = reducedMotion ? 0.2 : 1
+        time += dt * s.speed * motion
 
         for (let i = sparks.length - 1; i >= 0; i--) {
-          if (time - sparks[i].born > sparks[i].life) sparks.splice(i, 1);
+          if (time - sparks[i].born > sparks[i].life) sparks.splice(i, 1)
         }
         const focus = (spot: Point): Focus => ({
           x: (spot.x - near.ox) / near.fit,
           y: (spot.y - near.oy) / near.fit,
-          radius: Math.max(1, s.cursorRadius) / near.fit
-        });
+          radius: Math.max(1, s.cursorRadius) / near.fit,
+        })
         if (burst && morph >= 1 && s.arcs > 0) {
           for (let i = 0; i < 3 && sparks.length < ARCS; i++) {
-            const spark = spawnArc(to, time, focus(burst));
-            if (spark) sparks.push(spark);
+            const spark = spawnArc(to, time, focus(burst))
+            if (spark) sparks.push(spark)
           }
         }
-        burst = null;
+        burst = null
         if (!reducedMotion && presence > 0.8 && morph >= 1 && sparks.length < ARCS) {
-          const chance = dt * s.speed * s.arcs;
+          const chance = dt * s.speed * s.arcs
           if (Math.random() < chance * 6 * hover.power * s.cursorIntensity) {
-            const spark = spawnArc(to, time, focus(hover));
-            if (spark) sparks.push(spark);
+            const spark = spawnArc(to, time, focus(hover))
+            if (spark) sparks.push(spark)
           } else if (Math.random() < chance * 2.2) {
-            const spark = spawnArc(to, time, null);
-            if (spark) sparks.push(spark);
+            const spark = spawnArc(to, time, null)
+            if (spark) sparks.push(spark)
           }
         }
 
         for (let i = 0; i < ARCS; i++) {
-          const o = i * 4;
-          const spark = sparks[i];
+          const o = i * 4
+          const spark = sparks[i]
           if (!spark) {
-            arcShape[o + 1] = 0;
-            continue;
+            arcShape[o + 1] = 0
+            continue
           }
-          const k = (time - spark.born) / spark.life;
-          arcEnds[o] = near.ox + spark.ax * near.fit;
-          arcEnds[o + 1] = near.oy + spark.ay * near.fit;
-          arcEnds[o + 2] = near.ox + spark.bx * near.fit;
-          arcEnds[o + 3] = near.oy + spark.by * near.fit;
-          arcShape[o] = spark.bow * near.fit;
-          arcShape[o + 1] = Math.sin(Math.PI * Math.min(1, Math.max(0, k))) * presence;
-          arcShape[o + 2] = spark.seed;
+          const k = (time - spark.born) / spark.life
+          arcEnds[o] = near.ox + spark.ax * near.fit
+          arcEnds[o + 1] = near.oy + spark.ay * near.fit
+          arcEnds[o + 2] = near.ox + spark.bx * near.fit
+          arcEnds[o + 3] = near.oy + spark.by * near.fit
+          arcShape[o] = spark.bow * near.fit
+          arcShape[o + 1] = Math.sin(Math.PI * Math.min(1, Math.max(0, k))) * presence
+          arcShape[o + 2] = spark.seed
         }
 
-        let boost = 0;
-        let flash = 0;
+        let boost = 0
+        let flash = 0
         for (let i = pulses.length - 1; i >= 0; i--) {
-          if ((now - pulses[i].born) / 1000 > 2) pulses.splice(i, 1);
+          if ((now - pulses[i].born) / 1000 > 2) pulses.splice(i, 1)
         }
         for (let i = 0; i < PULSES; i++) {
-          const o = i * 4;
-          const pulse = pulses[i];
+          const o = i * 4
+          const pulse = pulses[i]
           if (!pulse) {
-            pulseData[o + 3] = 0;
-            continue;
+            pulseData[o + 3] = 0
+            continue
           }
-          const age = (now - pulse.born) / 1000;
-          pulseData[o] = pulse.x;
-          pulseData[o + 1] = pulse.y;
-          pulseData[o + 2] = age;
-          pulseData[o + 3] = 1;
-          boost = Math.max(boost, Math.exp(-age * 1.7));
-          flash += Math.exp(-age * 7);
+          const age = (now - pulse.born) / 1000
+          pulseData[o] = pulse.x
+          pulseData[o + 1] = pulse.y
+          pulseData[o + 2] = age
+          pulseData[o + 3] = 1
+          boost = Math.max(boost, Math.exp(-age * 1.7))
+          flash += Math.exp(-age * 7)
         }
 
-        const fromSlot = slots[1 - target];
-        uniforms.tFieldTo.value = slots[target].field;
-        uniforms.tGlowTo.value = slots[target].glow;
-        uniforms.tFieldFrom.value = fromSlot.field;
-        uniforms.tGlowFrom.value = fromSlot.glow;
-        uniforms.uMapTo.value = [near.ox, near.oy, near.fit, to.glowOffset];
-        uniforms.uSizeTo.value = [to.width, to.height, to.glowWidth, to.glowHeight];
+        const fromSlot = slots[1 - target]
+        uniforms.tFieldTo.value = slots[target].field
+        uniforms.tGlowTo.value = slots[target].glow
+        uniforms.tFieldFrom.value = fromSlot.field
+        uniforms.tGlowFrom.value = fromSlot.glow
+        uniforms.uMapTo.value = [near.ox, near.oy, near.fit, to.glowOffset]
+        uniforms.uSizeTo.value = [to.width, to.height, to.glowWidth, to.glowHeight]
         if (from) {
-          uniforms.uMapFrom.value = [far.ox, far.oy, far.fit, from.glowOffset];
-          uniforms.uSizeFrom.value = [from.width, from.height, from.glowWidth, from.glowHeight];
+          uniforms.uMapFrom.value = [far.ox, far.oy, far.fit, from.glowOffset]
+          uniforms.uSizeFrom.value = [from.width, from.height, from.glowWidth, from.glowHeight]
         }
-        uniforms.uMorph.value = morph;
-        uniforms.uUnit.value = unit;
-        uniforms.uTime.value = time;
-        uniforms.uPresence.value = presence;
-        uniforms.uHover.value = [hover.x, hover.y, hover.power * Math.max(0, s.cursorIntensity)];
-        uniforms.uHoverRadius.value = Math.max(1, s.cursorRadius);
-        uniforms.uPulseBoost.value = boost;
-        uniforms.uFlash.value = flash;
-        const targets = [hexToRgb(s.color), hexToRgb(s.glowColor)];
-        const shift = settled ? 1 - Math.exp(-dt / 0.35) : 1;
-        settled = true;
+        uniforms.uMorph.value = morph
+        uniforms.uUnit.value = unit
+        uniforms.uTime.value = time
+        uniforms.uPresence.value = presence
+        uniforms.uHover.value = [hover.x, hover.y, hover.power * Math.max(0, s.cursorIntensity)]
+        uniforms.uHoverRadius.value = Math.max(1, s.cursorRadius)
+        uniforms.uPulseBoost.value = boost
+        uniforms.uFlash.value = flash
+        const targets = [hexToRgb(s.color), hexToRgb(s.glowColor)]
+        const shift = settled ? 1 - Math.exp(-dt / 0.35) : 1
+        settled = true
         for (let i = 0; i < 2; i++) {
-          for (let c = 0; c < 3; c++) hues[i][c] += (targets[i][c] - hues[i][c]) * shift;
+          for (let c = 0; c < 3; c++) hues[i][c] += (targets[i][c] - hues[i][c]) * shift
         }
-        uniforms.uColor.value = hues[0].slice();
-        uniforms.uGlowColor.value = hues[1].slice();
-        uniforms.uIntensity.value = s.intensity;
-        uniforms.uGlow.value = s.glow;
-        uniforms.uThickness.value = s.thickness;
-        uniforms.uStrands.value = Math.max(1, Math.min(6, Math.round(s.strands)));
-        uniforms.uBend.value = s.bend;
-        uniforms.uCrackle.value = s.crackle;
-        uniforms.uFlicker.value = reducedMotion ? 0 : s.flicker;
-        ink += ((s.theme === 'light' ? 1 : 0) - ink) * (1 - Math.exp(-dt / 0.25));
-        uniforms.uFill.value = s.fill;
-        uniforms.uInk.value = ink;
-        renderer.render({ scene: mesh });
-        s.onRender?.(canvas);
+        uniforms.uColor.value = hues[0].slice()
+        uniforms.uGlowColor.value = hues[1].slice()
+        uniforms.uIntensity.value = s.intensity
+        uniforms.uGlow.value = s.glow
+        uniforms.uThickness.value = s.thickness
+        uniforms.uStrands.value = Math.max(1, Math.min(6, Math.round(s.strands)))
+        uniforms.uBend.value = s.bend
+        uniforms.uCrackle.value = s.crackle
+        uniforms.uFlicker.value = reducedMotion ? 0 : s.flicker
+        ink += ((s.theme === 'light' ? 1 : 0) - ink) * (1 - Math.exp(-dt / 0.25))
+        uniforms.uFill.value = s.fill
+        uniforms.uInk.value = ink
+        renderer.render({ scene: mesh })
+        s.onRender?.(canvas)
       }
 
-      if (visible) raf = requestAnimationFrame(frame);
-    };
+      if (visible) raf = requestAnimationFrame(frame)
+    }
 
     const start = () => {
-      if (raf || !visible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || !visible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
 
     const onMove = (e: PointerEvent) => {
-      const rect = containerEl.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
-      pointer.over = true;
-    };
+      const rect = containerEl.getBoundingClientRect()
+      pointer.x = e.clientX - rect.left
+      pointer.y = e.clientY - rect.top
+      pointer.over = true
+    }
     const onDown = (e: PointerEvent) => {
-      onMove(e);
-      if (!settings?.interactive || reducedMotion) return;
-      pulses.push({ x: pointer.x, y: pointer.y, born: performance.now() });
-      if (pulses.length > PULSES) pulses.shift();
-      burst = { x: pointer.x, y: pointer.y };
-    };
+      onMove(e)
+      if (!settings?.interactive || reducedMotion) return
+      pulses.push({ x: pointer.x, y: pointer.y, born: performance.now() })
+      if (pulses.length > PULSES) pulses.shift()
+      burst = { x: pointer.x, y: pointer.y }
+    }
     const onLeave = () => {
-      pointer.over = false;
-    };
-    containerEl.addEventListener('pointermove', onMove);
-    containerEl.addEventListener('pointerdown', onDown);
-    containerEl.addEventListener('pointerleave', onLeave);
-    containerEl.addEventListener('pointercancel', onLeave);
+      pointer.over = false
+    }
+    containerEl.addEventListener('pointermove', onMove)
+    containerEl.addEventListener('pointerdown', onDown)
+    containerEl.addEventListener('pointerleave', onLeave)
+    containerEl.addEventListener('pointercancel', onLeave)
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(containerEl);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(containerEl)
     const intersectionObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      start();
-    });
-    intersectionObserver.observe(containerEl);
+      visible = entry.isIntersecting
+      start()
+    })
+    intersectionObserver.observe(containerEl)
 
-    resize();
-    start();
+    resize()
+    start()
 
     onCleanup(() => {
-      visible = false;
-      cancelAnimationFrame(raf);
-      resizeObserver.disconnect();
-      intersectionObserver.disconnect();
-      containerEl.removeEventListener('pointermove', onMove);
-      containerEl.removeEventListener('pointerdown', onDown);
-      containerEl.removeEventListener('pointerleave', onLeave);
-      containerEl.removeEventListener('pointercancel', onLeave);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    });
-  });
+      visible = false
+      cancelAnimationFrame(raf)
+      resizeObserver.disconnect()
+      intersectionObserver.disconnect()
+      containerEl.removeEventListener('pointermove', onMove)
+      containerEl.removeEventListener('pointerdown', onDown)
+      containerEl.removeEventListener('pointerleave', onLeave)
+      containerEl.removeEventListener('pointercancel', onLeave)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
+    })
+  })
 
   return (
     <div
       ref={container}
-      class={['relative h-full w-full overflow-hidden', props.class, props.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', props.class, props.className]
+        .filter(Boolean)
+        .join(' ')}
       style={props.style}
     />
-  );
-};
+  )
+}
 
-export default ElectricLogo;
+export default ElectricLogo

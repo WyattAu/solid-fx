@@ -1,131 +1,131 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { animate, motionValue } from 'motion';
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { animate, motionValue } from 'motion'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
-export type DodgeAxis = 'both' | 'x' | 'y';
-export type DodgeWall = 'clamp' | 'bounce';
-export type DodgeFieldState = { dodges: number; gave: boolean; caught: boolean; fleeing: boolean };
+export type DodgeAxis = 'both' | 'x' | 'y'
+export type DodgeWall = 'clamp' | 'bounce'
+export type DodgeFieldState = { dodges: number; gave: boolean; caught: boolean; fleeing: boolean }
 
 export interface DodgeFieldProps {
-  children?: JSX.Element | ((state: DodgeFieldState) => JSX.Element);
-  taunts?: string[];
-  notice?: string;
-  inkColor?: string;
-  contrastColor?: string;
-  fieldHeight?: number;
-  reach?: number;
-  radius?: number;
-  falloff?: number;
-  fleeDuration?: number;
-  returnDuration?: number;
-  returnBounce?: number;
-  axis?: DodgeAxis;
-  wall?: DodgeWall;
-  patience?: number;
-  disabled?: boolean;
-  onDodge?: (count: number) => void;
-  onRelent?: () => void;
-  onCatch?: () => void;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  children?: JSX.Element | ((state: DodgeFieldState) => JSX.Element)
+  taunts?: string[]
+  notice?: string
+  inkColor?: string
+  contrastColor?: string
+  fieldHeight?: number
+  reach?: number
+  radius?: number
+  falloff?: number
+  fleeDuration?: number
+  returnDuration?: number
+  returnBounce?: number
+  axis?: DodgeAxis
+  wall?: DodgeWall
+  patience?: number
+  disabled?: boolean
+  onDodge?: (count: number) => void
+  onRelent?: () => void
+  onCatch?: () => void
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-const COUNT_LINE = 0.55;
-const DEAD_ZONE = 6;
-const CAUGHT_HOLD_MS = 760;
-const INSET = 12;
-const DEFAULT_TAUNTS = ['Catch me', 'Nope', 'Too slow', 'Almost', 'Okay, okay'];
+const COUNT_LINE = 0.55
+const DEAD_ZONE = 6
+const CAUGHT_HOLD_MS = 760
+const INSET = 12
+const DEFAULT_TAUNTS = ['Catch me', 'Nope', 'Too slow', 'Almost', 'Okay, okay']
 
 const wallIt = (t: number, room: number, wall: DodgeWall) => {
   if (wall === 'bounce') {
-    if (t > room) return Math.max(-room, 2 * room - t);
-    if (t < -room) return Math.min(room, -2 * room - t);
-    return t;
+    if (t > room) return Math.max(-room, 2 * room - t)
+    if (t < -room) return Math.min(room, -2 * room - t)
+    return t
   }
-  return Math.min(room, Math.max(-room, t));
-};
+  return Math.min(room, Math.max(-room, t))
+}
 const bearingOf = (dx: number, dy: number, d: number, axis: DodgeAxis) => {
-  if (axis === 'x') return { x: Math.sign(dx) || 1, y: 0 };
-  if (axis === 'y') return { x: 0, y: Math.sign(dy) || 1 };
-  return { x: dx / d, y: dy / d };
-};
+  if (axis === 'x') return { x: Math.sign(dx) || 1, y: 0 }
+  if (axis === 'y') return { x: 0, y: Math.sign(dy) || 1 }
+  return { x: dx / d, y: dy / d }
+}
 
 const DodgeField = (props: DodgeFieldProps) => {
-  const taunts = () => props.taunts ?? DEFAULT_TAUNTS;
-  const inkColor = () => props.inkColor ?? '#f5f5f5';
-  const contrastColor = () => props.contrastColor ?? '#18181b';
-  const fieldHeight = () => props.fieldHeight ?? 240;
-  const reach = () => props.reach ?? 72;
-  const radius = () => props.radius ?? 120;
-  const falloff = () => props.falloff ?? 2;
-  const fleeDuration = () => props.fleeDuration ?? 130;
-  const returnDuration = () => props.returnDuration ?? 620;
-  const returnBounce = () => props.returnBounce ?? 0.1;
-  const axis = () => props.axis ?? 'both';
-  const wall = () => props.wall ?? 'clamp';
-  const patience = () => props.patience ?? 4;
+  const taunts = () => props.taunts ?? DEFAULT_TAUNTS
+  const inkColor = () => props.inkColor ?? '#f5f5f5'
+  const contrastColor = () => props.contrastColor ?? '#18181b'
+  const fieldHeight = () => props.fieldHeight ?? 240
+  const reach = () => props.reach ?? 72
+  const radius = () => props.radius ?? 120
+  const falloff = () => props.falloff ?? 2
+  const fleeDuration = () => props.fleeDuration ?? 130
+  const returnDuration = () => props.returnDuration ?? 620
+  const returnBounce = () => props.returnBounce ?? 0.1
+  const axis = () => props.axis ?? 'both'
+  const wall = () => props.wall ?? 'clamp'
+  const patience = () => props.patience ?? 4
 
-  let fieldEl: HTMLDivElement | undefined;
-  let moverEl: HTMLDivElement | undefined;
-  const x = motionValue(0);
-  const y = motionValue(0);
-  const reduce = usePrefersReducedMotion();
-  const [fine, setFine] = createSignal(true);
-  const [inside, setInside] = createSignal(false);
-  const [dodges, setDodges] = createSignal(0);
-  const [caught, setCaught] = createSignal(false);
-  const gave = () => dodges() >= Math.max(1, patience());
-  const still = () => gave() || caught() || (props.disabled ?? false) || !!reduce();
+  let fieldEl: HTMLDivElement | undefined
+  let moverEl: HTMLDivElement | undefined
+  const x = motionValue(0)
+  const y = motionValue(0)
+  const reduce = usePrefersReducedMotion()
+  const [fine, setFine] = createSignal(true)
+  const [inside, setInside] = createSignal(false)
+  const [dodges, setDodges] = createSignal(0)
+  const [caught, setCaught] = createSignal(false)
+  const gave = () => dodges() >= Math.max(1, patience())
+  const still = () => gave() || caught() || (props.disabled ?? false) || !!reduce()
 
-  let px = 0;
-  let py = 0;
-  let hasPointer = false;
-  const bearing = { x: 1, y: 0 };
-  let armed = true;
-  const room = { x: 0, y: 0 };
-  let raf = 0;
-  let hold: ReturnType<typeof setTimeout> | undefined;
+  let px = 0
+  let py = 0
+  let hasPointer = false
+  const bearing = { x: 1, y: 0 }
+  let armed = true
+  const room = { x: 0, y: 0 }
+  let raf = 0
+  let hold: ReturnType<typeof setTimeout> | undefined
 
   const applyTransform = () => {
-    moverEl?.style.setProperty('transform', `translate(${x.get()}px, ${y.get()}px)`);
-  };
+    moverEl?.style.setProperty('transform', `translate(${x.get()}px, ${y.get()}px)`)
+  }
 
   onMount(() => {
-    const offs = [x.on('change', applyTransform), y.on('change', applyTransform)];
-    applyTransform();
+    const offs = [x.on('change', applyTransform), y.on('change', applyTransform)]
+    applyTransform()
     onCleanup(() => {
-      offs.forEach(off => off());
-      x.stop();
-      y.stop();
-      clearTimeout(hold);
-    });
-  });
+      offs.forEach(off => off())
+      x.stop()
+      y.stop()
+      clearTimeout(hold)
+    })
+  })
 
   // Upstream: useEffect(measure, []) — ResizeObserver on field + mover.
   onMount(() => {
-    const field = fieldEl;
-    const mover = moverEl;
-    if (!field || !mover) return;
+    const field = fieldEl
+    const mover = moverEl
+    if (!field || !mover) return
     const measure = () => {
-      room.x = Math.max(0, (field.clientWidth - mover.offsetWidth) / 2 - INSET);
-      room.y = Math.max(0, (field.clientHeight - mover.offsetHeight) / 2 - INSET);
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(field);
-    observer.observe(mover);
-    onCleanup(() => observer.disconnect());
-  });
+      room.x = Math.max(0, (field.clientWidth - mover.offsetWidth) / 2 - INSET)
+      room.y = Math.max(0, (field.clientHeight - mover.offsetHeight) / 2 - INSET)
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(field)
+    observer.observe(mover)
+    onCleanup(() => observer.disconnect())
+  })
 
   const frame = () => {
-    raf = 0;
-    const field = fieldEl;
-    if (!field) return;
+    raf = 0
+    const field = fieldEl
+    if (!field) return
     const L = {
       reach: reach(),
       radius: radius(),
@@ -134,112 +134,117 @@ const DodgeField = (props: DodgeFieldProps) => {
       wall: wall(),
       still: untrack(still),
       inside: untrack(inside),
-      reduce: reduce()
-    };
-    const rect = field.getBoundingClientRect();
-    const zoom = rect.width / (field.offsetWidth || rect.width) || 1;
-    const dx = hasPointer ? (px - (rect.left + rect.width / 2)) / zoom : Infinity;
-    const dy = hasPointer ? (py - (rect.top + rect.height / 2)) / zoom : Infinity;
-    const d = Math.hypot(dx, dy);
-    const isInside = d <= L.radius;
-    if (!isInside && !L.inside) return;
+      reduce: reduce(),
+    }
+    const rect = field.getBoundingClientRect()
+    const zoom = rect.width / (field.offsetWidth || rect.width) || 1
+    const dx = hasPointer ? (px - (rect.left + rect.width / 2)) / zoom : Infinity
+    const dy = hasPointer ? (py - (rect.top + rect.height / 2)) / zoom : Infinity
+    const d = Math.hypot(dx, dy)
+    const isInside = d <= L.radius
+    if (!isInside && !L.inside) return
     if (!L.still) {
       if (d < L.radius * COUNT_LINE) {
         if (armed) {
-          armed = false;
-          setDodges(n => n + 1);
+          armed = false
+          setDodges(n => n + 1)
         }
       } else if (d > L.radius) {
-        armed = true;
+        armed = true
       }
     }
     if (Number.isFinite(d) && d > DEAD_ZONE) {
-      const b = bearingOf(dx, dy, d, L.axis);
-      bearing.x = b.x;
-      bearing.y = b.y;
+      const b = bearingOf(dx, dy, d, L.axis)
+      bearing.x = b.x
+      bearing.y = b.y
     }
-    const flee = isInside && !L.still ? (1 - d / L.radius) ** L.falloff : 0;
-    const tx = wallIt(-bearing.x * flee * L.reach, room.x, L.wall);
-    const ty = wallIt(-bearing.y * flee * L.reach, room.y, L.wall);
+    const flee = isInside && !L.still ? (1 - d / L.radius) ** L.falloff : 0
+    const tx = wallIt(-bearing.x * flee * L.reach, room.x, L.wall)
+    const ty = wallIt(-bearing.y * flee * L.reach, room.y, L.wall)
     if (L.reduce) {
-      x.jump(0);
-      y.jump(0);
+      x.jump(0)
+      y.jump(0)
     } else {
       const cfg =
         flee > 0
           ? { type: 'spring' as const, duration: fleeDuration() / 1000, bounce: 0 }
-          : { type: 'spring' as const, duration: returnDuration() / 1000, bounce: returnBounce() };
-      animate(x, tx, cfg);
-      animate(y, ty, cfg);
+          : { type: 'spring' as const, duration: returnDuration() / 1000, bounce: returnBounce() }
+      animate(x, tx, cfg)
+      animate(y, ty, cfg)
     }
-    if (isInside !== L.inside) setInside(isInside);
-  };
+    if (isInside !== L.inside) setInside(isInside)
+  }
 
   // Upstream: useEffect on [disabled, frame] — media query sync + listeners.
   createEffect(() => {
-    const disabled = props.disabled ?? false;
-    const query = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const sync = () => setFine(query.matches);
-    sync();
-    query.addEventListener('change', sync);
+    const disabled = props.disabled ?? false
+    const query = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const sync = () => setFine(query.matches)
+    sync()
+    query.addEventListener('change', sync)
     if (query.matches && !disabled) {
       const tick = () => {
-        if (!raf) raf = requestAnimationFrame(frame);
-      };
+        if (!raf) raf = requestAnimationFrame(frame)
+      }
       const onMove = (e: PointerEvent) => {
-        if (e.pointerType === 'touch') return;
-        px = e.clientX;
-        py = e.clientY;
-        hasPointer = true;
-        tick();
-      };
+        if (e.pointerType === 'touch') return
+        px = e.clientX
+        py = e.clientY
+        hasPointer = true
+        tick()
+      }
       const onLeave = () => {
-        hasPointer = false;
-        tick();
-      };
-      window.addEventListener('pointermove', onMove, { passive: true });
-      window.addEventListener('scroll', tick, { passive: true, capture: true });
-      document.addEventListener('pointerleave', onLeave);
-      window.addEventListener('blur', onLeave);
+        hasPointer = false
+        tick()
+      }
+      window.addEventListener('pointermove', onMove, { passive: true })
+      window.addEventListener('scroll', tick, { passive: true, capture: true })
+      document.addEventListener('pointerleave', onLeave)
+      window.addEventListener('blur', onLeave)
       onCleanup(() => {
-        window.removeEventListener('pointermove', onMove);
-        window.removeEventListener('scroll', tick, { capture: true });
-        document.removeEventListener('pointerleave', onLeave);
-        window.removeEventListener('blur', onLeave);
-        cancelAnimationFrame(raf);
-        raf = 0;
-      });
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('scroll', tick, { capture: true })
+        document.removeEventListener('pointerleave', onLeave)
+        window.removeEventListener('blur', onLeave)
+        cancelAnimationFrame(raf)
+        raf = 0
+      })
     }
-    onCleanup(() => query.removeEventListener('change', sync));
-  });
+    onCleanup(() => query.removeEventListener('change', sync))
+  })
 
   // Upstream: useEffect on [still] — kick a frame when stillness changes.
   createEffect(() => {
-    still();
-    if (!raf) raf = requestAnimationFrame(frame);
-  });
+    still()
+    if (!raf) raf = requestAnimationFrame(frame)
+  })
   createEffect(() => {
-    const d = dodges();
-    if (d) untrack(() => props.onDodge?.(d));
-  });
+    const d = dodges()
+    if (d) untrack(() => props.onDodge?.(d))
+  })
   createEffect(() => {
-    if (gave()) untrack(() => props.onRelent?.());
-  });
+    if (gave()) untrack(() => props.onRelent?.())
+  })
 
   const handleClick = () => {
-    setCaught(true);
-    untrack(() => props.onCatch?.());
-    clearTimeout(hold);
+    setCaught(true)
+    untrack(() => props.onCatch?.())
+    clearTimeout(hold)
     hold = setTimeout(() => {
-      setCaught(false);
-      setDodges(0);
-      armed = false;
-    }, CAUGHT_HOLD_MS);
-  };
+      setCaught(false)
+      setDodges(0)
+      armed = false
+    }, CAUGHT_HOLD_MS)
+  }
 
-  const state = (): DodgeFieldState => ({ dodges: dodges(), gave: gave(), caught: caught(), fleeing: inside() && !still() });
+  const state = (): DodgeFieldState => ({
+    dodges: dodges(),
+    gave: gave(),
+    caught: caught(),
+    fleeing: inside() && !still(),
+  })
   const index = () =>
-    gave() || caught() ? taunts().length - 1 : Math.min(dodges(), Math.max(0, taunts().length - 2));
+    gave() || caught() ? taunts().length - 1 : Math.min(dodges(), Math.max(0, taunts().length - 2))
 
   // Built once so the taunt spans persist and their data-[active] transitions
   // animate (upstream re-rendered in place; Solid achieves the same by keeping
@@ -264,14 +269,14 @@ const DodgeField = (props: DodgeFieldProps) => {
         </For>
       </span>
     </button>
-  );
+  )
 
   const content = createMemo<JSX.Element>(() => {
-    const c = props.children;
-    if (typeof c === 'function') return c(state());
-    if (c) return c;
-    return defaultContent;
-  });
+    const c = props.children
+    if (typeof c === 'function') return c(state())
+    if (c) return c
+    return defaultContent
+  })
 
   return (
     <div
@@ -284,7 +289,7 @@ const DodgeField = (props: DodgeFieldProps) => {
         '--df-contrast': contrastColor(),
         '--df-height': `${fieldHeight()}px`,
         '--df-ease-out': 'cubic-bezier(0.23, 1, 0.32, 1)',
-        ...props.style
+        ...props.style,
       }}
     >
       <div
@@ -303,7 +308,7 @@ const DodgeField = (props: DodgeFieldProps) => {
         </p>
       ) : null}
     </div>
-  );
-};
+  )
+}
 
-export default DodgeField;
+export default DodgeField

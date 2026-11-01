@@ -1,9 +1,9 @@
-import { createSignal } from 'solid-js';
-import BellToggle from './BellToggle';
+import { createSignal } from 'solid-js'
+import BellToggle from './BellToggle'
 
 function BellToggleDemo() {
-  const [pressed, setPressed] = createSignal(false);
-  const [count, setCount] = createSignal(3);
+  const [pressed, setPressed] = createSignal(false)
+  const [count, setCount] = createSignal(3)
   return (
     <div class="flex h-96 w-full flex-col items-center justify-center gap-6 bg-zinc-950 p-8 text-white">
       <BellToggle pressed={pressed()} onChange={setPressed} count={count()} />
@@ -15,7 +15,7 @@ function BellToggleDemo() {
         Simulate notification ({count()})
       </button>
     </div>
-  );
+  )
 }
 
-export default BellToggleDemo;
+export default BellToggleDemo

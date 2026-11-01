@@ -1,70 +1,73 @@
-import { createEffect, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 const SIZES: Record<SpecularButtonSize, string> = {
   sm: 'px-5 py-2.5 text-[0.875rem]',
   md: 'px-7 py-3.5 text-[1rem]',
-  lg: 'px-[38px] py-[18px] text-[1.125rem]'
-};
+  lg: 'px-[38px] py-[18px] text-[1.125rem]',
+}
 
 const BUTTON =
-  'relative isolate m-0 inline-flex cursor-pointer items-center justify-center gap-[0.5em] border-0 [font-family:inherit] font-medium leading-none tracking-[0.01em] [color:var(--sb-text-color)] [border-radius:var(--sb-radius)] [background:color-mix(in_srgb,var(--sb-tint)_calc(var(--sb-tint-opacity)*100%),transparent)] shadow-[0_10px_24px_-14px_rgba(0,0,0,0.45)] [-webkit-backdrop-filter:blur(var(--sb-blur))] [backdrop-filter:blur(var(--sb-blur))] outline-none [-webkit-tap-highlight-color:transparent] transition-transform duration-250 ease-[cubic-bezier(0.2,0.8,0.2,1)] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:[outline-color:color-mix(in_srgb,var(--sb-text-color)_55%,transparent)] disabled:cursor-default disabled:opacity-50 disabled:active:scale-100';
+  'relative isolate m-0 inline-flex cursor-pointer items-center justify-center gap-[0.5em] border-0 [font-family:inherit] font-medium leading-none tracking-[0.01em] [color:var(--sb-text-color)] [border-radius:var(--sb-radius)] [background:color-mix(in_srgb,var(--sb-tint)_calc(var(--sb-tint-opacity)*100%),transparent)] shadow-[0_10px_24px_-14px_rgba(0,0,0,0.45)] [-webkit-backdrop-filter:blur(var(--sb-blur))] [backdrop-filter:blur(var(--sb-blur))] outline-none [-webkit-tap-highlight-color:transparent] transition-transform duration-250 ease-[cubic-bezier(0.2,0.8,0.2,1)] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:[outline-color:color-mix(in_srgb,var(--sb-text-color)_55%,transparent)] disabled:cursor-default disabled:opacity-50 disabled:active:scale-100'
 
-const PAD = 24;
-const TAU = Math.PI * 2;
+const PAD = 24
+const TAU = Math.PI * 2
 
-export type SpecularButtonSize = 'sm' | 'md' | 'lg';
+export type SpecularButtonSize = 'sm' | 'md' | 'lg'
 
 export interface SpecularButtonProps
-  extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'type' | 'class' | 'className' | 'style'> {
-  children?: JSX.Element;
-  size?: SpecularButtonSize;
-  radius?: number;
-  tint?: string;
-  tintOpacity?: number;
-  blur?: number;
-  textColor?: string;
-  lineColor?: string;
-  baseColor?: string;
-  intensity?: number;
-  idleIntensity?: number;
-  shineSize?: number;
-  shineFade?: number;
-  thickness?: number;
-  glow?: number;
-  speed?: number;
-  followMouse?: boolean;
-  proximity?: number;
-  autoAnimate?: boolean;
-  disabled?: boolean;
-  type?: 'button' | 'submit' | 'reset';
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  extends Omit<
+    JSX.ButtonHTMLAttributes<HTMLButtonElement>,
+    'children' | 'type' | 'class' | 'className' | 'style'
+  > {
+  children?: JSX.Element
+  size?: SpecularButtonSize
+  radius?: number
+  tint?: string
+  tintOpacity?: number
+  blur?: number
+  textColor?: string
+  lineColor?: string
+  baseColor?: string
+  intensity?: number
+  idleIntensity?: number
+  shineSize?: number
+  shineFade?: number
+  thickness?: number
+  glow?: number
+  speed?: number
+  followMouse?: boolean
+  proximity?: number
+  autoAnimate?: boolean
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  radius: number;
-  lineColor: string;
-  baseColor: string;
-  intensity: number;
-  idleIntensity: number;
-  shineSize: number;
-  shineFade: number;
-  thickness: number;
-  glow: number;
-  speed: number;
-  followMouse: boolean;
-  proximity: number;
-  autoAnimate: boolean;
-  disabled: boolean;
-};
+  radius: number
+  lineColor: string
+  baseColor: string
+  intensity: number
+  idleIntensity: number
+  shineSize: number
+  shineFade: number
+  thickness: number
+  glow: number
+  speed: number
+  followMouse: boolean
+  proximity: number
+  autoAnimate: boolean
+  disabled: boolean
+}
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -122,7 +125,7 @@ void main() {
   float light = clamp((band * streak + glow * uGlow) * uIntensity, 0.0, 1.0);
   vec4 base = vec4(uBaseColor, 1.0) * hair * 0.6;
   outColor = vec4(uLineColor, 1.0) * light + base * (1.0 - light);
-}`;
+}`
 
 const UNIFORMS = [
   'uCenter',
@@ -136,88 +139,88 @@ const UNIFORMS = [
   'uIntensity',
   'uWindow',
   'uThickness',
-  'uGlow'
-];
+  'uGlow',
+]
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const wrap = (value: number) => value - Math.floor(value);
+const wrap = (value: number) => value - Math.floor(value)
 
 const loopPosition = (x: number, y: number, halfX: number, halfY: number, r: number) => {
-  const innerX = halfX - r;
-  const innerY = halfY - r;
-  const arc = (Math.PI / 2) * r;
-  const quarter = innerX + innerY + arc;
-  const ax = Math.abs(x);
-  const ay = Math.abs(y);
-  const qx = ax - innerX;
-  const qy = ay - innerY;
-  let s;
-  if (qx > 0 && qy > 0) s = innerY + Math.atan2(qy, qx) * r;
-  else if (qx > qy) s = Math.min(ay, innerY);
-  else s = innerY + arc + innerX - Math.min(ax, innerX);
-  if (x < 0) s = y >= 0 ? 2 * quarter - s : 2 * quarter + s;
-  else if (y < 0) s = 4 * quarter - s;
-  return wrap(s / Math.max(4 * quarter, 0.0001));
-};
+  const innerX = halfX - r
+  const innerY = halfY - r
+  const arc = (Math.PI / 2) * r
+  const quarter = innerX + innerY + arc
+  const ax = Math.abs(x)
+  const ay = Math.abs(y)
+  const qx = ax - innerX
+  const qy = ay - innerY
+  let s
+  if (qx > 0 && qy > 0) s = innerY + Math.atan2(qy, qx) * r
+  else if (qx > qy) s = Math.min(ay, innerY)
+  else s = innerY + arc + innerX - Math.min(ax, innerX)
+  if (x < 0) s = y >= 0 ? 2 * quarter - s : 2 * quarter + s
+  else if (y < 0) s = 4 * quarter - s
+  return wrap(s / Math.max(4 * quarter, 0.0001))
+}
 
 const rimPoint = (position: number, halfX: number, halfY: number, r: number): [number, number] => {
-  const innerX = halfX - r;
-  const innerY = halfY - r;
-  const arc = (Math.PI / 2) * r;
-  const quarter = innerX + innerY + arc;
-  let s = wrap(position) * 4 * quarter;
-  let signX = 1;
-  let signY = 1;
+  const innerX = halfX - r
+  const innerY = halfY - r
+  const arc = (Math.PI / 2) * r
+  const quarter = innerX + innerY + arc
+  let s = wrap(position) * 4 * quarter
+  let signX = 1
+  let signY = 1
   if (s > 3 * quarter) {
-    s = 4 * quarter - s;
-    signY = -1;
+    s = 4 * quarter - s
+    signY = -1
   } else if (s > 2 * quarter) {
-    s -= 2 * quarter;
-    signX = -1;
-    signY = -1;
+    s -= 2 * quarter
+    signX = -1
+    signY = -1
   } else if (s > quarter) {
-    s = 2 * quarter - s;
-    signX = -1;
+    s = 2 * quarter - s
+    signX = -1
   }
-  let x = innerX - (s - innerY - arc);
-  let y = halfY;
+  let x = innerX - (s - innerY - arc)
+  let y = halfY
   if (s <= innerY) {
-    x = halfX;
-    y = s;
+    x = halfX
+    y = s
   } else if (s <= innerY + arc) {
-    const angle = (s - innerY) / Math.max(r, 0.0001);
-    x = innerX + Math.cos(angle) * r;
-    y = innerY + Math.sin(angle) * r;
+    const angle = (s - innerY) / Math.max(r, 0.0001)
+    x = innerX + Math.cos(angle) * r
+    y = innerY + Math.sin(angle) * r
   }
-  return [x * signX, y * signY];
-};
+  return [x * signX, y * signY]
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext) => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
-  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program;
-  gl.deleteProgram(program);
-  return null;
-};
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
+  if (gl.getProgramParameter(program, gl.LINK_STATUS)) return program
+  gl.deleteProgram(program)
+  return null
+}
 
 const SpecularButton = (props: SpecularButtonProps) => {
   const [own, rest] = splitProps(props, [
@@ -244,11 +247,11 @@ const SpecularButton = (props: SpecularButtonProps) => {
     'type',
     'class',
     'className',
-    'style'
-  ]);
-  let buttonRef!: HTMLButtonElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+    'style',
+  ])
+  let buttonRef!: HTMLButtonElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   let settingsRef: Settings = {
     radius: 18,
@@ -264,8 +267,8 @@ const SpecularButton = (props: SpecularButtonProps) => {
     followMouse: true,
     proximity: 250,
     autoAnimate: false,
-    disabled: false
-  };
+    disabled: false,
+  }
 
   // Upstream recomputed `settings` on every render and woke the engine after
   // every render; this effect covers both.
@@ -284,221 +287,240 @@ const SpecularButton = (props: SpecularButtonProps) => {
       followMouse: own.followMouse ?? true,
       proximity: Math.max(1, own.proximity ?? 250),
       autoAnimate: own.autoAnimate ?? false,
-      disabled: own.disabled ?? false
-    };
-    wakeRef?.();
-  });
+      disabled: own.disabled ?? false,
+    }
+    wakeRef?.()
+  })
 
   onMount(() => {
-    const button = buttonRef;
-    const canvas = canvasRef;
+    const button = buttonRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!button || !canvas || !gl) return;
-    const program = link(gl);
-    if (!program) return;
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
-    for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name);
-    const buffer = gl.createBuffer();
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    gl.bindVertexArray(null);
+      stencil: false,
+    })
+    if (!button || !canvas || !gl) return
+    const program = link(gl)
+    if (!program) return
+    const uniforms: Record<string, WebGLUniformLocation | null> = {}
+    for (const name of UNIFORMS) uniforms[name] = gl.getUniformLocation(program, name)
+    const buffer = gl.createBuffer()
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+    gl.bindVertexArray(null)
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const colors = new Map<string, number[]>();
-    const view = { width: 1, height: 1, ratio: 1 };
-    const pointer = { x: 0, y: 0, known: false };
-    const state = { spot: 0, level: 0, press: 0, ready: false };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const colors = new Map<string, number[]>()
+    const view = { width: 1, height: 1, ratio: 1 }
+    const pointer = { x: 0, y: 0, known: false }
+    const state = { spot: 0, level: 0, press: 0, ready: false }
+    let raf = 0
+    let last = 0
+    let visible = true
 
     const toRgb = (value: string): number[] => {
-      const cached = colors.get(value);
-      if (cached) return cached;
-      let rgb = [1, 1, 1];
+      const cached = colors.get(value)
+      if (cached) return cached
+      let rgb = [1, 1, 1]
       if (probe) {
-        probe.clearRect(0, 0, 1, 1);
-        probe.fillStyle = '#000000';
-        probe.fillStyle = value;
-        probe.fillRect(0, 0, 1, 1);
-        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-        rgb = [r / 255, g / 255, b / 255];
+        probe.clearRect(0, 0, 1, 1)
+        probe.fillStyle = '#000000'
+        probe.fillStyle = value
+        probe.fillRect(0, 0, 1, 1)
+        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+        rgb = [r / 255, g / 255, b / 255]
       }
-      colors.set(value, rgb);
-      return rgb;
-    };
+      colors.set(value, rgb)
+      return rgb
+    }
 
-    const cornerRadius = (s: Settings) => Math.min(s.radius, view.width / 2, view.height / 2);
+    const cornerRadius = (s: Settings) => Math.min(s.radius, view.width / 2, view.height / 2)
 
     const restSpot = (s: Settings) => {
-      const r = cornerRadius(s);
-      const inset = r * (1 - Math.SQRT1_2);
-      return loopPosition(inset - view.width / 2, view.height / 2 - inset, view.width / 2, view.height / 2, r);
-    };
+      const r = cornerRadius(s)
+      const inset = r * (1 - Math.SQRT1_2)
+      return loopPosition(
+        inset - view.width / 2,
+        view.height / 2 - inset,
+        view.width / 2,
+        view.height / 2,
+        r,
+      )
+    }
 
     const aim = (s: Settings) => {
-      if (!s.followMouse || s.disabled || !pointer.known) return null;
-      const rect = button.getBoundingClientRect();
-      const scale = rect.width / view.width || 1;
-      const halfX = view.width / 2;
-      const halfY = view.height / 2;
-      const x = (pointer.x - rect.left - rect.width / 2) / scale;
-      const y = (rect.top + rect.height / 2 - pointer.y) / scale;
-      const distance = Math.hypot(Math.max(Math.abs(x) - halfX, 0), Math.max(Math.abs(y) - halfY, 0));
-      const t = clamp(1 - distance / s.proximity, 0, 1);
-      const near = t * t * (3 - 2 * t);
-      const nearest = loopPosition(x, y, halfX, halfY, cornerRadius(s));
-      if (distance > 0) return { spot: nearest, near };
-      const depth = clamp(Math.min(halfX - Math.abs(x), halfY - Math.abs(y)) / (halfY * 0.8), 0, 1);
-      const sway = restSpot(s) - (x / halfX) * 0.06 - (y / halfY) * 0.02;
-      const offset = sway - nearest - Math.round(sway - nearest);
-      return { spot: wrap(nearest + offset * depth * depth * (3 - 2 * depth)), near };
-    };
+      if (!s.followMouse || s.disabled || !pointer.known) return null
+      const rect = button.getBoundingClientRect()
+      const scale = rect.width / view.width || 1
+      const halfX = view.width / 2
+      const halfY = view.height / 2
+      const x = (pointer.x - rect.left - rect.width / 2) / scale
+      const y = (rect.top + rect.height / 2 - pointer.y) / scale
+      const distance = Math.hypot(
+        Math.max(Math.abs(x) - halfX, 0),
+        Math.max(Math.abs(y) - halfY, 0),
+      )
+      const t = clamp(1 - distance / s.proximity, 0, 1)
+      const near = t * t * (3 - 2 * t)
+      const nearest = loopPosition(x, y, halfX, halfY, cornerRadius(s))
+      if (distance > 0) return { spot: nearest, near }
+      const depth = clamp(Math.min(halfX - Math.abs(x), halfY - Math.abs(y)) / (halfY * 0.8), 0, 1)
+      const sway = restSpot(s) - (x / halfX) * 0.06 - (y / halfY) * 0.02
+      const offset = sway - nearest - Math.round(sway - nearest)
+      return { spot: wrap(nearest + offset * depth * depth * (3 - 2 * depth)), near }
+    }
 
     const draw = (s: Settings) => {
-      const { width, height } = view;
-      const scaleX = canvas.width / (width + PAD * 2);
-      const scaleY = canvas.height / (height + PAD * 2);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.uniform2f(uniforms.uCenter, (PAD + width / 2) * scaleX, (PAD + height / 2) * scaleY);
-      gl.uniform2f(uniforms.uHalf, (width / 2) * scaleX, (height / 2) * scaleY);
-      gl.uniform1f(uniforms.uRadius, Math.min(s.radius, width / 2, height / 2) * scaleX);
-      gl.uniform1f(uniforms.uPx, view.ratio);
-      const r = Math.min(s.radius, width / 2, height / 2);
-      const [rimX, rimY] = rimPoint(state.spot, width / 2, height / 2, r);
-      const pull = 1 - Math.min(0.35 * (height / 2), Math.hypot(rimX, rimY)) / Math.max(Math.hypot(rimX, rimY), 0.0001);
-      gl.uniform1f(uniforms.uSpot, state.spot);
-      gl.uniform2f(uniforms.uEntry, rimX * pull * scaleX, rimY * pull * scaleY);
-      gl.uniform3fv(uniforms.uLineColor, toRgb(s.lineColor));
-      gl.uniform3fv(uniforms.uBaseColor, toRgb(s.baseColor));
-      gl.uniform1f(uniforms.uIntensity, s.intensity * (state.level + state.press * 0.8));
-      gl.uniform2f(uniforms.uWindow, s.shineSize / 360 + state.press * 0.06, s.shineFade / 360 + 0.0001);
-      gl.uniform1f(uniforms.uThickness, s.thickness);
-      gl.uniform1f(uniforms.uGlow, s.glow);
-      gl.bindVertexArray(vao);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.bindVertexArray(null);
-    };
+      const { width, height } = view
+      const scaleX = canvas.width / (width + PAD * 2)
+      const scaleY = canvas.height / (height + PAD * 2)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(program)
+      gl.uniform2f(uniforms.uCenter, (PAD + width / 2) * scaleX, (PAD + height / 2) * scaleY)
+      gl.uniform2f(uniforms.uHalf, (width / 2) * scaleX, (height / 2) * scaleY)
+      gl.uniform1f(uniforms.uRadius, Math.min(s.radius, width / 2, height / 2) * scaleX)
+      gl.uniform1f(uniforms.uPx, view.ratio)
+      const r = Math.min(s.radius, width / 2, height / 2)
+      const [rimX, rimY] = rimPoint(state.spot, width / 2, height / 2, r)
+      const pull =
+        1 -
+        Math.min(0.35 * (height / 2), Math.hypot(rimX, rimY)) /
+          Math.max(Math.hypot(rimX, rimY), 0.0001)
+      gl.uniform1f(uniforms.uSpot, state.spot)
+      gl.uniform2f(uniforms.uEntry, rimX * pull * scaleX, rimY * pull * scaleY)
+      gl.uniform3fv(uniforms.uLineColor, toRgb(s.lineColor))
+      gl.uniform3fv(uniforms.uBaseColor, toRgb(s.baseColor))
+      gl.uniform1f(uniforms.uIntensity, s.intensity * (state.level + state.press * 0.8))
+      gl.uniform2f(
+        uniforms.uWindow,
+        s.shineSize / 360 + state.press * 0.06,
+        s.shineFade / 360 + 0.0001,
+      )
+      gl.uniform1f(uniforms.uThickness, s.thickness)
+      gl.uniform1f(uniforms.uGlow, s.glow)
+      gl.bindVertexArray(vao)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      gl.bindVertexArray(null)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible) return;
-      const s = settingsRef;
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
-      const target = aim(s);
-      const spinning = s.autoAnimate && !reduce;
-      const steering = !!target && target.near > 0;
+      raf = 0
+      if (!visible) return
+      const s = settingsRef
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      const target = aim(s)
+      const spinning = s.autoAnimate && !reduce
+      const steering = !!target && target.near > 0
       if (!state.ready) {
-        state.spot = restSpot(s);
-        state.level = s.autoAnimate ? 1 : s.idleIntensity;
-        state.ready = true;
+        state.spot = restSpot(s)
+        state.level = s.autoAnimate ? 1 : s.idleIntensity
+        state.ready = true
       }
-      let diff = 0;
-      if (spinning && !steering) state.spot = wrap(state.spot + (s.speed / TAU) * dt);
+      let diff = 0
+      if (spinning && !steering) state.spot = wrap(state.spot + (s.speed / TAU) * dt)
       else {
-        diff = (steering ? target.spot : restSpot(s)) - state.spot;
-        diff -= Math.round(diff);
-        state.spot = wrap(state.spot + diff * (1 - Math.exp(-dt * 8)));
+        diff = (steering ? target.spot : restSpot(s)) - state.spot
+        diff -= Math.round(diff)
+        state.spot = wrap(state.spot + diff * (1 - Math.exp(-dt * 8)))
       }
-      const level = s.autoAnimate ? 1 : s.idleIntensity + (1 - s.idleIntensity) * (target ? target.near : 0);
-      state.level += (level - state.level) * (1 - Math.exp(-dt * 7));
-      state.press *= Math.exp(-dt * 5);
-      draw(s);
-      const settling = Math.abs(diff) > 0.0002 || Math.abs(level - state.level) > 0.001 || state.press > 0.002;
-      if (settling || (spinning && !steering)) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+      const level = s.autoAnimate
+        ? 1
+        : s.idleIntensity + (1 - s.idleIntensity) * (target ? target.near : 0)
+      state.level += (level - state.level) * (1 - Math.exp(-dt * 7))
+      state.press *= Math.exp(-dt * 5)
+      draw(s)
+      const settling =
+        Math.abs(diff) > 0.0002 || Math.abs(level - state.level) > 0.001 || state.press > 0.002
+      if (settling || (spinning && !steering)) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (!raf && visible) raf = requestAnimationFrame(frame);
-    };
+      if (!raf && visible) raf = requestAnimationFrame(frame)
+    }
 
     const measure = (entry?: ResizeObserverEntry) => {
-      const box = entry?.borderBoxSize?.[0];
-      view.width = Math.max(1, box ? box.inlineSize : button.offsetWidth);
-      view.height = Math.max(1, box ? box.blockSize : button.offsetHeight);
-      view.ratio = Math.min(window.devicePixelRatio || 1, 3);
-      canvas.width = Math.max(1, Math.round((view.width + PAD * 2) * view.ratio));
-      canvas.height = Math.max(1, Math.round((view.height + PAD * 2) * view.ratio));
-      if (state.ready) draw(settingsRef);
-      wake();
-    };
+      const box = entry?.borderBoxSize?.[0]
+      view.width = Math.max(1, box ? box.inlineSize : button.offsetWidth)
+      view.height = Math.max(1, box ? box.blockSize : button.offsetHeight)
+      view.ratio = Math.min(window.devicePixelRatio || 1, 3)
+      canvas.width = Math.max(1, Math.round((view.width + PAD * 2) * view.ratio))
+      canvas.height = Math.max(1, Math.round((view.height + PAD * 2) * view.ratio))
+      if (state.ready) draw(settingsRef)
+      wake()
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-      pointer.known = true;
-      wake();
-    };
+      pointer.x = event.clientX
+      pointer.y = event.clientY
+      pointer.known = true
+      wake()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-      pointer.known = true;
-      if (!settingsRef.disabled) state.press = 1;
-      wake();
-    };
+      pointer.x = event.clientX
+      pointer.y = event.clientY
+      pointer.known = true
+      if (!settingsRef.disabled) state.press = 1
+      wake()
+    }
 
     const onPointerEnd = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse') return;
-      pointer.known = false;
-      wake();
-    };
+      if (event.pointerType === 'mouse') return
+      pointer.known = false
+      wake()
+    }
 
     const onPointerLeave = () => {
-      pointer.known = false;
-      wake();
-    };
+      pointer.known = false
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(entries => measure(entries[entries.length - 1]));
-    resizeObserver.observe(button);
+    const resizeObserver = new ResizeObserver(entries => measure(entries[entries.length - 1]))
+    resizeObserver.observe(button)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(button);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerup', onPointerEnd, { passive: true });
-    window.addEventListener('pointercancel', onPointerEnd, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    button.addEventListener('pointerdown', onPointerDown);
-    measure();
-    wakeRef = wake;
+    })
+    intersection.observe(button)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerup', onPointerEnd, { passive: true })
+    window.addEventListener('pointercancel', onPointerEnd, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    button.addEventListener('pointerdown', onPointerDown)
+    measure()
+    wakeRef = wake
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerEnd);
-      window.removeEventListener('pointercancel', onPointerEnd);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      button.removeEventListener('pointerdown', onPointerDown);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.deleteProgram(program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerEnd)
+      window.removeEventListener('pointercancel', onPointerEnd)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      button.removeEventListener('pointerdown', onPointerDown)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.deleteProgram(program)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   return (
     <button
@@ -513,7 +535,7 @@ const SpecularButton = (props: SpecularButtonProps) => {
           '--sb-tint-opacity': own.tintOpacity ?? 0.04,
           '--sb-blur': `${own.blur ?? 0}px`,
           '--sb-text-color': own.textColor ?? '#f5f5f5',
-          ...own.style
+          ...own.style,
         } as JSX.CSSProperties
       }
       {...rest}
@@ -521,11 +543,12 @@ const SpecularButton = (props: SpecularButtonProps) => {
       <canvas
         ref={canvasRef}
         class="pointer-events-none absolute -inset-6 z-[1] block h-[calc(100%+48px)] w-[calc(100%+48px)]"
-        aria-hidden="true"
       />
-      <span class="relative z-[2] inline-flex items-center gap-[inherit]">{own.children ?? 'Get Started'}</span>
+      <span class="relative z-[2] inline-flex items-center gap-[inherit]">
+        {own.children ?? 'Get Started'}
+      </span>
     </button>
-  );
-};
+  )
+}
 
-export default SpecularButton;
+export default SpecularButton

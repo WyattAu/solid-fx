@@ -1,4 +1,4 @@
-import FuzzyText from './FuzzyText';
+import FuzzyText from './FuzzyText'
 
 function FuzzyTextDemo() {
   return (
@@ -13,7 +13,7 @@ function FuzzyTextDemo() {
         Fuzzy
       </FuzzyText>
     </div>
-  );
+  )
 }
 
-export default FuzzyTextDemo;
+export default FuzzyTextDemo

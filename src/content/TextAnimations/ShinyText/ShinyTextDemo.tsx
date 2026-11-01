@@ -1,4 +1,4 @@
-import ShinyText from './ShinyText';
+import ShinyText from './ShinyText'
 
 function ShinyTextDemo() {
   return (
@@ -12,7 +12,7 @@ function ShinyTextDemo() {
         className="text-4xl font-semibold"
       />
     </div>
-  );
+  )
 }
 
-export default ShinyTextDemo;
+export default ShinyTextDemo

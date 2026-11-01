@@ -1,4 +1,4 @@
-import GlitchText from './GlitchText';
+import GlitchText from './GlitchText'
 
 function GlitchTextDemo() {
   return (
@@ -7,7 +7,7 @@ function GlitchTextDemo() {
         GLITCH
       </GlitchText>
     </div>
-  );
+  )
 }
 
-export default GlitchTextDemo;
+export default GlitchTextDemo

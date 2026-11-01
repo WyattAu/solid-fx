@@ -1,4 +1,4 @@
-import GridMotion from './GridMotion';
+import GridMotion from './GridMotion'
 
 function GridMotionDemo() {
   const items = [
@@ -9,13 +9,17 @@ function GridMotionDemo() {
     '★',
     { src: 'https://picsum.photos/seed/grid-motion-3/300/300', alt: 'tile' },
     'Bits',
-    { src: 'https://picsum.photos/seed/grid-motion-4/300/300', alt: 'tile' }
-  ];
+    { src: 'https://picsum.photos/seed/grid-motion-4/300/300', alt: 'tile' },
+  ]
   return (
     <div class="h-[480px] w-full p-4">
-      <GridMotion items={items} class="h-full w-full overflow-hidden rounded-2xl border border-white/10" rows={4} />
+      <GridMotion
+        items={items}
+        class="h-full w-full overflow-hidden rounded-2xl border border-white/10"
+        rows={4}
+      />
     </div>
-  );
+  )
 }
 
-export default GridMotionDemo;
+export default GridMotionDemo

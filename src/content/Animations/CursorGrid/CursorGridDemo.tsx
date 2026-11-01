@@ -1,4 +1,4 @@
-import CursorGrid from './CursorGrid';
+import CursorGrid from './CursorGrid'
 
 function CursorGridDemo() {
   return (
@@ -9,7 +9,7 @@ function CursorGridDemo() {
         </div>
       </CursorGrid>
     </div>
-  );
+  )
 }
 
-export default CursorGridDemo;
+export default CursorGridDemo

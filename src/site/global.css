@@ -1,9 +1,9 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* Scan the component library for Tailwind classes (they are not imported
    anywhere statically — demos are lazy islands). */
-@source '../../src/content';
-@source '../../src/islands';
+@source "../../src/content";
+@source "../../src/islands";
 
 body {
   background: #060010;

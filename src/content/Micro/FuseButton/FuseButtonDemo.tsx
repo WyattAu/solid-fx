@@ -1,4 +1,4 @@
-import FuseButton from './FuseButton';
+import FuseButton from './FuseButton'
 
 function FuseButtonDemo() {
   return (
@@ -20,7 +20,7 @@ function FuseButtonDemo() {
         settle="stay"
       />
     </div>
-  );
+  )
 }
 
-export default FuseButtonDemo;
+export default FuseButtonDemo

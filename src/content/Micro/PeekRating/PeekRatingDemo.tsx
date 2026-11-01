@@ -1,4 +1,4 @@
-import PeekRating from './PeekRating';
+import PeekRating from './PeekRating'
 
 function PeekRatingDemo() {
   return (
@@ -6,7 +6,7 @@ function PeekRatingDemo() {
       <PeekRating defaultValue={3} labels={['Meh', 'Okay', 'Good', 'Great', 'Amazing']} />
       <PeekRating shape="heart" count={4} defaultValue={2} activeColor="#f43f5e" size={24} />
     </div>
-  );
+  )
 }
 
-export default PeekRatingDemo;
+export default PeekRatingDemo

@@ -100,14 +100,20 @@
         "rules": {
           "suspicious": {
             "noConsole": "off",
-            "noExplicitAny": "warn"
+            "noExplicitAny": "warn",
+            "noImplicitAnyLet": "warn",
+            "noAssignInExpressions": "warn",
+            "useIterableCallbackReturn": "warn"
+          },
+          "style": {
+            "useForOf": "warn",
+            "noNonNullAssertion": "off"
           },
           "a11y": {
             "noSvgWithoutTitle": "off",
-            "useButtonType": "off"
-          },
-          "style": {
-            "noNonNullAssertion": "off"
+            "useButtonType": "off",
+            "noStaticElementInteractions": "warn",
+            "useKeyWithClickEvents": "warn"
           }
         }
       }

@@ -1,4 +1,4 @@
-import AcidSquares from './AcidSquares';
+import AcidSquares from './AcidSquares'
 
 const AcidSquaresDemo = () => (
   <div class="h-96 w-full">
@@ -11,6 +11,6 @@ const AcidSquaresDemo = () => (
       rotation={35}
     />
   </div>
-);
+)
 
-export default AcidSquaresDemo;
+export default AcidSquaresDemo

@@ -1,4 +1,4 @@
-import PixelSwap from './PixelSwap';
+import PixelSwap from './PixelSwap'
 
 function PixelSwapDemo() {
   return (
@@ -12,7 +12,9 @@ function PixelSwapDemo() {
         duration={450}
         firstContent={
           <div class="flex h-full w-full items-center justify-center bg-neutral-900">
-            <span class="text-xs font-medium tracking-[0.3em] text-neutral-300 uppercase">Hover to swap</span>
+            <span class="text-xs font-medium tracking-[0.3em] text-neutral-300 uppercase">
+              Hover to swap
+            </span>
           </div>
         }
         secondContent={
@@ -25,7 +27,7 @@ function PixelSwapDemo() {
         }
       />
     </div>
-  );
+  )
 }
 
-export default PixelSwapDemo;
+export default PixelSwapDemo

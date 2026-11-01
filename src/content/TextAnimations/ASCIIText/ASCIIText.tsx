@@ -1,67 +1,73 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { Show } from 'solid-js/web';
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { Show } from 'solid-js/web'
 
 export type ASCIITextProps = {
-  text?: string;
-  asciiFontSize?: number;
-  charset?: string;
-  fontFamily?: string;
-  fontWeight?: number | string;
-  textColor?: string;
-  colors?: string[];
-  textScale?: number;
-  blocks?: number;
-  waves?: number;
-  waveSpeed?: number;
-  chroma?: number;
-  tilt?: number;
-  hueShift?: number;
-  scramble?: number;
-  clickRipple?: boolean;
-  intro?: boolean;
-  idle?: boolean;
-  interactive?: boolean;
-  theme?: 'dark' | 'light';
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
-};
+  text?: string
+  asciiFontSize?: number
+  charset?: string
+  fontFamily?: string
+  fontWeight?: number | string
+  textColor?: string
+  colors?: string[]
+  textScale?: number
+  blocks?: number
+  waves?: number
+  waveSpeed?: number
+  chroma?: number
+  tilt?: number
+  hueShift?: number
+  scramble?: number
+  clickRipple?: boolean
+  intro?: boolean
+  idle?: boolean
+  interactive?: boolean
+  theme?: 'dark' | 'light'
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
+}
 
-type Ripple = { x: number; y: number; age: number };
+type Ripple = { x: number; y: number; age: number }
 
-type Build = (value: string, family: string, weight: number | string, color: string, characters: string) => void;
+type Build = (
+  value: string,
+  family: string,
+  weight: number | string,
+  color: string,
+  characters: string,
+) => void
 
 type Settings = {
-  cellSize: number;
-  textScale: number;
-  blocks: number;
-  waves: number;
-  waveSpeed: number;
-  chroma: number;
-  tilt: number;
-  hueShift: number;
-  scramble: number;
-  clickRipple: boolean;
-  intro: boolean;
-  idle: boolean;
-  interactive: boolean;
-  light: boolean;
-  colors: string[];
-};
+  cellSize: number
+  textScale: number
+  blocks: number
+  waves: number
+  waveSpeed: number
+  chroma: number
+  tilt: number
+  hueShift: number
+  scramble: number
+  clickRipple: boolean
+  intro: boolean
+  idle: boolean
+  interactive: boolean
+  light: boolean
+  colors: string[]
+}
 
-const CHARSET = ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
-const FONT = "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-const GLYPH_WIDTH = 40;
-const GLYPH_HEIGHT = 64;
-const TEXT_PX = 256;
-const RIPPLES = 4;
+const CHARSET = ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$'
+const FONT = "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+const GLYPH_WIDTH = 40
+const GLYPH_HEIGHT = 64
+const TEXT_PX = 256
+const RIPPLES = 4
 
 const VERTEX = `#version 300 es
 in vec2 position;
 void main() {
   gl_Position = vec4(position, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -178,91 +184,91 @@ void main() {
   color = clamp(hueRotate(color, uHue), 0.0, 1.0) * uReady;
   if (uLight > 0.5) color = vec3(alpha) - color;
   fragColor = vec4(color, alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const toRgb = (color: string): number[] => {
-  const ctx = document.createElement('canvas').getContext('2d');
-  if (!ctx) return [1, 1, 1];
-  ctx.fillStyle = '#ffffff';
-  ctx.fillStyle = color;
-  const value = String(ctx.fillStyle);
+  const ctx = document.createElement('canvas').getContext('2d')
+  if (!ctx) return [1, 1, 1]
+  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = color
+  const value = String(ctx.fillStyle)
   if (value.startsWith('#')) {
-    const hex = parseInt(value.slice(1, 7), 16);
-    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+    const hex = parseInt(value.slice(1, 7), 16)
+    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255]
   }
-  const parts = value.match(/[\d.]+/g)?.map(Number) ?? [255, 255, 255];
-  return [parts[0] / 255, parts[1] / 255, parts[2] / 255];
-};
+  const parts = value.match(/[\d.]+/g)?.map(Number) ?? [255, 255, 255]
+  return [parts[0] / 255, parts[1] / 255, parts[2] / 255]
+}
 
 const drawText = (text: string, fontFamily: string, fontWeight: number | string, color: string) => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-  const font = `${fontWeight} ${TEXT_PX}px ${fontFamily}`;
-  ctx.font = font;
-  const width = Math.max(TEXT_PX * 0.6, ctx.measureText(text || ' ').width);
-  canvas.width = Math.ceil(width + TEXT_PX * 0.3);
-  canvas.height = Math.ceil(TEXT_PX * 1.3);
-  ctx.font = font;
-  ctx.fillStyle = color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-  return canvas;
-};
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  const font = `${fontWeight} ${TEXT_PX}px ${fontFamily}`
+  ctx.font = font
+  const width = Math.max(TEXT_PX * 0.6, ctx.measureText(text || ' ').width)
+  canvas.width = Math.ceil(width + TEXT_PX * 0.3)
+  canvas.height = Math.ceil(TEXT_PX * 1.3)
+  ctx.font = font
+  ctx.fillStyle = color
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2)
+  return canvas
+}
 
 const drawGlyphs = (charset: string, fontFamily: string) => {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-  canvas.width = charset.length * GLYPH_WIDTH;
-  canvas.height = GLYPH_HEIGHT;
-  ctx.font = `500 ${GLYPH_HEIGHT * 0.74}px ${fontFamily}`;
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  canvas.width = charset.length * GLYPH_WIDTH
+  canvas.height = GLYPH_HEIGHT
+  ctx.font = `500 ${GLYPH_HEIGHT * 0.74}px ${fontFamily}`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
   Array.from(charset).forEach((char, i) => {
-    ctx.fillText(char, i * GLYPH_WIDTH + GLYPH_WIDTH / 2, GLYPH_HEIGHT / 2 + GLYPH_HEIGHT * 0.04);
-  });
-  return canvas;
-};
+    ctx.fillText(char, i * GLYPH_WIDTH + GLYPH_WIDTH / 2, GLYPH_HEIGHT / 2 + GLYPH_HEIGHT * 0.04)
+  })
+  return canvas
+}
 
 export default function ASCIIText(props: ASCIITextProps) {
-  const text = () => props.text ?? 'Hey!';
-  const asciiFontSize = () => props.asciiFontSize ?? 8;
-  const charset = () => props.charset ?? CHARSET;
-  const fontFamily = () => props.fontFamily ?? FONT;
-  const fontWeight = () => props.fontWeight ?? 600;
-  const textColor = () => props.textColor ?? '#fdf9f3';
-  const colors = () => props.colors ?? ['#ff6188', '#fc9867', '#ffd866'];
-  const textScale = () => props.textScale ?? 1;
-  const blocks = () => props.blocks ?? 0.9;
-  const waves = () => props.waves ?? 1;
-  const waveSpeed = () => props.waveSpeed ?? 1;
-  const chroma = () => props.chroma ?? 1;
-  const tilt = () => props.tilt ?? 1;
-  const hueShift = () => props.hueShift ?? 1;
-  const scramble = () => props.scramble ?? 0.6;
-  const clickRipple = () => props.clickRipple ?? true;
-  const intro = () => props.intro ?? true;
-  const idle = () => props.idle ?? true;
-  const interactive = () => props.interactive ?? true;
-  const theme = () => props.theme ?? 'dark';
+  const text = () => props.text ?? 'Hey!'
+  const asciiFontSize = () => props.asciiFontSize ?? 8
+  const charset = () => props.charset ?? CHARSET
+  const fontFamily = () => props.fontFamily ?? FONT
+  const fontWeight = () => props.fontWeight ?? 600
+  const textColor = () => props.textColor ?? '#fdf9f3'
+  const colors = () => props.colors ?? ['#ff6188', '#fc9867', '#ffd866']
+  const textScale = () => props.textScale ?? 1
+  const blocks = () => props.blocks ?? 0.9
+  const waves = () => props.waves ?? 1
+  const waveSpeed = () => props.waveSpeed ?? 1
+  const chroma = () => props.chroma ?? 1
+  const tilt = () => props.tilt ?? 1
+  const hueShift = () => props.hueShift ?? 1
+  const scramble = () => props.scramble ?? 0.6
+  const clickRipple = () => props.clickRipple ?? true
+  const intro = () => props.intro ?? true
+  const idle = () => props.idle ?? true
+  const interactive = () => props.interactive ?? true
+  const theme = () => props.theme ?? 'dark'
 
-  const glyphs = () => (Array.from(charset()).length > 1 ? charset() : CHARSET);
-  const palette = () => (colors().length ? colors() : ['#ffffff']).slice(0, 3);
+  const glyphs = () => (Array.from(charset()).length > 1 ? charset() : CHARSET)
+  const palette = () => (colors().length ? colors() : ['#ffffff']).slice(0, 3)
   // Upstream recomputed `settings` on every render and mirrored it into a ref;
   // an accessor read inside the frame loop gives the same live semantics.
   const settings = (): Settings => ({
@@ -280,53 +286,61 @@ export default function ASCIIText(props: ASCIITextProps) {
     idle: idle(),
     interactive: interactive(),
     light: theme() === 'light',
-    colors: [palette()[0], palette()[1] ?? palette()[0], palette()[2] ?? palette()[1] ?? palette()[0]]
-  });
+    colors: [
+      palette()[0],
+      palette()[1] ?? palette()[0],
+      palette()[2] ?? palette()[1] ?? palette()[0],
+    ],
+  })
 
-  let container!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let buildRef: Build | null = null;
-  const [fallback, setFallback] = createSignal(false);
+  let container!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let buildRef: Build | null = null
+  const [fallback, setFallback] = createSignal(false)
 
   onMount(() => {
-    const el = container;
-    const canvas = canvasEl;
-    if (!el || !canvas) return;
+    const el = container
+    const canvas = canvasEl
+    if (!el || !canvas) return
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    let program: WebGLProgram | null = null;
-    let buffer: WebGLBuffer | null = null;
-    let textTexture: WebGLTexture | null = null;
-    let glyphTexture: WebGLTexture | null = null;
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    let program: WebGLProgram | null = null
+    let buffer: WebGLBuffer | null = null
+    let textTexture: WebGLTexture | null = null
+    let glyphTexture: WebGLTexture | null = null
+    const uniforms: Record<string, WebGLUniformLocation | null> = {}
 
     if (gl) {
-      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
+      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
       if (vertex && fragment) {
-        program = gl.createProgram();
+        program = gl.createProgram()
         if (program) {
-          gl.attachShader(program, vertex);
-          gl.attachShader(program, fragment);
-          gl.bindAttribLocation(program, 0, 'position');
-          gl.linkProgram(program);
-          gl.deleteShader(vertex);
-          gl.deleteShader(fragment);
+          gl.attachShader(program, vertex)
+          gl.attachShader(program, fragment)
+          gl.bindAttribLocation(program, 0, 'position')
+          gl.linkProgram(program)
+          gl.deleteShader(vertex)
+          gl.deleteShader(fragment)
           if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-            gl.deleteProgram(program);
-            program = null;
+            gl.deleteProgram(program)
+            program = null
           }
         }
       }
       if (program) {
-        buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-        textTexture = gl.createTexture();
-        glyphTexture = gl.createTexture();
+        buffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+        gl.enableVertexAttribArray(0)
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+        textTexture = gl.createTexture()
+        glyphTexture = gl.createTexture()
         for (const name of [
           'uText',
           'uGlyphs',
@@ -349,28 +363,32 @@ export default function ASCIIText(props: ASCIITextProps) {
           'uRipples',
           'uIntro',
           'uLight',
-          'uReady'
+          'uReady',
         ]) {
-          uniforms[name] = gl.getUniformLocation(program, name);
+          uniforms[name] = gl.getUniformLocation(program, name)
         }
       }
     }
     if (!gl || !program) {
-      setFallback(true);
-      return;
+      setFallback(true)
+      return
     }
 
     const upload = (texture: WebGLTexture | null, source: HTMLCanvasElement, smooth: boolean) => {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, smooth ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, smooth ? gl.LINEAR : gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    };
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
+      gl.generateMipmap(gl.TEXTURE_2D)
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_MIN_FILTER,
+        smooth ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST,
+      )
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, smooth ? gl.LINEAR : gl.NEAREST)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+    }
 
     const state = {
       ready: false,
@@ -389,14 +407,14 @@ export default function ASCIIText(props: ASCIITextProps) {
       inside: false,
       visible: true,
       ripples: [] as Ripple[],
-      introPlayed: false
-    };
-    const rippleData = new Float32Array(RIPPLES * 4);
-    const colorData = new Float32Array(9);
-    let colorKey = '';
-    let raf = 0;
-    let last = performance.now();
-    let alive = true;
+      introPlayed: false,
+    }
+    const rippleData = new Float32Array(RIPPLES * 4)
+    const colorData = new Float32Array(9)
+    let colorKey = ''
+    let raf = 0
+    let last = performance.now()
+    let alive = true
 
     const build = (
       value: string,
@@ -404,199 +422,206 @@ export default function ASCIIText(props: ASCIITextProps) {
       weight: number | string,
       color: string,
       characters: string,
-      playIntro: boolean
+      playIntro: boolean,
     ) => {
-      const textCanvas = drawText(value, family, weight, color);
-      const glyphCanvas = drawGlyphs(characters, family);
-      if (!textCanvas || !glyphCanvas) return;
-      upload(textTexture, textCanvas, false);
-      upload(glyphTexture, glyphCanvas, true);
-      state.textAspect = textCanvas.width / textCanvas.height;
-      state.glyphCount = Array.from(characters).length;
-      state.ready = true;
+      const textCanvas = drawText(value, family, weight, color)
+      const glyphCanvas = drawGlyphs(characters, family)
+      if (!textCanvas || !glyphCanvas) return
+      upload(textTexture, textCanvas, false)
+      upload(glyphTexture, glyphCanvas, true)
+      state.textAspect = textCanvas.width / textCanvas.height
+      state.glyphCount = Array.from(characters).length
+      state.ready = true
       if (playIntro && settings().intro && !state.introPlayed && !reduce) {
-        state.introPlayed = true;
-        state.intro = 1;
+        state.introPlayed = true
+        state.intro = 1
       }
-    };
+    }
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const width = Math.max(1, Math.round(el.clientWidth * dpr));
-      const height = Math.max(1, Math.round(el.clientHeight * dpr));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const width = Math.max(1, Math.round(el.clientWidth * dpr))
+      const height = Math.max(1, Math.round(el.clientHeight * dpr))
       if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = width
+        canvas.height = height
       }
-    };
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive) return;
-      const s = settings();
-      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
-      last = now;
-      state.time += reduce ? 0 : dt;
-      const dpr = canvas.width / Math.max(1, el.clientWidth);
+      raf = 0
+      if (!alive) return
+      const s = settings()
+      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000))
+      last = now
+      state.time += reduce ? 0 : dt
+      const dpr = canvas.width / Math.max(1, el.clientWidth)
 
-      let targetX = 0;
-      let targetY = 0;
+      let targetX = 0
+      let targetY = 0
       if (s.interactive && state.inside) {
-        targetX = state.targetY * 0.5 * s.tilt;
-        targetY = state.targetX * 0.5 * s.tilt;
+        targetX = state.targetY * 0.5 * s.tilt
+        targetY = state.targetX * 0.5 * s.tilt
       } else if (s.idle && !reduce) {
-        targetX = Math.sin(state.time * 0.55) * 0.12 * s.tilt;
-        targetY = Math.sin(state.time * 0.4 + 1.3) * 0.2 * s.tilt;
+        targetX = Math.sin(state.time * 0.55) * 0.12 * s.tilt
+        targetY = Math.sin(state.time * 0.4 + 1.3) * 0.2 * s.tilt
       }
-      const follow = 1 - Math.exp(-dt / 0.3);
-      state.tiltX += (targetX - state.tiltX) * follow;
-      state.tiltY += (targetY - state.tiltY) * follow;
-      const angle = Math.atan2(state.targetY, state.targetX);
-      const hueTarget = s.interactive && state.inside ? angle * s.hueShift : state.hue;
-      let delta = hueTarget - state.hue;
-      delta = Math.atan2(Math.sin(delta), Math.cos(delta));
-      state.hue += delta * (1 - Math.exp(-dt / 0.25));
-      state.hover += ((s.interactive && state.inside ? 1 : 0) - state.hover) * (1 - Math.exp(-dt / 0.2));
-      if (state.intro > 0) state.intro = Math.max(0, state.intro - dt / 1.4);
+      const follow = 1 - Math.exp(-dt / 0.3)
+      state.tiltX += (targetX - state.tiltX) * follow
+      state.tiltY += (targetY - state.tiltY) * follow
+      const angle = Math.atan2(state.targetY, state.targetX)
+      const hueTarget = s.interactive && state.inside ? angle * s.hueShift : state.hue
+      let delta = hueTarget - state.hue
+      delta = Math.atan2(Math.sin(delta), Math.cos(delta))
+      state.hue += delta * (1 - Math.exp(-dt / 0.25))
+      state.hover +=
+        ((s.interactive && state.inside ? 1 : 0) - state.hover) * (1 - Math.exp(-dt / 0.2))
+      if (state.intro > 0) state.intro = Math.max(0, state.intro - dt / 1.4)
 
-      rippleData.fill(0);
-      state.ripples = state.ripples.filter(ripple => (ripple.age += dt) < 1.3);
+      rippleData.fill(0)
+      state.ripples = state.ripples.filter(ripple => (ripple.age += dt) < 1.3)
       state.ripples.slice(-RIPPLES).forEach((ripple, i) => {
-        rippleData.set([ripple.x * dpr, ripple.y * dpr, ripple.age, 1], i * 4);
-      });
+        rippleData.set([ripple.x * dpr, ripple.y * dpr, ripple.age, 1], i * 4)
+      })
 
-      const width = canvas.width;
-      const height = canvas.height;
-      gl.viewport(0, 0, width, height);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, textTexture);
-      gl.uniform1i(uniforms.uText, 0);
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, glyphTexture);
-      gl.uniform1i(uniforms.uGlyphs, 1);
-      gl.uniform2f(uniforms.uSize, width, height);
-      gl.uniform2f(uniforms.uCell, s.cellSize * 0.62 * dpr, s.cellSize * dpr);
-      gl.uniform1f(uniforms.uGlyphCount, state.glyphCount);
-      gl.uniform1f(uniforms.uTextAspect, state.textAspect);
-      gl.uniform1f(uniforms.uPlaneHeight, 0.5 * s.textScale);
-      gl.uniform2f(uniforms.uTilt, state.tiltX, state.tiltY);
-      gl.uniform1f(uniforms.uTime, state.time);
-      gl.uniform1f(uniforms.uWaves, s.waves);
-      gl.uniform1f(uniforms.uWaveSpeed, s.waveSpeed);
-      gl.uniform1f(uniforms.uChroma, s.chroma);
-      gl.uniform1f(uniforms.uBlocks, s.blocks);
-      const key = s.colors.join();
+      const width = canvas.width
+      const height = canvas.height
+      gl.viewport(0, 0, width, height)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, textTexture)
+      gl.uniform1i(uniforms.uText, 0)
+      gl.activeTexture(gl.TEXTURE1)
+      gl.bindTexture(gl.TEXTURE_2D, glyphTexture)
+      gl.uniform1i(uniforms.uGlyphs, 1)
+      gl.uniform2f(uniforms.uSize, width, height)
+      gl.uniform2f(uniforms.uCell, s.cellSize * 0.62 * dpr, s.cellSize * dpr)
+      gl.uniform1f(uniforms.uGlyphCount, state.glyphCount)
+      gl.uniform1f(uniforms.uTextAspect, state.textAspect)
+      gl.uniform1f(uniforms.uPlaneHeight, 0.5 * s.textScale)
+      gl.uniform2f(uniforms.uTilt, state.tiltX, state.tiltY)
+      gl.uniform1f(uniforms.uTime, state.time)
+      gl.uniform1f(uniforms.uWaves, s.waves)
+      gl.uniform1f(uniforms.uWaveSpeed, s.waveSpeed)
+      gl.uniform1f(uniforms.uChroma, s.chroma)
+      gl.uniform1f(uniforms.uBlocks, s.blocks)
+      const key = s.colors.join()
       if (key !== colorKey) {
-        colorKey = key;
-        colorData.set(s.colors.flatMap(toRgb));
+        colorKey = key
+        colorData.set(s.colors.flatMap(toRgb))
       }
-      gl.uniform3fv(uniforms.uColors, colorData);
-      gl.uniform1f(uniforms.uHue, state.hue);
-      gl.uniform2f(uniforms.uPointer, state.pointerX * dpr, state.pointerY * dpr);
-      gl.uniform1f(uniforms.uHover, state.hover);
-      gl.uniform1f(uniforms.uScramble, s.scramble);
-      gl.uniform4fv(uniforms.uRipples, rippleData);
-      gl.uniform1f(uniforms.uIntro, state.intro);
-      gl.uniform1f(uniforms.uLight, s.light ? 1 : 0);
-      gl.uniform1f(uniforms.uReady, state.ready ? 1 : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.uniform3fv(uniforms.uColors, colorData)
+      gl.uniform1f(uniforms.uHue, state.hue)
+      gl.uniform2f(uniforms.uPointer, state.pointerX * dpr, state.pointerY * dpr)
+      gl.uniform1f(uniforms.uHover, state.hover)
+      gl.uniform1f(uniforms.uScramble, s.scramble)
+      gl.uniform4fv(uniforms.uRipples, rippleData)
+      gl.uniform1f(uniforms.uIntro, state.intro)
+      gl.uniform1f(uniforms.uLight, s.light ? 1 : 0)
+      gl.uniform1f(uniforms.uReady, state.ready ? 1 : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      if (state.visible) raf = requestAnimationFrame(frame);
-    };
+      if (state.visible) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || !alive || !state.visible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
+      if (raf || !alive || !state.visible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
 
-    buildRef = (value: string, family: string, weight: number | string, color: string, characters: string) => {
-      build(value, family, weight, color, characters, true);
-      wake();
-    };
+    buildRef = (
+      value: string,
+      family: string,
+      weight: number | string,
+      color: string,
+      characters: string,
+    ) => {
+      build(value, family, weight, color, characters, true)
+      wake()
+    }
 
     const locate = (event: PointerEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      state.pointerX = x;
-      state.pointerY = y;
-      state.targetX = clamp((x / Math.max(1, rect.width)) * 2 - 1, -1, 1);
-      state.targetY = clamp((y / Math.max(1, rect.height)) * 2 - 1, -1, 1);
-    };
+      const rect = el.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      state.pointerX = x
+      state.pointerY = y
+      state.targetX = clamp((x / Math.max(1, rect.width)) * 2 - 1, -1, 1)
+      state.targetY = clamp((y / Math.max(1, rect.height)) * 2 - 1, -1, 1)
+    }
     const onMove = (event: PointerEvent) => {
-      locate(event);
-      state.inside = true;
-    };
+      locate(event)
+      state.inside = true
+    }
     const onLeave = () => {
-      state.inside = false;
-    };
+      state.inside = false
+    }
     const onDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.interactive || !s.clickRipple) return;
-      locate(event);
-      state.ripples.push({ x: state.pointerX, y: state.pointerY, age: 0 });
-    };
+      const s = settings()
+      if (!s.interactive || !s.clickRipple) return
+      locate(event)
+      state.ripples.push({ x: state.pointerX, y: state.pointerY, age: 0 })
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(el);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(el)
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-      if (state.visible) wake();
-    });
-    visibility.observe(el);
-    el.addEventListener('pointermove', onMove);
-    el.addEventListener('pointerdown', onDown);
-    el.addEventListener('pointerleave', onLeave);
-    resize();
-    wake();
+      state.visible = entries.some(entry => entry.isIntersecting)
+      if (state.visible) wake()
+    })
+    visibility.observe(el)
+    el.addEventListener('pointermove', onMove)
+    el.addEventListener('pointerdown', onDown)
+    el.addEventListener('pointerleave', onLeave)
+    resize()
+    wake()
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      buildRef = null;
-      resizeObserver.disconnect();
-      visibility.disconnect();
-      el.removeEventListener('pointermove', onMove);
-      el.removeEventListener('pointerdown', onDown);
-      el.removeEventListener('pointerleave', onLeave);
-      gl.deleteTexture(textTexture);
-      gl.deleteTexture(glyphTexture);
-      gl.deleteBuffer(buffer);
-      gl.deleteProgram(program);
-    });
-  });
+      alive = false
+      cancelAnimationFrame(raf)
+      buildRef = null
+      resizeObserver.disconnect()
+      visibility.disconnect()
+      el.removeEventListener('pointermove', onMove)
+      el.removeEventListener('pointerdown', onDown)
+      el.removeEventListener('pointerleave', onLeave)
+      gl.deleteTexture(textTexture)
+      gl.deleteTexture(glyphTexture)
+      gl.deleteBuffer(buffer)
+      gl.deleteProgram(program)
+    })
+  })
 
   createEffect(() => {
     // Upstream deps: [text, fontFamily, fontWeight, textColor, glyphs]
-    const value = text();
-    const family = fontFamily();
-    const weight = fontWeight();
-    const color = textColor();
-    const characters = glyphs();
-    let cancelled = false;
+    const value = text()
+    const family = fontFamily()
+    const weight = fontWeight()
+    const color = textColor()
+    const characters = glyphs()
+    let cancelled = false
     const run = () => {
-      if (!cancelled) buildRef?.(value, family, weight, color, characters);
-    };
-    run();
-    const fonts = document.fonts;
+      if (!cancelled) buildRef?.(value, family, weight, color, characters)
+    }
+    run()
+    const fonts = document.fonts
     if (fonts?.load) {
       Promise.all([
         fonts.load(`${weight} ${TEXT_PX}px ${family}`, value || 'A'),
-        fonts.load(`500 ${GLYPH_HEIGHT}px ${family}`, characters)
+        fonts.load(`500 ${GLYPH_HEIGHT}px ${family}`, characters),
       ])
         .catch(() => null)
-        .then(run);
+        .then(run)
     }
-    fonts?.addEventListener?.('loadingdone', run);
+    fonts?.addEventListener?.('loadingdone', run)
     onCleanup(() => {
-      cancelled = true;
-      fonts?.removeEventListener?.('loadingdone', run);
-    });
-  });
+      cancelled = true
+      fonts?.removeEventListener?.('loadingdone', run)
+    })
+  })
 
   return (
     <div
@@ -618,12 +643,12 @@ export default function ASCIIText(props: ASCIITextProps) {
             'font-family': fontFamily(),
             'font-weight': `${fontWeight()}`,
             'font-size': `${8 * textScale()}vw`,
-            color: textColor()
+            color: textColor(),
           }}
         >
           {text()}
         </div>
       </Show>
     </div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import LogoLoop from './LogoLoop';
-import type { LogoItem } from './LogoLoop';
+import LogoLoop from './LogoLoop'
+import type { LogoItem } from './LogoLoop'
 
-const NAMES = ['Solid Bits', 'Astro', 'Tailwind', 'GSAP', 'TypeScript', 'Vite'];
+const NAMES = ['Solid Bits', 'Astro', 'Tailwind', 'GSAP', 'TypeScript', 'Vite']
 
 const LOGOS: LogoItem[] = NAMES.map(name => ({
   node: (
@@ -10,15 +10,15 @@ const LOGOS: LogoItem[] = NAMES.map(name => ({
       <span class="text-indigo-400">.</span>
     </span>
   ),
-  title: name
-}));
+  title: name,
+}))
 
 function LogoLoopDemo() {
   return (
     <div class="flex h-96 w-full items-center justify-center bg-neutral-950">
       <LogoLoop logos={LOGOS} logoHeight={32} speed={90} layout="wave" bend={0.4} />
     </div>
-  );
+  )
 }
 
-export default LogoLoopDemo;
+export default LogoLoopDemo

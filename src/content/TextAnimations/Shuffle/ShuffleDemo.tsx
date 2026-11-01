@@ -1,4 +1,4 @@
-import Shuffle from './Shuffle';
+import Shuffle from './Shuffle'
 
 function ShuffleDemo() {
   return (
@@ -13,7 +13,7 @@ function ShuffleDemo() {
         accentColor="#a78bfa"
       />
     </div>
-  );
+  )
 }
 
-export default ShuffleDemo;
+export default ShuffleDemo

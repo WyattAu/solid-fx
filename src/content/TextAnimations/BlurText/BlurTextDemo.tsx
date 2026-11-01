@@ -1,4 +1,4 @@
-import BlurText from './BlurText';
+import BlurText from './BlurText'
 
 function BlurTextDemo() {
   return (
@@ -12,7 +12,7 @@ function BlurTextDemo() {
         class="max-w-md text-center text-3xl font-semibold text-white"
       />
     </div>
-  );
+  )
 }
 
-export default BlurTextDemo;
+export default BlurTextDemo

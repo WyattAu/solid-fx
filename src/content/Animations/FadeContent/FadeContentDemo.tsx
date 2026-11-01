@@ -1,4 +1,4 @@
-import FadeContent from './FadeContent';
+import FadeContent from './FadeContent'
 
 function FadeContentDemo() {
   return (
@@ -11,12 +11,13 @@ function FadeContentDemo() {
       >
         <h3 class="text-lg font-semibold text-white">Fade on mount</h3>
         <p class="mt-2 text-sm leading-relaxed text-white/60">
-          Content sharpens from a soft blur as it fades in — scroll-triggered by default, or on mount like this
-          demo. Supports dissolve, mist, and pixel masks via the <code class="text-white/80">effect</code> prop.
+          Content sharpens from a soft blur as it fades in — scroll-triggered by default, or on
+          mount like this demo. Supports dissolve, mist, and pixel masks via the{' '}
+          <code class="text-white/80">effect</code> prop.
         </p>
       </FadeContent>
     </div>
-  );
+  )
 }
 
-export default FadeContentDemo;
+export default FadeContentDemo

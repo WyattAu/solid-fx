@@ -1,4 +1,4 @@
-import StickerPeel from './StickerPeel';
+import StickerPeel from './StickerPeel'
 
 function StickerPeelDemo() {
   return (
@@ -13,7 +13,7 @@ function StickerPeelDemo() {
         Drag the sticker
       </div>
     </div>
-  );
+  )
 }
 
-export default StickerPeelDemo;
+export default StickerPeelDemo

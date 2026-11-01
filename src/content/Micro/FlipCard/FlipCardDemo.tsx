@@ -1,4 +1,4 @@
-import FlipCard from './FlipCard';
+import FlipCard from './FlipCard'
 
 function FlipCardDemo() {
   return (
@@ -20,7 +20,7 @@ function FlipCardDemo() {
         }
       />
     </div>
-  );
+  )
 }
 
-export default FlipCardDemo;
+export default FlipCardDemo

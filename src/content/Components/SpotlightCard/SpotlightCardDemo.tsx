@@ -1,4 +1,4 @@
-import SpotlightCard from './SpotlightCard';
+import SpotlightCard from './SpotlightCard'
 
 function SpotlightCardDemo() {
   return (
@@ -8,7 +8,12 @@ function SpotlightCardDemo() {
         <p class="mt-2 text-lg font-semibold">Hover me</p>
         <p class="mt-1 text-sm text-white/50">The spotlight follows the pointer.</p>
       </SpotlightCard>
-      <SpotlightCard class="w-full text-white sm:w-64" shape="beam" ambient spotlightColor="#60a5fa">
+      <SpotlightCard
+        class="w-full text-white sm:w-64"
+        shape="beam"
+        ambient
+        spotlightColor="#60a5fa"
+      >
         <p class="text-xs tracking-widest text-white/40 uppercase">beam + ambient</p>
         <p class="mt-2 text-lg font-semibold">Top light</p>
         <p class="mt-1 text-sm text-white/50">Drifts on its own when idle.</p>
@@ -25,7 +30,7 @@ function SpotlightCardDemo() {
         <p class="mt-1 text-sm text-white/50">Reacts before you arrive.</p>
       </SpotlightCard>
     </div>
-  );
+  )
 }
 
-export default SpotlightCardDemo;
+export default SpotlightCardDemo

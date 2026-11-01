@@ -1,4 +1,4 @@
-import BubbleMenu from './BubbleMenu';
+import BubbleMenu from './BubbleMenu'
 
 function BubbleMenuDemo() {
   return (
@@ -11,7 +11,7 @@ function BubbleMenuDemo() {
         Click the toggle bubble to open the menu
       </div>
     </div>
-  );
+  )
 }
 
-export default BubbleMenuDemo;
+export default BubbleMenuDemo

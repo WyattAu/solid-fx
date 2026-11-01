@@ -1,4 +1,4 @@
-import LatticeLoader from './LatticeLoader';
+import LatticeLoader from './LatticeLoader'
 
 function LatticeLoaderDemo() {
   return (
@@ -7,7 +7,7 @@ function LatticeLoaderDemo() {
       <LatticeLoader status="done" doneLabel="Done in" pattern="snake" showTimer={false} />
       <LatticeLoader status="error" errorLabel="Failed after" pattern="rain" grid={4} />
     </div>
-  );
+  )
 }
 
-export default LatticeLoaderDemo;
+export default LatticeLoaderDemo

@@ -1,38 +1,39 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export type DecayCardProps = {
-  image?: string;
-  width?: number;
-  height?: number;
-  intensity?: number;
-  sensitivity?: number;
-  hoverDecay?: number;
-  recovery?: number;
-  idle?: number;
-  grain?: number;
-  detail?: number;
-  pattern?: number;
-  flow?: number;
-  chroma?: number;
-  travel?: number;
-  tilt?: number;
-  scope?: 'window' | 'card';
-  radius?: number;
-  grayscale?: boolean;
-  children?: JSX.Element;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
-};
+  image?: string
+  width?: number
+  height?: number
+  intensity?: number
+  sensitivity?: number
+  hoverDecay?: number
+  recovery?: number
+  idle?: number
+  grain?: number
+  detail?: number
+  pattern?: number
+  flow?: number
+  chroma?: number
+  travel?: number
+  tilt?: number
+  scope?: 'window' | 'card'
+  radius?: number
+  grayscale?: boolean
+  children?: JSX.Element
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
+}
 
-const SCOPES: NonNullable<DecayCardProps['scope']>[] = ['window', 'card'];
-const BLEED = 1.24;
+const SCOPES: NonNullable<DecayCardProps['scope']>[] = ['window', 'card']
+const BLEED = 1.24
 
-const ROOT = 'relative flex-none will-change-transform';
-const CANVAS = 'pointer-events-none absolute top-[-12%] left-[-12%] block h-[124%] w-[124%]';
-const FALLBACK = 'absolute top-[8.33%] left-[8.33%] h-[83.33%] w-[83.33%] object-cover';
-const CONTENT = 'pointer-events-none absolute right-[8.33%] bottom-[8.33%] left-[8.33%] p-5 text-white';
+const ROOT = 'relative flex-none will-change-transform'
+const CANVAS = 'pointer-events-none absolute top-[-12%] left-[-12%] block h-[124%] w-[124%]'
+const FALLBACK = 'absolute top-[8.33%] left-[8.33%] h-[83.33%] w-[83.33%] object-cover'
+const CONTENT =
+  'pointer-events-none absolute right-[8.33%] bottom-[8.33%] left-[8.33%] p-5 text-white'
 
 const VERTEX = `#version 300 es
 in vec2 position;
@@ -40,7 +41,7 @@ out vec2 vUv;
 void main() {
   vUv = vec2(position.x * 0.5 + 0.5, 0.5 - position.y * 0.5);
   gl_Position = vec4(position, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -164,32 +165,32 @@ void main() {
   }
   color = mix(color, vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), uGray);
   fragColor = vec4(color * alpha, alpha);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const soften = (value: number, bound: number) => {
-  if (value > bound) return bound + (value - bound) * 0.2;
-  if (value < -bound) return -bound + (value + bound) * 0.2;
-  return value;
-};
+  if (value > bound) return bound + (value - bound) * 0.2
+  if (value < -bound) return -bound + (value + bound) * 0.2
+  return value
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const DecayCard = (props: DecayCardProps) => {
-  let rootRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let loadFn: ((src: string) => void) | null = null; // upstream loadRef
-  let wakeFn: (() => void) | null = null; // upstream wakeRef
-  const [fallback, setFallback] = createSignal(false);
+  let rootRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let loadFn: ((src: string) => void) | null = null // upstream loadRef
+  let wakeFn: (() => void) | null = null // upstream wakeRef
+  const [fallback, setFallback] = createSignal(false)
 
   // Upstream rebuilt `settings` every render and kept it in a ref for the
   // frame loop; a memo gives the same always-current read.
@@ -208,49 +209,63 @@ const DecayCard = (props: DecayCardProps) => {
     tilt: clamp(props.tilt ?? 10, 0, 45),
     scope: SCOPES.includes(props.scope ?? 'window') ? (props.scope as 'window' | 'card') : 'window',
     radius: Math.max(0, props.radius ?? 0),
-    grayscale: props.grayscale ?? false
-  }));
+    grayscale: props.grayscale ?? false,
+  }))
 
   onMount(() => {
-    const root = rootRef;
-    const canvas = canvasRef;
+    const root = rootRef
+    const canvas = canvasRef
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    let program: WebGLProgram | null = null;
-    let texture: WebGLTexture | null = null;
-    let buffer: WebGLBuffer | null = null;
-    const uniforms: Record<string, WebGLUniformLocation | null> = {};
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    let program: WebGLProgram | null = null
+    let texture: WebGLTexture | null = null
+    let buffer: WebGLBuffer | null = null
+    const uniforms: Record<string, WebGLUniformLocation | null> = {}
 
     if (gl) {
-      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
+      const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+      const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
       if (vertex && fragment) {
-        program = gl.createProgram();
-        gl.attachShader(program, vertex);
-        gl.attachShader(program, fragment);
-        gl.bindAttribLocation(program, 0, 'position');
-        gl.linkProgram(program);
-        gl.deleteShader(vertex);
-        gl.deleteShader(fragment);
+        program = gl.createProgram()
+        gl.attachShader(program, vertex)
+        gl.attachShader(program, fragment)
+        gl.bindAttribLocation(program, 0, 'position')
+        gl.linkProgram(program)
+        gl.deleteShader(vertex)
+        gl.deleteShader(fragment)
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-          gl.deleteProgram(program);
-          program = null;
+          gl.deleteProgram(program)
+          program = null
         }
       }
       if (program) {
-        buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-        texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+        buffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+        gl.enableVertexAttribArray(0)
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+        texture = gl.createTexture()
+        gl.bindTexture(gl.TEXTURE_2D, texture)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          1,
+          1,
+          0,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          new Uint8Array([0, 0, 0, 0]),
+        )
         for (const name of [
           'uImage',
           'uSize',
@@ -266,13 +281,13 @@ const DecayCard = (props: DecayCardProps) => {
           'uFlow',
           'uChroma',
           'uGray',
-          'uReady'
+          'uReady',
         ]) {
-          uniforms[name] = gl.getUniformLocation(program, name);
+          uniforms[name] = gl.getUniformLocation(program, name)
         }
       }
     }
-    if (!program) setFallback(true);
+    if (!program) setFallback(true)
 
     const state = {
       x: 0,
@@ -289,208 +304,217 @@ const DecayCard = (props: DecayCardProps) => {
       visible: true,
       ready: false,
       imageWidth: 1,
-      imageHeight: 1
-    };
-    let raf = 0;
-    let last = performance.now();
-    let alive = true;
-    let calm = 0;
-    let tick = 0;
+      imageHeight: 1,
+    }
+    let raf = 0
+    let last = performance.now()
+    let alive = true
+    let calm = 0
+    let tick = 0
 
     const draw = () => {
-      if (!gl || !program) return;
-      const s = settings();
-      const w = canvas.width;
-      const h = canvas.height;
-      if (!w || !h) return;
-      const unit = Math.max(w / 720, h / 900) / BLEED;
-      gl.viewport(0, 0, w, h);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.useProgram(program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(uniforms.uImage, 0);
-      gl.uniform2f(uniforms.uSize, w, h);
-      gl.uniform2f(uniforms.uImageSize, state.imageWidth, state.imageHeight);
-      gl.uniform1f(uniforms.uUnit, unit);
-      gl.uniform1f(uniforms.uScale, state.level * s.intensity * 440);
-      gl.uniform1f(uniforms.uIdle, s.idle);
-      gl.uniform1f(uniforms.uFrequency, s.frequency);
-      gl.uniform1i(uniforms.uOctaves, s.octaves);
-      gl.uniform1f(uniforms.uSeed, s.seed);
-      gl.uniform1f(uniforms.uRadius, Math.min(300, (s.radius * (w / Math.max(1, canvas.clientWidth))) / unit));
-      gl.uniform1f(uniforms.uTime, state.time);
-      gl.uniform1f(uniforms.uFlow, reduce ? 0 : s.flow);
-      gl.uniform1f(uniforms.uChroma, s.chroma);
-      gl.uniform1f(uniforms.uGray, s.grayscale ? 1 : 0);
-      gl.uniform1f(uniforms.uReady, state.ready ? 1 : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+      if (!gl || !program) return
+      const s = settings()
+      const w = canvas.width
+      const h = canvas.height
+      if (!w || !h) return
+      const unit = Math.max(w / 720, h / 900) / BLEED
+      gl.viewport(0, 0, w, h)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.useProgram(program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.uniform1i(uniforms.uImage, 0)
+      gl.uniform2f(uniforms.uSize, w, h)
+      gl.uniform2f(uniforms.uImageSize, state.imageWidth, state.imageHeight)
+      gl.uniform1f(uniforms.uUnit, unit)
+      gl.uniform1f(uniforms.uScale, state.level * s.intensity * 440)
+      gl.uniform1f(uniforms.uIdle, s.idle)
+      gl.uniform1f(uniforms.uFrequency, s.frequency)
+      gl.uniform1i(uniforms.uOctaves, s.octaves)
+      gl.uniform1f(uniforms.uSeed, s.seed)
+      gl.uniform1f(
+        uniforms.uRadius,
+        Math.min(300, (s.radius * (w / Math.max(1, canvas.clientWidth))) / unit),
+      )
+      gl.uniform1f(uniforms.uTime, state.time)
+      gl.uniform1f(uniforms.uFlow, reduce ? 0 : s.flow)
+      gl.uniform1f(uniforms.uChroma, s.chroma)
+      gl.uniform1f(uniforms.uGray, s.grayscale ? 1 : 0)
+      gl.uniform1f(uniforms.uReady, state.ready ? 1 : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!alive) return;
-      const s = settings();
-      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
-      last = now;
-      state.time += dt;
+      raf = 0
+      if (!alive) return
+      const s = settings()
+      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000))
+      last = now
+      state.time += dt
 
-      const speed = Math.hypot(state.cursorX - state.lastX, state.cursorY - state.lastY) / dt;
-      state.lastX = state.cursorX;
-      state.lastY = state.cursorY;
+      const speed = Math.hypot(state.cursorX - state.lastX, state.cursorY - state.lastY) / dt
+      state.lastX = state.cursorX
+      state.lastY = state.cursorY
 
-      let nx = 0;
-      let ny = 0;
+      let nx = 0
+      let ny = 0
       if (s.scope === 'card') {
         if (state.hovered) {
-          const rect = root.getBoundingClientRect();
-          nx = clamp(((state.cursorX - rect.left) / Math.max(1, rect.width)) * 2 - 1, -1, 1);
-          ny = clamp(((state.cursorY - rect.top) / Math.max(1, rect.height)) * 2 - 1, -1, 1);
+          const rect = root.getBoundingClientRect()
+          nx = clamp(((state.cursorX - rect.left) / Math.max(1, rect.width)) * 2 - 1, -1, 1)
+          ny = clamp(((state.cursorY - rect.top) / Math.max(1, rect.height)) * 2 - 1, -1, 1)
         }
       } else if (state.seen) {
-        nx = clamp((state.cursorX / Math.max(1, window.innerWidth)) * 2 - 1, -1, 1);
-        ny = clamp((state.cursorY / Math.max(1, window.innerHeight)) * 2 - 1, -1, 1);
+        nx = clamp((state.cursorX / Math.max(1, window.innerWidth)) * 2 - 1, -1, 1)
+        ny = clamp((state.cursorY / Math.max(1, window.innerHeight)) * 2 - 1, -1, 1)
       }
-      const follow = 1 - Math.exp(-dt / 0.16);
-      const targetX = reduce ? 0 : soften(nx * 120, s.travel);
-      const targetY = reduce ? 0 : soften(ny * 120, s.travel);
-      const targetRotate = reduce ? 0 : nx * s.tilt;
-      state.x += (targetX - state.x) * follow;
-      state.y += (targetY - state.y) * follow;
-      state.rotate += (targetRotate - state.rotate) * follow;
+      const follow = 1 - Math.exp(-dt / 0.16)
+      const targetX = reduce ? 0 : soften(nx * 120, s.travel)
+      const targetY = reduce ? 0 : soften(ny * 120, s.travel)
+      const targetRotate = reduce ? 0 : nx * s.tilt
+      state.x += (targetX - state.x) * follow
+      state.y += (targetY - state.y) * follow
+      state.rotate += (targetRotate - state.rotate) * follow
 
-      const active = s.scope === 'window' || state.hovered;
-      let wanted = active ? clamp(speed / (2400 - 2100 * s.sensitivity), 0, 1) ** 2 : 0;
-      if (state.hovered) wanted = Math.max(wanted, s.hoverDecay);
-      const tau = wanted > state.level ? 0.08 : s.recovery;
-      state.level += (wanted - state.level) * (1 - Math.exp(-dt / tau));
+      const active = s.scope === 'window' || state.hovered
+      let wanted = active ? clamp(speed / (2400 - 2100 * s.sensitivity), 0, 1) ** 2 : 0
+      if (state.hovered) wanted = Math.max(wanted, s.hoverDecay)
+      const tau = wanted > state.level ? 0.08 : s.recovery
+      state.level += (wanted - state.level) * (1 - Math.exp(-dt / tau))
 
-      root.style.transform = `translate3d(${state.x.toFixed(2)}px, ${state.y.toFixed(2)}px, 0) rotate(${state.rotate.toFixed(3)}deg)`;
+      root.style.transform = `translate3d(${state.x.toFixed(2)}px, ${state.y.toFixed(2)}px, 0) rotate(${state.rotate.toFixed(3)}deg)`
 
       const settling =
-        Math.abs(targetX - state.x) + Math.abs(targetY - state.y) + Math.abs(targetRotate - state.rotate) > 0.05 ||
+        Math.abs(targetX - state.x) +
+          Math.abs(targetY - state.y) +
+          Math.abs(targetRotate - state.rotate) >
+          0.05 ||
         Math.abs(wanted - state.level) > 0.002 ||
         (state.level > 0.002 && s.flow > 0 && !reduce) ||
-        speed > 1;
-      const animating = s.idle > 0 && !reduce;
-      tick = (tick + 1) % 2;
-      if (settling || !animating || tick === 0) draw();
-      calm = settling ? 0 : calm + dt;
-      if (state.visible && (calm < 0.25 || animating)) raf = requestAnimationFrame(frame);
-    };
+        speed > 1
+      const animating = s.idle > 0 && !reduce
+      tick = (tick + 1) % 2
+      if (settling || !animating || tick === 0) draw()
+      calm = settling ? 0 : calm + dt
+      if (state.visible && (calm < 0.25 || animating)) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || !alive || !state.visible) return;
-      calm = 0;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-    wakeFn = wake;
+      if (raf || !alive || !state.visible) return
+      calm = 0
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
+    wakeFn = wake
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.max(1, Math.round(canvas.clientWidth * dpr));
-      const h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const w = Math.max(1, Math.round(canvas.clientWidth * dpr))
+      const h = Math.max(1, Math.round(canvas.clientHeight * dpr))
       if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = w
+        canvas.height = h
       }
-      draw();
-    };
+      draw()
+    }
 
     loadFn = (src: string) => {
-      state.ready = false;
-      draw();
-      if (!src) return;
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.decoding = 'async';
+      state.ready = false
+      draw()
+      if (!src) return
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.decoding = 'async'
       img.onload = () => {
-        if (!alive) return;
+        if (!alive) return
         if (!gl || !program) {
-          setFallback(true);
-          return;
+          setFallback(true)
+          return
         }
         try {
-          gl.bindTexture(gl.TEXTURE_2D, texture);
-          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-          gl.generateMipmap(gl.TEXTURE_2D);
-          state.imageWidth = img.naturalWidth || 1;
-          state.imageHeight = img.naturalHeight || 1;
-          state.ready = true;
-          setFallback(false);
-          draw();
+          gl.bindTexture(gl.TEXTURE_2D, texture)
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+          gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
+          gl.generateMipmap(gl.TEXTURE_2D)
+          state.imageWidth = img.naturalWidth || 1
+          state.imageHeight = img.naturalHeight || 1
+          state.ready = true
+          setFallback(false)
+          draw()
         } catch {
-          setFallback(true);
+          setFallback(true)
         }
-      };
+      }
       img.onerror = () => {
-        if (alive) setFallback(true);
-      };
-      img.src = src;
-    };
+        if (alive) setFallback(true)
+      }
+      img.src = src
+    }
 
     const onMove = (event: PointerEvent) => {
-      state.cursorX = event.clientX;
-      state.cursorY = event.clientY;
+      state.cursorX = event.clientX
+      state.cursorY = event.clientY
       if (!state.seen) {
-        state.seen = true;
-        state.lastX = event.clientX;
-        state.lastY = event.clientY;
+        state.seen = true
+        state.lastX = event.clientX
+        state.lastY = event.clientY
       }
-      wake();
-    };
+      wake()
+    }
     const onEnter = () => {
-      state.hovered = true;
-      wake();
-    };
+      state.hovered = true
+      wake()
+    }
     const onLeave = () => {
-      state.hovered = false;
-      wake();
-    };
+      state.hovered = false
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(canvas)
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-      if (state.visible) wake();
-    });
-    visibility.observe(root);
-    window.addEventListener('pointermove', onMove, { passive: true });
-    root.addEventListener('pointerenter', onEnter);
-    root.addEventListener('pointerleave', onLeave);
-    resize();
+      state.visible = entries.some(entry => entry.isIntersecting)
+      if (state.visible) wake()
+    })
+    visibility.observe(root)
+    window.addEventListener('pointermove', onMove, { passive: true })
+    root.addEventListener('pointerenter', onEnter)
+    root.addEventListener('pointerleave', onLeave)
+    resize()
 
     onCleanup(() => {
-      alive = false;
-      cancelAnimationFrame(raf);
-      wakeFn = null;
-      loadFn = null;
-      resizeObserver.disconnect();
-      visibility.disconnect();
-      window.removeEventListener('pointermove', onMove);
-      root.removeEventListener('pointerenter', onEnter);
-      root.removeEventListener('pointerleave', onLeave);
+      alive = false
+      cancelAnimationFrame(raf)
+      wakeFn = null
+      loadFn = null
+      resizeObserver.disconnect()
+      visibility.disconnect()
+      window.removeEventListener('pointermove', onMove)
+      root.removeEventListener('pointerenter', onEnter)
+      root.removeEventListener('pointerleave', onLeave)
       if (gl) {
-        gl.deleteTexture(texture);
-        gl.deleteBuffer(buffer);
-        gl.deleteProgram(program);
+        gl.deleteTexture(texture)
+        gl.deleteBuffer(buffer)
+        gl.deleteProgram(program)
       }
-    });
-  });
+    })
+  })
 
   createEffect(() => {
-    loadFn?.(props.image ?? 'https://images.unsplash.com/photo-1762846818262-33c197852fa8?w=900&q=80&auto=format&fit=crop');
-  });
+    loadFn?.(
+      props.image ??
+        'https://images.unsplash.com/photo-1762846818262-33c197852fa8?w=900&q=80&auto=format&fit=crop',
+    )
+  })
 
   // Upstream woke the loop after every render; wake on prop changes instead.
   createEffect(() => {
-    settings();
-    wakeFn?.();
-  });
+    settings()
+    wakeFn?.()
+  })
 
   return (
     <div
@@ -500,24 +524,27 @@ const DecayCard = (props: DecayCardProps) => {
         {
           width: `${props.width ?? 300}px`,
           height: `${props.height ?? 400}px`,
-          ...props.style
+          ...props.style,
         } as JSX.CSSProperties
       }
     >
-      <canvas ref={canvasRef} class={CANVAS} aria-hidden="true" />
+      <canvas ref={canvasRef} class={CANVAS} />
       <Show when={fallback() && props.image}>
         <img
           class={FALLBACK}
           src={props.image}
           alt=""
-          style={{ 'border-radius': `${props.radius ?? 0}px`, filter: props.grayscale ? 'grayscale(1)' : undefined }}
+          style={{
+            'border-radius': `${props.radius ?? 0}px`,
+            filter: props.grayscale ? 'grayscale(1)' : undefined,
+          }}
         />
       </Show>
       <Show when={props.children}>
         <div class={CONTENT}>{props.children}</div>
       </Show>
     </div>
-  );
-};
+  )
+}
 
-export default DecayCard;
+export default DecayCard

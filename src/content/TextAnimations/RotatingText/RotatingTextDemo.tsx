@@ -1,4 +1,4 @@
-import RotatingText from './RotatingText';
+import RotatingText from './RotatingText'
 
 function RotatingTextDemo() {
   return (
@@ -12,7 +12,7 @@ function RotatingTextDemo() {
         mainClassName="text-3xl font-bold text-purple-400"
       />
     </div>
-  );
+  )
 }
 
-export default RotatingTextDemo;
+export default RotatingTextDemo

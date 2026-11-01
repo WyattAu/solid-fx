@@ -1,10 +1,16 @@
-import DotField from './DotField';
+import DotField from './DotField'
 
 function DotFieldDemo() {
   return (
     <div class="grid w-full grid-cols-1 gap-4 p-4 lg:grid-cols-2">
       <div class="h-96 overflow-hidden rounded-2xl border border-white/10 bg-black">
-        <DotField class="h-full w-full" dotRadius={1.6} dotSpacing={12} gradientFrom="#5227FF" gradientTo="#FF9FFC" />
+        <DotField
+          class="h-full w-full"
+          dotRadius={1.6}
+          dotSpacing={12}
+          gradientFrom="#5227FF"
+          gradientTo="#FF9FFC"
+        />
       </div>
       <div class="h-96 overflow-hidden rounded-2xl border border-white/10 bg-black">
         <DotField
@@ -20,7 +26,7 @@ function DotFieldDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default DotFieldDemo;
+export default DotFieldDemo

@@ -1,108 +1,108 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import HugeiconsIcon from '@/lib/HugeiconsIcon';
-import { CheckmarkBadge01Icon, FingerPrintIcon } from '@hugeicons/core-free-icons';
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
+import { CheckmarkBadge01Icon, FingerPrintIcon } from '@hugeicons/core-free-icons'
 
 export interface ReflectiveCardProps {
-  name?: string;
-  role?: string;
-  badge?: string;
-  status?: string;
-  statusColor?: string;
-  idLabel?: string;
-  idValue?: string;
-  children?: JSX.Element;
-  theme?: 'dark' | 'light';
-  videoSrc?: string;
-  webcam?: boolean;
-  onWebcamError?: (error: Error) => void;
-  tint?: string;
-  metalness?: number;
-  roughness?: number;
-  blurStrength?: number;
-  grayscale?: number;
-  warp?: number;
-  warpScale?: number;
-  shine?: number;
-  bevel?: number;
-  glare?: number;
-  enableTilt?: boolean;
-  tiltStrength?: number;
-  intro?: boolean;
-  width?: number | string;
-  height?: number | string;
-  radius?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  name?: string
+  role?: string
+  badge?: string
+  status?: string
+  statusColor?: string
+  idLabel?: string
+  idValue?: string
+  children?: JSX.Element
+  theme?: 'dark' | 'light'
+  videoSrc?: string
+  webcam?: boolean
+  onWebcamError?: (error: Error) => void
+  tint?: string
+  metalness?: number
+  roughness?: number
+  blurStrength?: number
+  grayscale?: number
+  warp?: number
+  warpScale?: number
+  shine?: number
+  bevel?: number
+  glare?: number
+  enableTilt?: boolean
+  tiltStrength?: number
+  intro?: boolean
+  width?: number | string
+  height?: number | string
+  radius?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface Settings {
-  tint: number[];
-  metalness: number;
-  roughness: number;
-  blurStrength: number;
-  grayscale: number;
-  warp: number;
-  warpScale: number;
-  shine: number;
-  bevel: number;
-  glare: number;
-  enableTilt: boolean;
-  tiltStrength: number;
-  radius: number;
-  theme: number;
-  intro: boolean;
+  tint: number[]
+  metalness: number
+  roughness: number
+  blurStrength: number
+  grayscale: number
+  warp: number
+  warpScale: number
+  shine: number
+  bevel: number
+  glare: number
+  enableTilt: boolean
+  tiltStrength: number
+  radius: number
+  theme: number
+  intro: boolean
 }
 
 interface Source {
-  element: HTMLVideoElement;
-  src: string;
-  time: number;
-  ready: boolean;
-  failed: boolean;
-  width: number;
-  height: number;
-  mix: number;
+  element: HTMLVideoElement
+  src: string
+  time: number
+  ready: boolean
+  failed: boolean
+  width: number
+  height: number
+  mix: number
 }
 
 interface EnvFrame {
-  width: number;
-  height: number;
-  scale: number;
-  blur: number;
-  roughness: number;
-  video: Source;
-  cam: Source;
+  width: number
+  height: number
+  scale: number
+  blur: number
+  roughness: number
+  video: Source
+  cam: Source
 }
 
 interface PlateFrame {
-  width: number;
-  height: number;
-  rotateX: number;
-  rotateY: number;
-  capture: number;
-  glare: number;
-  pointerX: number;
-  pointerY: number;
-  settings: Settings;
+  width: number
+  height: number
+  rotateX: number
+  rotateY: number
+  capture: number
+  glare: number
+  pointerX: number
+  pointerY: number
+  settings: Settings
 }
 
-type Uniforms = Record<string, WebGLUniformLocation | null>;
+type Uniforms = Record<string, WebGLUniformLocation | null>
 
 interface Program {
-  program: WebGLProgram;
-  uniforms: Uniforms;
+  program: WebGLProgram
+  uniforms: Uniforms
 }
 
 interface Target {
-  texture: WebGLTexture | null;
-  framebuffer: WebGLFramebuffer | null;
-  width: number;
-  height: number;
+  texture: WebGLTexture | null
+  framebuffer: WebGLFramebuffer | null
+  width: number
+  height: number
 }
 
-type SourceKey = 'video' | 'cam';
+type SourceKey = 'video' | 'cam'
 
 const THEMES: Record<'dark' | 'light', JSX.CSSProperties> = {
   dark: {
@@ -115,11 +115,12 @@ const THEMES: Record<'dark' | 'light', JSX.CSSProperties> = {
     '--rc-tile-highlight': 'rgba(255, 255, 255, 0.12)',
     '--rc-tile-shadow': '0 4px 10px -4px rgba(0, 0, 0, 0.7)',
     '--rc-rim': 'rgba(255, 255, 255, 0.07)',
-    '--rc-rim-highlight': 'rgba(255, 255, 255, 0.1)'
+    '--rc-rim-highlight': 'rgba(255, 255, 255, 0.1)',
   },
   light: {
     '--rc-base': '#e7e7ea',
-    '--rc-shadow': '0 22px 44px -22px rgba(24, 24, 27, 0.3), 0 6px 16px -10px rgba(24, 24, 27, 0.16)',
+    '--rc-shadow':
+      '0 22px 44px -22px rgba(24, 24, 27, 0.3), 0 6px 16px -10px rgba(24, 24, 27, 0.16)',
     '--rc-ink': '#18181b',
     '--rc-muted': 'rgba(24, 24, 27, 0.6)',
     '--rc-tile': 'linear-gradient(180deg, #ffffff 0%, #f6f6f8 100%)',
@@ -127,39 +128,40 @@ const THEMES: Record<'dark' | 'light', JSX.CSSProperties> = {
     '--rc-tile-highlight': 'rgba(255, 255, 255, 1)',
     '--rc-tile-shadow': '0 4px 10px -5px rgba(24, 24, 27, 0.25)',
     '--rc-rim': 'rgba(24, 24, 27, 0.08)',
-    '--rc-rim-highlight': 'rgba(255, 255, 255, 0.8)'
-  }
-};
+    '--rc-rim-highlight': 'rgba(255, 255, 255, 0.8)',
+  },
+}
 
 const BODY_STYLE: JSX.CSSProperties = {
   'border-radius': 'var(--rc-radius)',
   background: 'var(--rc-base)',
   'box-shadow': 'var(--rc-shadow)',
-  transform: 'translate3d(0, var(--rc-lift, 0px), 0) rotateX(var(--rc-rotate-x, 0deg)) rotateY(var(--rc-rotate-y, 0deg))',
+  transform:
+    'translate3d(0, var(--rc-lift, 0px), 0) rotateX(var(--rc-rotate-x, 0deg)) rotateY(var(--rc-rotate-y, 0deg))',
   opacity: 'var(--rc-presence, 1)',
   isolation: 'isolate',
-  'will-change': 'transform'
-};
+  'will-change': 'transform',
+}
 
 const TILE_STYLE: JSX.CSSProperties = {
   'border-radius': 'var(--rc-tile-radius)',
   background: 'var(--rc-tile)',
   'box-shadow': 'var(--rc-tile-shadow)',
-  color: 'var(--rc-muted)'
-};
+  color: 'var(--rc-muted)',
+}
 
 const TILE_RIM_STYLE: JSX.CSSProperties = {
-  'box-shadow': 'inset 0 0 0 1px var(--rc-tile-edge), inset 0 1px 0 var(--rc-tile-highlight)'
-};
+  'box-shadow': 'inset 0 0 0 1px var(--rc-tile-edge), inset 0 1px 0 var(--rc-tile-highlight)',
+}
 
 const RIM_STYLE: JSX.CSSProperties = {
-  'box-shadow': 'inset 0 0 0 1px var(--rc-rim), inset 0 1px 0 var(--rc-rim-highlight)'
-};
+  'box-shadow': 'inset 0 0 0 1px var(--rc-rim), inset 0 1px 0 var(--rc-rim-highlight)',
+}
 
-const VIEW_DISTANCE = 900;
-const OVERSCAN = 1.2;
-const INTRO_MS = 1400;
-const FADE_SECONDS = 0.35;
+const VIEW_DISTANCE = 900
+const OVERSCAN = 1.2
+const INTRO_MS = 1400
+const FADE_SECONDS = 0.35
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
@@ -167,7 +169,7 @@ out vec2 vUv;
 void main() {
   vUv = aPosition * 0.5 + 0.5;
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const CAPTURE = `#version 300 es
 precision highp float;
@@ -195,7 +197,7 @@ void main() {
     mean += level(uCam) * uWeights.y;
   }
   fragColor = vec4(color, mean);
-}`;
+}`
 
 const BLUR = `#version 300 es
 precision highp float;
@@ -221,7 +223,7 @@ void main() {
     total += 2.0 * weight;
   }
   fragColor = sum / total;
-}`;
+}`
 
 const PLATE = `#version 300 es
 precision highp float;
@@ -418,82 +420,82 @@ void main() {
   color += (hash(gl_FragCoord.xy) - 0.5) / 255.0;
   color = clamp(color, 0.0, 1.0);
   fragColor = vec4(color * coverage, coverage);
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const toPx = (value: number | string) => {
-  if (typeof value === 'number') return `${value}px`;
-  return value;
-};
+  if (typeof value === 'number') return `${value}px`
+  return value
+}
 
 const parseColor = (value: string): number[] => {
-  const text = String(value || '').trim();
-  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text);
+  const text = String(value || '').trim()
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(text)
   if (hex) {
-    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1];
-    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255);
+    const full = hex[1].length === 3 ? hex[1].replace(/./g, digit => digit + digit) : hex[1]
+    return [0, 2, 4].map(index => parseInt(full.slice(index, index + 2), 16) / 255)
   }
-  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text);
-  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1));
-  return [1, 1, 1];
-};
+  const rgb = /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i.exec(text)
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].map(channel => clamp(parseFloat(channel) / 255, 0, 1))
+  return [1, 1, 1]
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    return null;
+    console.error(gl.getShaderInfoLog(shader))
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = vertex && fragment ? gl.createProgram() : null;
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = vertex && fragment ? gl.createProgram() : null
   if (!vertex || !fragment || !program) {
-    if (vertex) gl.deleteShader(vertex);
-    if (fragment) gl.deleteShader(fragment);
-    return null;
+    if (vertex) gl.deleteShader(vertex)
+    if (fragment) gl.deleteShader(fragment)
+    return null
   }
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    return null;
+    console.error(gl.getProgramInfoLog(program))
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Uniforms = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Uniforms = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let index = 0; index < count; index++) {
-    const info = gl.getActiveUniform(program, index);
-    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, index)
+    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const coverMap = (width: number, height: number, aspect: number, mirror: boolean) => {
-  const ratio = width / Math.max(1, height);
-  const sx = ratio > aspect ? aspect / ratio : 1;
-  const sy = ratio > aspect ? 1 : ratio / aspect;
-  const u = mirror ? -sx : sx;
-  return [u, -sy, 0.5 - u * 0.5, 0.5 + sy * 0.5];
-};
+  const ratio = width / Math.max(1, height)
+  const sx = ratio > aspect ? aspect / ratio : 1
+  const sy = ratio > aspect ? 1 : ratio / aspect
+  const u = mirror ? -sx : sx
+  return [u, -sy, 0.5 - u * 0.5, 0.5 + sy * 0.5]
+}
 
 const lodFor = (width: number, height: number, envWidth: number, aspect: number) => {
-  const ratio = width / Math.max(1, height);
-  const visible = width * (ratio > aspect ? aspect / ratio : 1);
-  return Math.max(0, Math.log2(Math.max(1, visible / Math.max(1, envWidth))) - 0.5);
-};
+  const ratio = width / Math.max(1, height)
+  const visible = width * (ratio > aspect ? aspect / ratio : 1)
+  return Math.max(0, Math.log2(Math.max(1, visible / Math.max(1, envWidth))) - 0.5)
+}
 
 const createRenderer = (canvas: HTMLCanvasElement) => {
   const gl = canvas.getContext('webgl2', {
@@ -502,128 +504,155 @@ const createRenderer = (canvas: HTMLCanvasElement) => {
     antialias: false,
     depth: false,
     stencil: false,
-    powerPreference: 'default'
-  });
-  if (!gl) return null;
-  const captureProgram = link(gl, CAPTURE);
-  const blurProgram = link(gl, BLUR);
-  const plateProgram = link(gl, PLATE);
+    powerPreference: 'default',
+  })
+  if (!gl) return null
+  const captureProgram = link(gl, CAPTURE)
+  const blurProgram = link(gl, BLUR)
+  const plateProgram = link(gl, PLATE)
   if (!captureProgram || !blurProgram || !plateProgram) {
     for (const item of [captureProgram, blurProgram, plateProgram]) {
-      if (item) gl.deleteProgram(item.program);
+      if (item) gl.deleteProgram(item.program)
     }
-    return null;
+    return null
   }
 
   const createTexture = (mipmaps: boolean, wrap: number) => {
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
-    return texture;
-  };
+    const texture = gl.createTexture()
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      mipmaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR,
+    )
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap)
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap)
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      1,
+      1,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      new Uint8Array([0, 0, 0, 255]),
+    )
+    return texture
+  }
 
   const createTarget = (): Target => {
-    const texture = createTexture(false, gl.MIRRORED_REPEAT);
-    const framebuffer = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    return { texture, framebuffer, width: 1, height: 1 };
-  };
+    const texture = createTexture(false, gl.MIRRORED_REPEAT)
+    const framebuffer = gl.createFramebuffer()
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    return { texture, framebuffer, width: 1, height: 1 }
+  }
 
   const allocate = (target: Target, width: number, height: number) => {
-    if (target.width === width && target.height === height) return;
-    target.width = width;
-    target.height = height;
-    gl.bindTexture(gl.TEXTURE_2D, target.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-  };
+    if (target.width === width && target.height === height) return
+    target.width = width
+    target.height = height
+    gl.bindTexture(gl.TEXTURE_2D, target.texture)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+  }
 
-  const vao = gl.createVertexArray();
-  gl.bindVertexArray(vao);
-  const buffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(0);
-  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-  gl.disable(gl.BLEND);
-  gl.disable(gl.DEPTH_TEST);
+  const vao = gl.createVertexArray()
+  gl.bindVertexArray(vao)
+  const buffer = gl.createBuffer()
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+  gl.enableVertexAttribArray(0)
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+  gl.disable(gl.BLEND)
+  gl.disable(gl.DEPTH_TEST)
 
-  const textures = { video: createTexture(true, gl.CLAMP_TO_EDGE), cam: createTexture(true, gl.CLAMP_TO_EDGE) };
-  const capture = createTarget();
-  const blurX = createTarget();
-  const blurY = createTarget();
-  const rotation = new Float32Array(9);
+  const textures = {
+    video: createTexture(true, gl.CLAMP_TO_EDGE),
+    cam: createTexture(true, gl.CLAMP_TO_EDGE),
+  }
+  const capture = createTarget()
+  const blurX = createTarget()
+  const blurY = createTarget()
+  const rotation = new Float32Array(9)
 
   const pass = (target: Target | null, program: Program) => {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.framebuffer : null);
-    gl.viewport(0, 0, target ? target.width : canvas.width, target ? target.height : canvas.height);
-    gl.useProgram(program.program);
-    return program.uniforms;
-  };
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.framebuffer : null)
+    gl.viewport(0, 0, target ? target.width : canvas.width, target ? target.height : canvas.height)
+    gl.useProgram(program.program)
+    return program.uniforms
+  }
 
   const bind = (unit: number, texture: WebGLTexture | null) => {
-    gl.activeTexture(gl.TEXTURE0 + unit);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-  };
+    gl.activeTexture(gl.TEXTURE0 + unit)
+    gl.bindTexture(gl.TEXTURE_2D, texture)
+  }
 
   const upload = (key: SourceKey, element: HTMLVideoElement) => {
     try {
-      gl.bindTexture(gl.TEXTURE_2D, textures[key]);
-      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
-      gl.generateMipmap(gl.TEXTURE_2D);
-      return true;
+      gl.bindTexture(gl.TEXTURE_2D, textures[key])
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false)
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element)
+      gl.generateMipmap(gl.TEXTURE_2D)
+      return true
     } catch {
-      return false;
+      return false
     }
-  };
+  }
 
   const renderEnv = ({ width, height, scale, blur, roughness, video, cam }: EnvFrame) => {
-    const envScale = clamp(2.5 / Math.max(blur, 0.01), 0.12, scale);
-    const envWidth = Math.max(8, Math.ceil(width * OVERSCAN * envScale));
-    const envHeight = Math.max(8, Math.ceil(height * OVERSCAN * envScale));
-    allocate(capture, envWidth, envHeight);
-    allocate(blurX, envWidth, envHeight);
-    allocate(blurY, envWidth, envHeight);
-    const aspect = width / Math.max(1, height);
-    const total = 1 - (1 - video.mix) * (1 - cam.mix);
-    const camWeight = total > 0 ? cam.mix / total : 0;
+    const envScale = clamp(2.5 / Math.max(blur, 0.01), 0.12, scale)
+    const envWidth = Math.max(8, Math.ceil(width * OVERSCAN * envScale))
+    const envHeight = Math.max(8, Math.ceil(height * OVERSCAN * envScale))
+    allocate(capture, envWidth, envHeight)
+    allocate(blurX, envWidth, envHeight)
+    allocate(blurY, envWidth, envHeight)
+    const aspect = width / Math.max(1, height)
+    const total = 1 - (1 - video.mix) * (1 - cam.mix)
+    const camWeight = total > 0 ? cam.mix / total : 0
 
-    let u = pass(capture, captureProgram);
-    bind(0, textures.video);
-    bind(1, textures.cam);
-    gl.uniform1i(u.uVideo, 0);
-    gl.uniform1i(u.uCam, 1);
-    gl.uniform4fv(u.uVideoMap, video.ready ? coverMap(video.width, video.height, aspect, false) : [1, 1, 0, 0]);
-    gl.uniform4fv(u.uCamMap, cam.ready ? coverMap(cam.width, cam.height, aspect, true) : [1, 1, 0, 0]);
-    gl.uniform2f(u.uWeights, video.ready && total > 0 ? 1 - camWeight : 0, cam.ready ? camWeight : 0);
+    let u = pass(capture, captureProgram)
+    bind(0, textures.video)
+    bind(1, textures.cam)
+    gl.uniform1i(u.uVideo, 0)
+    gl.uniform1i(u.uCam, 1)
+    gl.uniform4fv(
+      u.uVideoMap,
+      video.ready ? coverMap(video.width, video.height, aspect, false) : [1, 1, 0, 0],
+    )
+    gl.uniform4fv(
+      u.uCamMap,
+      cam.ready ? coverMap(cam.width, cam.height, aspect, true) : [1, 1, 0, 0],
+    )
+    gl.uniform2f(
+      u.uWeights,
+      video.ready && total > 0 ? 1 - camWeight : 0,
+      cam.ready ? camWeight : 0,
+    )
     gl.uniform2f(
       u.uLod,
       video.ready ? lodFor(video.width, video.height, envWidth, aspect) : 0,
-      cam.ready ? lodFor(cam.width, cam.height, envWidth, aspect) : 0
-    );
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+      cam.ready ? lodFor(cam.width, cam.height, envWidth, aspect) : 0,
+    )
+    gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-    u = pass(blurX, blurProgram);
-    bind(0, capture.texture);
-    gl.uniform1i(u.uTexture, 0);
-    gl.uniform2f(u.uStep, 1 / envWidth, 0);
-    gl.uniform1f(u.uSigma, blur * envScale);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    u = pass(blurX, blurProgram)
+    bind(0, capture.texture)
+    gl.uniform1i(u.uTexture, 0)
+    gl.uniform2f(u.uStep, 1 / envWidth, 0)
+    gl.uniform1f(u.uSigma, blur * envScale)
+    gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-    u = pass(blurY, blurProgram);
-    bind(0, blurX.texture);
-    gl.uniform1i(u.uTexture, 0);
-    gl.uniform2f(u.uStep, 0, 1 / envHeight);
-    gl.uniform1f(u.uSigma, (blur * (1 + 1.5 * roughness) + 10 * roughness) * envScale);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  };
+    u = pass(blurY, blurProgram)
+    bind(0, blurX.texture)
+    gl.uniform1i(u.uTexture, 0)
+    gl.uniform2f(u.uStep, 0, 1 / envHeight)
+    gl.uniform1f(u.uSigma, (blur * (1 + 1.5 * roughness) + 10 * roughness) * envScale)
+    gl.drawArrays(gl.TRIANGLES, 0, 3)
+  }
 
   const renderPlate = ({
     width,
@@ -634,64 +663,64 @@ const createRenderer = (canvas: HTMLCanvasElement) => {
     glare,
     pointerX,
     pointerY,
-    settings
+    settings,
   }: PlateFrame) => {
-    const cx = Math.cos(rotateX);
-    const sx = Math.sin(rotateX);
-    const cy = Math.cos(rotateY);
-    const sy = Math.sin(rotateY);
-    rotation.set([cy, sx * sy, -cx * sy, 0, cx, sx, sy, -sx * cy, cx * cy]);
+    const cx = Math.cos(rotateX)
+    const sx = Math.sin(rotateX)
+    const cy = Math.cos(rotateY)
+    const sy = Math.sin(rotateY)
+    rotation.set([cy, sx * sy, -cx * sy, 0, cx, sx, sy, -sx * cy, cx * cy])
 
-    const u = pass(null, plateProgram);
-    bind(0, blurY.texture);
-    gl.uniform1i(u.uEnv, 0);
-    gl.uniform2f(u.uEnvSize, blurY.width, blurY.height);
-    gl.uniform2f(u.uSize, width, height);
-    gl.uniform1f(u.uRadius, settings.radius);
-    gl.uniform1f(u.uScale, canvas.width / Math.max(1, width));
-    gl.uniformMatrix3fv(u.uRotate, false, rotation);
-    gl.uniform1f(u.uCapture, amount);
-    gl.uniform1f(u.uBlur, settings.blurStrength);
-    gl.uniform1f(u.uRough, settings.roughness);
-    gl.uniform1f(u.uMetal, settings.metalness);
-    gl.uniform3fv(u.uTint, settings.tint);
-    gl.uniform1f(u.uGray, settings.grayscale);
-    gl.uniform1f(u.uWarp, settings.warp);
-    gl.uniform1f(u.uWarpScale, settings.warpScale);
-    gl.uniform1f(u.uShine, settings.shine);
-    gl.uniform1f(u.uBevel, settings.bevel);
-    gl.uniform1f(u.uGlare, glare);
-    gl.uniform2f(u.uPointer, pointerX, pointerY);
-    gl.uniform1f(u.uTheme, settings.theme);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  };
+    const u = pass(null, plateProgram)
+    bind(0, blurY.texture)
+    gl.uniform1i(u.uEnv, 0)
+    gl.uniform2f(u.uEnvSize, blurY.width, blurY.height)
+    gl.uniform2f(u.uSize, width, height)
+    gl.uniform1f(u.uRadius, settings.radius)
+    gl.uniform1f(u.uScale, canvas.width / Math.max(1, width))
+    gl.uniformMatrix3fv(u.uRotate, false, rotation)
+    gl.uniform1f(u.uCapture, amount)
+    gl.uniform1f(u.uBlur, settings.blurStrength)
+    gl.uniform1f(u.uRough, settings.roughness)
+    gl.uniform1f(u.uMetal, settings.metalness)
+    gl.uniform3fv(u.uTint, settings.tint)
+    gl.uniform1f(u.uGray, settings.grayscale)
+    gl.uniform1f(u.uWarp, settings.warp)
+    gl.uniform1f(u.uWarpScale, settings.warpScale)
+    gl.uniform1f(u.uShine, settings.shine)
+    gl.uniform1f(u.uBevel, settings.bevel)
+    gl.uniform1f(u.uGlare, glare)
+    gl.uniform2f(u.uPointer, pointerX, pointerY)
+    gl.uniform1f(u.uTheme, settings.theme)
+    gl.drawArrays(gl.TRIANGLES, 0, 3)
+  }
 
   const dispose = () => {
-    if (gl.isContextLost()) return;
+    if (gl.isContextLost()) return
     for (const target of [capture, blurX, blurY]) {
-      gl.deleteFramebuffer(target.framebuffer);
-      gl.deleteTexture(target.texture);
+      gl.deleteFramebuffer(target.framebuffer)
+      gl.deleteTexture(target.texture)
     }
-    gl.deleteTexture(textures.video);
-    gl.deleteTexture(textures.cam);
-    gl.deleteBuffer(buffer);
-    gl.deleteVertexArray(vao);
-    for (const item of [captureProgram, blurProgram, plateProgram]) gl.deleteProgram(item.program);
-  };
+    gl.deleteTexture(textures.video)
+    gl.deleteTexture(textures.cam)
+    gl.deleteBuffer(buffer)
+    gl.deleteVertexArray(vao)
+    for (const item of [captureProgram, blurProgram, plateProgram]) gl.deleteProgram(item.program)
+  }
 
-  return { upload, renderEnv, renderPlate, dispose };
-};
+  return { upload, renderEnv, renderPlate, dispose }
+}
 
 const ReflectiveCard = (props: ReflectiveCardProps) => {
-  let rootRef!: HTMLDivElement;
-  let bodyRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let videoRef!: HTMLVideoElement;
-  let camRef!: HTMLVideoElement;
-  let wakeRef: (() => void) | null = null;
-  const [generation, setGeneration] = createSignal(0);
+  let rootRef!: HTMLDivElement
+  let bodyRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let videoRef!: HTMLVideoElement
+  let camRef!: HTMLVideoElement
+  let wakeRef: (() => void) | null = null
+  const [generation, setGeneration] = createSignal(0)
 
-  const palette = () => (props.theme === 'light' ? 'light' : 'dark');
+  const palette = () => (props.theme === 'light' ? 'light' : 'dark')
 
   let settingsRef: Settings = {
     tint: [1, 1, 1],
@@ -708,14 +737,14 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
     tiltStrength: 12,
     radius: 24,
     theme: 0,
-    intro: true
-  };
+    intro: true,
+  }
 
   // Upstream recomputed `settings` on every render and woke the engine after
   // every render; this effect covers both.
   createEffect(() => {
     settingsRef = {
-      tint: parseColor(props.tint ?? '#ffffff').map(channel => Math.pow(channel, 2.2)),
+      tint: parseColor(props.tint ?? '#ffffff').map(channel => channel ** 2.2),
       metalness: clamp(props.metalness ?? 1, 0, 1),
       roughness: clamp(props.roughness ?? 0.3, 0, 1),
       blurStrength: clamp(props.blurStrength ?? 6, 0, 40),
@@ -729,36 +758,36 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
       tiltStrength: clamp(props.tiltStrength ?? 12, 0, 30),
       radius: Math.max(0, props.radius ?? 24),
       theme: palette() === 'light' ? 1 : 0,
-      intro: props.intro ?? true
-    };
-    wakeRef?.();
-  });
+      intro: props.intro ?? true,
+    }
+    wakeRef?.()
+  })
 
   onMount(() => {
-    const root = rootRef;
-    if (!root || !settingsRef.intro) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    root.style.setProperty('--rc-presence', '0');
-    root.style.setProperty('--rc-lift', '14px');
-  });
+    const root = rootRef
+    if (!root || !settingsRef.intro) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    root.style.setProperty('--rc-presence', '0')
+    root.style.setProperty('--rc-lift', '14px')
+  })
 
   createEffect(() => {
     // Upstream deps: [generation] — the whole engine rebuilds on context restore.
-    const firstRun = generation() === 0;
-    const root = rootRef;
-    const body = bodyRef;
-    const canvas = canvasRef;
-    const videoElement = videoRef;
-    const camElement = camRef;
-    if (!root || !body || !canvas || !videoElement || !camElement) return;
+    const firstRun = generation() === 0
+    const root = rootRef
+    const body = bodyRef
+    const canvas = canvasRef
+    const videoElement = videoRef
+    const camElement = camRef
+    if (!root || !body || !canvas || !videoElement || !camElement) return
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const renderer = createRenderer(canvas);
-    const x = { p: 0, v: 0, target: 0 };
-    const y = { p: 0, v: 0, target: 0 };
-    const light = { p: 0, target: 0 };
-    const pointer = { x: 0, y: 0 };
-    const size = { width: body.offsetWidth, height: body.offsetHeight, scale: 1 };
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const renderer = createRenderer(canvas)
+    const x = { p: 0, v: 0, target: 0 }
+    const y = { p: 0, v: 0, target: 0 }
+    const light = { p: 0, target: 0 }
+    const pointer = { x: 0, y: 0 }
+    const size = { width: body.offsetWidth, height: body.offsetHeight, scale: 1 }
     const makeSource = (element: HTMLVideoElement): Source => ({
       element,
       src: '',
@@ -767,102 +796,102 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
       failed: false,
       width: 0,
       height: 0,
-      mix: 0
-    });
-    const sources = { video: makeSource(videoElement), cam: makeSource(camElement) };
-    let presence = 1;
-    let presenceStart = 0;
-    let slowUntil = 0;
-    let touchId: number | null = null;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let pageVisible = document.visibilityState !== 'hidden';
-    let lost = false;
-    let envKey = '';
-    let envFresh = false;
+      mix: 0,
+    })
+    const sources = { video: makeSource(videoElement), cam: makeSource(camElement) }
+    let presence = 1
+    let presenceStart = 0
+    let slowUntil = 0
+    let touchId: number | null = null
+    let raf = 0
+    let last = 0
+    let visible = true
+    let pageVisible = document.visibilityState !== 'hidden'
+    let lost = false
+    let envKey = ''
+    let envFresh = false
 
     const write = () => {
-      const { enableTilt: tiltOn, tiltStrength: strength } = settingsRef;
-      const angle = tiltOn && !reduced ? strength : 0;
-      const style = root.style;
-      style.setProperty('--rc-rotate-x', `${(y.p * angle).toFixed(3)}deg`);
-      style.setProperty('--rc-rotate-y', `${(-x.p * angle).toFixed(3)}deg`);
-      const eased = 1 - Math.pow(1 - presence, 3);
-      style.setProperty('--rc-presence', eased.toFixed(4));
-      style.setProperty('--rc-lift', `${((1 - eased) * 14).toFixed(2)}px`);
-    };
+      const { enableTilt: tiltOn, tiltStrength: strength } = settingsRef
+      const angle = tiltOn && !reduced ? strength : 0
+      const style = root.style
+      style.setProperty('--rc-rotate-x', `${(y.p * angle).toFixed(3)}deg`)
+      style.setProperty('--rc-rotate-y', `${(-x.p * angle).toFixed(3)}deg`)
+      const eased = 1 - (1 - presence) ** 3
+      style.setProperty('--rc-presence', eased.toFixed(4))
+      style.setProperty('--rc-lift', `${((1 - eased) * 14).toFixed(2)}px`)
+    }
 
     const refresh = (key: SourceKey, source: Source) => {
-      const element = source.element;
-      const src = element.srcObject ? 'stream' : element.currentSrc;
+      const element = source.element
+      const src = element.srcObject ? 'stream' : element.currentSrc
       if (src !== source.src) {
-        source.src = src;
-        source.failed = false;
-        source.time = -1;
+        source.src = src
+        source.failed = false
+        source.time = -1
       }
       if (!src) {
-        source.ready = false;
-        return false;
+        source.ready = false
+        return false
       }
       if (element.error) {
-        source.failed = true;
-        return false;
+        source.failed = true
+        return false
       }
-      if (element.readyState < 2 || !element.videoWidth) return false;
-      const time = element.currentTime;
-      if (source.ready && time === source.time) return false;
-      if (!renderer || !renderer.upload(key, element)) {
-        source.failed = true;
-        return false;
+      if (element.readyState < 2 || !element.videoWidth) return false
+      const time = element.currentTime
+      if (source.ready && time === source.time) return false
+      if (!renderer?.upload(key, element)) {
+        source.failed = true
+        return false
       }
-      source.time = time;
-      source.width = element.videoWidth;
-      source.height = element.videoHeight;
-      source.ready = true;
-      return true;
-    };
+      source.time = time
+      source.width = element.videoWidth
+      source.height = element.videoHeight
+      source.ready = true
+      return true
+    }
 
     const fade = (source: Source, dt: number) => {
-      const target = source.ready && !source.failed && source.src ? 1 : 0;
-      const before = source.mix;
-      source.mix += (target - source.mix) * (1 - Math.exp(-dt / FADE_SECONDS));
-      if (Math.abs(target - source.mix) < 0.002) source.mix = target;
-      return source.mix !== before;
-    };
+      const target = source.ready && !source.failed && source.src ? 1 : 0
+      const before = source.mix
+      source.mix += (target - source.mix) * (1 - Math.exp(-dt / FADE_SECONDS))
+      if (Math.abs(target - source.mix) < 0.002) source.mix = target
+      return source.mix !== before
+    }
 
     const resize = () => {
-      size.width = body.offsetWidth;
-      size.height = body.offsetHeight;
-      size.scale = Math.min(window.devicePixelRatio || 1, 2);
-      const w = Math.max(1, Math.round(size.width * size.scale));
-      const h = Math.max(1, Math.round(size.height * size.scale));
+      size.width = body.offsetWidth
+      size.height = body.offsetHeight
+      size.scale = Math.min(window.devicePixelRatio || 1, 2)
+      const w = Math.max(1, Math.round(size.width * size.scale))
+      const h = Math.max(1, Math.round(size.height * size.scale))
       if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
+        canvas.width = w
+        canvas.height = h
       }
-      envFresh = true;
-    };
+      envFresh = true
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (lost) return;
-      const dt = Math.min(0.05, (now - last) / 1000 || 0);
-      last = now;
-      const slow = now < slowUntil;
-      const stiffness = slow ? 24 : 120;
-      const damping = slow ? 9 : 16;
-      const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
-      const h = dt / steps;
+      raf = 0
+      if (lost) return
+      const dt = Math.min(0.05, (now - last) / 1000 || 0)
+      last = now
+      const slow = now < slowUntil
+      const stiffness = slow ? 24 : 120
+      const damping = slow ? 9 : 16
+      const steps = Math.max(1, Math.ceil(dt / (1 / 120)))
+      const h = dt / steps
       for (let i = 0; i < steps; i++) {
         for (const axis of [x, y]) {
-          axis.v += (stiffness * (axis.target - axis.p) - damping * axis.v) * h;
-          axis.p += axis.v * h;
+          axis.v += (stiffness * (axis.target - axis.p) - damping * axis.v) * h
+          axis.p += axis.v * h
         }
       }
-      const tau = light.target > light.p ? 0.18 : slow ? 0.9 : 0.45;
-      light.p += (light.target - light.p) * (1 - Math.exp(-dt / tau));
-      if (presence < 1) presence = clamp((now - presenceStart) / 650, 0, 1);
+      const tau = light.target > light.p ? 0.18 : slow ? 0.9 : 0.45
+      light.p += (light.target - light.p) * (1 - Math.exp(-dt / tau))
+      if (presence < 1) presence = clamp((now - presenceStart) / 650, 0, 1)
 
       const moving =
         Math.abs(x.target - x.p) > 0.0005 ||
@@ -870,30 +899,30 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
         Math.abs(x.v) > 0.0005 ||
         Math.abs(y.v) > 0.0005 ||
         Math.abs(light.target - light.p) > 0.002 ||
-        presence < 1;
+        presence < 1
       if (!moving) {
-        x.p = x.target;
-        y.p = y.target;
-        x.v = 0;
-        y.v = 0;
-        light.p = light.target;
+        x.p = x.target
+        y.p = y.target
+        x.v = 0
+        y.v = 0
+        light.p = light.target
       }
-      write();
+      write()
 
-      let playing = false;
+      let playing = false
       if (renderer) {
-        if (sources.cam.mix < 1 && refresh('video', sources.video)) envFresh = true;
-        if (refresh('cam', sources.cam)) envFresh = true;
+        if (sources.cam.mix < 1 && refresh('video', sources.video)) envFresh = true
+        if (refresh('cam', sources.cam)) envFresh = true
         for (const source of [sources.video, sources.cam]) {
-          if (source.src && !source.failed && !source.element.paused) playing = true;
-          if (fade(source, dt)) envFresh = true;
-          if (source.mix > 0 && source.mix < 1) playing = true;
+          if (source.src && !source.failed && !source.element.paused) playing = true
+          if (fade(source, dt)) envFresh = true
+          if (source.mix > 0 && source.mix < 1) playing = true
         }
-        const s = settingsRef;
-        const key = `${s.blurStrength}|${s.roughness}|${size.width}|${size.height}|${size.scale}`;
+        const s = settingsRef
+        const key = `${s.blurStrength}|${s.roughness}|${size.width}|${size.height}|${size.scale}`
         if (key !== envKey) {
-          envKey = key;
-          envFresh = true;
+          envKey = key
+          envFresh = true
         }
         if (envFresh && (sources.video.mix > 0 || sources.cam.mix > 0)) {
           renderer.renderEnv({
@@ -903,11 +932,11 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
             blur: s.blurStrength,
             roughness: s.roughness,
             video: sources.video,
-            cam: sources.cam
-          });
+            cam: sources.cam,
+          })
         }
-        envFresh = false;
-        const angle = (s.enableTilt && !reduced ? s.tiltStrength : 0) * (Math.PI / 180);
+        envFresh = false
+        const angle = (s.enableTilt && !reduced ? s.tiltStrength : 0) * (Math.PI / 180)
         renderer.renderPlate({
           width: size.width,
           height: size.height,
@@ -917,194 +946,197 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
           glare: s.glare * light.p,
           pointerX: pointer.x,
           pointerY: pointer.y,
-          settings: s
-        });
+          settings: s,
+        })
       }
 
-      if ((moving || playing) && visible && pageVisible) raf = requestAnimationFrame(frame);
-    };
+      if ((moving || playing) && visible && pageVisible) raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
-      if (raf || lost || !visible || !pageVisible) return;
-      last = performance.now();
-      raf = requestAnimationFrame(frame);
-    };
-    wakeRef = wake;
+      if (raf || lost || !visible || !pageVisible) return
+      last = performance.now()
+      raf = requestAnimationFrame(frame)
+    }
+    wakeRef = wake
 
     const aim = (nx: number, ny: number, on = true) => {
-      x.target = clamp(nx, -1, 1);
-      y.target = clamp(ny, -1, 1);
-      light.target = on ? 1 : 0;
-      slowUntil = 0;
-      wake();
-    };
+      x.target = clamp(nx, -1, 1)
+      y.target = clamp(ny, -1, 1)
+      light.target = on ? 1 : 0
+      slowUntil = 0
+      wake()
+    }
 
     const aimAt = (event: PointerEvent) => {
-      const rect = root.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-      pointer.x = nx * size.width * 0.5;
-      pointer.y = ny * size.height * 0.5;
-      aim(nx, ny);
-    };
+      const rect = root.getBoundingClientRect()
+      if (!rect.width || !rect.height) return
+      const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1
+      pointer.x = nx * size.width * 0.5
+      pointer.y = ny * size.height * 0.5
+      aim(nx, ny)
+    }
 
-    const release = () => aim(0, 0, false);
+    const release = () => aim(0, 0, false)
 
     const onEnter = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse') aimAt(event);
-    };
+      if (event.pointerType === 'mouse') aimAt(event)
+    }
     const onMove = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse' || event.pointerId === touchId) aimAt(event);
-    };
+      if (event.pointerType === 'mouse' || event.pointerId === touchId) aimAt(event)
+    }
     const onLeave = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse') release();
-    };
+      if (event.pointerType === 'mouse') release()
+    }
     const onDown = (event: PointerEvent) => {
-      if (event.pointerType === 'mouse') return;
-      touchId = event.pointerId;
-      aimAt(event);
-    };
+      if (event.pointerType === 'mouse') return
+      touchId = event.pointerId
+      aimAt(event)
+    }
     const onUp = (event: PointerEvent) => {
-      if (event.pointerId !== touchId) return;
-      touchId = null;
-      release();
-    };
+      if (event.pointerId !== touchId) return
+      touchId = null
+      release()
+    }
 
-    root.addEventListener('pointerenter', onEnter);
-    root.addEventListener('pointermove', onMove);
-    root.addEventListener('pointerleave', onLeave);
-    root.addEventListener('pointerdown', onDown);
-    root.addEventListener('pointerup', onUp);
-    root.addEventListener('pointercancel', onUp);
+    root.addEventListener('pointerenter', onEnter)
+    root.addEventListener('pointermove', onMove)
+    root.addEventListener('pointerleave', onLeave)
+    root.addEventListener('pointerdown', onDown)
+    root.addEventListener('pointerup', onUp)
+    root.addEventListener('pointercancel', onUp)
 
     const onLost = (event: Event) => {
-      event.preventDefault();
-      lost = true;
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-    const onRestored = () => setGeneration(value => value + 1);
-    canvas.addEventListener('webglcontextlost', onLost);
-    canvas.addEventListener('webglcontextrestored', onRestored);
+      event.preventDefault()
+      lost = true
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const onRestored = () => setGeneration(value => value + 1)
+    canvas.addEventListener('webglcontextlost', onLost)
+    canvas.addEventListener('webglcontextrestored', onRestored)
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      wake();
-    });
-    resizeObserver.observe(body);
-    resize();
+      resize()
+      wake()
+    })
+    resizeObserver.observe(body)
+    resize()
 
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (!reduced) {
         for (const element of [videoElement, camElement]) {
-          if (visible && (element.currentSrc || element.srcObject)) element.play().catch(() => {});
-          else if (!visible && element.currentSrc && !element.srcObject) element.pause();
+          if (visible && (element.currentSrc || element.srcObject)) element.play().catch(() => {})
+          else if (!visible && element.currentSrc && !element.srcObject) element.pause()
         }
       }
-      wake();
-    });
-    intersection.observe(root);
+      wake()
+    })
+    intersection.observe(root)
 
     const onVisibility = () => {
-      pageVisible = document.visibilityState !== 'hidden';
-      wake();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+      pageVisible = document.visibilityState !== 'hidden'
+      wake()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
 
-    const onMedia = () => wake();
-    const mediaEvents = ['loadeddata', 'playing', 'seeked', 'emptied', 'error'];
+    const onMedia = () => wake()
+    const mediaEvents = ['loadeddata', 'playing', 'seeked', 'emptied', 'error']
     for (const element of [videoElement, camElement]) {
-      for (const type of mediaEvents) element.addEventListener(type, onMedia);
+      for (const type of mediaEvents) element.addEventListener(type, onMedia)
     }
 
     if (settingsRef.intro && !reduced && firstRun) {
-      x.p = 0.62;
-      y.p = -0.55;
-      light.p = 1;
-      pointer.x = 0.62 * size.width * 0.5;
-      pointer.y = -0.55 * size.height * 0.5;
-      presence = 0;
-      presenceStart = performance.now();
-      slowUntil = performance.now() + INTRO_MS;
+      x.p = 0.62
+      y.p = -0.55
+      light.p = 1
+      pointer.x = 0.62 * size.width * 0.5
+      pointer.y = -0.55 * size.height * 0.5
+      presence = 0
+      presenceStart = performance.now()
+      slowUntil = performance.now() + INTRO_MS
     }
-    write();
-    wake();
+    write()
+    wake()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
-      root.removeEventListener('pointerenter', onEnter);
-      root.removeEventListener('pointermove', onMove);
-      root.removeEventListener('pointerleave', onLeave);
-      root.removeEventListener('pointerdown', onDown);
-      root.removeEventListener('pointerup', onUp);
-      root.removeEventListener('pointercancel', onUp);
-      canvas.removeEventListener('webglcontextlost', onLost);
-      canvas.removeEventListener('webglcontextrestored', onRestored);
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      document.removeEventListener('visibilitychange', onVisibility)
+      root.removeEventListener('pointerenter', onEnter)
+      root.removeEventListener('pointermove', onMove)
+      root.removeEventListener('pointerleave', onLeave)
+      root.removeEventListener('pointerdown', onDown)
+      root.removeEventListener('pointerup', onUp)
+      root.removeEventListener('pointercancel', onUp)
+      canvas.removeEventListener('webglcontextlost', onLost)
+      canvas.removeEventListener('webglcontextrestored', onRestored)
       for (const element of [videoElement, camElement]) {
-        for (const type of mediaEvents) element.removeEventListener(type, onMedia);
+        for (const type of mediaEvents) element.removeEventListener(type, onMedia)
       }
-      renderer?.dispose();
-    });
-  });
+      renderer?.dispose()
+    })
+  })
 
   createEffect(() => {
     // Upstream deps: [videoSrc]
-    const video = videoRef;
-    if (!video) return;
-    const videoSrc = props.videoSrc;
+    const video = videoRef
+    if (!video) return
+    const videoSrc = props.videoSrc
     if (!videoSrc) {
-      video.removeAttribute('src');
-      video.load();
-      wakeRef?.();
-      return;
+      video.removeAttribute('src')
+      video.load()
+      wakeRef?.()
+      return
     }
-    video.src = videoSrc;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) video.play().catch(() => {});
-    wakeRef?.();
-    onCleanup(() => video.pause());
-  });
+    video.src = videoSrc
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) video.play().catch(() => {})
+    wakeRef?.()
+    onCleanup(() => video.pause())
+  })
 
   createEffect(() => {
     // Upstream deps: [webcam]
-    const cam = camRef;
-    if (!props.webcam || !cam) return;
-    const media = navigator.mediaDevices;
-    if (!media || !media.getUserMedia) {
-      props.onWebcamError?.(new Error('Camera access is not available in this browser.'));
-      return;
+    const cam = camRef
+    if (!props.webcam || !cam) return
+    const media = navigator.mediaDevices
+    if (!media?.getUserMedia) {
+      props.onWebcamError?.(new Error('Camera access is not available in this browser.'))
+      return
     }
-    let stream: MediaStream | null = null;
-    let cancelled = false;
+    let stream: MediaStream | null = null
+    let cancelled = false
     media
-      .getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false })
+      .getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false,
+      })
       .then(result => {
         if (cancelled) {
-          result.getTracks().forEach(track => track.stop());
-          return;
+          result.getTracks().forEach(track => track.stop())
+          return
         }
-        stream = result;
-        cam.srcObject = result;
-        cam.play().catch(() => {});
-        wakeRef?.();
+        stream = result
+        cam.srcObject = result
+        cam.play().catch(() => {})
+        wakeRef?.()
       })
       .catch(error => {
-        if (!cancelled) props.onWebcamError?.(error);
-      });
+        if (!cancelled) props.onWebcamError?.(error)
+      })
     onCleanup(() => {
-      cancelled = true;
-      stream?.getTracks().forEach(track => track.stop());
-      cam.srcObject = null;
-      wakeRef?.();
-    });
-  });
+      cancelled = true
+      stream?.getTracks().forEach(track => track.stop())
+      cam.srcObject = null
+      wakeRef?.()
+    })
+  })
 
-  const corner = () => Math.max(0, props.radius ?? 24);
+  const corner = () => Math.max(0, props.radius ?? 24)
   const cardStyle = (): JSX.CSSProperties => ({
     ...THEMES[palette()],
     '--rc-width': toPx(props.width ?? 320),
@@ -1116,8 +1148,8 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
     width: 'var(--rc-width)',
     height: 'var(--rc-height)',
     perspective: '900px',
-    color: 'var(--rc-ink)'
-  });
+    color: 'var(--rc-ink)',
+  })
 
   return (
     <div
@@ -1125,8 +1157,12 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
       class={`relative box-border max-w-full touch-pan-y select-none ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={{ ...cardStyle(), ...props.style }}
     >
-      <div ref={bodyRef} class="relative box-border h-full w-full overflow-hidden" style={BODY_STYLE}>
-        <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <div
+        ref={bodyRef}
+        class="relative box-border h-full w-full overflow-hidden"
+        style={BODY_STYLE}
+      >
+        <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
         <div class="relative z-[1] box-border flex h-full flex-col p-[var(--rc-pad)]">
           {props.children ?? (
             <>
@@ -1153,14 +1189,18 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
                   </h3>
                 )}
                 {props.role && (
-                  <p class="mb-0 mt-1 text-[14px] leading-[1.4] [color:var(--rc-muted)]">{props.role}</p>
+                  <p class="mb-0 mt-1 text-[14px] leading-[1.4] [color:var(--rc-muted)]">
+                    {props.role}
+                  </p>
                 )}
               </div>
               {(props.idLabel || props.idValue) && (
                 <div class="mt-6 flex items-end justify-between gap-4">
                   <div class="flex min-w-0 flex-col gap-1">
                     {props.idLabel && (
-                      <span class="text-[12px] leading-4 [color:var(--rc-muted)]">{props.idLabel}</span>
+                      <span class="text-[12px] leading-4 [color:var(--rc-muted)]">
+                        {props.idLabel}
+                      </span>
                     )}
                     {props.idValue && (
                       <span class="overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[15px] leading-5 tracking-[0.02em] tabular-nums [color:var(--rc-ink)]">
@@ -1172,7 +1212,10 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
                     class="relative box-border flex h-11 w-11 flex-none items-center justify-center"
                     style={TILE_STYLE}
                   >
-                    <span class="pointer-events-none absolute inset-0 rounded-[inherit]" style={TILE_RIM_STYLE} />
+                    <span
+                      class="pointer-events-none absolute inset-0 rounded-[inherit]"
+                      style={TILE_RIM_STYLE}
+                    />
                     <HugeiconsIcon icon={FingerPrintIcon} size={22} strokeWidth={1.6} />
                   </span>
                 </div>
@@ -1180,7 +1223,10 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
             </>
           )}
         </div>
-        <span class="pointer-events-none absolute inset-0 z-[2] rounded-[inherit]" style={RIM_STYLE} />
+        <span
+          class="pointer-events-none absolute inset-0 z-[2] rounded-[inherit]"
+          style={RIM_STYLE}
+        />
       </div>
       <video
         ref={videoRef}
@@ -1189,17 +1235,15 @@ const ReflectiveCard = (props: ReflectiveCardProps) => {
         loop
         playsinline
         crossorigin="anonymous"
-        aria-hidden="true"
       />
       <video
         ref={camRef}
         class="pointer-events-none absolute left-0 top-0 h-px w-px opacity-0"
         muted
         playsinline
-        aria-hidden="true"
       />
     </div>
-  );
-};
+  )
+}
 
-export default ReflectiveCard;
+export default ReflectiveCard

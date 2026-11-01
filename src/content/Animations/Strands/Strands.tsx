@@ -1,78 +1,78 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 interface StrandsProps {
-  colors?: string[];
-  count?: number;
-  speed?: number;
-  amplitude?: number;
-  waviness?: number;
-  thickness?: number;
-  glow?: number;
-  taper?: number;
-  spread?: number;
-  hueShift?: number;
-  intensity?: number;
-  saturation?: number;
-  opacity?: number;
-  scale?: number;
-  glass?: boolean;
-  refraction?: number;
-  dispersion?: number;
-  glassSize?: number;
-  rim?: number;
-  energy?: number;
-  listening?: boolean;
-  level?: number;
-  interactive?: boolean;
-  clickPulse?: boolean;
-  intro?: boolean;
-  lightMode?: boolean;
-  maxDevicePixelRatio?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  colors?: string[]
+  count?: number
+  speed?: number
+  amplitude?: number
+  waviness?: number
+  thickness?: number
+  glow?: number
+  taper?: number
+  spread?: number
+  hueShift?: number
+  intensity?: number
+  saturation?: number
+  opacity?: number
+  scale?: number
+  glass?: boolean
+  refraction?: number
+  dispersion?: number
+  glassSize?: number
+  rim?: number
+  energy?: number
+  listening?: boolean
+  level?: number
+  interactive?: boolean
+  clickPulse?: boolean
+  intro?: boolean
+  lightMode?: boolean
+  maxDevicePixelRatio?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 interface StrandsConfig {
-  colors: string[];
-  count: number;
-  speed: number;
-  amplitude: number;
-  waviness: number;
-  thickness: number;
-  glow: number;
-  taper: number;
-  spread: number;
-  hueShift: number;
-  intensity: number;
-  saturation: number;
-  opacity: number;
-  scale: number;
-  glass: boolean;
-  refraction: number;
-  dispersion: number;
-  glassSize: number;
-  rim: number;
-  energy: number;
-  listening: boolean;
-  level?: number;
-  interactive: boolean;
-  clickPulse: boolean;
-  intro: boolean;
-  lightMode: boolean;
-  maxDevicePixelRatio: number;
+  colors: string[]
+  count: number
+  speed: number
+  amplitude: number
+  waviness: number
+  thickness: number
+  glow: number
+  taper: number
+  spread: number
+  hueShift: number
+  intensity: number
+  saturation: number
+  opacity: number
+  scale: number
+  glass: boolean
+  refraction: number
+  dispersion: number
+  glassSize: number
+  rim: number
+  energy: number
+  listening: boolean
+  level?: number
+  interactive: boolean
+  clickPulse: boolean
+  intro: boolean
+  lightMode: boolean
+  maxDevicePixelRatio: number
 }
 
-const MAX_COLORS = 8;
-const ROLES = 7;
+const MAX_COLORS = 8
+const ROLES = 7
 
 const VERT = `#version 300 es
 in vec2 position;
 void main() {
   gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const FRAG = `#version 300 es
 precision highp float;
@@ -337,52 +337,52 @@ void main() {
     }
   }
 }
-`;
+`
 
 const hexToRgb = (hex: string): [number, number, number] => {
-  let h = String(hex).replace('#', '').trim();
-  if (h.length === 3) h = h.replace(/(.)/g, '$1$1');
-  const v = parseInt(h.slice(0, 6), 16);
-  if (!isFinite(v)) return [1, 1, 1];
-  return [((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255];
-};
+  let h = String(hex).replace('#', '').trim()
+  if (h.length === 3) h = h.replace(/(.)/g, '$1$1')
+  const v = parseInt(h.slice(0, 6), 16)
+  if (!Number.isFinite(v)) return [1, 1, 1]
+  return [((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255]
+}
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type) as WebGLShader;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  return shader;
-};
+  const shader = gl.createShader(type) as WebGLShader
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  return shader
+}
 
 const createProgram = (gl: WebGL2RenderingContext) => {
-  const program = gl.createProgram() as WebGLProgram;
-  gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERT));
-  gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAG));
-  gl.bindAttribLocation(program, 0, 'position');
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-  return program;
-};
+  const program = gl.createProgram() as WebGLProgram
+  gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERT))
+  gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAG))
+  gl.bindAttribLocation(program, 0, 'position')
+  gl.linkProgram(program)
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null
+  return program
+}
 
 const smooth = (a: number, b: number, x: number) => {
-  const k = Math.min(1, Math.max(0, (x - a) / (b - a)));
-  return k * k * (3 - 2 * k);
-};
+  const k = Math.min(1, Math.max(0, (x - a) / (b - a)))
+  return k * k * (3 - 2 * k)
+}
 
 const speech = (t: number) => {
-  const phrase = smooth(-0.8, -0.3, 0.6 * Math.sin(t * 2.7) + 0.5 * Math.sin(t * 1.53 + 1.2));
-  const syllable = Math.max(0, Math.sin(t * 17 + 1.6 * Math.sin(t * 5.3)));
-  const stress = 0.6 + 0.4 * Math.sin(t * 3.7 + 0.7);
-  return phrase * (0.35 + 0.65 * syllable) * (0.25 + stress);
-};
+  const phrase = smooth(-0.8, -0.3, 0.6 * Math.sin(t * 2.7) + 0.5 * Math.sin(t * 1.53 + 1.2))
+  const syllable = Math.max(0, Math.sin(t * 17 + 1.6 * Math.sin(t * 5.3)))
+  const stress = 0.6 + 0.4 * Math.sin(t * 3.7 + 0.7)
+  return phrase * (0.35 + 0.65 * syllable) * (0.25 + stress)
+}
 
-const DEFAULT_COLORS = ['#d95b56', '#ba5046', '#ffa24c', '#ffe0b3', '#93f1ff', '#3569fa', '#193d9b'];
+const DEFAULT_COLORS = ['#d95b56', '#ba5046', '#ffa24c', '#ffe0b3', '#93f1ff', '#3569fa', '#193d9b']
 
 const Strands = (props: StrandsProps) => {
-  let container!: HTMLDivElement;
-  const propsRef: { current: StrandsConfig } = { current: {} as StrandsConfig };
+  let container!: HTMLDivElement
+  const propsRef: { current: StrandsConfig } = { current: {} as StrandsConfig }
   // Upstream reassigned its props mirror every render; this tracked effect
   // replaces that (the frame loop reads propsRef.current).
   createEffect(() => {
@@ -413,25 +413,29 @@ const Strands = (props: StrandsProps) => {
       clickPulse: props.clickPulse ?? true,
       intro: props.intro ?? true,
       lightMode: props.lightMode ?? false,
-      maxDevicePixelRatio: props.maxDevicePixelRatio ?? 2
-    };
-  });
+      maxDevicePixelRatio: props.maxDevicePixelRatio ?? 2,
+    }
+  })
 
   onMount(() => {
-    const host = container;
-    if (!host) return;
-    const canvas = document.createElement('canvas');
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.setAttribute('aria-hidden', 'true');
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false });
-    if (!gl) return;
-    host.appendChild(canvas);
+    const host = container
+    if (!host) return
+    const canvas = document.createElement('canvas')
+    canvas.style.display = 'block'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
+    canvas.setAttribute('aria-hidden', 'true')
+    const gl = canvas.getContext('webgl2', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+    })
+    if (!gl) return
+    host.appendChild(canvas)
 
-    let program: WebGLProgram | null = null;
-    let buffer: WebGLBuffer | null = null;
-    let loc: Record<string, WebGLUniformLocation | null> = {};
+    let program: WebGLProgram | null = null
+    let buffer: WebGLBuffer | null = null
+    let loc: Record<string, WebGLUniformLocation | null> = {}
     const names = [
       'uResolution',
       'uMotion',
@@ -457,30 +461,32 @@ const Strands = (props: StrandsProps) => {
       'uIntro',
       'uPulse',
       'uLight',
-      'uOpacity'
-    ];
+      'uOpacity',
+    ]
     const setup = () => {
-      const next = createProgram(gl);
-      if (!next) return false;
-      program = next;
-      buffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(0);
-      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-      gl.useProgram(next);
-      loc = Object.fromEntries(names.map(name => [name, gl.getUniformLocation(next, name)]));
-      gl.disable(gl.BLEND);
-      gl.clearColor(0, 0, 0, 0);
-      return true;
-    };
+      const next = createProgram(gl)
+      if (!next) return false
+      program = next
+      buffer = gl.createBuffer()
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+      gl.enableVertexAttribArray(0)
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+      gl.useProgram(next)
+      loc = Object.fromEntries(names.map(name => [name, gl.getUniformLocation(next, name)]))
+      gl.disable(gl.BLEND)
+      gl.clearColor(0, 0, 0, 0)
+      return true
+    }
     if (!setup()) {
-      canvas.remove();
-      return;
+      canvas.remove()
+      return
     }
 
     const query =
-      typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)')
+        : null
     const st = {
       clock: 0,
       pace: 0,
@@ -502,109 +508,122 @@ const Strands = (props: StrandsProps) => {
       height: 0,
       speechT: 0,
       paletteKey: '',
-      palette: { flat: new Float32Array(MAX_COLORS * 3), count: 1 }
-    };
+      palette: { flat: new Float32Array(MAX_COLORS * 3), count: 1 },
+    }
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, Math.max(0.5, propsRef.current.maxDevicePixelRatio));
-      const w = Math.max(1, Math.round(host.clientWidth * dpr));
-      const h = Math.max(1, Math.round(host.clientHeight * dpr));
+      const dpr = Math.min(
+        window.devicePixelRatio || 1,
+        Math.max(0.5, propsRef.current.maxDevicePixelRatio),
+      )
+      const w = Math.max(1, Math.round(host.clientWidth * dpr))
+      const h = Math.max(1, Math.round(host.clientHeight * dpr))
       if (w !== st.width || h !== st.height) {
-        st.width = w;
-        st.height = h;
-        canvas.width = w;
-        canvas.height = h;
+        st.width = w
+        st.height = h
+        canvas.width = w
+        canvas.height = h
       }
-    };
+    }
 
     const updatePalette = (list: string[]) => {
-      const key = list.join(',');
-      if (key === st.paletteKey) return;
-      st.paletteKey = key;
-      const rgb = (list.length ? list : DEFAULT_COLORS).slice(0, MAX_COLORS).map(hexToRgb);
-      const flat = new Float32Array(MAX_COLORS * 3);
+      const key = list.join(',')
+      if (key === st.paletteKey) return
+      st.paletteKey = key
+      const rgb = (list.length ? list : DEFAULT_COLORS).slice(0, MAX_COLORS).map(hexToRgb)
+      const flat = new Float32Array(MAX_COLORS * 3)
       for (let i = 0; i < ROLES; i++) {
-        const t = rgb.length > 1 ? (i / (ROLES - 1)) * (rgb.length - 1) : 0;
-        const a = Math.floor(t);
-        const b = Math.min(a + 1, rgb.length - 1);
-        const f = t - a;
+        const t = rgb.length > 1 ? (i / (ROLES - 1)) * (rgb.length - 1) : 0
+        const a = Math.floor(t)
+        const b = Math.min(a + 1, rgb.length - 1)
+        const f = t - a
         flat.set(
           rgb[a].map((c, k) => c + (rgb[b][k] - c) * f),
-          i * 3
-        );
+          i * 3,
+        )
       }
-      st.palette = { flat, count: ROLES };
-    };
+      st.palette = { flat, count: ROLES }
+    }
 
     const draw = () => {
-      if (st.lost || !program) return;
-      const p = propsRef.current;
-      updatePalette(Array.isArray(p.colors) ? p.colors : []);
-      gl.viewport(0, 0, st.width, st.height);
-      gl.uniform2f(loc.uResolution, st.width, st.height);
-      const c = st.clock;
-      const sway = 0.75 + 0.45 * st.pace;
+      if (st.lost || !program) return
+      const p = propsRef.current
+      updatePalette(Array.isArray(p.colors) ? p.colors : [])
+      gl.viewport(0, 0, st.width, st.height)
+      gl.uniform2f(loc.uResolution, st.width, st.height)
+      const c = st.clock
+      const sway = 0.75 + 0.45 * st.pace
       gl.uniform3f(
         loc.uMotion,
         (0.26 * Math.sin(0.53 * c) + 0.1 * Math.sin(1.19 * c + 1.3)) * sway,
         1 + (0.06 * Math.sin(0.71 * c) + 0.035 * Math.sin(1.37 * c + 0.4)) * sway,
-        0.06 * Math.sin(0.41 * c + 2) * sway
-      );
-      gl.uniform1f(loc.uLevel, clamp(st.activity, 0, 1));
-      gl.uniform3fv(loc.uColors, st.palette.flat);
-      gl.uniform1i(loc.uCount, clamp(Math.round(p.count), 1, 3));
-      gl.uniform1f(loc.uAmplitude, p.amplitude);
-      gl.uniform1f(loc.uWaviness, p.waviness);
-      gl.uniform1f(loc.uThickness, p.thickness);
-      gl.uniform1f(loc.uGlow, p.glow);
-      gl.uniform1f(loc.uTaper, Math.max(0.05, p.taper));
-      gl.uniform1f(loc.uSpread, p.spread);
-      gl.uniform1f(loc.uHueShift, p.hueShift);
-      gl.uniform1f(loc.uIntensity, p.intensity);
-      gl.uniform1f(loc.uSaturation, p.saturation);
-      gl.uniform1f(loc.uScale, Math.max(0.05, p.scale));
-      gl.uniform1f(loc.uGlass, p.glass ? 1 : 0);
-      gl.uniform1f(loc.uRadius, 0.42 * p.glassSize);
-      gl.uniform1f(loc.uRefraction, p.refraction);
-      gl.uniform1f(loc.uDispersion, p.dispersion);
-      gl.uniform1f(loc.uRim, p.rim);
-      gl.uniform2f(loc.uLean, st.lean[0], st.lean[1]);
-      gl.uniform1f(loc.uIntro, st.intro);
-      gl.uniform1f(loc.uPulse, st.pulse);
-      gl.uniform1f(loc.uLight, p.lightMode ? 1 : 0);
-      gl.uniform1f(loc.uOpacity, p.opacity);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        0.06 * Math.sin(0.41 * c + 2) * sway,
+      )
+      gl.uniform1f(loc.uLevel, clamp(st.activity, 0, 1))
+      gl.uniform3fv(loc.uColors, st.palette.flat)
+      gl.uniform1i(loc.uCount, clamp(Math.round(p.count), 1, 3))
+      gl.uniform1f(loc.uAmplitude, p.amplitude)
+      gl.uniform1f(loc.uWaviness, p.waviness)
+      gl.uniform1f(loc.uThickness, p.thickness)
+      gl.uniform1f(loc.uGlow, p.glow)
+      gl.uniform1f(loc.uTaper, Math.max(0.05, p.taper))
+      gl.uniform1f(loc.uSpread, p.spread)
+      gl.uniform1f(loc.uHueShift, p.hueShift)
+      gl.uniform1f(loc.uIntensity, p.intensity)
+      gl.uniform1f(loc.uSaturation, p.saturation)
+      gl.uniform1f(loc.uScale, Math.max(0.05, p.scale))
+      gl.uniform1f(loc.uGlass, p.glass ? 1 : 0)
+      gl.uniform1f(loc.uRadius, 0.42 * p.glassSize)
+      gl.uniform1f(loc.uRefraction, p.refraction)
+      gl.uniform1f(loc.uDispersion, p.dispersion)
+      gl.uniform1f(loc.uRim, p.rim)
+      gl.uniform2f(loc.uLean, st.lean[0], st.lean[1])
+      gl.uniform1f(loc.uIntro, st.intro)
+      gl.uniform1f(loc.uPulse, st.pulse)
+      gl.uniform1f(loc.uLight, p.lightMode ? 1 : 0)
+      gl.uniform1f(loc.uOpacity, p.opacity)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const frame = (now: number) => {
-      st.raf = 0;
-      const p = propsRef.current;
-      const dt = st.last ? clamp((now - st.last) / 1000, 0, 0.05) : 0;
-      st.last = now;
-      const reduced = !!query?.matches;
-      if (st.introStart < 0 && st.visible) st.introStart = now;
+      st.raf = 0
+      const p = propsRef.current
+      const dt = st.last ? clamp((now - st.last) / 1000, 0, 0.05) : 0
+      st.last = now
+      const reduced = !!query?.matches
+      if (st.introStart < 0 && st.visible) st.introStart = now
       if (p.intro && !reduced && st.introStart >= 0) {
-        const t = clamp((now - st.introStart) / 1400, 0, 1);
-        st.intro = 1 - Math.pow(1 - t, 3);
+        const t = clamp((now - st.introStart) / 1400, 0, 1)
+        st.intro = 1 - (1 - t) ** 3
       } else {
-        st.intro = 1;
+        st.intro = 1
       }
-      st.hover += (st.hoverTarget - st.hover) * (1 - Math.exp(-dt / (st.hoverTarget > st.hover ? 0.25 : 0.6)));
-      for (let i = 0; i < 2; i++) st.lean[i] += (st.leanTarget[i] - st.lean[i]) * (1 - Math.exp(-dt / 0.35));
-      st.pulseV += (-170 * st.pulse - 14 * st.pulseV) * dt;
-      st.pulse += st.pulseV * dt;
-      st.burst *= Math.exp(-dt / 0.45);
-      if (p.listening && !reduced) st.speechT += dt;
+      st.hover +=
+        (st.hoverTarget - st.hover) * (1 - Math.exp(-dt / (st.hoverTarget > st.hover ? 0.25 : 0.6)))
+      for (let i = 0; i < 2; i++)
+        st.lean[i] += (st.leanTarget[i] - st.lean[i]) * (1 - Math.exp(-dt / 0.35))
+      st.pulseV += (-170 * st.pulse - 14 * st.pulseV) * dt
+      st.pulse += st.pulseV * dt
+      st.burst *= Math.exp(-dt / 0.45)
+      if (p.listening && !reduced) st.speechT += dt
       const voice =
-        typeof p.level === 'number' ? clamp(p.level, 0, 1) : p.listening && !reduced ? speech(st.speechT) : 0;
-      const target = Math.min(1.2, Math.max(clamp(p.energy, 0, 1), voice) + st.hover * 0.18 + st.burst);
-      st.activity += (target - st.activity) * (1 - Math.exp(-dt / (target > st.activity ? 0.12 : 0.4)));
-      st.pace += (Math.min(1, st.activity) - st.pace) * (1 - Math.exp(-dt / 0.8));
+        typeof p.level === 'number'
+          ? clamp(p.level, 0, 1)
+          : p.listening && !reduced
+            ? speech(st.speechT)
+            : 0
+      const target = Math.min(
+        1.2,
+        Math.max(clamp(p.energy, 0, 1), voice) + st.hover * 0.18 + st.burst,
+      )
+      st.activity +=
+        (target - st.activity) * (1 - Math.exp(-dt / (target > st.activity ? 0.12 : 0.4)))
+      st.pace += (Math.min(1, st.activity) - st.pace) * (1 - Math.exp(-dt / 0.8))
       if (!reduced) {
-        st.clock += dt * p.speed * (0.6 + 1.6 * st.pace);
+        st.clock += dt * p.speed * (0.6 + 1.6 * st.pace)
       }
-      draw();
+      draw()
       const settled =
         reduced &&
         Math.abs(st.activity - target) < 1e-3 &&
@@ -613,99 +632,103 @@ const Strands = (props: StrandsProps) => {
         st.burst < 1e-3 &&
         Math.abs(st.hover - st.hoverTarget) < 1e-3 &&
         Math.abs(st.lean[0] - st.leanTarget[0]) < 1e-3 &&
-        Math.abs(st.lean[1] - st.leanTarget[1]) < 1e-3;
-      if (st.visible && !document.hidden && !st.lost && !settled) st.raf = requestAnimationFrame(frame);
-    };
+        Math.abs(st.lean[1] - st.leanTarget[1]) < 1e-3
+      if (st.visible && !document.hidden && !st.lost && !settled)
+        st.raf = requestAnimationFrame(frame)
+    }
 
     const wake = () => {
       if (!st.raf && st.visible && !st.lost) {
-        st.last = 0;
-        st.raf = requestAnimationFrame(frame);
+        st.last = 0
+        st.raf = requestAnimationFrame(frame)
       }
-    };
+    }
 
     const local = (e: PointerEvent): [number, number] => {
-      const r = host.getBoundingClientRect();
-      const m = Math.min(r.width, r.height) || 1;
-      return [(e.clientX - r.left - r.width / 2) / (m / 2), (e.clientY - r.top - r.height / 2) / (m / 2)];
-    };
+      const r = host.getBoundingClientRect()
+      const m = Math.min(r.width, r.height) || 1
+      return [
+        (e.clientX - r.left - r.width / 2) / (m / 2),
+        (e.clientY - r.top - r.height / 2) / (m / 2),
+      ]
+    }
 
     const onMove = (e: PointerEvent) => {
-      if (!propsRef.current.interactive) return;
-      const [x, y] = local(e);
-      st.hoverTarget = clamp(1.6 - Math.hypot(x, y), 0, 1);
-      st.leanTarget = [clamp(x, -1.2, 1.2) * 0.8, clamp(-y, -1.2, 1.2) * 0.8];
-      wake();
-    };
+      if (!propsRef.current.interactive) return
+      const [x, y] = local(e)
+      st.hoverTarget = clamp(1.6 - Math.hypot(x, y), 0, 1)
+      st.leanTarget = [clamp(x, -1.2, 1.2) * 0.8, clamp(-y, -1.2, 1.2) * 0.8]
+      wake()
+    }
 
     const onLeave = () => {
-      st.hoverTarget = 0;
-      st.leanTarget = [0, 0];
-      wake();
-    };
+      st.hoverTarget = 0
+      st.leanTarget = [0, 0]
+      wake()
+    }
 
     const onDown = () => {
-      if (!propsRef.current.clickPulse) return;
-      st.pulseV += 5;
-      st.burst = Math.min(1.2, st.burst + 0.9);
-      wake();
-    };
+      if (!propsRef.current.clickPulse) return
+      st.pulseV += 5
+      st.burst = Math.min(1.2, st.burst + 0.9)
+      wake()
+    }
 
     const onLost = (e: Event) => {
-      e.preventDefault();
-      st.lost = true;
-      if (st.raf) cancelAnimationFrame(st.raf);
-      st.raf = 0;
-    };
+      e.preventDefault()
+      st.lost = true
+      if (st.raf) cancelAnimationFrame(st.raf)
+      st.raf = 0
+    }
 
     const onRestored = () => {
-      st.lost = false;
-      if (setup()) wake();
-    };
+      st.lost = false
+      if (setup()) wake()
+    }
 
-    canvas.addEventListener('webglcontextlost', onLost);
-    canvas.addEventListener('webglcontextrestored', onRestored);
-    host.addEventListener('pointermove', onMove);
-    host.addEventListener('pointerleave', onLeave);
-    host.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('webglcontextlost', onLost)
+    canvas.addEventListener('webglcontextrestored', onRestored)
+    host.addEventListener('pointermove', onMove)
+    host.addEventListener('pointerleave', onLeave)
+    host.addEventListener('pointerdown', onDown)
 
     const resizeObserver = new ResizeObserver(() => {
-      resize();
-      draw();
-    });
-    resizeObserver.observe(host);
-    resize();
+      resize()
+      draw()
+    })
+    resizeObserver.observe(host)
+    resize()
 
-    let intersection: IntersectionObserver | null = null;
+    let intersection: IntersectionObserver | null = null
     if (typeof IntersectionObserver !== 'undefined') {
       intersection = new IntersectionObserver(entries => {
-        st.visible = entries[entries.length - 1].isIntersecting;
-        if (st.visible) wake();
-      });
-      intersection.observe(host);
+        st.visible = entries[entries.length - 1].isIntersecting
+        if (st.visible) wake()
+      })
+      intersection.observe(host)
     }
     const onVisibility = () => {
-      if (!document.hidden) wake();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    wake();
+      if (!document.hidden) wake()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    wake()
 
     onCleanup(() => {
-      if (st.raf) cancelAnimationFrame(st.raf);
-      canvas.removeEventListener('webglcontextlost', onLost);
-      canvas.removeEventListener('webglcontextrestored', onRestored);
-      host.removeEventListener('pointermove', onMove);
-      host.removeEventListener('pointerleave', onLeave);
-      host.removeEventListener('pointerdown', onDown);
-      document.removeEventListener('visibilitychange', onVisibility);
-      resizeObserver.disconnect();
-      intersection?.disconnect();
-      if (program) gl.deleteProgram(program);
-      if (buffer) gl.deleteBuffer(buffer);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      canvas.remove();
-    });
-  });
+      if (st.raf) cancelAnimationFrame(st.raf)
+      canvas.removeEventListener('webglcontextlost', onLost)
+      canvas.removeEventListener('webglcontextrestored', onRestored)
+      host.removeEventListener('pointermove', onMove)
+      host.removeEventListener('pointerleave', onLeave)
+      host.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('visibilitychange', onVisibility)
+      resizeObserver.disconnect()
+      intersection?.disconnect()
+      if (program) gl.deleteProgram(program)
+      if (buffer) gl.deleteBuffer(buffer)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.remove()
+    })
+  })
 
   return (
     <div
@@ -713,7 +736,7 @@ const Strands = (props: StrandsProps) => {
       class={`relative h-full w-full bg-transparent [-webkit-tap-highlight-color:transparent] ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     />
-  );
-};
+  )
+}
 
-export default Strands;
+export default Strands

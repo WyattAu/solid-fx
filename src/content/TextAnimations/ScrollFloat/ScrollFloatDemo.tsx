@@ -1,4 +1,4 @@
-import ScrollFloat from './ScrollFloat';
+import ScrollFloat from './ScrollFloat'
 
 function ScrollFloatDemo() {
   return (
@@ -14,7 +14,7 @@ function ScrollFloatDemo() {
         Scroll Into View
       </ScrollFloat>
     </div>
-  );
+  )
 }
 
-export default ScrollFloatDemo;
+export default ScrollFloatDemo

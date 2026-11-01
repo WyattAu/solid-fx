@@ -1,6 +1,9 @@
-import OrbitImages from './OrbitImages';
+import OrbitImages from './OrbitImages'
 
-const IMAGES = Array.from({ length: 8 }, (_, i) => `https://picsum.photos/seed/orbit-${i + 1}/200/200`);
+const IMAGES = Array.from(
+  { length: 8 },
+  (_, i) => `https://picsum.photos/seed/orbit-${i + 1}/200/200`,
+)
 
 function OrbitImagesDemo() {
   return (
@@ -15,7 +18,7 @@ function OrbitImagesDemo() {
         altPrefix="Orbiting photo"
       />
     </div>
-  );
+  )
 }
 
-export default OrbitImagesDemo;
+export default OrbitImagesDemo

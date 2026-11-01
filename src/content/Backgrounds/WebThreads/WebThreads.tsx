@@ -1,111 +1,111 @@
-import { createMemo, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createMemo, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface WebThreadsProps {
-  colors?: string[];
-  coreColor?: string;
-  backgroundColor?: string;
-  lightMode?: boolean;
-  threadCount?: number;
-  speed?: number;
-  frequency?: number;
-  spread?: number;
-  taper?: number;
-  position?: number;
-  pinch?: number;
-  nodes?: number;
-  angle?: number;
-  glow?: number;
-  falloff?: number;
-  thickness?: number;
-  brightness?: number;
-  opacity?: number;
-  depth?: number;
-  pulses?: number;
-  mirror?: boolean;
-  shimmer?: boolean;
-  fade?: number;
-  grain?: number;
-  intro?: boolean;
-  mouseInteraction?: boolean;
-  mouseStrength?: number;
-  pulseOnClick?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  colors?: string[]
+  coreColor?: string
+  backgroundColor?: string
+  lightMode?: boolean
+  threadCount?: number
+  speed?: number
+  frequency?: number
+  spread?: number
+  taper?: number
+  position?: number
+  pinch?: number
+  nodes?: number
+  angle?: number
+  glow?: number
+  falloff?: number
+  thickness?: number
+  brightness?: number
+  opacity?: number
+  depth?: number
+  pulses?: number
+  mirror?: boolean
+  shimmer?: boolean
+  fade?: number
+  grain?: number
+  intro?: boolean
+  mouseInteraction?: boolean
+  mouseStrength?: number
+  pulseOnClick?: boolean
+  paused?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type RGB = [number, number, number];
+type RGB = [number, number, number]
 
 interface Surge {
-  x: number;
-  direction: number;
-  at: number;
+  x: number
+  direction: number
+  at: number
 }
 
 interface Shape {
-  nodes: number;
-  pinch: number;
-  mirror: boolean;
-  spread: number;
-  shimmer: boolean;
-  frequency: number;
-  count: number;
-  taper: number;
-  position: number;
+  nodes: number
+  pinch: number
+  mirror: boolean
+  spread: number
+  shimmer: boolean
+  frequency: number
+  count: number
+  taper: number
+  position: number
 }
 
 interface Settings {
-  palette: RGB[];
-  core: RGB;
-  paper: RGB | null;
-  lightMode: boolean;
-  count: number;
-  speed: number;
-  frequency: number;
-  spread: number;
-  taper: number;
-  position: number;
-  pinch: number;
-  nodes: number;
-  angle: number;
-  glow: number;
-  falloff: number;
-  thickness: number;
-  brightness: number;
-  opacity: number;
-  depth: number;
-  pulses: number;
-  mirror: boolean;
-  shimmer: boolean;
-  fade: number;
-  grain: number;
-  intro: boolean;
-  mouseInteraction: boolean;
-  mouseStrength: number;
-  pulseOnClick: boolean;
-  paused: boolean;
-  dpr: number;
+  palette: RGB[]
+  core: RGB
+  paper: RGB | null
+  lightMode: boolean
+  count: number
+  speed: number
+  frequency: number
+  spread: number
+  taper: number
+  position: number
+  pinch: number
+  nodes: number
+  angle: number
+  glow: number
+  falloff: number
+  thickness: number
+  brightness: number
+  opacity: number
+  depth: number
+  pulses: number
+  mirror: boolean
+  shimmer: boolean
+  fade: number
+  grain: number
+  intro: boolean
+  mouseInteraction: boolean
+  mouseStrength: number
+  pulseOnClick: boolean
+  paused: boolean
+  dpr: number
 }
 
-const ROOT = 'relative h-full w-full overflow-hidden';
-const CANVAS = 'absolute inset-0 block h-full w-full';
+const ROOT = 'relative h-full w-full overflow-hidden'
+const CANVAS = 'absolute inset-0 block h-full w-full'
 
-const MAX_THREADS = 24;
-const MAX_COLORS = 6;
-const MAX_SURGES = 3;
-const SURGE_SECONDS = 1.6;
-const SURGE_STAGGER = 0.05;
-const STROKE_SECONDS = 1.25;
-const TAU = Math.PI * 2;
+const MAX_THREADS = 24
+const MAX_COLORS = 6
+const MAX_SURGES = 3
+const SURGE_SECONDS = 1.6
+const SURGE_STAGGER = 0.05
+const STROKE_SECONDS = 1.25
+const TAU = Math.PI * 2
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -324,81 +324,85 @@ void main() {
       outColor = vec4(stroke * cover, cover);
     }
   }
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-const mod = (value: number, base: number) => ((value % base) + base) % base;
+const mod = (value: number, base: number) => ((value % base) + base) % base
 
-let probe: CanvasRenderingContext2D | null = null;
+let probe: CanvasRenderingContext2D | null = null
 
 const parseColor = (value: string, fallback: RGB | null): RGB | null => {
-  if (value === 'transparent') return null;
-  if (typeof document === 'undefined') return fallback;
-  if (!probe) probe = document.createElement('canvas').getContext('2d');
-  if (!probe) return fallback;
-  probe.fillStyle = '#000000';
-  probe.fillStyle = value;
-  const text = probe.fillStyle;
+  if (value === 'transparent') return null
+  if (typeof document === 'undefined') return fallback
+  if (!probe) probe = document.createElement('canvas').getContext('2d')
+  if (!probe) return fallback
+  probe.fillStyle = '#000000'
+  probe.fillStyle = value
+  const text = probe.fillStyle
   if (text.startsWith('#')) {
-    const hex = parseInt(text.slice(1), 16);
-    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+    const hex = parseInt(text.slice(1), 16)
+    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255]
   }
-  const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text);
-  if (!match) return fallback;
-  if (match[4] !== undefined && Number(match[4]) === 0) return null;
-  return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255];
-};
+  const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text)
+  if (!match) return fallback
+  if (match[4] !== undefined && Number(match[4]) === 0) return null
+  return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255]
+}
 
-const staggerFor = (count: number) => Math.min(0.12, 0.9 / Math.max(count - 1, 1));
+const staggerFor = (count: number) => Math.min(0.12, 0.9 / Math.max(count - 1, 1))
 
 const toThreadSpace = (point: number[], aspect: number, angle: number) => {
-  const qx = (point[0] - 0.5) * aspect;
-  const qy = 0.5 - point[1];
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [(qx * cos + qy * sin) / aspect + 0.5, -qx * sin + qy * cos + 0.5];
-};
+  const qx = (point[0] - 0.5) * aspect
+  const qy = 0.5 - point[1]
+  const cos = Math.cos(angle)
+  const sin = Math.sin(angle)
+  return [(qx * cos + qy * sin) / aspect + 0.5, -qx * sin + qy * cos + 0.5]
+}
 
 const threadY = (s: Shape, x: number, index: number, phase: number, clock: number) => {
-  const lane = s.nodes <= 1 ? x - s.pinch : (x - s.pinch + 0.5) * s.nodes - 0.5;
-  const side = s.mirror ? (mod(Math.floor(lane), 2) < 0.5 ? -1 : 1) : 1;
-  const dx = x - s.pinch;
+  const lane = s.nodes <= 1 ? x - s.pinch : (x - s.pinch + 0.5) * s.nodes - 0.5
+  const side = s.mirror ? (mod(Math.floor(lane), 2) < 0.5 ? -1 : 1) : 1
+  const dx = x - s.pinch
   const env =
-    s.nodes <= 1 ? s.spread * Math.abs(dx) : s.spread * 0.5 * Math.abs(Math.cos(Math.PI * s.nodes * (dx + 0.5)));
-  const shimmer = s.shimmer ? Math.sin(clock * 1.7 + index * 1.3) * 0.35 : 0;
-  const angle = x * s.frequency + (phase + (index * TAU) / Math.max(s.count, 1)) * side + shimmer;
-  return s.position - env * (1 + index * s.taper) * Math.sin(angle);
-};
+    s.nodes <= 1
+      ? s.spread * Math.abs(dx)
+      : s.spread * 0.5 * Math.abs(Math.cos(Math.PI * s.nodes * (dx + 0.5)))
+  const shimmer = s.shimmer ? Math.sin(clock * 1.7 + index * 1.3) * 0.35 : 0
+  const angle = x * s.frequency + (phase + (index * TAU) / Math.max(s.count, 1)) * side + shimmer
+  return s.position - env * (1 + index * s.taper) * Math.sin(angle)
+}
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    gl.deleteShader(shader);
-    return null;
+    gl.deleteShader(shader)
+    return null
   }
-  return shader;
-};
+  return shader
+}
 
 const prefersReduced = () =>
-  typeof window !== 'undefined' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+  typeof window !== 'undefined' &&
+  (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
 
 export default function WebThreads(props: WebThreadsProps) {
-  let containerRef!: HTMLDivElement;
+  let containerRef!: HTMLDivElement
 
-  const colorKey = createMemo(() => (props.colors ?? ['#5227FF', '#FF9FFC']).join('|'));
-  const palette = createMemo(
-    () =>
-      colorKey()
-        .split('|')
-        .slice(0, MAX_COLORS)
-        .map((value): RGB => parseColor(value, [1, 1, 1]) ?? [1, 1, 1])
-  );
-  const core = createMemo((): RGB => parseColor(props.coreColor ?? '#FFFFFF', [1, 1, 1]) ?? [1, 1, 1]);
-  const paper = createMemo(() => parseColor(props.backgroundColor ?? 'transparent', null));
+  const colorKey = createMemo(() => (props.colors ?? ['#5227FF', '#FF9FFC']).join('|'))
+  const palette = createMemo(() =>
+    colorKey()
+      .split('|')
+      .slice(0, MAX_COLORS)
+      .map((value): RGB => parseColor(value, [1, 1, 1]) ?? [1, 1, 1]),
+  )
+  const core = createMemo(
+    (): RGB => parseColor(props.coreColor ?? '#FFFFFF', [1, 1, 1]) ?? [1, 1, 1],
+  )
+  const paper = createMemo(() => parseColor(props.backgroundColor ?? 'transparent', null))
 
   // Upstream rebuilt this object each render and kept it in a ref; the memo
   // tracks the same props so per-render effects fire on the same changes.
@@ -433,46 +437,46 @@ export default function WebThreads(props: WebThreadsProps) {
       mouseStrength: clamp(props.mouseStrength ?? 0.5, 0, 1),
       pulseOnClick: props.pulseOnClick ?? true,
       paused: props.paused ?? false,
-      dpr: Math.max(0.5, props.dpr ?? 2)
-    })
-  );
+      dpr: Math.max(0.5, props.dpr ?? 2),
+    }),
+  )
 
   onMount(() => {
-    const container = containerRef;
-    if (!container) return;
-    const canvas = document.createElement('canvas');
-    canvas.className = CANVAS;
-    container.appendChild(canvas);
+    const container = containerRef
+    if (!container) return
+    const canvas = document.createElement('canvas')
+    canvas.className = CANVAS
+    container.appendChild(canvas)
     const gl = canvas.getContext('webgl2', {
       alpha: true,
       antialias: false,
       depth: false,
       stencil: false,
       premultipliedAlpha: true,
-      powerPreference: 'high-performance'
-    });
+      powerPreference: 'high-performance',
+    })
     if (!gl) {
-      canvas.remove();
-      return;
+      canvas.remove()
+      return
     }
 
-    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-    const program = gl.createProgram();
+    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+    const program = gl.createProgram()
     if (!vertex || !fragment || !program) {
-      canvas.remove();
-      return;
+      canvas.remove()
+      return
     }
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.bindAttribLocation(program, 0, 'aPosition');
-    gl.linkProgram(program);
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
+    gl.attachShader(program, vertex)
+    gl.attachShader(program, fragment)
+    gl.bindAttribLocation(program, 0, 'aPosition')
+    gl.linkProgram(program)
+    gl.deleteShader(vertex)
+    gl.deleteShader(fragment)
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      gl.deleteProgram(program);
-      canvas.remove();
-      return;
+      gl.deleteProgram(program)
+      canvas.remove()
+      return
     }
     const names = [
       'uResolution',
@@ -506,25 +510,25 @@ export default function WebThreads(props: WebThreadsProps) {
       'uIntro',
       'uFocus',
       'uFocusState',
-      'uSurges'
-    ];
-    const u: Record<string, WebGLUniformLocation | null> = {};
+      'uSurges',
+    ]
+    const u: Record<string, WebGLUniformLocation | null> = {}
     names.forEach(name => {
-      u[name] = gl.getUniformLocation(program, name);
-    });
+      u[name] = gl.getUniformLocation(program, name)
+    })
 
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    gl.useProgram(program);
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    const buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+    gl.useProgram(program)
 
-    const colorData = new Float32Array(MAX_COLORS * 3);
-    const surgeData = new Float32Array(MAX_SURGES * 4);
-    const focus = new Float32Array(MAX_THREADS);
+    const colorData = new Float32Array(MAX_COLORS * 3)
+    const surgeData = new Float32Array(MAX_SURGES * 4)
+    const focus = new Float32Array(MAX_THREADS)
     const state = {
       width: 1,
       height: 1,
@@ -541,138 +545,142 @@ export default function WebThreads(props: WebThreadsProps) {
       target: -1,
       surges: [] as Surge[],
       quiet: 0,
-      seen: null as Settings | null
-    };
+      seen: null as Settings | null,
+    }
 
     const resize = () => {
-      const s = settings();
-      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr);
-      const width = Math.max(1, Math.round(container.clientWidth * ratio));
-      const height = Math.max(1, Math.round(container.clientHeight * ratio));
-      if (width === state.width && height === state.height) return;
-      state.quiet = 0;
-      state.width = width;
-      state.height = height;
-      canvas.width = width;
-      canvas.height = height;
-    };
+      const s = settings()
+      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr)
+      const width = Math.max(1, Math.round(container.clientWidth * ratio))
+      const height = Math.max(1, Math.round(container.clientHeight * ratio))
+      if (width === state.width && height === state.height) return
+      state.quiet = 0
+      state.width = width
+      state.height = height
+      canvas.width = width
+      canvas.height = height
+    }
 
-    const introLength = (s: Settings) => (s.count - 1) * staggerFor(s.count) + STROKE_SECONDS;
+    const introLength = (s: Settings) => (s.count - 1) * staggerFor(s.count) + STROKE_SECONDS
 
     const updateFocus = (s: Settings, dt: number, reduced: boolean) => {
-      const wanted = s.mouseInteraction && state.inside;
+      const wanted = s.mouseInteraction && state.inside
       if (wanted) {
-        const aspect = state.width / Math.max(state.height, 1);
-        const [cx, cy] = toThreadSpace(state.pointer, aspect, s.angle);
-        let best = -1;
-        let bestDistance = Infinity;
+        const aspect = state.width / Math.max(state.height, 1)
+        const [cx, cy] = toThreadSpace(state.pointer, aspect, s.angle)
+        let best = -1
+        let bestDistance = Infinity
         for (let index = 0; index < s.count; index++) {
-          const distance = Math.abs(threadY(s, cx, index, state.phase, reduced ? 0 : state.clock) - cy);
-          const reach = index === state.target ? 0.11 : 0.085;
+          const distance = Math.abs(
+            threadY(s, cx, index, state.phase, reduced ? 0 : state.clock) - cy,
+          )
+          const reach = index === state.target ? 0.11 : 0.085
           if (distance < reach && distance < bestDistance) {
-            best = index;
-            bestDistance = distance;
+            best = index
+            bestDistance = distance
           }
         }
-        state.target = best;
+        state.target = best
       } else {
-        state.target = -1;
+        state.target = -1
       }
-      const ease = 1 - Math.exp(-dt / 0.22);
-      let strongest = 0;
+      const ease = 1 - Math.exp(-dt / 0.22)
+      let strongest = 0
       for (let index = 0; index < MAX_THREADS; index++) {
-        const goal = index === state.target ? 1 : 0;
-        focus[index] += (goal - focus[index]) * ease;
-        strongest = Math.max(strongest, focus[index]);
+        const goal = index === state.target ? 1 : 0
+        focus[index] += (goal - focus[index]) * ease
+        strongest = Math.max(strongest, focus[index])
       }
-      state.presence += ((wanted ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / 0.3));
-      const settleGoal = s.mouseStrength * 0.65 * strongest * state.presence;
-      state.settle += (settleGoal - state.settle) * (1 - Math.exp(-dt / 0.3));
-      return strongest > 0.002 || state.presence > 0.002 || state.settle > 0.002;
-    };
+      state.presence += ((wanted ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / 0.3))
+      const settleGoal = s.mouseStrength * 0.65 * strongest * state.presence
+      state.settle += (settleGoal - state.settle) * (1 - Math.exp(-dt / 0.3))
+      return strongest > 0.002 || state.presence > 0.002 || state.settle > 0.002
+    }
 
     const render = (reduced: boolean) => {
-      const s = settings();
-      const introClock = state.introAt < 0 ? 0 : state.clock - state.introAt;
-      const introRunning = s.intro && !reduced && introClock < introLength(s);
-      gl.viewport(0, 0, state.width, state.height);
-      gl.uniform2f(u.uResolution, state.width, state.height);
-      gl.uniform1f(u.uPhase, state.phase);
-      gl.uniform1f(u.uClock, reduced ? 0 : state.clock);
-      gl.uniform1i(u.uCount, s.count);
-      gl.uniform1f(u.uFrequency, s.frequency);
-      gl.uniform1f(u.uSpread, s.spread);
-      gl.uniform1f(u.uTaper, s.taper);
-      gl.uniform1f(u.uPosition, s.position);
-      gl.uniform1f(u.uPinch, s.pinch);
-      gl.uniform1f(u.uNodes, s.nodes);
-      gl.uniform2f(u.uAngle, Math.cos(s.angle), Math.sin(s.angle));
-      gl.uniform1f(u.uGlow, s.glow * Math.sqrt(6 / Math.max(s.count, 6)));
-      gl.uniform1f(u.uFalloff, s.falloff);
-      gl.uniform1f(u.uThickness, s.thickness);
-      gl.uniform1f(u.uBrightness, s.brightness);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.uniform1f(u.uMirror, s.mirror ? 1 : 0);
-      gl.uniform1f(u.uShimmer, s.shimmer && !reduced ? 1 : 0);
-      gl.uniform1f(u.uDepth, s.depth);
-      gl.uniform1f(u.uPulses, s.pulses);
-      gl.uniform1f(u.uFade, s.fade);
-      gl.uniform1f(u.uGrain, s.grain);
-      colorData.fill(0);
-      s.palette.slice(0, MAX_COLORS).forEach((rgb, index) => colorData.set(rgb, index * 3));
-      gl.uniform3fv(u.uColors, colorData);
-      gl.uniform1i(u.uColorCount, Math.min(s.palette.length, MAX_COLORS));
-      gl.uniform3f(u.uCore, s.core[0], s.core[1], s.core[2]);
-      const paperColor = s.paper ?? [0, 0, 0];
-      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2]);
-      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0);
-      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0);
-      gl.uniform4f(u.uIntro, introClock, staggerFor(s.count), STROKE_SECONDS, introRunning ? 1 : 0);
-      gl.uniform1fv(u.uFocus, focus);
-      gl.uniform2f(u.uFocusState, state.presence * (0.4 + 0.6 * s.mouseStrength), state.settle);
-      surgeData.fill(0);
+      const s = settings()
+      const introClock = state.introAt < 0 ? 0 : state.clock - state.introAt
+      const introRunning = s.intro && !reduced && introClock < introLength(s)
+      gl.viewport(0, 0, state.width, state.height)
+      gl.uniform2f(u.uResolution, state.width, state.height)
+      gl.uniform1f(u.uPhase, state.phase)
+      gl.uniform1f(u.uClock, reduced ? 0 : state.clock)
+      gl.uniform1i(u.uCount, s.count)
+      gl.uniform1f(u.uFrequency, s.frequency)
+      gl.uniform1f(u.uSpread, s.spread)
+      gl.uniform1f(u.uTaper, s.taper)
+      gl.uniform1f(u.uPosition, s.position)
+      gl.uniform1f(u.uPinch, s.pinch)
+      gl.uniform1f(u.uNodes, s.nodes)
+      gl.uniform2f(u.uAngle, Math.cos(s.angle), Math.sin(s.angle))
+      gl.uniform1f(u.uGlow, s.glow * Math.sqrt(6 / Math.max(s.count, 6)))
+      gl.uniform1f(u.uFalloff, s.falloff)
+      gl.uniform1f(u.uThickness, s.thickness)
+      gl.uniform1f(u.uBrightness, s.brightness)
+      gl.uniform1f(u.uOpacity, s.opacity)
+      gl.uniform1f(u.uMirror, s.mirror ? 1 : 0)
+      gl.uniform1f(u.uShimmer, s.shimmer && !reduced ? 1 : 0)
+      gl.uniform1f(u.uDepth, s.depth)
+      gl.uniform1f(u.uPulses, s.pulses)
+      gl.uniform1f(u.uFade, s.fade)
+      gl.uniform1f(u.uGrain, s.grain)
+      colorData.fill(0)
+      s.palette.slice(0, MAX_COLORS).forEach((rgb, index) => colorData.set(rgb, index * 3))
+      gl.uniform3fv(u.uColors, colorData)
+      gl.uniform1i(u.uColorCount, Math.min(s.palette.length, MAX_COLORS))
+      gl.uniform3f(u.uCore, s.core[0], s.core[1], s.core[2])
+      const paperColor = s.paper ?? [0, 0, 0]
+      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2])
+      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0)
+      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0)
+      gl.uniform4f(u.uIntro, introClock, staggerFor(s.count), STROKE_SECONDS, introRunning ? 1 : 0)
+      gl.uniform1fv(u.uFocus, focus)
+      gl.uniform2f(u.uFocusState, state.presence * (0.4 + 0.6 * s.mouseStrength), state.settle)
+      surgeData.fill(0)
       state.surges.slice(-MAX_SURGES).forEach((surge, index) => {
-        surgeData.set([surge.x, state.clock - surge.at, surge.direction, 1], index * 4);
-      });
-      gl.uniform4fv(u.uSurges, surgeData);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        surgeData.set([surge.x, state.clock - surge.at, surge.direction, 1], index * 4)
+      })
+      gl.uniform4fv(u.uSurges, surgeData)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const tick = (now: number) => {
-      state.raf = requestAnimationFrame(tick);
+      state.raf = requestAnimationFrame(tick)
       if (!state.visible || document.hidden) {
-        state.last = now;
-        return;
+        state.last = now
+        return
       }
-      const s = settings();
-      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 1 / 60;
-      state.last = now;
-      const reduced = prefersReduced();
-      state.clock += dt;
-      if (state.introAt < 0) state.introAt = state.clock;
-      if (!s.paused && !reduced) state.phase += dt * s.speed;
-      const focusing = updateFocus(s, dt, reduced);
+      const s = settings()
+      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 1 / 60
+      state.last = now
+      const reduced = prefersReduced()
+      state.clock += dt
+      if (state.introAt < 0) state.introAt = state.clock
+      if (!s.paused && !reduced) state.phase += dt * s.speed
+      const focusing = updateFocus(s, dt, reduced)
       state.surges = state.surges.filter(
-        surge => state.clock - surge.at < SURGE_SECONDS + (s.count - 1) * SURGE_STAGGER
-      );
+        surge => state.clock - surge.at < SURGE_SECONDS + (s.count - 1) * SURGE_STAGGER,
+      )
 
-      const still = s.paused || reduced;
+      const still = s.paused || reduced
       const transient =
-        state.surges.length > 0 || (s.intro && !reduced && state.clock - state.introAt < introLength(s)) || focusing;
-      if (state.seen !== s || transient || !still) state.quiet = 0;
-      else state.quiet += 1;
-      state.seen = s;
-      if (state.quiet > 3) return;
+        state.surges.length > 0 ||
+        (s.intro && !reduced && state.clock - state.introAt < introLength(s)) ||
+        focusing
+      if (state.seen !== s || transient || !still) state.quiet = 0
+      else state.quiet += 1
+      state.seen = s
+      if (state.quiet > 3) return
 
-      resize();
-      render(reduced);
-    };
+      resize()
+      render(reduced)
+    }
 
     const local = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
+      const rect = container.getBoundingClientRect()
       return {
         x: (event.clientX - rect.left) / Math.max(rect.width, 1),
         y: (event.clientY - rect.top) / Math.max(rect.height, 1),
@@ -680,63 +688,63 @@ export default function WebThreads(props: WebThreadsProps) {
           event.clientX >= rect.left &&
           event.clientX <= rect.right &&
           event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-      };
-    };
+          event.clientY <= rect.bottom,
+      }
+    }
 
     const onMove = (event: PointerEvent) => {
-      const point = local(event);
-      state.inside = point.inside;
-      if (point.inside) state.pointer = [point.x, point.y];
-    };
+      const point = local(event)
+      state.inside = point.inside
+      if (point.inside) state.pointer = [point.x, point.y]
+    }
 
     const onLeave = () => {
-      state.inside = false;
-    };
+      state.inside = false
+    }
 
     const onDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.pulseOnClick || event.button !== 0 || prefersReduced()) return;
+      const s = settings()
+      if (!s.pulseOnClick || event.button !== 0 || prefersReduced()) return
       if (
         event.target instanceof Element &&
         event.target.closest('a, button, input, textarea, select, label, [role="button"]')
       )
-        return;
-      const point = local(event);
-      if (!point.inside) return;
-      const aspect = state.width / Math.max(state.height, 1);
-      const [x] = toThreadSpace([point.x, point.y], aspect, s.angle);
-      const direction = x <= s.pinch ? 1 : -1;
-      state.surges.push({ x, direction, at: state.clock });
-      if (state.surges.length > MAX_SURGES) state.surges.shift();
-    };
+        return
+      const point = local(event)
+      if (!point.inside) return
+      const aspect = state.width / Math.max(state.height, 1)
+      const [x] = toThreadSpace([point.x, point.y], aspect, s.angle)
+      const direction = x <= s.pinch ? 1 : -1
+      state.surges.push({ x, direction, at: state.clock })
+      if (state.surges.length > MAX_SURGES) state.surges.shift()
+    }
 
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-    });
-    visibility.observe(container);
-    const sizes = new ResizeObserver(resize);
-    sizes.observe(container);
-    resize();
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onDown);
-    document.documentElement.addEventListener('pointerleave', onLeave);
-    state.raf = requestAnimationFrame(tick);
+      state.visible = entries.some(entry => entry.isIntersecting)
+    })
+    visibility.observe(container)
+    const sizes = new ResizeObserver(resize)
+    sizes.observe(container)
+    resize()
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown)
+    document.documentElement.addEventListener('pointerleave', onLeave)
+    state.raf = requestAnimationFrame(tick)
 
     onCleanup(() => {
-      cancelAnimationFrame(state.raf);
-      visibility.disconnect();
-      sizes.disconnect();
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerdown', onDown);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      gl.deleteProgram(program);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      canvas.remove();
-    });
-  });
+      cancelAnimationFrame(state.raf)
+      visibility.disconnect()
+      sizes.disconnect()
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
+      gl.deleteProgram(program)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.remove()
+    })
+  })
 
   // The tick loop reads the settings memo fresh every frame; its
   // `state.seen !== s` identity check re-renders (and un-quiets) on prop
@@ -748,5 +756,5 @@ export default function WebThreads(props: WebThreadsProps) {
       class={[ROOT, props.class, props.className].filter(Boolean).join(' ')}
       style={props.style}
     />
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import LaserFlow from './LaserFlow';
+import LaserFlow from './LaserFlow'
 
 function LaserFlowDemo() {
   return (
@@ -8,7 +8,7 @@ function LaserFlowDemo() {
         Laser flow
       </div>
     </div>
-  );
+  )
 }
 
-export default LaserFlowDemo;
+export default LaserFlowDemo

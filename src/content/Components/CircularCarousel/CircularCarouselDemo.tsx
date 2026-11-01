@@ -1,6 +1,6 @@
-import { createSignal } from 'solid-js';
-import CircularCarousel from './CircularCarousel';
-import type { CircularCarouselItem } from './CircularCarousel';
+import { createSignal } from 'solid-js'
+import CircularCarousel from './CircularCarousel'
+import type { CircularCarouselItem } from './CircularCarousel'
 
 const ITEMS: CircularCarouselItem[] = [
   { src: 'https://picsum.photos/seed/ring-1/700/700', title: 'Valley', subtitle: 'Landscape' },
@@ -10,17 +10,19 @@ const ITEMS: CircularCarouselItem[] = [
   { src: 'https://picsum.photos/seed/ring-5/700/700', title: 'Facade', subtitle: 'Architecture' },
   { src: 'https://picsum.photos/seed/ring-6/700/700', title: 'Night', subtitle: 'Sky' },
   { src: 'https://picsum.photos/seed/ring-7/700/700', title: 'Mirror', subtitle: 'Landscape' },
-  { src: 'https://picsum.photos/seed/ring-8/700/700', title: 'Street', subtitle: 'Editorial' }
-];
+  { src: 'https://picsum.photos/seed/ring-8/700/700', title: 'Street', subtitle: 'Editorial' },
+]
 
 function CircularCarouselDemo() {
-  const [active, setActive] = createSignal(0);
+  const [active, setActive] = createSignal(0)
   return (
     <div class="h-96 w-full bg-gray-950">
       <CircularCarousel items={ITEMS} preset="cylinder" captions onChange={setActive} />
-      <p class="text-center text-xs text-white/40">front: {active() + 1} / {ITEMS.length} — drag or scroll</p>
+      <p class="text-center text-xs text-white/40">
+        front: {active() + 1} / {ITEMS.length} — drag or scroll
+      </p>
     </div>
-  );
+  )
 }
 
-export default CircularCarouselDemo;
+export default CircularCarouselDemo

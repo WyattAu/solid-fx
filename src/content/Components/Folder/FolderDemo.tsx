@@ -1,4 +1,4 @@
-import Folder from './Folder';
+import Folder from './Folder'
 
 function FolderDemo() {
   return (
@@ -10,7 +10,7 @@ function FolderDemo() {
         items={[{ title: 'Brand guidelines' }, { title: 'Launch plan' }, { title: 'Moodboard' }]}
       />
     </div>
-  );
+  )
 }
 
-export default FolderDemo;
+export default FolderDemo

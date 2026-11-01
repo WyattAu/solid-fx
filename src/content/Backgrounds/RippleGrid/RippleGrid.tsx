@@ -1,70 +1,74 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type RippleGridVariant = 'lines' | 'dots' | 'cross';
-export type RippleGridAutoRipple = 'center' | 'random' | 'none';
+export type RippleGridVariant = 'lines' | 'dots' | 'cross'
+export type RippleGridAutoRipple = 'center' | 'random' | 'none'
 
-export interface RippleGridProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'style' | 'ref' | 'children'> {
-  color?: string;
-  variant?: RippleGridVariant;
-  cellSize?: number;
-  lineWidth?: number;
-  glow?: number;
-  rippleStrength?: number;
-  rippleSpeed?: number;
-  rippleSize?: number;
-  autoRipple?: RippleGridAutoRipple;
-  rippleInterval?: number;
-  tilt?: number;
-  rotation?: number;
-  mouseInteraction?: boolean;
-  clickRipple?: boolean;
-  intro?: boolean;
-  fade?: number;
-  opacity?: number;
-  lightMode?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+export interface RippleGridProps
+  extends Omit<
+    JSX.HTMLAttributes<HTMLDivElement>,
+    'class' | 'className' | 'style' | 'ref' | 'children'
+  > {
+  color?: string
+  variant?: RippleGridVariant
+  cellSize?: number
+  lineWidth?: number
+  glow?: number
+  rippleStrength?: number
+  rippleSpeed?: number
+  rippleSize?: number
+  autoRipple?: RippleGridAutoRipple
+  rippleInterval?: number
+  tilt?: number
+  rotation?: number
+  mouseInteraction?: boolean
+  clickRipple?: boolean
+  intro?: boolean
+  fade?: number
+  opacity?: number
+  lightMode?: boolean
+  paused?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  color: string;
-  variant: number;
-  cellSize: number;
-  lineWidth: number;
-  glow: number;
-  rippleStrength: number;
-  rippleSpeed: number;
-  rippleSize: number;
-  autoRipple: RippleGridAutoRipple;
-  rippleInterval: number;
-  tilt: number;
-  rotation: number;
-  mouseInteraction: boolean;
-  clickRipple: boolean;
-  intro: boolean;
-  fade: number;
-  opacity: number;
-  lightMode: boolean;
-  paused: boolean;
-  dpr?: number;
-};
+  color: string
+  variant: number
+  cellSize: number
+  lineWidth: number
+  glow: number
+  rippleStrength: number
+  rippleSpeed: number
+  rippleSize: number
+  autoRipple: RippleGridAutoRipple
+  rippleInterval: number
+  tilt: number
+  rotation: number
+  mouseInteraction: boolean
+  clickRipple: boolean
+  intro: boolean
+  fade: number
+  opacity: number
+  lightMode: boolean
+  paused: boolean
+  dpr?: number
+}
 
-type Ripple = { x: number; y: number; born: number; strength: number };
+type Ripple = { x: number; y: number; born: number; strength: number }
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-const MAX_RIPPLES = 12;
-const VARIANTS: Record<string, number> = { lines: 0, dots: 1, cross: 2 };
+const MAX_RIPPLES = 12
+const VARIANTS: Record<string, number> = { lines: 0, dots: 1, cross: 2 }
 
 const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const FRAGMENT = `#version 300 es
 precision highp float;
@@ -177,51 +181,51 @@ void main() {
     vec3 color = mix(uColor, vec3(1.0), clamp(level - 0.7, 0.0, 1.0));
     outColor = vec4(color * alpha, alpha);
   }
-}`;
+}`
 
-const INTRO_SECONDS = 1.6;
+const INTRO_SECONDS = 1.6
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name.replace('[0]', '')] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 export const RippleGrid = (props: RippleGridProps) => {
-  const [own, rest] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = createMemo(
     (): Settings => ({
@@ -244,292 +248,306 @@ export const RippleGrid = (props: RippleGridProps) => {
       opacity: clamp(props.opacity ?? 1, 0, 1),
       lightMode: props.lightMode ?? false,
       paused: props.paused ?? false,
-      dpr: props.dpr
-    })
-  );
+      dpr: props.dpr,
+    }),
+  )
 
   onMount(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
+    const container = containerRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return;
+      stencil: false,
+    })
+    if (!container || !canvas || !gl) return
 
-    const program = link(gl);
-    if (!program) return;
-    const u = program.uniforms;
+    const program = link(gl)
+    if (!program) return
+    const u = program.uniforms
 
-    const buffer = gl.createBuffer();
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const buffer = gl.createBuffer()
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const colorCache = new Map<string, number[]>();
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const colorCache = new Map<string, number[]>()
     const toLinear = (value: string): number[] => {
-      const cached = colorCache.get(value);
-      if (cached) return cached;
-      let rgb = [1, 1, 1];
+      const cached = colorCache.get(value)
+      if (cached) return cached
+      let rgb = [1, 1, 1]
       if (probe) {
-        probe.clearRect(0, 0, 1, 1);
-        probe.fillStyle = '#ffffff';
-        probe.fillStyle = value;
-        probe.fillRect(0, 0, 1, 1);
-        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-        rgb = [r, g, b].map(v => Math.pow(v / 255, 2.2));
+        probe.clearRect(0, 0, 1, 1)
+        probe.fillStyle = '#ffffff'
+        probe.fillStyle = value
+        probe.fillRect(0, 0, 1, 1)
+        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+        rgb = [r, g, b].map(v => (v / 255) ** 2.2)
       }
-      colorCache.set(value, rgb);
-      return rgb;
-    };
+      colorCache.set(value, rgb)
+      return rgb
+    }
 
-    const view = { width: 1, height: 1, ratio: 1 };
-    const pointer = { x: 0, y: 0, inside: false, planeX: 0, planeY: 0, lastX: 0, lastY: 0, travel: 0 };
-    const state = { clock: 0, intro: settings().intro && !reduce ? 0 : 1, glow: 0, nextAuto: 0.4 };
-    const ripples: Ripple[] = [];
-    const packed = new Float32Array(MAX_RIPPLES * 4);
-    let raf = 0;
-    let last = 0;
-    let visible = true;
+    const view = { width: 1, height: 1, ratio: 1 }
+    const pointer = {
+      x: 0,
+      y: 0,
+      inside: false,
+      planeX: 0,
+      planeY: 0,
+      lastX: 0,
+      lastY: 0,
+      travel: 0,
+    }
+    const state = { clock: 0, intro: settings().intro && !reduce ? 0 : 1, glow: 0, nextAuto: 0.4 }
+    const ripples: Ripple[] = []
+    const packed = new Float32Array(MAX_RIPPLES * 4)
+    let raf = 0
+    let last = 0
+    let visible = true
 
-    const focalOf = () => view.height * 1.15;
+    const focalOf = () => view.height * 1.15
 
     const toPlane = (x: number, y: number): [number, number] | null => {
-      const s = settings();
-      const sx = x - view.width / 2;
-      const sy = y - view.height / 2;
-      const tilt = (s.tilt * Math.PI) / 180;
-      if (tilt <= 0.0001) return [sx, sy];
-      const focal = focalOf();
-      const depth = focal + sy * Math.tan(tilt);
-      if (depth <= focal * 0.05) return null;
-      const scale = focal / depth;
-      return [sx * scale, (sy * scale) / Math.cos(tilt)];
-    };
+      const s = settings()
+      const sx = x - view.width / 2
+      const sy = y - view.height / 2
+      const tilt = (s.tilt * Math.PI) / 180
+      if (tilt <= 0.0001) return [sx, sy]
+      const focal = focalOf()
+      const depth = focal + sy * Math.tan(tilt)
+      if (depth <= focal * 0.05) return null
+      const scale = focal / depth
+      return [sx * scale, (sy * scale) / Math.cos(tilt)]
+    }
 
     const spawn = (x: number, y: number, strength: number) => {
-      ripples.push({ x, y, born: state.clock, strength });
-      if (ripples.length > MAX_RIPPLES) ripples.shift();
-    };
+      ripples.push({ x, y, born: state.clock, strength })
+      if (ripples.length > MAX_RIPPLES) ripples.shift()
+    }
 
     const render = () => {
-      const s = settings();
-      const presence = state.intro * state.intro * (3 - 2 * state.intro);
-      const waveLength = s.cellSize * 2.4 * s.rippleSize;
-      const waveSpeed = 240 * s.rippleSpeed;
-      let count = 0;
+      const s = settings()
+      const presence = state.intro * state.intro * (3 - 2 * state.intro)
+      const waveLength = s.cellSize * 2.4 * s.rippleSize
+      const waveSpeed = 240 * s.rippleSpeed
+      let count = 0
       for (let i = ripples.length - 1; i >= 0 && count < MAX_RIPPLES; i--) {
-        const r = ripples[i];
-        const age = state.clock - r.born;
-        packed[count * 4] = r.x;
-        packed[count * 4 + 1] = r.y;
-        packed[count * 4 + 2] = age;
-        packed[count * 4 + 3] = r.strength * Math.exp(-age * 0.55);
-        count++;
+        const r = ripples[i]
+        const age = state.clock - r.born
+        packed[count * 4] = r.x
+        packed[count * 4 + 1] = r.y
+        packed[count * 4 + 2] = age
+        packed[count * 4 + 3] = r.strength * Math.exp(-age * 0.55)
+        count++
       }
-      const angle = (s.rotation * Math.PI) / 180;
-      const tint = toLinear(s.color);
-      const tone = 0.2126 * tint[0] + 0.7152 * tint[1] + 0.0722 * tint[2];
-      const depth = Math.min(1, 0.12 / Math.max(tone, 0.001));
-      const ink = tint.map(v => Math.pow(Math.min(1, v * depth), 1 / 2.2));
-      const diagonal = Math.hypot(view.width, view.height);
+      const angle = (s.rotation * Math.PI) / 180
+      const tint = toLinear(s.color)
+      const tone = 0.2126 * tint[0] + 0.7152 * tint[1] + 0.0722 * tint[2]
+      const depth = Math.min(1, 0.12 / Math.max(tone, 0.001))
+      const ink = tint.map(v => Math.min(1, v * depth) ** (1 / 2.2))
+      const diagonal = Math.hypot(view.width, view.height)
 
-      gl.bindVertexArray(vao);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(program.program);
-      gl.uniform2f(u.uView, view.width, view.height);
-      gl.uniform1f(u.uRatio, view.ratio);
-      gl.uniform1f(u.uCell, s.cellSize);
-      gl.uniform1f(u.uLineWidth, s.lineWidth);
-      gl.uniform1f(u.uGlow, s.glow);
-      gl.uniform1f(u.uTilt, (s.tilt * Math.PI) / 180);
-      gl.uniform1f(u.uFocal, focalOf());
-      gl.uniform2f(u.uTurn, Math.cos(angle), Math.sin(angle));
-      gl.uniform4fv(u.uRipples, packed);
-      gl.uniform1i(u.uRippleCount, count);
-      gl.uniform1f(u.uWaveLength, waveLength);
-      gl.uniform1f(u.uWaveSpeed, waveSpeed);
-      gl.uniform1f(u.uStrength, s.rippleStrength);
-      gl.uniform3f(u.uPointer, pointer.planeX, pointer.planeY, state.glow);
+      gl.bindVertexArray(vao)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(program.program)
+      gl.uniform2f(u.uView, view.width, view.height)
+      gl.uniform1f(u.uRatio, view.ratio)
+      gl.uniform1f(u.uCell, s.cellSize)
+      gl.uniform1f(u.uLineWidth, s.lineWidth)
+      gl.uniform1f(u.uGlow, s.glow)
+      gl.uniform1f(u.uTilt, (s.tilt * Math.PI) / 180)
+      gl.uniform1f(u.uFocal, focalOf())
+      gl.uniform2f(u.uTurn, Math.cos(angle), Math.sin(angle))
+      gl.uniform4fv(u.uRipples, packed)
+      gl.uniform1i(u.uRippleCount, count)
+      gl.uniform1f(u.uWaveLength, waveLength)
+      gl.uniform1f(u.uWaveSpeed, waveSpeed)
+      gl.uniform1f(u.uStrength, s.rippleStrength)
+      gl.uniform3f(u.uPointer, pointer.planeX, pointer.planeY, state.glow)
       gl.uniform3fv(
         u.uColor,
-        tint.map(v => Math.pow(v, 1 / 2.2))
-      );
-      gl.uniform3fv(u.uInk, ink);
-      gl.uniform1f(u.uPresence, Math.min(1, presence * 1.6));
-      gl.uniform1f(u.uReveal, s.intro && !reduce ? presence * diagonal * 1.4 + s.cellSize * 4 : 1e6);
-      gl.uniform1f(u.uFade, s.fade);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0);
-      gl.uniform1i(u.uVariant, s.variant);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        tint.map(v => v ** (1 / 2.2)),
+      )
+      gl.uniform3fv(u.uInk, ink)
+      gl.uniform1f(u.uPresence, Math.min(1, presence * 1.6))
+      gl.uniform1f(u.uReveal, s.intro && !reduce ? presence * diagonal * 1.4 + s.cellSize * 4 : 1e6)
+      gl.uniform1f(u.uFade, s.fade)
+      gl.uniform1f(u.uOpacity, s.opacity)
+      gl.uniform1f(u.uLightMode, s.lightMode ? 1 : 0)
+      gl.uniform1i(u.uVariant, s.variant)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settings();
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
-      const moving = !s.paused && !reduce;
-      if (moving) state.clock += dt;
-      if (!s.intro || reduce) state.intro = 1;
-      else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS);
+      raf = 0
+      if (!visible || document.hidden) return
+      const s = settings()
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      const moving = !s.paused && !reduce
+      if (moving) state.clock += dt
+      if (!s.intro || reduce) state.intro = 1
+      else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS)
 
       if (moving && s.autoRipple !== 'none' && state.clock >= state.nextAuto) {
         if (s.autoRipple === 'random') {
-          const spot = toPlane(Math.random() * view.width, view.height * (0.2 + Math.random() * 0.7));
-          if (spot) spawn(spot[0], spot[1], 0.75);
+          const spot = toPlane(
+            Math.random() * view.width,
+            view.height * (0.2 + Math.random() * 0.7),
+          )
+          if (spot) spawn(spot[0], spot[1], 0.75)
         } else {
-          spawn(0, 0, 1);
+          spawn(0, 0, 1)
         }
-        state.nextAuto = state.clock + s.rippleInterval;
+        state.nextAuto = state.clock + s.rippleInterval
       }
-      const lifetime = 9 / Math.max(0.2, s.rippleSpeed);
-      while (ripples.length && state.clock - ripples[0].born > lifetime) ripples.shift();
+      const lifetime = 9 / Math.max(0.2, s.rippleSpeed)
+      while (ripples.length && state.clock - ripples[0].born > lifetime) ripples.shift()
 
-      const engaged = s.mouseInteraction && pointer.inside && !reduce;
-      state.glow += ((engaged ? 1 : 0) - state.glow) * (1 - Math.exp(-dt * (engaged ? 6 : 2.5)));
-      render();
+      const engaged = s.mouseInteraction && pointer.inside && !reduce
+      state.glow += ((engaged ? 1 : 0) - state.glow) * (1 - Math.exp(-dt * (engaged ? 6 : 2.5)))
+      render()
 
-      const settling = state.intro < 1 || Math.abs((engaged ? 1 : 0) - state.glow) > 0.002;
-      if (moving || settling) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+      const settling = state.intro < 1 || Math.abs((engaged ? 1 : 0) - state.glow) > 0.002
+      if (moving || settling) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    };
+      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
+    }
 
     const resize = () => {
-      const s = settings();
-      const width = Math.max(1, container.clientWidth);
-      const height = Math.max(1, container.clientHeight);
-      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      view.width = width;
-      view.height = height;
-      canvas.width = Math.max(1, Math.round(width * ratio));
-      canvas.height = Math.max(1, Math.round(height * ratio));
-      view.ratio = canvas.width / width;
-      if (!raf) render();
-      wake();
-    };
+      const s = settings()
+      const width = Math.max(1, container.clientWidth)
+      const height = Math.max(1, container.clientHeight)
+      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      view.width = width
+      view.height = height
+      canvas.width = Math.max(1, Math.round(width * ratio))
+      canvas.height = Math.max(1, Math.round(height * ratio))
+      view.ratio = canvas.width / width
+      if (!raf) render()
+      wake()
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height;
-      const spot = pointer.inside ? toPlane(x, y) : null;
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      pointer.inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+      const spot = pointer.inside ? toPlane(x, y) : null
       if (spot) {
-        const s = settings();
-        const step = Math.hypot(spot[0] - pointer.planeX, spot[1] - pointer.planeY);
-        pointer.planeX = spot[0];
-        pointer.planeY = spot[1];
+        const s = settings()
+        const step = Math.hypot(spot[0] - pointer.planeX, spot[1] - pointer.planeY)
+        pointer.planeX = spot[0]
+        pointer.planeY = spot[1]
         if (s.mouseInteraction && !reduce && step < s.cellSize * 6) {
-          pointer.travel += step;
+          pointer.travel += step
           if (pointer.travel > s.cellSize * 1.6) {
-            pointer.travel = 0;
-            spawn(spot[0], spot[1], 0.32);
+            pointer.travel = 0
+            spawn(spot[0], spot[1], 0.32)
           }
         }
       } else {
-        pointer.inside = false;
+        pointer.inside = false
       }
-      pointer.x = x;
-      pointer.y = y;
-      wake();
-    };
+      pointer.x = x
+      pointer.y = y
+      wake()
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.clickRipple || reduce) return;
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
-      const spot = toPlane(x, y);
-      if (spot) spawn(spot[0], spot[1], 1.2);
-      wake();
-    };
+      const s = settings()
+      if (!s.clickRipple || reduce) return
+      const rect = container.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return
+      const spot = toPlane(x, y)
+      if (spot) spawn(spot[0], spot[1], 1.2)
+      wake()
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wake();
-    };
+      last = 0
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    if (settings().intro && !reduce) spawn(0, 0, 1.1);
-    resize();
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    if (settings().intro && !reduce) spawn(0, 0, 1.1)
+    resize()
 
-    let lastDpr = settings().dpr;
+    let lastDpr = settings().dpr
     wakeRef = () => {
-      const s = settings();
+      const s = settings()
       if (s.dpr !== lastDpr) {
-        lastDpr = s.dpr;
-        resize();
-        return;
+        lastDpr = s.dpr
+        resize()
+        return
       }
-      if (!raf) render();
-      wake();
-    };
+      if (!raf) render()
+      wake()
+    }
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteProgram(program.program);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteProgram(program.program)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       {...rest}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default RippleGrid;
+export default RippleGrid

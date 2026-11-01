@@ -1,141 +1,150 @@
-import { createEffect, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import { animate, motionValue } from 'motion';
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
+import { animate, motionValue } from 'motion'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
-export type StatusMarkStatus = 'pending' | 'running' | 'done' | 'failed' | 'cancelled';
+export type StatusMarkStatus = 'pending' | 'running' | 'done' | 'failed' | 'cancelled'
 
 export interface StatusMarkProps {
-  status?: StatusMarkStatus;
-  progress?: number;
-  label?: JSX.Element;
-  color?: string;
-  doneColor?: string;
-  errorColor?: string;
-  size?: number;
-  strokeWidth?: number;
-  dashes?: number;
-  fontSize?: number;
-  spinDuration?: number;
-  arcLength?: number;
-  drawDuration?: number;
-  fillOpacity?: number;
-  strike?: boolean;
-  strikeDelay?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  status?: StatusMarkStatus
+  progress?: number
+  label?: JSX.Element
+  color?: string
+  doneColor?: string
+  errorColor?: string
+  size?: number
+  strokeWidth?: number
+  dashes?: number
+  fontSize?: number
+  spinDuration?: number
+  arcLength?: number
+  drawDuration?: number
+  fillOpacity?: number
+  strike?: boolean
+  strikeDelay?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-const UI = { type: 'spring' as const, duration: 0.3, bounce: 0 };
-const MORPH = { duration: 0.3, ease: [0.77, 0, 0.175, 1] as [number, number, number, number] };
-const CHECK = 'M7.5 12.25 10.5 15.25 16.75 8.75';
-const CROSS = 'M8.5 8.5 15.5 15.5M15.5 8.5 8.5 15.5';
+const UI = { type: 'spring' as const, duration: 0.3, bounce: 0 }
+const MORPH = { duration: 0.3, ease: [0.77, 0, 0.175, 1] as [number, number, number, number] }
+const CHECK = 'M7.5 12.25 10.5 15.25 16.75 8.75'
+const CROSS = 'M8.5 8.5 15.5 15.5M15.5 8.5 8.5 15.5'
 const TEXT: Record<StatusMarkStatus, string> = {
   pending: 'Pending',
   running: 'In progress',
   done: 'Completed',
   failed: 'Failed',
-  cancelled: 'Cancelled'
-};
-const IDLE_DASH = 0.3;
-const STYLE = '@keyframes sm-breathe{50%{opacity:.45}}';
+  cancelled: 'Cancelled',
+}
+const IDLE_DASH = 0.3
+const STYLE = '@keyframes sm-breathe{50%{opacity:.45}}'
 
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
 const StatusMark = (props: StatusMarkProps) => {
-  const reduce = usePrefersReducedMotion();
-  const status = () => props.status ?? 'pending';
-  const size = () => props.size ?? 20;
-  const strokeWidth = () => props.strokeWidth ?? 2;
-  const r = () => 10 - strokeWidth() / 2;
-  const C = () => 2 * Math.PI * r();
-  const P = () => C() / Math.max(1, props.dashes ?? 8);
+  const reduce = usePrefersReducedMotion()
+  const status = () => props.status ?? 'pending'
+  const size = () => props.size ?? 20
+  const strokeWidth = () => props.strokeWidth ?? 2
+  const r = () => 10 - strokeWidth() / 2
+  const C = () => 2 * Math.PI * r()
+  const P = () => C() / Math.max(1, props.dashes ?? 8)
   const determinate = () =>
-    status() === 'running' && typeof props.progress === 'number' && Number.isFinite(props.progress);
-  const indeterminate = () => status() === 'running' && !determinate();
-  const solid = () => status() === 'running' || status() === 'done' || status() === 'failed';
+    status() === 'running' && typeof props.progress === 'number' && Number.isFinite(props.progress)
+  const indeterminate = () => status() === 'running' && !determinate()
+  const solid = () => status() === 'running' || status() === 'done' || status() === 'failed'
   const targetArc = () =>
-    indeterminate() ? (props.arcLength ?? 0.68) : determinate() ? clamp01(props.progress as number) : 1;
+    indeterminate()
+      ? (props.arcLength ?? 0.68)
+      : determinate()
+        ? clamp01(props.progress as number)
+        : 1
 
-  const mode = motionValue(solid() ? 1 : 0);
-  const arc = motionValue(targetArc());
-  const travel = motionValue(0);
-  let ringEl!: SVGCircleElement;
-  let gen = 0;
+  const mode = motionValue(solid() ? 1 : 0)
+  const arc = motionValue(targetArc())
+  const travel = motionValue(0)
+  let ringEl!: SVGCircleElement
+  let gen = 0
 
   const writeDash = () => {
-    const m = mode.get();
-    const a = arc.get();
-    const c = C();
-    const p = P();
-    const dash = IDLE_DASH * p + (a * c - IDLE_DASH * p) * m;
-    const gap = (1 - IDLE_DASH) * p + ((1 - a) * c - (1 - IDLE_DASH) * p) * m;
-    ringEl?.setAttribute('stroke-dasharray', `${Math.max(0, dash)} ${Math.max(0, gap)}`);
-  };
+    const m = mode.get()
+    const a = arc.get()
+    const c = C()
+    const p = P()
+    const dash = IDLE_DASH * p + (a * c - IDLE_DASH * p) * m
+    const gap = (1 - IDLE_DASH) * p + ((1 - a) * c - (1 - IDLE_DASH) * p) * m
+    ringEl?.setAttribute('stroke-dasharray', `${Math.max(0, dash)} ${Math.max(0, gap)}`)
+  }
 
   // Upstream: useLayoutEffect on [C, P] — writeDash tracks C()/P() via props.
   createEffect(() => {
-    writeDash();
-    ringEl?.setAttribute('stroke-dashoffset', String(travel.get()));
-  });
+    writeDash()
+    ringEl?.setAttribute('stroke-dashoffset', String(travel.get()))
+  })
 
   onMount(() => {
     const offs = [
       mode.on('change', writeDash),
       arc.on('change', writeDash),
-      travel.on('change', (v: number) => ringEl?.setAttribute('stroke-dashoffset', String(v)))
-    ];
+      travel.on('change', (v: number) => ringEl?.setAttribute('stroke-dashoffset', String(v))),
+    ]
     onCleanup(() => {
-      offs.forEach(off => off());
-      mode.stop();
-      arc.stop();
-      travel.stop();
-    });
-  });
+      offs.forEach(off => off())
+      mode.stop()
+      arc.stop()
+      travel.stop()
+    })
+  })
 
   createEffect(() => {
     // Upstream deps: [status, determinate, targetArc, reduce, C, P, spinDuration]
-    const determinateNow = determinate();
-    const targetArcNow = targetArc();
-    const reducedNow = reduce();
-    const circumference = C();
-    const perimeter = P();
-    const spinMs = props.spinDuration ?? 1100;
-    const genAtStart = ++gen;
+    const determinateNow = determinate()
+    const targetArcNow = targetArc()
+    const reducedNow = reduce()
+    const circumference = C()
+    const perimeter = P()
+    const spinMs = props.spinDuration ?? 1100
+    const genAtStart = ++gen
 
     if (reducedNow) {
-      mode.jump(solid() ? 1 : 0);
-      arc.jump(targetArcNow);
-      travel.jump(0);
-      return;
+      mode.jump(solid() ? 1 : 0)
+      arc.jump(targetArcNow)
+      travel.jump(0)
+      return
     }
-    if (mode.get() === 0) arc.jump(targetArcNow);
+    if (mode.get() === 0) arc.jump(targetArcNow)
 
-    const controls = [animate(mode, solid() ? 1 : 0, MORPH), animate(arc, targetArcNow, UI)];
+    const controls = [animate(mode, solid() ? 1 : 0, MORPH), animate(arc, targetArcNow, UI)]
     if (indeterminate()) {
-      const t0 = travel.get();
+      const t0 = travel.get()
       controls.push(
-        animate(travel, [t0, t0 - circumference], { duration: spinMs / 1000, ease: 'linear', repeat: Infinity })
-      );
+        animate(travel, [t0, t0 - circumference], {
+          duration: spinMs / 1000,
+          ease: 'linear',
+          repeat: Infinity,
+        }),
+      )
     } else {
-      const unit = determinateNow ? circumference : perimeter;
-      const to = Math.floor(travel.get() / unit) * unit;
-      const tween = animate(travel, to, UI);
-      controls.push(tween);
+      const unit = determinateNow ? circumference : perimeter
+      const to = Math.floor(travel.get() / unit) * unit
+      const tween = animate(travel, to, UI)
+      controls.push(tween)
       tween.then(() => {
-        if (gen === genAtStart) travel.jump(0);
-      });
+        if (gen === genAtStart) travel.jump(0)
+      })
     }
-    onCleanup(() => controls.forEach(control => control.stop()));
-  });
+    onCleanup(() => controls.forEach(control => control.stop()))
+  })
 
   const spoken = () =>
-    TEXT[status()] + (determinate() ? `, ${Math.round(clamp01(props.progress as number) * 100)}%` : '');
-  const hasLabel = () => props.label !== undefined && props.label !== null;
+    TEXT[status()] +
+    (determinate() ? `, ${Math.round(clamp01(props.progress as number) * 100)}%` : '')
+  const hasLabel = () => props.label !== undefined && props.label !== null
 
   return (
     <span
@@ -154,7 +163,7 @@ const StatusMark = (props: StatusMarkProps) => {
         '--sm-draw': `${props.drawDuration ?? 240}ms`,
         '--sm-strike-delay': `${120 + (props.strikeDelay ?? 60)}ms`,
         '--sm-check-delay': '120ms',
-        ...props.style
+        ...props.style,
       }}
     >
       <style>{STYLE}</style>
@@ -204,7 +213,7 @@ const StatusMark = (props: StatusMarkProps) => {
         </span>
       ) : null}
     </span>
-  );
-};
+  )
+}
 
-export default StatusMark;
+export default StatusMark

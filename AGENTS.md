@@ -25,15 +25,15 @@ the library itself.
 
 Install with `bun install`. Every verb is `bun run <script>` or `make <verb>`.
 
-| Verb | Meaning |
-| --- | --- |
-| `make build` | gen:index → gen:docs → tsc --noEmit → astro build |
-| `make test` | vitest (barrel smoke test) |
-| `make lint` | biome lint |
-| `make fmt` / `make fmt-check` | biome format |
-| `make coverage` | vitest --coverage |
-| `make contract` | React-free + layering oracle over `src/content` (`scripts/check-contract.sh`) |
-| `make ci` | build + test + fmt-check + lint + contract |
+| Verb                          | Meaning                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------- |
+| `make build`                  | gen:index → gen:docs → tsc --noEmit → astro build                             |
+| `make test`                   | vitest (barrel smoke test)                                                    |
+| `make lint`                   | biome lint                                                                    |
+| `make fmt` / `make fmt-check` | biome format                                                                  |
+| `make coverage`               | vitest --coverage                                                             |
+| `make contract`               | React-free + layering oracle over `src/content` (`scripts/check-contract.sh`) |
+| `make ci`                     | build + test + fmt-check + lint + contract                                    |
 
 ## Rules
 

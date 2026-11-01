@@ -1,4 +1,4 @@
-import FolderFloat from './FolderFloat';
+import FolderFloat from './FolderFloat'
 
 function FolderFloatDemo() {
   return (
@@ -11,7 +11,7 @@ function FolderFloatDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default FolderFloatDemo;
+export default FolderFloatDemo

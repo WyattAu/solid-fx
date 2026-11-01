@@ -1,4 +1,4 @@
-import GlowCursor from './GlowCursor';
+import GlowCursor from './GlowCursor'
 
 function GlowCursorDemo() {
   return (
@@ -12,7 +12,7 @@ function GlowCursorDemo() {
         </div>
       </GlowCursor>
     </div>
-  );
+  )
 }
 
-export default GlowCursorDemo;
+export default GlowCursorDemo

@@ -1,60 +1,64 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type PlasmaDirection = 'forward' | 'reverse' | 'pingpong';
+export type PlasmaDirection = 'forward' | 'reverse' | 'pingpong'
 
-export interface PlasmaProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'class' | 'className' | 'style' | 'ref' | 'children'> {
-  color?: string;
-  speed?: number;
-  direction?: PlasmaDirection;
-  scale?: number;
-  twist?: number;
-  wave?: number;
-  softness?: number;
-  shine?: number;
-  brightness?: number;
-  grain?: number;
-  quality?: number;
-  mouseInteractive?: boolean;
-  intro?: boolean;
-  fade?: number;
-  opacity?: number;
-  lightMode?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+export interface PlasmaProps
+  extends Omit<
+    JSX.HTMLAttributes<HTMLDivElement>,
+    'class' | 'className' | 'style' | 'ref' | 'children'
+  > {
+  color?: string
+  speed?: number
+  direction?: PlasmaDirection
+  scale?: number
+  twist?: number
+  wave?: number
+  softness?: number
+  shine?: number
+  brightness?: number
+  grain?: number
+  quality?: number
+  mouseInteractive?: boolean
+  intro?: boolean
+  fade?: number
+  opacity?: number
+  lightMode?: boolean
+  paused?: boolean
+  dpr?: number
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  color: string;
-  speed: number;
-  direction: PlasmaDirection;
-  scale: number;
-  twist: number;
-  wave: number;
-  softness: number;
-  shine: number;
-  brightness: number;
-  grain: number;
-  quality: number;
-  mouseInteractive: boolean;
-  intro: boolean;
-  fade: number;
-  opacity: number;
-  lightMode: boolean;
-  paused: boolean;
-  dpr?: number;
-};
+  color: string
+  speed: number
+  direction: PlasmaDirection
+  scale: number
+  twist: number
+  wave: number
+  softness: number
+  shine: number
+  brightness: number
+  grain: number
+  quality: number
+  mouseInteractive: boolean
+  intro: boolean
+  fade: number
+  opacity: number
+  lightMode: boolean
+  paused: boolean
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
 const QUAD_VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
 const VOLUME = `#version 300 es
 precision highp float;
@@ -106,7 +110,7 @@ void main() {
   vec2 encoded = sqrt(vec2(density, band) / (1.0 + vec2(density, band)));
   encoded += (vec2(hash(gl_FragCoord.xy), hash(gl_FragCoord.yx + 17.0)) - 0.5) * uDither;
   outColor = vec4(encoded, 0.0, 1.0);
-}`;
+}`
 
 const COMPOSITE = `#version 300 es
 precision highp float;
@@ -166,52 +170,52 @@ void main() {
     color = clamp(color + grain * level, 0.0, 1.0) * mask;
     outColor = vec4(color, max(color.r, max(color.g, color.b)));
   }
-}`;
+}`
 
-const INTRO_SECONDS = 1.6;
-const MAX_VOLUME_PIXELS = 1600000;
+const INTRO_SECONDS = 1.6
+const MAX_VOLUME_PIXELS = 1600000
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, QUAD_VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.bindAttribLocation(program, 0, 'aPosition');
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, QUAD_VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.bindAttribLocation(program, 0, 'aPosition')
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name);
+    const info = gl.getActiveUniform(program, i)
+    if (info) uniforms[info.name] = gl.getUniformLocation(program, info.name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 export const Plasma = (props: PlasmaProps) => {
-  const [own, rest] = splitProps(props, ['class', 'className', 'style']);
-  let containerRef!: HTMLDivElement;
-  let canvasRef!: HTMLCanvasElement;
-  let wakeRef: (() => void) | null = null;
+  const [own, rest] = splitProps(props, ['class', 'className', 'style'])
+  let containerRef!: HTMLDivElement
+  let canvasRef!: HTMLCanvasElement
+  let wakeRef: (() => void) | null = null
 
   const settings = createMemo(
     (): Settings => ({
@@ -232,79 +236,79 @@ export const Plasma = (props: PlasmaProps) => {
       opacity: clamp(props.opacity ?? 1, 0, 1),
       lightMode: props.lightMode ?? false,
       paused: props.paused ?? false,
-      dpr: props.dpr
-    })
-  );
+      dpr: props.dpr,
+    }),
+  )
 
   onMount(() => {
-    const container = containerRef;
-    const canvas = canvasRef;
+    const container = containerRef
+    const canvas = canvasRef
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
       stencil: false,
-      powerPreference: 'high-performance'
-    });
-    if (!container || !canvas || !gl) return;
+      powerPreference: 'high-performance',
+    })
+    if (!container || !canvas || !gl) return
 
-    const floatTargets = !!gl.getExtension('EXT_color_buffer_float');
-    const volumeProgram = link(gl, VOLUME);
-    const compositeProgram = link(gl, COMPOSITE);
-    if (!volumeProgram || !compositeProgram) return;
-    const programs = { volume: volumeProgram, composite: compositeProgram };
+    const floatTargets = !!gl.getExtension('EXT_color_buffer_float')
+    const volumeProgram = link(gl, VOLUME)
+    const compositeProgram = link(gl, COMPOSITE)
+    if (!volumeProgram || !compositeProgram) return
+    const programs = { volume: volumeProgram, composite: compositeProgram }
 
-    const buffer = gl.createBuffer();
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+    const buffer = gl.createBuffer()
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
 
-    const texture = gl.createTexture();
-    const framebuffer = gl.createFramebuffer();
-    const target = { width: 0, height: 0 };
+    const texture = gl.createTexture()
+    const framebuffer = gl.createFramebuffer()
+    const target = { width: 0, height: 0 }
     const sizeTarget = (width: number, height: number) => {
-      if (target.width === width && target.height === height) return;
-      target.width = width;
-      target.height = height;
-      gl.bindTexture(gl.TEXTURE_2D, texture);
+      if (target.width === width && target.height === height) return
+      target.width = width
+      target.height = height
+      gl.bindTexture(gl.TEXTURE_2D, texture)
       if (floatTargets) {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, width, height, 0, gl.RGBA, gl.HALF_FLOAT, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, width, height, 0, gl.RGBA, gl.HALF_FLOAT, null)
       } else {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
       }
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-    };
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0)
+    }
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const colorCache = new Map<string, number[]>();
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const colorCache = new Map<string, number[]>()
     const toLinear = (value: string): number[] => {
-      const cached = colorCache.get(value);
-      if (cached) return cached;
-      let rgb = [1, 1, 1];
+      const cached = colorCache.get(value)
+      if (cached) return cached
+      let rgb = [1, 1, 1]
       if (probe) {
-        probe.clearRect(0, 0, 1, 1);
-        probe.fillStyle = '#ffffff';
-        probe.fillStyle = value;
-        probe.fillRect(0, 0, 1, 1);
-        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-        rgb = [r, g, b].map(v => Math.pow(v / 255, 2.2));
+        probe.clearRect(0, 0, 1, 1)
+        probe.fillStyle = '#ffffff'
+        probe.fillStyle = value
+        probe.fillRect(0, 0, 1, 1)
+        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+        rgb = [r, g, b].map(v => (v / 255) ** 2.2)
       }
-      colorCache.set(value, rgb);
-      return rgb;
-    };
+      colorCache.set(value, rgb)
+      return rgb
+    }
 
-    const view = { width: 1, height: 1, volumeWidth: 1, volumeHeight: 1 };
-    const pointer = { x: 0, y: 0, inside: false };
+    const view = { width: 1, height: 1, volumeWidth: 1, volumeHeight: 1 }
+    const pointer = { x: 0, y: 0, inside: false }
     const state = {
       clock: 0,
       intro: settings().intro && !reduce ? 0 : 1,
@@ -314,210 +318,214 @@ export const Plasma = (props: PlasmaProps) => {
       pitchVelocity: 0,
       heat: 0,
       heatX: 0,
-      heatY: 0
-    };
-    let raf = 0;
-    let last = 0;
-    let visible = true;
+      heatY: 0,
+    }
+    let raf = 0
+    let last = 0
+    let visible = true
 
     const timeOf = (s: Settings) => {
-      const t = state.clock * 0.4;
-      if (s.direction === 'reverse') return -t;
-      if (s.direction !== 'pingpong') return t;
-      const span = 10;
-      const segment = (state.clock % span) / span;
-      const eased = segment * segment * (3 - 2 * segment);
-      return (Math.floor(state.clock / span) % 2 === 0 ? eased : 1 - eased) * span * 0.4;
-    };
+      const t = state.clock * 0.4
+      if (s.direction === 'reverse') return -t
+      if (s.direction !== 'pingpong') return t
+      const span = 10
+      const segment = (state.clock % span) / span
+      const eased = segment * segment * (3 - 2 * segment)
+      return (Math.floor(state.clock / span) % 2 === 0 ? eased : 1 - eased) * span * 0.4
+    }
 
     const render = () => {
-      const s = settings();
-      const presence = state.intro * state.intro * (3 - 2 * state.intro);
-      gl.bindVertexArray(vao);
-      sizeTarget(view.volumeWidth, view.volumeHeight);
+      const s = settings()
+      const presence = state.intro * state.intro * (3 - 2 * state.intro)
+      gl.bindVertexArray(vao)
+      sizeTarget(view.volumeWidth, view.volumeHeight)
 
-      const volume = programs.volume;
-      const u = volume.uniforms;
-      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-      gl.viewport(0, 0, target.width, target.height);
-      gl.useProgram(volume.program);
-      gl.uniform2f(u.uView, view.width, view.height);
-      gl.uniform2f(u.uScale, view.width / target.width, view.height / target.height);
-      gl.uniform1f(u.uZoom, s.scale);
-      gl.uniform1f(u.uTime, timeOf(s) + (1 - presence) * 1.4);
-      gl.uniform1f(u.uTwist, s.twist);
-      gl.uniform1f(u.uWave, 0.4 * s.wave);
-      gl.uniform1f(u.uSharpness, 100 - s.softness * 90);
-      gl.uniform2f(u.uOrbit, state.yaw, state.pitch);
-      gl.uniform1f(u.uDither, floatTargets ? 0 : 1 / 255);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      const volume = programs.volume
+      const u = volume.uniforms
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer)
+      gl.viewport(0, 0, target.width, target.height)
+      gl.useProgram(volume.program)
+      gl.uniform2f(u.uView, view.width, view.height)
+      gl.uniform2f(u.uScale, view.width / target.width, view.height / target.height)
+      gl.uniform1f(u.uZoom, s.scale)
+      gl.uniform1f(u.uTime, timeOf(s) + (1 - presence) * 1.4)
+      gl.uniform1f(u.uTwist, s.twist)
+      gl.uniform1f(u.uWave, 0.4 * s.wave)
+      gl.uniform1f(u.uSharpness, 100 - s.softness * 90)
+      gl.uniform2f(u.uOrbit, state.yaw, state.pitch)
+      gl.uniform1f(u.uDither, floatTargets ? 0 : 1 / 255)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      const composite = programs.composite;
-      const c = composite.uniforms;
-      const base = toLinear(s.color);
-      const highlight = base.map(v => v + (1 - v) * 0.85);
-      const tone = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2];
-      const depth = Math.min(1, 0.16 / Math.max(tone, 0.001));
-      const ink = base.map(v => Math.pow(Math.min(1, v * depth), 1 / 2.2));
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(composite.program);
-      gl.uniform2f(c.uResolution, canvas.width, canvas.height);
-      gl.uniform3fv(c.uColor, base);
-      gl.uniform3fv(c.uHighlight, highlight);
-      gl.uniform3fv(c.uInk, ink);
-      gl.uniform1f(c.uGain, 4.8 * s.brightness);
-      gl.uniform1f(c.uShine, 0.025 * s.shine);
-      gl.uniform1f(c.uPresence, presence);
-      gl.uniform1f(c.uGrain, s.grain);
-      gl.uniform1f(c.uFade, s.fade);
-      gl.uniform1f(c.uOpacity, s.opacity);
-      gl.uniform1f(c.uTime, state.clock % 1000);
-      gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0);
+      const composite = programs.composite
+      const c = composite.uniforms
+      const base = toLinear(s.color)
+      const highlight = base.map(v => v + (1 - v) * 0.85)
+      const tone = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2]
+      const depth = Math.min(1, 0.16 / Math.max(tone, 0.001))
+      const ink = base.map(v => Math.min(1, v * depth) ** (1 / 2.2))
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(composite.program)
+      gl.uniform2f(c.uResolution, canvas.width, canvas.height)
+      gl.uniform3fv(c.uColor, base)
+      gl.uniform3fv(c.uHighlight, highlight)
+      gl.uniform3fv(c.uInk, ink)
+      gl.uniform1f(c.uGain, 4.8 * s.brightness)
+      gl.uniform1f(c.uShine, 0.025 * s.shine)
+      gl.uniform1f(c.uPresence, presence)
+      gl.uniform1f(c.uGrain, s.grain)
+      gl.uniform1f(c.uFade, s.fade)
+      gl.uniform1f(c.uOpacity, s.opacity)
+      gl.uniform1f(c.uTime, state.clock % 1000)
+      gl.uniform1f(c.uLightMode, s.lightMode ? 1 : 0)
       gl.uniform3f(
         c.uHeat,
         (state.heatX * canvas.width) / view.width,
         ((view.height - state.heatY) * canvas.height) / view.height,
-        state.heat
-      );
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.uniform1i(c.uVolume, 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        state.heat,
+      )
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, texture)
+      gl.uniform1i(c.uVolume, 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settings();
-      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
-      last = now;
-      const moving = !s.paused && !reduce;
-      if (moving) state.clock += dt * s.speed;
-      if (!s.intro || reduce) state.intro = 1;
-      else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS);
-      const engaged = s.mouseInteractive && pointer.inside && !reduce;
-      const goalYaw = engaged ? (pointer.x / view.width - 0.5) * 0.9 : 0;
-      const goalPitch = engaged ? (pointer.y / view.height - 0.5) * 0.18 : 0;
-      state.yawVelocity += (40 * (goalYaw - state.yaw) - 11 * state.yawVelocity) * dt;
-      state.pitchVelocity += (40 * (goalPitch - state.pitch) - 11 * state.pitchVelocity) * dt;
-      state.yaw += state.yawVelocity * dt;
-      state.pitch += state.pitchVelocity * dt;
-      state.heat += ((engaged ? 1 : 0) - state.heat) * (1 - Math.exp(-dt * (engaged ? 4 : 2)));
-      state.heatX += (pointer.x - state.heatX) * (1 - Math.exp(-dt * 8));
-      state.heatY += (pointer.y - state.heatY) * (1 - Math.exp(-dt * 8));
-      render();
+      raf = 0
+      if (!visible || document.hidden) return
+      const s = settings()
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60
+      last = now
+      const moving = !s.paused && !reduce
+      if (moving) state.clock += dt * s.speed
+      if (!s.intro || reduce) state.intro = 1
+      else if (state.intro < 1) state.intro = Math.min(1, state.intro + dt / INTRO_SECONDS)
+      const engaged = s.mouseInteractive && pointer.inside && !reduce
+      const goalYaw = engaged ? (pointer.x / view.width - 0.5) * 0.9 : 0
+      const goalPitch = engaged ? (pointer.y / view.height - 0.5) * 0.18 : 0
+      state.yawVelocity += (40 * (goalYaw - state.yaw) - 11 * state.yawVelocity) * dt
+      state.pitchVelocity += (40 * (goalPitch - state.pitch) - 11 * state.pitchVelocity) * dt
+      state.yaw += state.yawVelocity * dt
+      state.pitch += state.pitchVelocity * dt
+      state.heat += ((engaged ? 1 : 0) - state.heat) * (1 - Math.exp(-dt * (engaged ? 4 : 2)))
+      state.heatX += (pointer.x - state.heatX) * (1 - Math.exp(-dt * 8))
+      state.heatY += (pointer.y - state.heatY) * (1 - Math.exp(-dt * 8))
+      render()
       const settling =
         state.intro < 1 ||
         Math.abs(goalYaw - state.yaw) > 0.0005 ||
         Math.abs(state.yawVelocity) > 0.0005 ||
         Math.abs(goalPitch - state.pitch) > 0.0005 ||
         Math.abs(state.pitchVelocity) > 0.0005 ||
-        Math.abs((engaged ? 1 : 0) - state.heat) > 0.002;
-      if (moving || settling) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+        Math.abs((engaged ? 1 : 0) - state.heat) > 0.002
+      if (moving || settling) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     const wake = () => {
-      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
-    };
+      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
+    }
 
     const resize = () => {
-      const s = settings();
-      const width = Math.max(1, container.clientWidth);
-      const height = Math.max(1, container.clientHeight);
-      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      view.width = width;
-      view.height = height;
-      canvas.width = Math.max(1, Math.round(width * ratio));
-      canvas.height = Math.max(1, Math.round(height * ratio));
-      let scale = s.quality;
-      if (width * height * scale * scale > MAX_VOLUME_PIXELS) scale = Math.sqrt(MAX_VOLUME_PIXELS / (width * height));
-      view.volumeWidth = Math.max(1, Math.round(width * scale));
-      view.volumeHeight = Math.max(1, Math.round(height * scale));
-      if (!raf) render();
-      wake();
-    };
+      const s = settings()
+      const width = Math.max(1, container.clientWidth)
+      const height = Math.max(1, container.clientHeight)
+      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      view.width = width
+      view.height = height
+      canvas.width = Math.max(1, Math.round(width * ratio))
+      canvas.height = Math.max(1, Math.round(height * ratio))
+      let scale = s.quality
+      if (width * height * scale * scale > MAX_VOLUME_PIXELS)
+        scale = Math.sqrt(MAX_VOLUME_PIXELS / (width * height))
+      view.volumeWidth = Math.max(1, Math.round(width * scale))
+      view.volumeHeight = Math.max(1, Math.round(height * scale))
+      if (!raf) render()
+      wake()
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      pointer.x = event.clientX - rect.left;
-      pointer.y = event.clientY - rect.top;
-      pointer.inside = pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height;
-      wake();
-    };
+      const rect = container.getBoundingClientRect()
+      pointer.x = event.clientX - rect.left
+      pointer.y = event.clientY - rect.top
+      pointer.inside =
+        pointer.x >= 0 && pointer.y >= 0 && pointer.x <= rect.width && pointer.y <= rect.height
+      wake()
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      wake();
-    };
+      pointer.inside = false
+      wake()
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wake();
-    };
+      last = 0
+      wake()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wake();
+        last = 0
+        wake()
       }
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
-    resize();
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
+    resize()
 
-    let lastQuality = settings().quality;
-    let lastDpr = settings().dpr;
+    let lastQuality = settings().quality
+    let lastDpr = settings().dpr
     wakeRef = () => {
-      const s = settings();
+      const s = settings()
       if (s.quality !== lastQuality || s.dpr !== lastDpr) {
-        lastQuality = s.quality;
-        lastDpr = s.dpr;
-        resize();
-        return;
+        lastQuality = s.quality
+        lastDpr = s.dpr
+        resize()
+        return
       }
-      if (!raf) render();
-      wake();
-    };
+      if (!raf) render()
+      wake()
+    }
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      wakeRef = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      gl.deleteTexture(texture);
-      gl.deleteFramebuffer(framebuffer);
-      gl.deleteProgram(programs.volume.program);
-      gl.deleteProgram(programs.composite.program);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      wakeRef = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      gl.deleteTexture(texture)
+      gl.deleteFramebuffer(framebuffer)
+      gl.deleteProgram(programs.volume.program)
+      gl.deleteProgram(programs.composite.program)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   createEffect(() => {
-    settings();
-    wakeRef?.();
-  });
+    settings()
+    wakeRef?.()
+  })
 
   return (
     <div
       ref={containerRef}
-      class={['relative h-full w-full overflow-hidden', own.class, own.className].filter(Boolean).join(' ')}
+      class={['relative h-full w-full overflow-hidden', own.class, own.className]
+        .filter(Boolean)
+        .join(' ')}
       {...rest}
     >
-      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" />
     </div>
-  );
-};
+  )
+}
 
-export default Plasma;
+export default Plasma

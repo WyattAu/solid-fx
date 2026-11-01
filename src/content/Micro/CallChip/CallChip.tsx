@@ -1,171 +1,184 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
-import HugeiconsIcon from '@/lib/HugeiconsIcon';
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import {
   CommandLineIcon,
   File02Icon,
   PencilEdit01Icon,
   RefreshIcon,
   Search01Icon,
-  Tick02Icon
-} from '@hugeicons/core-free-icons';
+  Tick02Icon,
+} from '@hugeicons/core-free-icons'
 
-export type CallChipStatus = 'idle' | 'running' | 'done' | 'error';
-export type CallChipIcon = 'terminal' | 'file' | 'search' | 'edit';
+export type CallChipStatus = 'idle' | 'running' | 'done' | 'error'
+export type CallChipIcon = 'terminal' | 'file' | 'search' | 'edit'
 
 export interface CallChipProps {
-  icon?: CallChipIcon | JSX.Element;
-  name?: string;
-  argument?: string;
-  status?: CallChipStatus;
-  expectedMs?: number;
-  size?: number;
-  radius?: number;
-  color?: string;
-  surfaceColor?: string;
-  progressColor?: string;
-  progressOpacity?: number;
-  doneColor?: string;
-  errorColor?: string;
-  washOpacity?: number;
-  shake?: number;
-  showTimer?: boolean;
-  onRetry?: () => void;
-  className?: string;
-  class?: string;
-  style?: JSX.CSSProperties;
+  icon?: CallChipIcon | JSX.Element
+  name?: string
+  argument?: string
+  status?: CallChipStatus
+  expectedMs?: number
+  size?: number
+  radius?: number
+  color?: string
+  surfaceColor?: string
+  progressColor?: string
+  progressOpacity?: number
+  doneColor?: string
+  errorColor?: string
+  washOpacity?: number
+  shake?: number
+  showTimer?: boolean
+  onRetry?: () => void
+  className?: string
+  class?: string
+  style?: JSX.CSSProperties
 }
 
-type Glyph = 'tool' | 'check' | 'retry';
+type Glyph = 'tool' | 'check' | 'retry'
 
-const HOLD_AT = 0.9;
-const SHAKE = [0, -1, 1, -0.66, 0.66, -0.33, 0];
+const HOLD_AT = 0.9
+const SHAKE = [0, -1, 1, -0.66, 0.66, -0.33, 0]
 const ICONS: Record<CallChipIcon, typeof CommandLineIcon> = {
   terminal: CommandLineIcon,
   file: File02Icon,
   search: Search01Icon,
-  edit: PencilEdit01Icon
-};
-const WORDS: Record<CallChipStatus, string> = { running: 'running', done: 'done', error: 'failed', idle: 'queued' };
+  edit: PencilEdit01Icon,
+}
+const WORDS: Record<CallChipStatus, string> = {
+  running: 'running',
+  done: 'done',
+  error: 'failed',
+  idle: 'queued',
+}
 
-const fmt = (ms: number) => (ms < 10000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`);
-const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-const glyphOf = (s: CallChipStatus): Glyph => (s === 'done' ? 'check' : s === 'error' ? 'retry' : 'tool');
+const fmt = (ms: number) => (ms < 10000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`)
+const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+const glyphOf = (s: CallChipStatus): Glyph =>
+  s === 'done' ? 'check' : s === 'error' ? 'retry' : 'tool'
 
 const CallChip = (props: CallChipProps) => {
-  const name = () => props.name ?? 'bash';
-  const argument = () => props.argument ?? 'npm test';
-  const status = () => props.status ?? 'running';
-  const size = () => props.size ?? 34;
-  const expectedMs = () => props.expectedMs ?? 2500;
-  const shakeAmount = () => props.shake ?? 6;
-  const showTimer = () => props.showTimer ?? true;
+  const name = () => props.name ?? 'bash'
+  const argument = () => props.argument ?? 'npm test'
+  const status = () => props.status ?? 'running'
+  const size = () => props.size ?? 34
+  const expectedMs = () => props.expectedMs ?? 2500
+  const shakeAmount = () => props.shake ?? 6
+  const showTimer = () => props.showTimer ?? true
 
-  let rootEl: HTMLSpanElement | undefined;
-  let fillEl: HTMLSpanElement | undefined;
-  let timerEl: HTMLSpanElement | undefined;
-  let fraction = 0;
-  const clock = { ms: 0 };
-  let shakeAnim: Animation | null = null;
-  const [mounted, setMounted] = createSignal(false);
-  const [pressed, setPressed] = createSignal(false);
-  const [announce, setAnnounce] = createSignal('');
-  const [roll, setRoll] = createSignal<{ cur: Glyph; prev: Glyph | null }>({ cur: glyphOf(status()), prev: null });
+  let rootEl: HTMLSpanElement | undefined
+  let fillEl: HTMLSpanElement | undefined
+  let timerEl: HTMLSpanElement | undefined
+  let fraction = 0
+  const clock = { ms: 0 }
+  let shakeAnim: Animation | null = null
+  const [mounted, setMounted] = createSignal(false)
+  const [pressed, setPressed] = createSignal(false)
+  const [announce, setAnnounce] = createSignal('')
+  const [roll, setRoll] = createSignal<{ cur: Glyph; prev: Glyph | null }>({
+    cur: glyphOf(status()),
+    prev: null,
+  })
 
   // Upstream mutated roll during render; a derived signal has the same shape:
   // cur becomes prev whenever the status glyph changes.
   createEffect(() => {
-    const g = glyphOf(status());
-    setRoll(prev => (g !== prev.cur ? { cur: g, prev: prev.cur } : prev));
-  });
+    const g = glyphOf(status())
+    setRoll(prev => (g !== prev.cur ? { cur: g, prev: prev.cur } : prev))
+  })
 
   const setFraction = (f: number, instant: boolean) => {
-    const fill = fillEl;
-    if (!fill) return;
-    fraction = f;
-    if (instant) fill.style.transition = 'none';
-    fill.style.transform = `scaleX(${f})`;
+    const fill = fillEl
+    if (!fill) return
+    fraction = f
+    if (instant) fill.style.transition = 'none'
+    fill.style.transform = `scaleX(${f})`
     if (instant) {
-      void fill.getBoundingClientRect();
-      fill.style.transition = '';
+      void fill.getBoundingClientRect()
+      fill.style.transition = ''
     }
-  };
+  }
   const apply = (s: CallChipStatus, animate: boolean) => {
     if (s === 'running') {
-      shakeAnim?.cancel();
-      setFraction(0, true);
-      if (animate) setFraction(HOLD_AT, false);
+      shakeAnim?.cancel()
+      setFraction(0, true)
+      if (animate) setFraction(HOLD_AT, false)
     } else if (s === 'done') {
-      setFraction(1, !animate);
+      setFraction(1, !animate)
     } else if (s === 'error') {
-      const fill = fillEl;
-      const live = fill ? new DOMMatrix(getComputedStyle(fill).transform).a : fraction;
-      setFraction(Math.min(1, Math.max(0, live)), true);
+      const fill = fillEl
+      const live = fill ? new DOMMatrix(getComputedStyle(fill).transform).a : fraction
+      setFraction(Math.min(1, Math.max(0, live)), true)
       if (animate && shakeAmount() > 0 && !reduceMotion() && rootEl) {
         shakeAnim = rootEl.animate(
-          SHAKE.map(k => ({ transform: `translateX(${k * shakeAmount()}px)`, easing: 'cubic-bezier(0.77, 0, 0.175, 1)' })),
-          { duration: 450, composite: 'add' }
-        );
+          SHAKE.map(k => ({
+            transform: `translateX(${k * shakeAmount()}px)`,
+            easing: 'cubic-bezier(0.77, 0, 0.175, 1)',
+          })),
+          { duration: 450, composite: 'add' },
+        )
       }
-    } else setFraction(0, true);
-  };
+    } else setFraction(0, true)
+  }
 
   onMount(() => {
-    setMounted(true);
-    onCleanup(() => shakeAnim?.cancel());
-  });
+    setMounted(true)
+    onCleanup(() => shakeAnim?.cancel())
+  })
 
   // Upstream: mount apply (useEffect) + useLayoutEffect on [status] — one
   // effect covers both (Solid effects run after the DOM is ready).
   createEffect(() => {
-    apply(status(), true);
-  });
+    apply(status(), true)
+  })
 
   createEffect(() => {
-    const s = status();
+    const s = status()
     const write = (ms: number) => {
-      clock.ms = ms;
-      if (timerEl) timerEl.textContent = fmt(ms);
-    };
+      clock.ms = ms
+      if (timerEl) timerEl.textContent = fmt(ms)
+    }
     if (s !== 'running') {
-      if ((s === 'idle' || !clock.ms) && timerEl) timerEl.textContent = '—';
-      return;
+      if ((s === 'idle' || !clock.ms) && timerEl) timerEl.textContent = '—'
+      return
     }
-    const startedAt = performance.now();
-    write(0);
+    const startedAt = performance.now()
+    write(0)
     if (reduceMotion()) {
-      const id = setInterval(() => write(performance.now() - startedAt), 100);
+      const id = setInterval(() => write(performance.now() - startedAt), 100)
       onCleanup(() => {
-        clearInterval(id);
-        write(performance.now() - startedAt);
-      });
+        clearInterval(id)
+        write(performance.now() - startedAt)
+      })
     } else {
-      let raf = 0;
+      let raf = 0
       const tick = () => {
-        write(performance.now() - startedAt);
-        raf = requestAnimationFrame(tick);
-      };
-      tick();
+        write(performance.now() - startedAt)
+        raf = requestAnimationFrame(tick)
+      }
+      tick()
       onCleanup(() => {
-        cancelAnimationFrame(raf);
-        write(performance.now() - startedAt);
-      });
+        cancelAnimationFrame(raf)
+        write(performance.now() - startedAt)
+      })
     }
-  });
+  })
 
   createEffect(() => {
-    const s = status();
-    const ms = showTimer() && clock.ms ? Math.round(clock.ms) : 0;
-    const when = s === 'done' && ms ? ` in ${ms} ms` : s === 'error' && ms ? ` after ${ms} ms` : '';
-    setAnnounce(`${name()} ${argument()}, ${WORDS[s] ?? s}${when}`);
-  });
+    const s = status()
+    const ms = showTimer() && clock.ms ? Math.round(clock.ms) : 0
+    const when = s === 'done' && ms ? ` in ${ms} ms` : s === 'error' && ms ? ` after ${ms} ms` : ''
+    setAnnounce(`${name()} ${argument()}, ${WORDS[s] ?? s}${when}`)
+  })
 
-  const font = () => Math.max(11, Math.round(size() * 0.38));
-  const glyphState = (g: Glyph) => (g === roll().cur ? 'in' : g === roll().prev ? 'out' : undefined);
-  const toolIcon = () => (typeof props.icon === 'string' ? (ICONS[props.icon as CallChipIcon] ?? ICONS.terminal) : null);
-  const iconSize = () => font() + 2;
+  const font = () => Math.max(11, Math.round(size() * 0.38))
+  const glyphState = (g: Glyph) => (g === roll().cur ? 'in' : g === roll().prev ? 'out' : undefined)
+  const toolIcon = () =>
+    typeof props.icon === 'string' ? (ICONS[props.icon as CallChipIcon] ?? ICONS.terminal) : null
+  const iconSize = () => font() + 2
   const glyphWrapClass =
-    'absolute inset-0 grid place-items-center opacity-0 blur-[3px] [transform:translateY(70%)] data-[state=in]:opacity-100 data-[state=in]:blur-0 data-[state=in]:[transform:none] data-[state=in]:[transition:opacity_240ms_cubic-bezier(0.23,1,0.32,1),transform_240ms_cubic-bezier(0.23,1,0.32,1),filter_240ms_cubic-bezier(0.23,1,0.32,1)] data-[state=out]:[transform:translateY(-70%)] data-[state=out]:[transition:opacity_160ms_cubic-bezier(0.23,1,0.32,1),transform_160ms_cubic-bezier(0.23,1,0.32,1),filter_160ms_cubic-bezier(0.23,1,0.32,1)] group-data-[status=done]:data-[state=in]:[color:var(--cc-done)] group-data-[status=error]:data-[state=in]:[color:var(--cc-error)] motion-reduce:[transform:none]! motion-reduce:[filter:none]! group-not-data-[mounted]:transition-none!';
+    'absolute inset-0 grid place-items-center opacity-0 blur-[3px] [transform:translateY(70%)] data-[state=in]:opacity-100 data-[state=in]:blur-0 data-[state=in]:[transform:none] data-[state=in]:[transition:opacity_240ms_cubic-bezier(0.23,1,0.32,1),transform_240ms_cubic-bezier(0.23,1,0.32,1),filter_240ms_cubic-bezier(0.23,1,0.32,1)] data-[state=out]:[transform:translateY(-70%)] data-[state=out]:[transition:opacity_160ms_cubic-bezier(0.23,1,0.32,1),transform_160ms_cubic-bezier(0.23,1,0.32,1),filter_160ms_cubic-bezier(0.23,1,0.32,1)] group-data-[status=done]:data-[state=in]:[color:var(--cc-done)] group-data-[status=error]:data-[state=in]:[color:var(--cc-error)] motion-reduce:[transform:none]! motion-reduce:[filter:none]! group-not-data-[mounted]:transition-none!'
 
   return (
     <span
@@ -190,7 +203,7 @@ const CallChip = (props: CallChipProps) => {
         '--cc-error': props.errorColor ?? '#ef4444',
         '--cc-wash-pct': `${(props.washOpacity ?? 0.14) * 100}%`,
         '--cc-expected': `${expectedMs()}ms`,
-        ...props.style
+        ...props.style,
       }}
     >
       <span
@@ -204,7 +217,11 @@ const CallChip = (props: CallChipProps) => {
       >
         <span class={glyphWrapClass} data-state={glyphState('tool')}>
           {toolIcon() ? (
-            <HugeiconsIcon icon={toolIcon() as typeof CommandLineIcon} size={iconSize()} strokeWidth={1.8} />
+            <HugeiconsIcon
+              icon={toolIcon() as typeof CommandLineIcon}
+              size={iconSize()}
+              strokeWidth={1.8}
+            />
           ) : (
             props.icon
           )}
@@ -224,8 +241,8 @@ const CallChip = (props: CallChipProps) => {
       </span>
       {showTimer() ? (
         <span
-          ref={(el) => {
-            timerEl = el;
+          ref={el => {
+            timerEl = el
           }}
           class="relative min-w-[6ch] text-right tabular-nums opacity-50"
           aria-hidden="true"
@@ -246,7 +263,7 @@ const CallChip = (props: CallChipProps) => {
       ) : null}
       <span class="sr-only">{announce()}</span>
     </span>
-  );
-};
+  )
+}
 
-export default CallChip;
+export default CallChip

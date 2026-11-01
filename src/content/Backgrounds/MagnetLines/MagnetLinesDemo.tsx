@@ -1,4 +1,4 @@
-import MagnetLines from './MagnetLines';
+import MagnetLines from './MagnetLines'
 
 function MagnetLinesDemo() {
   return (
@@ -17,7 +17,7 @@ function MagnetLinesDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default MagnetLinesDemo;
+export default MagnetLinesDemo

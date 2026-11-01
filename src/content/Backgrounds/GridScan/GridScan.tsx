@@ -1,100 +1,105 @@
-import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
+import type { JSX } from 'solid-js'
 
-export type GridScanLineStyle = 'solid' | 'dashed' | 'dotted';
+export type GridScanLineStyle = 'solid' | 'dashed' | 'dotted'
 
-export type GridScanDirection = 'forward' | 'backward' | 'pingpong';
+export type GridScanDirection = 'forward' | 'backward' | 'pingpong'
 
-export type GridScanClickEffect = 'ping' | 'scan' | 'none';
+export type GridScanClickEffect = 'ping' | 'scan' | 'none'
 
-export interface GridScanProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'style' | 'class' | 'className'> {
-  linesColor?: string;
-  scanColor?: string;
-  cells?: number;
-  lineThickness?: number;
-  lineStyle?: GridScanLineStyle;
-  depth?: number;
-  depthFade?: number;
-  parallax?: number;
-  points?: boolean;
-  reflection?: number;
-  shading?: number;
-  scanDirection?: GridScanDirection;
-  scanDuration?: number;
-  scanDelay?: number;
-  scanWidth?: number;
-  trail?: number;
-  glow?: number;
-  autoScan?: boolean;
-  interactive?: boolean;
-  clickEffect?: GridScanClickEffect;
-  enableWebcam?: boolean;
-  showPreview?: boolean;
-  modelsPath?: string;
-  enableGyro?: boolean;
-  intro?: boolean;
-  lightMode?: boolean;
-  dpr?: number;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+export interface GridScanProps
+  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'style' | 'class' | 'className'> {
+  linesColor?: string
+  scanColor?: string
+  cells?: number
+  lineThickness?: number
+  lineStyle?: GridScanLineStyle
+  depth?: number
+  depthFade?: number
+  parallax?: number
+  points?: boolean
+  reflection?: number
+  shading?: number
+  scanDirection?: GridScanDirection
+  scanDuration?: number
+  scanDelay?: number
+  scanWidth?: number
+  trail?: number
+  glow?: number
+  autoScan?: boolean
+  interactive?: boolean
+  clickEffect?: GridScanClickEffect
+  enableWebcam?: boolean
+  showPreview?: boolean
+  modelsPath?: string
+  enableGyro?: boolean
+  intro?: boolean
+  lightMode?: boolean
+  dpr?: number
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 type Settings = {
-  linesColor: string;
-  scanColor: string;
-  cells: number;
-  thickness: number;
-  style: number;
-  depth: number;
-  depthFade: number;
-  parallax: number;
-  points: boolean;
-  reflection: number;
-  shading: number;
-  direction: GridScanDirection;
-  duration: number;
-  delay: number;
-  scanWidth: number;
-  trail: number;
-  glow: number;
-  autoScan: boolean;
-  interactive: boolean;
-  clickEffect: GridScanClickEffect;
-  enableGyro: boolean;
-  intro: boolean;
-  lightMode: boolean;
-  dpr?: number;
-};
+  linesColor: string
+  scanColor: string
+  cells: number
+  thickness: number
+  style: number
+  depth: number
+  depthFade: number
+  parallax: number
+  points: boolean
+  reflection: number
+  shading: number
+  direction: GridScanDirection
+  duration: number
+  delay: number
+  scanWidth: number
+  trail: number
+  glow: number
+  autoScan: boolean
+  interactive: boolean
+  clickEffect: GridScanClickEffect
+  enableGyro: boolean
+  intro: boolean
+  lightMode: boolean
+  dpr?: number
+}
 
-type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> };
+type Program = { program: WebGLProgram; uniforms: Record<string, WebGLUniformLocation | null> }
 
-type Target = { texture: WebGLTexture | null; width: number; height: number };
+type Target = { texture: WebGLTexture | null; width: number; height: number }
 
-type Ping = { x: number; y: number; z: number; age: number };
+type Ping = { x: number; y: number; z: number; age: number }
 
-type Head = { active: boolean; move: (nx: number, ny: number, near: number) => void; release: () => void };
+type Head = {
+  active: boolean
+  move: (nx: number, ny: number, near: number) => void
+  release: () => void
+}
 
-type Status = 'loading' | 'searching' | 'tracking' | 'blocked';
+type Status = 'loading' | 'searching' | 'tracking' | 'blocked'
 
 type FaceApi = {
-  nets: { tinyFaceDetector: { loadFromUri: (url: string) => Promise<void> } };
-  TinyFaceDetectorOptions: new (options: { inputSize: number; scoreThreshold: number }) => unknown;
+  nets: { tinyFaceDetector: { loadFromUri: (url: string) => Promise<void> } }
+  TinyFaceDetectorOptions: new (options: { inputSize: number; scoreThreshold: number }) => unknown
   detectSingleFace: (
     input: HTMLVideoElement,
-    options: unknown
-  ) => PromiseLike<{ box: { x: number; y: number; width: number; height: number } } | undefined>;
-};
+    options: unknown,
+  ) => PromiseLike<{ box: { x: number; y: number; width: number; height: number } } | undefined>
+}
 
-type FaceScope = { faceapi?: FaceApi };
+type FaceScope = { faceapi?: FaceApi }
 
-const MAX_PINGS = 4;
-const PING_LIFE = 2.4;
-const INTRO_SECONDS = 2.2;
-const EYE_DISTANCE = 1.25;
-const FACE_API_URL = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js';
-const MODELS_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
-const STYLES: Record<string, number> = { solid: 0, dashed: 1, dotted: 2 };
+const MAX_PINGS = 4
+const PING_LIFE = 2.4
+const INTRO_SECONDS = 2.2
+const EYE_DISTANCE = 1.25
+const FACE_API_URL = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js'
+const MODELS_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights'
+const STYLES: Record<string, number> = { solid: 0, dashed: 1, dotted: 2 }
 
 const VERTEX = `#version 300 es
 out vec2 vUv;
@@ -102,7 +107,7 @@ void main() {
   vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
   vUv = p;
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
-}`;
+}`
 
 const ROOM = `#version 300 es
 precision highp float;
@@ -370,7 +375,7 @@ void main() {
   energy = clamp(energy, 0.0, 1.0);
   outColor = color;
   outGlow = vec4(uScanColor * energy, energy);
-}`;
+}`
 
 const DOWN = `#version 300 es
 precision highp float;
@@ -386,7 +391,7 @@ void main() {
     texture(uSource, vUv + vec2(-o.x, o.y)) +
     texture(uSource, vUv + vec2(o.x, o.y))
   );
-}`;
+}`
 
 const BLUR = `#version 300 es
 precision highp float;
@@ -400,7 +405,7 @@ void main() {
   sum += (texture(uSource, vUv + uStep * 3.2941176470588234) + texture(uSource, vUv - uStep * 3.2941176470588234)) * 0.09447039785044732;
   sum += (texture(uSource, vUv + uStep * 5.176470588235294) + texture(uSource, vUv - uStep * 5.176470588235294)) * 0.010381362401148057;
   outColor = sum;
-}`;
+}`
 
 const COMPOSITE = `#version 300 es
 precision highp float;
@@ -424,99 +429,100 @@ void main() {
   color.a = clamp(color.a + noise, 0.0, 1.0);
   color.rgb = clamp(color.rgb + noise, vec3(0.0), vec3(color.a));
   outColor = color;
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader;
-  gl.deleteShader(shader);
-  return null;
-};
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) return shader
+  gl.deleteShader(shader)
+  return null
+}
 
 const link = (gl: WebGL2RenderingContext, fragmentSource: string): Program | null => {
-  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource);
-  const program = gl.createProgram();
-  if (!vertex || !fragment || !program) return null;
-  gl.attachShader(program, vertex);
-  gl.attachShader(program, fragment);
-  gl.linkProgram(program);
-  gl.deleteShader(vertex);
-  gl.deleteShader(fragment);
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, fragmentSource)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  gl.deleteShader(vertex)
+  gl.deleteShader(fragment)
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    gl.deleteProgram(program);
-    return null;
+    gl.deleteProgram(program)
+    return null
   }
-  const uniforms: Record<string, WebGLUniformLocation | null> = {};
-  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+  const uniforms: Record<string, WebGLUniformLocation | null> = {}
+  const count = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
   for (let i = 0; i < count; i++) {
-    const info = gl.getActiveUniform(program, i);
-    if (!info) continue;
-    const name = info.name.replace(/\[0\]$/, '');
-    uniforms[name] = gl.getUniformLocation(program, name);
+    const info = gl.getActiveUniform(program, i)
+    if (!info) continue
+    const name = info.name.replace(/\[0\]$/, '')
+    uniforms[name] = gl.getUniformLocation(program, name)
   }
-  return { program, uniforms };
-};
+  return { program, uniforms }
+}
 
 const createTarget = (gl: WebGL2RenderingContext): Target => {
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  return { texture, width: 0, height: 0 };
-};
+  const texture = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, texture)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  return { texture, width: 0, height: 0 }
+}
 
 const sizeTarget = (gl: WebGL2RenderingContext, target: Target, width: number, height: number) => {
-  if (target.width === width && target.height === height) return;
-  target.width = width;
-  target.height = height;
-  gl.bindTexture(gl.TEXTURE_2D, target.texture);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-};
+  if (target.width === width && target.height === height) return
+  target.width = width
+  target.height = height
+  gl.bindTexture(gl.TEXTURE_2D, target.texture)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null)
+}
 
-let faceApiLoader: Promise<FaceApi> | null = null;
+let faceApiLoader: Promise<FaceApi> | null = null
 
 const loadFaceApi = () => {
-  const scope = window as unknown as FaceScope;
-  if (scope.faceapi) return Promise.resolve(scope.faceapi);
+  const scope = window as unknown as FaceScope
+  if (scope.faceapi) return Promise.resolve(scope.faceapi)
   if (!faceApiLoader) {
     faceApiLoader = new Promise<FaceApi>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = FACE_API_URL;
-      script.async = true;
-      script.onload = () => (scope.faceapi ? resolve(scope.faceapi) : reject(new Error('face-api.js')));
+      const script = document.createElement('script')
+      script.src = FACE_API_URL
+      script.async = true
+      script.onload = () =>
+        scope.faceapi ? resolve(scope.faceapi) : reject(new Error('face-api.js'))
       script.onerror = () => {
-        faceApiLoader = null;
-        reject(new Error('face-api.js'));
-      };
-      document.head.appendChild(script);
-    });
+        faceApiLoader = null
+        reject(new Error('face-api.js'))
+      }
+      document.head.appendChild(script)
+    })
   }
-  return faceApiLoader;
-};
+  return faceApiLoader
+}
 
 const STATUS_LABELS: Record<Status, string> = {
   loading: 'Loading face tracking',
   searching: 'Looking for a face',
   tracking: 'Tracking',
-  blocked: 'Camera unavailable'
-};
+  blocked: 'Camera unavailable',
+}
 
 export const GridScan = (props: GridScanProps) => {
-  const [own, rest] = splitProps(props, ['class', 'className', 'style']);
-  let containerEl!: HTMLDivElement;
-  let canvasEl!: HTMLCanvasElement;
-  let videoEl: HTMLVideoElement | null = null;
-  let wake: (() => void) | null = null;
-  let head: Head | null = null;
-  const [status, setStatus] = createSignal<Status>('loading');
+  const [own, rest] = splitProps(props, ['class', 'className', 'style'])
+  let containerEl!: HTMLDivElement
+  let canvasEl!: HTMLCanvasElement
+  let videoEl: HTMLVideoElement | null = null
+  let wake: (() => void) | null = null
+  let head: Head | null = null
+  const [status, setStatus] = createSignal<Status>('loading')
 
   const buildSettings = (): Settings => ({
     linesColor: props.linesColor ?? ((props.lightMode ?? false) ? '#d4d4d8' : '#4d4757'),
@@ -542,311 +548,326 @@ export const GridScan = (props: GridScanProps) => {
     enableGyro: props.enableGyro ?? false,
     intro: props.intro ?? true,
     lightMode: props.lightMode ?? false,
-    dpr: props.dpr
-  });
-  const settingsRef: { current: Settings } = { current: buildSettings() };
+    dpr: props.dpr,
+  })
+  const settingsRef: { current: Settings } = { current: buildSettings() }
 
   onMount(() => {
-    const container = containerEl;
-    const canvas = canvasEl;
+    const container = containerEl
+    const canvas = canvasEl
     const gl = canvas?.getContext('webgl2', {
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
       depth: false,
-      stencil: false
-    });
-    if (!container || !canvas || !gl) return;
+      stencil: false,
+    })
+    if (!container || !canvas || !gl) return
 
-    const room = link(gl, ROOM);
-    const down = link(gl, DOWN);
-    const blur = link(gl, BLUR);
-    const composite = link(gl, COMPOSITE);
-    if (!room || !down || !blur || !composite) return;
-    const vao = gl.createVertexArray();
-    const scene = createTarget(gl);
-    const light = createTarget(gl);
-    const bloomA = createTarget(gl);
-    const bloomB = createTarget(gl);
-    const sceneBuffer = gl.createFramebuffer();
-    const bloomBufferA = gl.createFramebuffer();
-    const bloomBufferB = gl.createFramebuffer();
+    const room = link(gl, ROOM)
+    const down = link(gl, DOWN)
+    const blur = link(gl, BLUR)
+    const composite = link(gl, COMPOSITE)
+    if (!room || !down || !blur || !composite) return
+    const vao = gl.createVertexArray()
+    const scene = createTarget(gl)
+    const light = createTarget(gl)
+    const bloomA = createTarget(gl)
+    const bloomB = createTarget(gl)
+    const sceneBuffer = gl.createFramebuffer()
+    const bloomBufferA = gl.createFramebuffer()
+    const bloomBufferB = gl.createFramebuffer()
 
-    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
-    const colorCache = new Map<string, number[]>();
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
+    const colorCache = new Map<string, number[]>()
     const parse = (value: string): number[] => {
-      const key = String(value);
-      const cached = colorCache.get(key);
-      if (cached) return cached;
-      let rgb = [1, 1, 1];
+      const key = String(value)
+      const cached = colorCache.get(key)
+      if (cached) return cached
+      let rgb = [1, 1, 1]
       if (probe) {
-        probe.clearRect(0, 0, 1, 1);
-        probe.fillStyle = '#000000';
-        probe.fillStyle = key;
-        probe.fillRect(0, 0, 1, 1);
-        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-        rgb = [r / 255, g / 255, b / 255];
+        probe.clearRect(0, 0, 1, 1)
+        probe.fillStyle = '#000000'
+        probe.fillStyle = key
+        probe.fillRect(0, 0, 1, 1)
+        const [r, g, b] = probe.getImageData(0, 0, 1, 1).data
+        rgb = [r / 255, g / 255, b / 255]
       }
-      colorCache.set(key, rgb);
-      return rgb;
-    };
+      colorCache.set(key, rgb)
+      return rgb
+    }
 
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-    const view = { width: 1, height: 1, ratio: 1 };
-    const eye = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, f: EYE_DISTANCE, vf: 0, tf: EYE_DISTANCE };
-    const pointer = { x: 0, y: 0, inside: false };
-    const look = { x: 0, y: 0, held: false };
-    const tilt = { gamma: 0, beta: 0, ready: false, asked: false };
-    const hover = { x: 0, y: 0, z: 0, strength: 0, ready: false };
-    const scan = { z: 0, dir: 1, alpha: 0, start: 0, sweeps: 0, waiting: false };
-    const pings: Ping[] = [];
-    const pingData = new Float32Array(MAX_PINGS * 4);
-    const pingAlpha = new Float32Array(MAX_PINGS);
-    let time = 0;
-    let introClock = settingsRef.current.intro && !reduce ? 0 : 1;
-    let raf = 0;
-    let last = 0;
-    let visible = true;
-    let leaveTimer = 0;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    const view = { width: 1, height: 1, ratio: 1 }
+    const eye = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, f: EYE_DISTANCE, vf: 0, tf: EYE_DISTANCE }
+    const pointer = { x: 0, y: 0, inside: false }
+    const look = { x: 0, y: 0, held: false }
+    const tilt = { gamma: 0, beta: 0, ready: false, asked: false }
+    const hover = { x: 0, y: 0, z: 0, strength: 0, ready: false }
+    const scan = { z: 0, dir: 1, alpha: 0, start: 0, sweeps: 0, waiting: false }
+    const pings: Ping[] = []
+    const pingData = new Float32Array(MAX_PINGS * 4)
+    const pingAlpha = new Float32Array(MAX_PINGS)
+    let time = 0
+    let introClock = settingsRef.current.intro && !reduce ? 0 : 1
+    let raf = 0
+    let last = 0
+    let visible = true
+    let leaveTimer = 0
 
     const roomSize = () => {
-      const s = settingsRef.current;
-      const aspect = view.width / view.height;
-      const cy = 1 / Math.round(s.cells);
-      const cx = aspect / Math.max(1, Math.round(aspect / cy));
-      const roomDepth = Math.max(cy, Math.round(s.depth / cy) * cy);
-      return { aspect, cx, cy, roomDepth };
-    };
+      const s = settingsRef.current
+      const aspect = view.width / view.height
+      const cy = 1 / Math.round(s.cells)
+      const cx = aspect / Math.max(1, Math.round(aspect / cy))
+      const roomDepth = Math.max(cy, Math.round(s.depth / cy) * cy)
+      return { aspect, cx, cy, roomDepth }
+    }
 
     const castRay = (u: number, v: number) => {
-      const { aspect, roomDepth } = roomSize();
-      const px = (u - 0.5) * aspect;
-      const py = v - 0.5;
-      const dx = px - eye.x;
-      const dy = py - eye.y;
-      const dz = eye.f;
-      const sx = dx > 0 ? 0.5 * aspect : -0.5 * aspect;
-      const sy = dy > 0 ? 0.5 : -0.5;
-      let t = roomDepth / dz;
-      if (Math.abs(dx) > 1e-6) t = Math.min(t, (sx - px) / dx);
-      if (Math.abs(dy) > 1e-6) t = Math.min(t, (sy - py) / dy);
-      return { x: px + dx * t, y: py + dy * t, z: dz * t };
-    };
+      const { aspect, roomDepth } = roomSize()
+      const px = (u - 0.5) * aspect
+      const py = v - 0.5
+      const dx = px - eye.x
+      const dy = py - eye.y
+      const dz = eye.f
+      const sx = dx > 0 ? 0.5 * aspect : -0.5 * aspect
+      const sy = dy > 0 ? 0.5 : -0.5
+      let t = roomDepth / dz
+      if (Math.abs(dx) > 1e-6) t = Math.min(t, (sx - px) / dx)
+      if (Math.abs(dy) > 1e-6) t = Math.min(t, (sy - py) / dy)
+      return { x: px + dx * t, y: py + dy * t, z: dz * t }
+    }
 
     const startSweep = (s: Settings) => {
-      scan.dir = s.direction === 'backward' || (s.direction === 'pingpong' && scan.sweeps % 2 === 1) ? -1 : 1;
-      scan.start = time;
-      scan.waiting = false;
-      scan.sweeps += 1;
-    };
+      scan.dir =
+        s.direction === 'backward' || (s.direction === 'pingpong' && scan.sweeps % 2 === 1) ? -1 : 1
+      scan.start = time
+      scan.waiting = false
+      scan.sweeps += 1
+    }
 
     const updateScan = (s: Settings, roomDepth: number) => {
       if (introClock < 1) {
-        const k = introClock;
-        scan.dir = 1;
-        scan.z = k * (roomDepth + 0.4) - 0.2;
-        scan.alpha = Math.min(1, k * 6) * (1 - Math.max(0, k - 0.85) / 0.15);
-        return;
+        const k = introClock
+        scan.dir = 1
+        scan.z = k * (roomDepth + 0.4) - 0.2
+        scan.alpha = Math.min(1, k * 6) * (1 - Math.max(0, k - 0.85) / 0.15)
+        return
       }
       if (scan.sweeps === 0 && !scan.waiting) {
-        scan.waiting = true;
-        scan.start = time;
-        scan.alpha = 0;
+        scan.waiting = true
+        scan.start = time
+        scan.alpha = 0
       }
       if (scan.waiting) {
-        scan.alpha = 0;
-        if (s.autoScan && !reduce && time - scan.start >= s.delay) startSweep(s);
-        return;
+        scan.alpha = 0
+        if (s.autoScan && !reduce && time - scan.start >= s.delay) startSweep(s)
+        return
       }
-      const k = (time - scan.start) / s.duration;
+      const k = (time - scan.start) / s.duration
       if (k >= 1) {
-        scan.waiting = true;
-        scan.start = time;
-        scan.alpha = 0;
-        return;
+        scan.waiting = true
+        scan.start = time
+        scan.alpha = 0
+        return
       }
-      const travel = k * (roomDepth + 0.3) - 0.15;
-      scan.z = scan.dir > 0 ? travel : roomDepth - travel;
-      scan.alpha = Math.min(1, k / 0.12) * Math.min(1, (1 - k) / 0.12);
-    };
+      const travel = k * (roomDepth + 0.3) - 0.15
+      scan.z = scan.dir > 0 ? travel : roomDepth - travel
+      scan.alpha = Math.min(1, k / 0.12) * Math.min(1, (1 - k) / 0.12)
+    }
 
     const updateEye = (dt: number) => {
-      const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
-      const h = dt / steps;
+      const steps = Math.max(1, Math.ceil(dt / (1 / 120)))
+      const h = dt / steps
       for (let i = 0; i < steps; i++) {
-        eye.vx += ((eye.tx - eye.x) * 42 - eye.vx * 11) * h;
-        eye.vy += ((eye.ty - eye.y) * 42 - eye.vy * 11) * h;
-        eye.vf += ((eye.tf - eye.f) * 42 - eye.vf * 11) * h;
-        eye.x += eye.vx * h;
-        eye.y += eye.vy * h;
-        eye.f += eye.vf * h;
+        eye.vx += ((eye.tx - eye.x) * 42 - eye.vx * 11) * h
+        eye.vy += ((eye.ty - eye.y) * 42 - eye.vy * 11) * h
+        eye.vf += ((eye.tf - eye.f) * 42 - eye.vf * 11) * h
+        eye.x += eye.vx * h
+        eye.y += eye.vy * h
+        eye.f += eye.vf * h
       }
-    };
+    }
 
     const setLook = (nx: number, ny: number, held: boolean) => {
-      look.x = clamp(nx, -1, 1);
-      look.y = clamp(ny, -1, 1);
-      look.held = held;
-    };
+      look.x = clamp(nx, -1, 1)
+      look.y = clamp(ny, -1, 1)
+      look.held = held
+    }
 
     const aimEye = (s: Settings) => {
-      const aspect = view.width / view.height;
-      const drift = reduce ? 0 : 1;
-      const nx = look.held ? look.x : (Math.sin(time * 0.21) * 0.2 + Math.sin(time * 0.083 + 1.3) * 0.12) * drift;
-      const ny = look.held ? look.y : Math.sin(time * 0.17 + 2.1) * 0.16 * drift;
-      eye.tx = nx * s.parallax * 0.22 * aspect;
-      eye.ty = ny * s.parallax * 0.22;
-    };
+      const aspect = view.width / view.height
+      const drift = reduce ? 0 : 1
+      const nx = look.held
+        ? look.x
+        : (Math.sin(time * 0.21) * 0.2 + Math.sin(time * 0.083 + 1.3) * 0.12) * drift
+      const ny = look.held ? look.y : Math.sin(time * 0.17 + 2.1) * 0.16 * drift
+      eye.tx = nx * s.parallax * 0.22 * aspect
+      eye.ty = ny * s.parallax * 0.22
+    }
 
     const resize = () => {
-      const s = settingsRef.current;
-      view.width = Math.max(1, container.clientWidth);
-      view.height = Math.max(1, container.clientHeight);
-      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
-      canvas.width = Math.max(1, Math.round(view.width * view.ratio));
-      canvas.height = Math.max(1, Math.round(view.height * view.ratio));
-      sizeTarget(gl, scene, canvas.width, canvas.height);
-      sizeTarget(gl, light, canvas.width, canvas.height);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, sceneBuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scene.texture, 0);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, light.texture, 0);
-      const bw = Math.max(1, Math.round(canvas.width / 4));
-      const bh = Math.max(1, Math.round(canvas.height / 4));
-      sizeTarget(gl, bloomA, bw, bh);
-      sizeTarget(gl, bloomB, bw, bh);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, bloomA.texture, 0);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferB);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, bloomB.texture, 0);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      draw();
-      wakeFn();
-    };
+      const s = settingsRef.current
+      view.width = Math.max(1, container.clientWidth)
+      view.height = Math.max(1, container.clientHeight)
+      view.ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2)
+      canvas.width = Math.max(1, Math.round(view.width * view.ratio))
+      canvas.height = Math.max(1, Math.round(view.height * view.ratio))
+      sizeTarget(gl, scene, canvas.width, canvas.height)
+      sizeTarget(gl, light, canvas.width, canvas.height)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, sceneBuffer)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, scene.texture, 0)
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, light.texture, 0)
+      const bw = Math.max(1, Math.round(canvas.width / 4))
+      const bh = Math.max(1, Math.round(canvas.height / 4))
+      sizeTarget(gl, bloomA, bw, bh)
+      sizeTarget(gl, bloomB, bw, bh)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA)
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        bloomA.texture,
+        0,
+      )
+      gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferB)
+      gl.framebufferTexture2D(
+        gl.FRAMEBUFFER,
+        gl.COLOR_ATTACHMENT0,
+        gl.TEXTURE_2D,
+        bloomB.texture,
+        0,
+      )
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      draw()
+      wakeFn()
+    }
 
     const draw = () => {
-      const s = settingsRef.current;
-      const { aspect, cx, cy, roomDepth } = roomSize();
-      const lineRgb = parse(s.linesColor);
-      const scanRgb = parse(s.scanColor);
-      const coreRgb = s.lightMode ? scanRgb : scanRgb.map(c => c + (1 - c) * 0.65);
-      const ru = room.uniforms;
-      gl.bindVertexArray(vao);
-      gl.disable(gl.BLEND);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, sceneBuffer);
-      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(room.program);
-      gl.uniform1f(ru.uAspect, aspect);
-      gl.uniform1f(ru.uPixel, 1 / canvas.height);
-      gl.uniform3f(ru.uEye, eye.x, eye.y, -eye.f);
-      gl.uniform1f(ru.uDepth, roomDepth);
-      gl.uniform3f(ru.uCell, cx, cy, cy);
-      gl.uniform1f(ru.uThick, s.thickness * view.ratio * 0.5);
-      gl.uniform1f(ru.uDot, 1.8 * view.ratio);
-      gl.uniform1i(ru.uStyle, s.style);
-      gl.uniform3fv(ru.uLineColor, lineRgb);
-      gl.uniform3fv(ru.uScanColor, scanRgb);
-      gl.uniform3fv(ru.uCoreColor, coreRgb);
-      gl.uniform1f(ru.uFade, s.depthFade);
-      gl.uniform1f(ru.uScanZ, scan.z);
-      gl.uniform1f(ru.uScanDir, scan.dir);
-      gl.uniform1f(ru.uScanAlpha, scan.alpha);
-      gl.uniform1f(ru.uScanWidth, 0.006 * s.scanWidth);
-      gl.uniform1f(ru.uTrail, 0.04 + s.trail * 1.1);
-      gl.uniform1f(ru.uReveal, introClock < 1 ? scan.z + 0.05 : 1e4);
-      gl.uniform1f(ru.uPoints, s.points ? 1 : 0);
-      gl.uniform1f(ru.uReflect, s.reflection);
-      gl.uniform1f(ru.uHaze, s.lightMode ? 0.03 : 0.05);
-      gl.uniform1f(ru.uShade, s.shading);
-      gl.uniform1f(ru.uLight, s.lightMode ? 1 : 0);
-      gl.uniform4fv(ru.uPing, pingData);
-      gl.uniform1fv(ru.uPingAlpha, pingAlpha);
-      gl.uniform4f(ru.uHover, hover.x, hover.y, hover.z, hover.strength);
-      gl.uniform1f(ru.uTime, time);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      const s = settingsRef.current
+      const { aspect, cx, cy, roomDepth } = roomSize()
+      const lineRgb = parse(s.linesColor)
+      const scanRgb = parse(s.scanColor)
+      const coreRgb = s.lightMode ? scanRgb : scanRgb.map(c => c + (1 - c) * 0.65)
+      const ru = room.uniforms
+      gl.bindVertexArray(vao)
+      gl.disable(gl.BLEND)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, sceneBuffer)
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1])
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(room.program)
+      gl.uniform1f(ru.uAspect, aspect)
+      gl.uniform1f(ru.uPixel, 1 / canvas.height)
+      gl.uniform3f(ru.uEye, eye.x, eye.y, -eye.f)
+      gl.uniform1f(ru.uDepth, roomDepth)
+      gl.uniform3f(ru.uCell, cx, cy, cy)
+      gl.uniform1f(ru.uThick, s.thickness * view.ratio * 0.5)
+      gl.uniform1f(ru.uDot, 1.8 * view.ratio)
+      gl.uniform1i(ru.uStyle, s.style)
+      gl.uniform3fv(ru.uLineColor, lineRgb)
+      gl.uniform3fv(ru.uScanColor, scanRgb)
+      gl.uniform3fv(ru.uCoreColor, coreRgb)
+      gl.uniform1f(ru.uFade, s.depthFade)
+      gl.uniform1f(ru.uScanZ, scan.z)
+      gl.uniform1f(ru.uScanDir, scan.dir)
+      gl.uniform1f(ru.uScanAlpha, scan.alpha)
+      gl.uniform1f(ru.uScanWidth, 0.006 * s.scanWidth)
+      gl.uniform1f(ru.uTrail, 0.04 + s.trail * 1.1)
+      gl.uniform1f(ru.uReveal, introClock < 1 ? scan.z + 0.05 : 1e4)
+      gl.uniform1f(ru.uPoints, s.points ? 1 : 0)
+      gl.uniform1f(ru.uReflect, s.reflection)
+      gl.uniform1f(ru.uHaze, s.lightMode ? 0.03 : 0.05)
+      gl.uniform1f(ru.uShade, s.shading)
+      gl.uniform1f(ru.uLight, s.lightMode ? 1 : 0)
+      gl.uniform4fv(ru.uPing, pingData)
+      gl.uniform1fv(ru.uPingAlpha, pingAlpha)
+      gl.uniform4f(ru.uHover, hover.x, hover.y, hover.z, hover.strength)
+      gl.uniform1f(ru.uTime, time)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
 
-      const glowing = s.glow > 0;
+      const glowing = s.glow > 0
       if (glowing) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA);
-        gl.viewport(0, 0, bloomA.width, bloomA.height);
-        gl.useProgram(down.program);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, light.texture);
-        gl.uniform1i(down.uniforms.uSource, 0);
-        gl.uniform2f(down.uniforms.uTexel, 1 / light.width, 1 / light.height);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        const spread = (2.2 * view.ratio) / 2;
-        gl.useProgram(blur.program);
-        gl.uniform1i(blur.uniforms.uSource, 0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferB);
-        gl.bindTexture(gl.TEXTURE_2D, bloomA.texture);
-        gl.uniform2f(blur.uniforms.uStep, spread / bloomA.width, 0);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA);
-        gl.bindTexture(gl.TEXTURE_2D, bloomB.texture);
-        gl.uniform2f(blur.uniforms.uStep, 0, spread / bloomA.height);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA)
+        gl.viewport(0, 0, bloomA.width, bloomA.height)
+        gl.useProgram(down.program)
+        gl.activeTexture(gl.TEXTURE0)
+        gl.bindTexture(gl.TEXTURE_2D, light.texture)
+        gl.uniform1i(down.uniforms.uSource, 0)
+        gl.uniform2f(down.uniforms.uTexel, 1 / light.width, 1 / light.height)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        const spread = (2.2 * view.ratio) / 2
+        gl.useProgram(blur.program)
+        gl.uniform1i(blur.uniforms.uSource, 0)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferB)
+        gl.bindTexture(gl.TEXTURE_2D, bloomA.texture)
+        gl.uniform2f(blur.uniforms.uStep, spread / bloomA.width, 0)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
+        gl.bindFramebuffer(gl.FRAMEBUFFER, bloomBufferA)
+        gl.bindTexture(gl.TEXTURE_2D, bloomB.texture)
+        gl.uniform2f(blur.uniforms.uStep, 0, spread / bloomA.height)
+        gl.drawArrays(gl.TRIANGLES, 0, 3)
       }
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.useProgram(composite.program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, scene.texture);
-      gl.uniform1i(composite.uniforms.uScene, 0);
-      gl.activeTexture(gl.TEXTURE1);
-      gl.bindTexture(gl.TEXTURE_2D, bloomA.texture);
-      gl.uniform1i(composite.uniforms.uBloom, 1);
-      gl.uniform1f(composite.uniforms.uGlow, glowing ? s.glow * (s.lightMode ? 0.8 : 1.6) : 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      gl.activeTexture(gl.TEXTURE0);
-    };
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.useProgram(composite.program)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, scene.texture)
+      gl.uniform1i(composite.uniforms.uScene, 0)
+      gl.activeTexture(gl.TEXTURE1)
+      gl.bindTexture(gl.TEXTURE_2D, bloomA.texture)
+      gl.uniform1i(composite.uniforms.uBloom, 1)
+      gl.uniform1f(composite.uniforms.uGlow, glowing ? s.glow * (s.lightMode ? 0.8 : 1.6) : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      gl.activeTexture(gl.TEXTURE0)
+    }
 
     const frame = (now: number) => {
-      raf = 0;
-      if (!visible || document.hidden) return;
-      const s = settingsRef.current;
-      const dt = last ? clamp((now - last) / 1000, 0.001, 0.05) : 1 / 60;
-      last = now;
-      time += dt;
-      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS);
-      const { roomDepth } = roomSize();
-      updateScan(s, roomDepth);
-      aimEye(s);
-      updateEye(dt);
+      raf = 0
+      if (!visible || document.hidden) return
+      const s = settingsRef.current
+      const dt = last ? clamp((now - last) / 1000, 0.001, 0.05) : 1 / 60
+      last = now
+      time += dt
+      if (introClock < 1) introClock = Math.min(1, introClock + dt / INTRO_SECONDS)
+      const { roomDepth } = roomSize()
+      updateScan(s, roomDepth)
+      aimEye(s)
+      updateEye(dt)
 
-      const aim = s.interactive && pointer.inside && !reduce ? 1 : 0;
+      const aim = s.interactive && pointer.inside && !reduce ? 1 : 0
       if (aim) {
-        const target = castRay(pointer.x, pointer.y);
-        if (!hover.ready) Object.assign(hover, target, { ready: true });
-        const follow = 1 - Math.exp(-dt / 0.08);
-        hover.x += (target.x - hover.x) * follow;
-        hover.y += (target.y - hover.y) * follow;
-        hover.z += (target.z - hover.z) * follow;
+        const target = castRay(pointer.x, pointer.y)
+        if (!hover.ready) Object.assign(hover, target, { ready: true })
+        const follow = 1 - Math.exp(-dt / 0.08)
+        hover.x += (target.x - hover.x) * follow
+        hover.y += (target.y - hover.y) * follow
+        hover.z += (target.z - hover.z) * follow
       }
-      hover.strength += (aim - hover.strength) * (1 - Math.exp(-dt / 0.25));
-      if (!aim && hover.strength < 0.01) hover.ready = false;
+      hover.strength += (aim - hover.strength) * (1 - Math.exp(-dt / 0.25))
+      if (!aim && hover.strength < 0.01) hover.ready = false
 
       for (let i = pings.length - 1; i >= 0; i--) {
-        pings[i].age += dt;
-        if (pings[i].age > PING_LIFE) pings.splice(i, 1);
+        pings[i].age += dt
+        if (pings[i].age > PING_LIFE) pings.splice(i, 1)
       }
       for (let i = 0; i < MAX_PINGS; i++) {
-        const ping = pings[i];
+        const ping = pings[i]
         if (!ping) {
-          pingAlpha[i] = 0;
-          continue;
+          pingAlpha[i] = 0
+          continue
         }
-        const k = ping.age / PING_LIFE;
-        pingData.set([ping.x, ping.y, ping.z, ping.age * 1.15], i * 4);
-        pingAlpha[i] = Math.min(1, ping.age / 0.05) * (1 - k) * (1 - k);
+        const k = ping.age / PING_LIFE
+        pingData.set([ping.x, ping.y, ping.z, ping.age * 1.15], i * 4)
+        pingAlpha[i] = Math.min(1, ping.age / 0.05) * (1 - k) * (1 - k)
       }
 
-      draw();
+      draw()
 
       const settling =
         Math.abs(eye.tx - eye.x) + Math.abs(eye.ty - eye.y) + Math.abs(eye.tf - eye.f) > 1e-4 ||
-        Math.abs(eye.vx) + Math.abs(eye.vy) + Math.abs(eye.vf) > 1e-4;
+        Math.abs(eye.vx) + Math.abs(eye.vy) + Math.abs(eye.vf) > 1e-4
       const busy =
         introClock < 1 ||
         (!reduce && s.autoScan) ||
@@ -855,232 +876,241 @@ export const GridScan = (props: GridScanProps) => {
         settling ||
         hover.strength > 0.002 ||
         (!reduce && s.parallax > 0 && !look.held) ||
-        (s.points && !reduce && scan.alpha > 0);
-      if (busy) raf = requestAnimationFrame(frame);
-      else last = 0;
-    };
+        (s.points && !reduce && scan.alpha > 0)
+      if (busy) raf = requestAnimationFrame(frame)
+      else last = 0
+    }
 
     // Function declaration (like upstream) so the initial resize() can call it.
     function wakeFn() {
-      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame);
+      if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame)
     }
-    wake = wakeFn;
+    wake = wakeFn
 
     const locate = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const u = (event.clientX - rect.left) / Math.max(1, rect.width);
-      const v = 1 - (event.clientY - rect.top) / Math.max(1, rect.height);
-      return { u, v, inside: u >= 0 && u <= 1 && v >= 0 && v <= 1 };
-    };
+      const rect = container.getBoundingClientRect()
+      const u = (event.clientX - rect.left) / Math.max(1, rect.width)
+      const v = 1 - (event.clientY - rect.top) / Math.max(1, rect.height)
+      return { u, v, inside: u >= 0 && u <= 1 && v >= 0 && v <= 1 }
+    }
 
     const onPointerMove = (event: PointerEvent) => {
-      const s = settingsRef.current;
-      const { u, v, inside } = locate(event);
-      pointer.x = u;
-      pointer.y = v;
-      const was = pointer.inside;
-      pointer.inside = inside;
+      const s = settingsRef.current
+      const { u, v, inside } = locate(event)
+      pointer.x = u
+      pointer.y = v
+      const was = pointer.inside
+      pointer.inside = inside
       if (inside) {
-        window.clearTimeout(leaveTimer);
-        leaveTimer = 0;
-        if (!head?.active && s.interactive && !reduce) setLook(u * 2 - 1, v * 2 - 1, true);
-        wakeFn();
+        window.clearTimeout(leaveTimer)
+        leaveTimer = 0
+        if (!head?.active && s.interactive && !reduce) setLook(u * 2 - 1, v * 2 - 1, true)
+        wakeFn()
       } else if (was && !leaveTimer) {
         leaveTimer = window.setTimeout(() => {
-          leaveTimer = 0;
-          if (!head?.active) look.held = false;
-          wakeFn();
-        }, 220);
-        wakeFn();
+          leaveTimer = 0
+          if (!head?.active) look.held = false
+          wakeFn()
+        }, 220)
+        wakeFn()
       }
-    };
+    }
 
     const onPointerDown = (event: PointerEvent) => {
-      const s = settingsRef.current;
-      const { u, v, inside } = locate(event);
-      if (!inside || reduce || s.clickEffect === 'none') return;
+      const s = settingsRef.current
+      const { u, v, inside } = locate(event)
+      if (!inside || reduce || s.clickEffect === 'none') return
       if (s.clickEffect === 'scan') {
-        if (introClock >= 1) startSweep(s);
+        if (introClock >= 1) startSweep(s)
       } else {
-        const hit = castRay(u, v);
-        pings.unshift({ ...hit, age: 0 });
-        if (pings.length > MAX_PINGS) pings.pop();
+        const hit = castRay(u, v)
+        pings.unshift({ ...hit, age: 0 })
+        if (pings.length > MAX_PINGS) pings.pop()
       }
-      wakeFn();
-    };
+      wakeFn()
+    }
 
     const onPointerLeave = () => {
-      pointer.inside = false;
-      if (!head?.active) look.held = false;
-      wakeFn();
-    };
+      pointer.inside = false
+      if (!head?.active) look.held = false
+      wakeFn()
+    }
 
     const onOrientation = (event: DeviceOrientationEvent) => {
-      const s = settingsRef.current;
-      if (!s.enableGyro || head?.active || reduce || event.gamma === null || event.beta === null) return;
-      if (!tilt.ready) Object.assign(tilt, { gamma: event.gamma, beta: event.beta, ready: true });
-      setLook((event.gamma - tilt.gamma) / 25, (event.beta - tilt.beta) / -25, true);
-      wakeFn();
-    };
+      const s = settingsRef.current
+      if (!s.enableGyro || head?.active || reduce || event.gamma === null || event.beta === null)
+        return
+      if (!tilt.ready) Object.assign(tilt, { gamma: event.gamma, beta: event.beta, ready: true })
+      setLook((event.gamma - tilt.gamma) / 25, (event.beta - tilt.beta) / -25, true)
+      wakeFn()
+    }
 
     const onClick = () => {
-      const s = settingsRef.current;
+      const s = settingsRef.current
       const request = (
-        window.DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> } | undefined
-      )?.requestPermission;
-      if (!s.enableGyro || tilt.asked || typeof request !== 'function') return;
-      tilt.asked = true;
-      request.call(window.DeviceOrientationEvent).catch(() => {});
-    };
+        window.DeviceOrientationEvent as unknown as
+          | { requestPermission?: () => Promise<string> }
+          | undefined
+      )?.requestPermission
+      if (!s.enableGyro || tilt.asked || typeof request !== 'function') return
+      tilt.asked = true
+      request.call(window.DeviceOrientationEvent).catch(() => {})
+    }
 
     const onVisibility = () => {
-      last = 0;
-      wakeFn();
-    };
+      last = 0
+      wakeFn()
+    }
 
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(container);
+    const resizeObserver = new ResizeObserver(resize)
+    resizeObserver.observe(container)
     const intersection = new IntersectionObserver(entries => {
-      visible = entries.some(entry => entry.isIntersecting);
+      visible = entries.some(entry => entry.isIntersecting)
       if (visible) {
-        last = 0;
-        wakeFn();
+        last = 0
+        wakeFn()
       }
-    });
-    intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    window.addEventListener('deviceorientation', onOrientation);
-    window.addEventListener('click', onClick);
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
-    document.addEventListener('visibilitychange', onVisibility);
+    })
+    intersection.observe(container)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    window.addEventListener('pointerdown', onPointerDown, { passive: true })
+    window.addEventListener('deviceorientation', onOrientation)
+    window.addEventListener('click', onClick)
+    document.documentElement.addEventListener('pointerleave', onPointerLeave)
+    document.addEventListener('visibilitychange', onVisibility)
     head = {
       active: false,
       move: (nx, ny, near) => {
-        if (reduce) return;
-        setLook(nx * 1.3, ny * 1.3, true);
-        eye.tf = EYE_DISTANCE * clamp(near, 0.6, 1.6);
-        wakeFn();
+        if (reduce) return
+        setLook(nx * 1.3, ny * 1.3, true)
+        eye.tf = EYE_DISTANCE * clamp(near, 0.6, 1.6)
+        wakeFn()
       },
       release: () => {
-        eye.tf = EYE_DISTANCE;
-        look.held = false;
-        wakeFn();
-      }
-    };
-    resize();
+        eye.tf = EYE_DISTANCE
+        look.held = false
+        wakeFn()
+      },
+    }
+    resize()
 
     onCleanup(() => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(leaveTimer);
-      wake = null;
-      head = null;
-      resizeObserver.disconnect();
-      intersection.disconnect();
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('deviceorientation', onOrientation);
-      window.removeEventListener('click', onClick);
-      document.documentElement.removeEventListener('pointerleave', onPointerLeave);
-      document.removeEventListener('visibilitychange', onVisibility);
-      [scene, light, bloomA, bloomB].forEach(target => gl.deleteTexture(target.texture));
-      [sceneBuffer, bloomBufferA, bloomBufferB].forEach(buffer => gl.deleteFramebuffer(buffer));
-      gl.deleteVertexArray(vao);
-      [room, down, blur, composite].forEach(item => gl.deleteProgram(item.program));
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-    });
-  });
+      cancelAnimationFrame(raf)
+      window.clearTimeout(leaveTimer)
+      wake = null
+      head = null
+      resizeObserver.disconnect()
+      intersection.disconnect()
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('deviceorientation', onOrientation)
+      window.removeEventListener('click', onClick)
+      document.documentElement.removeEventListener('pointerleave', onPointerLeave)
+      document.removeEventListener('visibilitychange', onVisibility)
+      ;[scene, light, bloomA, bloomB].forEach(target => gl.deleteTexture(target.texture))
+      ;[sceneBuffer, bloomBufferA, bloomBufferB].forEach(buffer => gl.deleteFramebuffer(buffer))
+      gl.deleteVertexArray(vao)
+      ;[room, down, blur, composite].forEach(item => gl.deleteProgram(item.program))
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    })
+  })
 
   // Upstream re-ran the wake effect after every render; settings refresh covers
   // the same prop-change window.
   createEffect(() => {
-    settingsRef.current = buildSettings();
-    wake?.();
-  });
+    settingsRef.current = buildSettings()
+    wake?.()
+  })
 
   // Webcam face tracking — upstream effect deps: [enableWebcam, modelsPath].
   createEffect(() => {
-    const modelsPath = props.modelsPath ?? MODELS_URL;
-    if (!props.enableWebcam) return;
-    const video = videoEl;
-    if (!video) return;
-    let stopped = false;
-    let stream: MediaStream | null = null;
-    let timer = 0;
-    let lost = 0;
-    const smooth = { x: 0, y: 0, near: 1, ready: false };
-    setStatus('loading');
+    const modelsPath = props.modelsPath ?? MODELS_URL
+    if (!props.enableWebcam) return
+    const video = videoEl
+    if (!video) return
+    let stopped = false
+    let stream: MediaStream | null = null
+    let timer = 0
+    let lost = 0
+    const smooth = { x: 0, y: 0, near: 1, ready: false }
+    setStatus('loading')
 
     const run = async () => {
       try {
-        const faceapi = await loadFaceApi();
-        await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath);
-        if (stopped) return;
+        const faceapi = await loadFaceApi()
+        await faceapi.nets.tinyFaceDetector.loadFromUri(modelsPath)
+        if (stopped) return
         stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-          audio: false
-        });
+          audio: false,
+        })
         if (stopped) {
-          stream.getTracks().forEach(track => track.stop());
-          return;
+          stream.getTracks().forEach(track => track.stop())
+          return
         }
-        video.srcObject = stream;
-        await video.play();
-        setStatus('searching');
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.45 });
+        video.srcObject = stream
+        await video.play()
+        setStatus('searching')
+        const options = new faceapi.TinyFaceDetectorOptions({
+          inputSize: 224,
+          scoreThreshold: 0.45,
+        })
         const detect = async () => {
-          if (stopped) return;
-          let result: { box: { x: number; y: number; width: number; height: number } } | null | undefined = null;
+          if (stopped) return
+          let result:
+            | { box: { x: number; y: number; width: number; height: number } }
+            | null
+            | undefined = null
           try {
-            result = await faceapi.detectSingleFace(video, options);
+            result = await faceapi.detectSingleFace(video, options)
           } catch {
-            result = null;
+            result = null
           }
-          if (stopped) return;
-          const tracker = head;
+          if (stopped) return
+          const tracker = head
           if (result && tracker) {
-            const box = result.box;
-            const vw = video.videoWidth || 1;
-            const vh = video.videoHeight || 1;
-            const x = -((box.x + box.width / 2) / vw - 0.5) * 2;
-            const y = -((box.y + box.height / 2) / vh - 0.5) * 2;
-            const near = 0.32 / Math.max(0.08, box.width / vw);
-            const k = smooth.ready ? 0.45 : 1;
-            smooth.x += (x - smooth.x) * k;
-            smooth.y += (y - smooth.y) * k;
-            smooth.near += (near - smooth.near) * k;
-            smooth.ready = true;
-            lost = 0;
-            tracker.active = true;
-            tracker.move(smooth.x, smooth.y, smooth.near);
-            setStatus('tracking');
+            const box = result.box
+            const vw = video.videoWidth || 1
+            const vh = video.videoHeight || 1
+            const x = -((box.x + box.width / 2) / vw - 0.5) * 2
+            const y = -((box.y + box.height / 2) / vh - 0.5) * 2
+            const near = 0.32 / Math.max(0.08, box.width / vw)
+            const k = smooth.ready ? 0.45 : 1
+            smooth.x += (x - smooth.x) * k
+            smooth.y += (y - smooth.y) * k
+            smooth.near += (near - smooth.near) * k
+            smooth.ready = true
+            lost = 0
+            tracker.active = true
+            tracker.move(smooth.x, smooth.y, smooth.near)
+            setStatus('tracking')
           } else if (tracker && ++lost > 12 && tracker.active) {
-            tracker.active = false;
-            smooth.ready = false;
-            tracker.release();
-            setStatus('searching');
+            tracker.active = false
+            smooth.ready = false
+            tracker.release()
+            setStatus('searching')
           }
-          timer = window.setTimeout(detect, 40);
-        };
-        detect();
+          timer = window.setTimeout(detect, 40)
+        }
+        detect()
       } catch {
-        if (!stopped) setStatus('blocked');
+        if (!stopped) setStatus('blocked')
       }
-    };
-    run();
+    }
+    run()
 
     onCleanup(() => {
-      stopped = true;
-      window.clearTimeout(timer);
-      stream?.getTracks().forEach(track => track.stop());
-      video.srcObject = null;
-      const tracker = head;
+      stopped = true
+      window.clearTimeout(timer)
+      stream?.getTracks().forEach(track => track.stop())
+      video.srcObject = null
+      const tracker = head
       if (tracker?.active) {
-        tracker.active = false;
-        tracker.release();
+        tracker.active = false
+        tracker.release()
       }
-    });
-  });
+    })
+  })
 
   return (
     <div
@@ -1089,7 +1119,7 @@ export const GridScan = (props: GridScanProps) => {
       style={own.style}
       {...rest}
     >
-      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+      <canvas ref={canvasEl} class="absolute inset-0 block h-full w-full" />
       <Show when={props.enableWebcam}>
         <div
           class={
@@ -1100,7 +1130,7 @@ export const GridScan = (props: GridScanProps) => {
         >
           <video
             ref={(el: HTMLVideoElement) => {
-              videoEl = el;
+              videoEl = el
             }}
             class="block h-full w-full -scale-x-100 object-cover"
             muted
@@ -1114,7 +1144,7 @@ export const GridScan = (props: GridScanProps) => {
         </div>
       </Show>
     </div>
-  );
-};
+  )
+}
 
-export default GridScan;
+export default GridScan

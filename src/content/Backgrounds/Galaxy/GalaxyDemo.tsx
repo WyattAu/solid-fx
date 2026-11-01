@@ -1,4 +1,4 @@
-import Galaxy from './Galaxy';
+import Galaxy from './Galaxy'
 
 function GalaxyDemo() {
   return (
@@ -17,7 +17,7 @@ function GalaxyDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default GalaxyDemo;
+export default GalaxyDemo

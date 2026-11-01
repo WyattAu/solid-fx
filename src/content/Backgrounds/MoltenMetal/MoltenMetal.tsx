@@ -1,50 +1,53 @@
-import { createMemo, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
+import { createMemo, onCleanup, onMount } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 export interface MoltenMetalProps {
-  colors?: string[];
-  coreColor?: string;
-  backgroundColor?: string;
-  lightMode?: boolean;
-  speed?: number;
-  scale?: number;
-  detail?: number;
-  glow?: number;
-  thickness?: number;
-  swirl?: number;
-  turbulence?: number;
-  haze?: number;
-  brightness?: number;
-  colorMode?: 'molten' | 'ember' | 'frost';
-  rotation?: number;
-  offsetX?: number;
-  offsetY?: number;
-  drift?: number;
-  grain?: number;
-  opacity?: number;
-  intro?: boolean;
-  mouseInteraction?: boolean;
-  mouseStrength?: number;
-  flareOnClick?: boolean;
-  paused?: boolean;
-  dpr?: number;
-  class?: string;
-  className?: string;
-  style?: JSX.CSSProperties;
+  colors?: string[]
+  coreColor?: string
+  backgroundColor?: string
+  lightMode?: boolean
+  speed?: number
+  scale?: number
+  detail?: number
+  glow?: number
+  thickness?: number
+  swirl?: number
+  turbulence?: number
+  haze?: number
+  brightness?: number
+  colorMode?: 'molten' | 'ember' | 'frost'
+  rotation?: number
+  offsetX?: number
+  offsetY?: number
+  drift?: number
+  grain?: number
+  opacity?: number
+  intro?: boolean
+  mouseInteraction?: boolean
+  mouseStrength?: number
+  flareOnClick?: boolean
+  paused?: boolean
+  dpr?: number
+  class?: string
+  className?: string
+  style?: JSX.CSSProperties
 }
 
 export default function MoltenMetal(props: MoltenMetalProps) {
-  let container!: HTMLDivElement;
+  let container!: HTMLDivElement
 
   // Upstream rebuilt these objects each render; the memos track the same props.
   const colorKey = () =>
-    [...(props.colors ?? ['#5227FF', '#FF9FFC']).slice(0, MAX_COLORS - 1), props.coreColor ?? '#FFFFFF'].join('|');
+    [
+      ...(props.colors ?? ['#5227FF', '#FF9FFC']).slice(0, MAX_COLORS - 1),
+      props.coreColor ?? '#FFFFFF',
+    ].join('|')
   const palette = createMemo(() =>
     colorKey()
       .split('|')
-      .map((value): RGB => parseColor(value, [1, 1, 1]) ?? [1, 1, 1])
-  );
-  const paper = createMemo(() => parseColor(props.backgroundColor ?? 'transparent', null));
+      .map((value): RGB => parseColor(value, [1, 1, 1]) ?? [1, 1, 1]),
+  )
+  const paper = createMemo(() => parseColor(props.backgroundColor ?? 'transparent', null))
   const settings = createMemo(() => ({
     palette: palette(),
     paper: paper(),
@@ -69,45 +72,45 @@ export default function MoltenMetal(props: MoltenMetalProps) {
     mouseStrength: clamp(props.mouseStrength ?? 0.5, 0, 1),
     flareOnClick: props.flareOnClick ?? true,
     paused: props.paused ?? false,
-    dpr: Math.max(0.5, props.dpr ?? 2)
-  }));
-  type SettingsShape = ReturnType<typeof settings>;
+    dpr: Math.max(0.5, props.dpr ?? 2),
+  }))
+  type SettingsShape = ReturnType<typeof settings>
 
-type RGB = [number, number, number];
+  type RGB = [number, number, number]
 
-interface TrailPoint {
-  at: number[];
-  time: number;
-  arrive: number;
-  weight: number;
-  live: boolean;
-}
+  interface TrailPoint {
+    at: number[]
+    time: number
+    arrive: number
+    weight: number
+    live: boolean
+  }
 
-interface Flare {
-  at: number[];
-  time: number;
-}
+  interface Flare {
+    at: number[]
+    time: number
+  }
 
-const ROOT = 'relative h-full w-full overflow-hidden';
-const CANVAS = 'absolute inset-0 block h-full w-full';
+  const ROOT = 'relative h-full w-full overflow-hidden'
+  const CANVAS = 'absolute inset-0 block h-full w-full'
 
-const MAX_COLORS = 6;
-const TRAIL = 16;
-const MAX_FLARES = 8;
-const SAMPLE_SECONDS = 0.06;
-const TRAIL_SECONDS = 0.9;
-const FLARE_SECONDS = 1.8;
-const INTRO_SECONDS = 2.4;
-const FLOW_START = 0.4;
-const BALANCE: Record<string, number> = { molten: 0.5, ember: 0.3, frost: 0.7 };
+  const MAX_COLORS = 6
+  const TRAIL = 16
+  const MAX_FLARES = 8
+  const SAMPLE_SECONDS = 0.06
+  const TRAIL_SECONDS = 0.9
+  const FLARE_SECONDS = 1.8
+  const INTRO_SECONDS = 2.4
+  const FLOW_START = 0.4
+  const BALANCE: Record<string, number> = { molten: 0.5, ember: 0.3, frost: 0.7 }
 
-const VERTEX = `#version 300 es
+  const VERTEX = `#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);
-}`;
+}`
 
-const FRAGMENT = `#version 300 es
+  const FRAGMENT = `#version 300 es
 precision highp float;
 uniform vec2 uResolution;
 uniform float uTime;
@@ -263,80 +266,81 @@ void main() {
   } else {
     outColor = vec4(col * a, a);
   }
-}`;
+}`
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-let probe: CanvasRenderingContext2D | null = null;
+  let probe: CanvasRenderingContext2D | null = null
 
-const parseColor = (value: string, fallback: RGB | null): RGB | null => {
-  if (value === 'transparent') return null;
-  if (typeof document === 'undefined') return fallback;
-  if (!probe) probe = document.createElement('canvas').getContext('2d');
-  if (!probe) return fallback;
-  probe.fillStyle = '#000000';
-  probe.fillStyle = value;
-  const text = probe.fillStyle;
-  if (text.startsWith('#')) {
-    const hex = parseInt(text.slice(1), 16);
-    return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255];
+  const parseColor = (value: string, fallback: RGB | null): RGB | null => {
+    if (value === 'transparent') return null
+    if (typeof document === 'undefined') return fallback
+    if (!probe) probe = document.createElement('canvas').getContext('2d')
+    if (!probe) return fallback
+    probe.fillStyle = '#000000'
+    probe.fillStyle = value
+    const text = probe.fillStyle
+    if (text.startsWith('#')) {
+      const hex = parseInt(text.slice(1), 16)
+      return [((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255]
+    }
+    const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text)
+    if (!match) return fallback
+    if (match[4] !== undefined && Number(match[4]) === 0) return null
+    return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255]
   }
-  const match = /rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/.exec(text);
-  if (!match) return fallback;
-  if (match[4] !== undefined && Number(match[4]) === 0) return null;
-  return [Number(match[1]) / 255, Number(match[2]) / 255, Number(match[3]) / 255];
-};
 
-const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
-  const shader = gl.createShader(type);
-  if (!shader) return null;
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    gl.deleteShader(shader);
-    return null;
+  const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
+    const shader = gl.createShader(type)
+    if (!shader) return null
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      gl.deleteShader(shader)
+      return null
+    }
+    return shader
   }
-  return shader;
-};
 
-const prefersReduced = () =>
-  typeof window !== 'undefined' && (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+  const prefersReduced = () =>
+    typeof window !== 'undefined' &&
+    (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
 
   onMount(() => {
-    if (!container) return undefined;
-    const canvas = document.createElement('canvas');
-    canvas.className = CANVAS;
-    container.appendChild(canvas);
+    if (!container) return undefined
+    const canvas = document.createElement('canvas')
+    canvas.className = CANVAS
+    container.appendChild(canvas)
     const gl = canvas.getContext('webgl2', {
       alpha: true,
       antialias: false,
       depth: false,
       stencil: false,
       premultipliedAlpha: true,
-      powerPreference: 'high-performance'
-    });
+      powerPreference: 'high-performance',
+    })
     if (!gl) {
-      canvas.remove();
-      return undefined;
+      canvas.remove()
+      return undefined
     }
 
-    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
-    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-    const program = gl.createProgram();
+    const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+    const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+    const program = gl.createProgram()
     if (!vertex || !fragment || !program) {
-      canvas.remove();
-      return undefined;
+      canvas.remove()
+      return undefined
     }
-    gl.attachShader(program, vertex);
-    gl.attachShader(program, fragment);
-    gl.bindAttribLocation(program, 0, 'aPosition');
-    gl.linkProgram(program);
-    gl.deleteShader(vertex);
-    gl.deleteShader(fragment);
+    gl.attachShader(program, vertex)
+    gl.attachShader(program, fragment)
+    gl.bindAttribLocation(program, 0, 'aPosition')
+    gl.linkProgram(program)
+    gl.deleteShader(vertex)
+    gl.deleteShader(fragment)
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      gl.deleteProgram(program);
-      canvas.remove();
-      return undefined;
+      gl.deleteProgram(program)
+      canvas.remove()
+      return undefined
     }
     const names = [
       'uResolution',
@@ -367,26 +371,26 @@ const prefersReduced = () =>
       'uTrailCount',
       'uFlares',
       'uFlareCount',
-      'uHeat'
-    ];
-    const u: Record<string, WebGLUniformLocation | null> = {};
+      'uHeat',
+    ]
+    const u: Record<string, WebGLUniformLocation | null> = {}
     names.forEach(name => {
-      u[name] = gl.getUniformLocation(program, name);
-    });
+      u[name] = gl.getUniformLocation(program, name)
+    })
 
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    gl.useProgram(program);
+    const vao = gl.createVertexArray()
+    gl.bindVertexArray(vao)
+    const buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0)
+    gl.useProgram(program)
 
-    const colorData = new Float32Array(MAX_COLORS * 3);
-    const trailData = new Float32Array(TRAIL * 4);
-    const weightData = new Float32Array(TRAIL);
-    const flareData = new Float32Array(MAX_FLARES * 4);
+    const colorData = new Float32Array(MAX_COLORS * 3)
+    const trailData = new Float32Array(TRAIL * 4)
+    const weightData = new Float32Array(TRAIL)
+    const flareData = new Float32Array(MAX_FLARES * 4)
     const state = {
       width: 1,
       height: 1,
@@ -403,93 +407,103 @@ const prefersReduced = () =>
       trail: [] as TrailPoint[],
       flares: [] as Flare[],
       quiet: 0,
-      seen: null as SettingsShape | null
-    };
+      seen: null as SettingsShape | null,
+    }
 
     const resize = () => {
-      const s = settings();
-      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr);
-      const width = Math.max(1, Math.round(container.clientWidth * ratio));
-      const height = Math.max(1, Math.round(container.clientHeight * ratio));
-      if (width === state.width && height === state.height) return;
-      state.quiet = 0;
-      state.width = width;
-      state.height = height;
-      canvas.width = width;
-      canvas.height = height;
-    };
+      const s = settings()
+      const ratio = Math.min(window.devicePixelRatio || 1, s.dpr)
+      const width = Math.max(1, Math.round(container.clientWidth * ratio))
+      const height = Math.max(1, Math.round(container.clientHeight * ratio))
+      if (width === state.width && height === state.height) return
+      state.quiet = 0
+      state.width = width
+      state.height = height
+      canvas.width = width
+      canvas.height = height
+    }
 
-    const toView = (point: number[]) => [(point[0] - 0.5) * (state.width / Math.max(state.height, 1)), 0.5 - point[1]];
+    const toView = (point: number[]) => [
+      (point[0] - 0.5) * (state.width / Math.max(state.height, 1)),
+      0.5 - point[1],
+    ]
 
     const introProgress = (s: SettingsShape, reduced: boolean) => {
-      if (!s.intro || reduced || state.introAt < 0) return 1;
-      return clamp((state.clock - state.introAt) / INTRO_SECONDS, 0, 1);
-    };
+      if (!s.intro || reduced || state.introAt < 0) return 1
+      return clamp((state.clock - state.introAt) / INTRO_SECONDS, 0, 1)
+    }
 
     const render = (reduced: boolean) => {
-      const s = settings();
-      const progress = introProgress(s, reduced);
-      const aspect = state.width / Math.max(state.height, 1);
-      gl.viewport(0, 0, state.width, state.height);
-      gl.uniform2f(u.uResolution, state.width, state.height);
-      gl.uniform1f(u.uTime, state.time);
-      gl.uniform1f(u.uClock, state.clock);
-      gl.uniform1f(u.uScale, s.scale);
-      gl.uniform1f(u.uDetail, s.detail);
-      gl.uniform1f(u.uGlow, s.glow * 0.1);
-      gl.uniform1f(u.uThickness, s.thickness);
-      gl.uniform1f(u.uSwirl, s.swirl);
-      gl.uniform1f(u.uFold, s.fold);
-      gl.uniform1f(u.uBlackPoint, s.blackPoint);
-      gl.uniform1f(u.uBrightness, s.brightness);
-      gl.uniform1f(u.uBalance, s.balance);
-      gl.uniform1f(u.uGrain, s.grain);
-      gl.uniform1f(u.uOpacity, s.opacity);
-      gl.uniform2f(u.uOffset, s.offset[0] * aspect, -s.offset[1]);
-      gl.uniform2f(u.uRotation, Math.cos(s.rotation), Math.sin(s.rotation));
-      gl.uniform2f(u.uDrift, state.drift[0], state.drift[1]);
-      colorData.fill(0);
-      s.palette.forEach((rgb, index) => colorData.set(rgb, index * 3));
-      gl.uniform3fv(u.uColors, colorData);
-      gl.uniform1i(u.uColorCount, s.palette.length);
-      const paperColor = s.paper ?? [0, 0, 0];
-      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2]);
-      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0);
-      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0);
-      gl.uniform3f(u.uReveal, Math.log(1.6) + Math.log(0.01 / 1.6) * progress, progress < 1 ? 1 : 0, progress);
-      trailData.fill(0);
-      weightData.fill(0);
+      const s = settings()
+      const progress = introProgress(s, reduced)
+      const aspect = state.width / Math.max(state.height, 1)
+      gl.viewport(0, 0, state.width, state.height)
+      gl.uniform2f(u.uResolution, state.width, state.height)
+      gl.uniform1f(u.uTime, state.time)
+      gl.uniform1f(u.uClock, state.clock)
+      gl.uniform1f(u.uScale, s.scale)
+      gl.uniform1f(u.uDetail, s.detail)
+      gl.uniform1f(u.uGlow, s.glow * 0.1)
+      gl.uniform1f(u.uThickness, s.thickness)
+      gl.uniform1f(u.uSwirl, s.swirl)
+      gl.uniform1f(u.uFold, s.fold)
+      gl.uniform1f(u.uBlackPoint, s.blackPoint)
+      gl.uniform1f(u.uBrightness, s.brightness)
+      gl.uniform1f(u.uBalance, s.balance)
+      gl.uniform1f(u.uGrain, s.grain)
+      gl.uniform1f(u.uOpacity, s.opacity)
+      gl.uniform2f(u.uOffset, s.offset[0] * aspect, -s.offset[1])
+      gl.uniform2f(u.uRotation, Math.cos(s.rotation), Math.sin(s.rotation))
+      gl.uniform2f(u.uDrift, state.drift[0], state.drift[1])
+      colorData.fill(0)
+      s.palette.forEach((rgb, index) => colorData.set(rgb, index * 3))
+      gl.uniform3fv(u.uColors, colorData)
+      gl.uniform1i(u.uColorCount, s.palette.length)
+      const paperColor = s.paper ?? [0, 0, 0]
+      gl.uniform3f(u.uBackground, paperColor[0], paperColor[1], paperColor[2])
+      gl.uniform1f(u.uOpaque, s.paper ? 1 : 0)
+      gl.uniform1f(u.uLight, s.lightMode ? 1 : 0)
+      gl.uniform3f(
+        u.uReveal,
+        Math.log(1.6) + Math.log(0.01 / 1.6) * progress,
+        progress < 1 ? 1 : 0,
+        progress,
+      )
+      trailData.fill(0)
+      weightData.fill(0)
       state.trail.forEach((point, index) => {
-        const [x, y] = toView(point.at);
-        trailData.set([x, y, state.clock - point.time, state.clock - point.arrive], index * 4);
-        weightData[index] = point.weight;
-      });
-      gl.uniform4fv(u.uTrail, trailData);
-      gl.uniform1fv(u.uTrailWeight, weightData);
-      gl.uniform1i(u.uTrailCount, state.trail.length);
-      flareData.fill(0);
+        const [x, y] = toView(point.at)
+        trailData.set([x, y, state.clock - point.time, state.clock - point.arrive], index * 4)
+        weightData[index] = point.weight
+      })
+      gl.uniform4fv(u.uTrail, trailData)
+      gl.uniform1fv(u.uTrailWeight, weightData)
+      gl.uniform1i(u.uTrailCount, state.trail.length)
+      flareData.fill(0)
       state.flares.forEach((flare, index) => {
-        const [x, y] = toView(flare.at);
-        flareData.set([x, y, state.clock - flare.time, 1], index * 4);
-      });
-      gl.uniform4fv(u.uFlares, flareData);
-      gl.uniform1i(u.uFlareCount, state.flares.length);
-      const heating = state.trail.length > 0 || state.flares.length > 0;
-      gl.uniform4f(u.uHeat, s.mouseStrength * 2, 3.2, 0.2, heating ? 1 : 0);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+        const [x, y] = toView(flare.at)
+        flareData.set([x, y, state.clock - flare.time, 1], index * 4)
+      })
+      gl.uniform4fv(u.uFlares, flareData)
+      gl.uniform1i(u.uFlareCount, state.flares.length)
+      const heating = state.trail.length > 0 || state.flares.length > 0
+      gl.uniform4f(u.uHeat, s.mouseStrength * 2, 3.2, 0.2, heating ? 1 : 0)
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+      gl.clearColor(0, 0, 0, 0)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
 
     const updateTrail = (s: SettingsShape, dt: number) => {
-      const wanted = s.mouseInteraction && state.inside && s.mouseStrength > 0;
-      state.presence += ((wanted ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / 0.25));
-      state.trail = state.trail.filter(point => point.live || state.clock - point.time < TRAIL_SECONDS);
-      const head = state.trail[0];
+      const wanted = s.mouseInteraction && state.inside && s.mouseStrength > 0
+      state.presence += ((wanted ? 1 : 0) - state.presence) * (1 - Math.exp(-dt / 0.25))
+      state.trail = state.trail.filter(
+        point => point.live || state.clock - point.time < TRAIL_SECONDS,
+      )
+      const head = state.trail[0]
       if (!wanted) {
-        if (head?.live) head.live = false;
-        return state.trail.length > 0;
+        if (head?.live) head.live = false
+        return state.trail.length > 0
       }
       if (!head?.live) {
         state.trail.unshift({
@@ -497,64 +511,65 @@ const prefersReduced = () =>
           time: state.clock,
           arrive: state.clock,
           weight: state.presence,
-          live: true
-        });
+          live: true,
+        })
       } else {
         if (head.at[0] !== state.pointer[0] || head.at[1] !== state.pointer[1]) {
-          const last = state.trail[1];
-          const gap = last ? Math.hypot(last.at[0] - head.at[0], last.at[1] - head.at[1]) : Infinity;
-          const settled = state.clock - head.arrive > SAMPLE_SECONDS;
+          const last = state.trail[1]
+          const gap = last ? Math.hypot(last.at[0] - head.at[0], last.at[1] - head.at[1]) : Infinity
+          const settled = state.clock - head.arrive > SAMPLE_SECONDS
           if (gap > 0.004 && (!last || settled || state.clock - last.time >= SAMPLE_SECONDS)) {
-            state.trail.splice(1, 0, { ...head, at: [...head.at], time: state.clock, live: false });
+            state.trail.splice(1, 0, { ...head, at: [...head.at], time: state.clock, live: false })
           }
-          head.at = [...state.pointer];
-          head.arrive = state.clock;
+          head.at = [...state.pointer]
+          head.arrive = state.clock
         }
-        head.time = state.clock;
-        head.weight = state.presence;
+        head.time = state.clock
+        head.weight = state.presence
       }
-      if (state.trail.length > TRAIL) state.trail.length = TRAIL;
-      return state.trail.length > 0;
-    };
+      if (state.trail.length > TRAIL) state.trail.length = TRAIL
+      return state.trail.length > 0
+    }
 
     const tick = (now: number) => {
-      state.raf = requestAnimationFrame(tick);
+      state.raf = requestAnimationFrame(tick)
       if (!state.visible || document.hidden) {
-        state.last = now;
-        return;
+        state.last = now
+        return
       }
-      const s = settings();
-      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 0;
-      state.last = now;
-      const reduced = prefersReduced();
-      state.clock += dt;
-      if (state.introAt < 0) state.introAt = state.clock;
-      if (!s.paused && !reduced) state.time += dt * s.speed;
+      const s = settings()
+      const dt = state.last ? Math.min((now - state.last) / 1000, 0.1) : 0
+      state.last = now
+      const reduced = prefersReduced()
+      state.clock += dt
+      if (state.introAt < 0) state.introAt = state.clock
+      if (!s.paused && !reduced) state.time += dt * s.speed
 
-      const leaning = s.mouseInteraction && state.inside && !reduced;
-      const goalX = leaning ? (state.pointer[0] - 0.5) * s.drift * 2 : 0;
-      const goalY = leaning ? (0.5 - state.pointer[1]) * s.drift * 2 : 0;
-      const ease = 1 - Math.exp(-dt / 0.33);
-      state.drift[0] += (goalX - state.drift[0]) * ease;
-      state.drift[1] += (goalY - state.drift[1]) * ease;
-      const drifting = Math.abs(goalX - state.drift[0]) + Math.abs(goalY - state.drift[1]) > 0.0005;
+      const leaning = s.mouseInteraction && state.inside && !reduced
+      const goalX = leaning ? (state.pointer[0] - 0.5) * s.drift * 2 : 0
+      const goalY = leaning ? (0.5 - state.pointer[1]) * s.drift * 2 : 0
+      const ease = 1 - Math.exp(-dt / 0.33)
+      state.drift[0] += (goalX - state.drift[0]) * ease
+      state.drift[1] += (goalY - state.drift[1]) * ease
+      const drifting = Math.abs(goalX - state.drift[0]) + Math.abs(goalY - state.drift[1]) > 0.0005
 
-      const heating = updateTrail(s, dt);
-      state.flares = state.flares.filter(flare => state.clock - flare.time < FLARE_SECONDS);
+      const heating = updateTrail(s, dt)
+      state.flares = state.flares.filter(flare => state.clock - flare.time < FLARE_SECONDS)
 
-      const still = s.paused || reduced;
-      const transient = heating || drifting || state.flares.length > 0 || introProgress(s, reduced) < 1;
-      if (state.seen !== s || transient || !still) state.quiet = 0;
-      else state.quiet += 1;
-      state.seen = s;
-      if (state.quiet > 3) return;
+      const still = s.paused || reduced
+      const transient =
+        heating || drifting || state.flares.length > 0 || introProgress(s, reduced) < 1
+      if (state.seen !== s || transient || !still) state.quiet = 0
+      else state.quiet += 1
+      state.seen = s
+      if (state.quiet > 3) return
 
-      resize();
-      render(reduced);
-    };
+      resize()
+      render(reduced)
+    }
 
     const local = (event: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
+      const rect = container.getBoundingClientRect()
       return {
         x: (event.clientX - rect.left) / Math.max(rect.width, 1),
         y: (event.clientY - rect.top) / Math.max(rect.height, 1),
@@ -562,60 +577,60 @@ const prefersReduced = () =>
           event.clientX >= rect.left &&
           event.clientX <= rect.right &&
           event.clientY >= rect.top &&
-          event.clientY <= rect.bottom
-      };
-    };
+          event.clientY <= rect.bottom,
+      }
+    }
 
     const onMove = (event: PointerEvent) => {
-      const point = local(event);
-      state.inside = point.inside;
-      if (point.inside) state.pointer = [point.x, point.y];
-    };
+      const point = local(event)
+      state.inside = point.inside
+      if (point.inside) state.pointer = [point.x, point.y]
+    }
 
     const onLeave = () => {
-      state.inside = false;
-    };
+      state.inside = false
+    }
 
     const onDown = (event: PointerEvent) => {
-      const s = settings();
-      if (!s.flareOnClick || event.button !== 0 || prefersReduced()) return;
+      const s = settings()
+      if (!s.flareOnClick || event.button !== 0 || prefersReduced()) return
       if (
         event.target instanceof Element &&
         event.target.closest('a, button, input, textarea, select, label, [role="button"]')
       )
-        return;
-      const point = local(event);
-      if (!point.inside) return;
-      state.flares.push({ at: [point.x, point.y], time: state.clock });
-      if (state.flares.length > MAX_FLARES) state.flares.shift();
-    };
+        return
+      const point = local(event)
+      if (!point.inside) return
+      state.flares.push({ at: [point.x, point.y], time: state.clock })
+      if (state.flares.length > MAX_FLARES) state.flares.shift()
+    }
 
     const visibility = new IntersectionObserver(entries => {
-      state.visible = entries.some(entry => entry.isIntersecting);
-    });
-    visibility.observe(container);
-    const sizes = new ResizeObserver(resize);
-    sizes.observe(container);
-    resize();
-    window.addEventListener('pointermove', onMove, { passive: true });
-    window.addEventListener('pointerdown', onDown);
-    document.documentElement.addEventListener('pointerleave', onLeave);
-    state.raf = requestAnimationFrame(tick);
+      state.visible = entries.some(entry => entry.isIntersecting)
+    })
+    visibility.observe(container)
+    const sizes = new ResizeObserver(resize)
+    sizes.observe(container)
+    resize()
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', onDown)
+    document.documentElement.addEventListener('pointerleave', onLeave)
+    state.raf = requestAnimationFrame(tick)
 
     onCleanup(() => {
-      cancelAnimationFrame(state.raf);
-      visibility.disconnect();
-      sizes.disconnect();
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerdown', onDown);
-      document.documentElement.removeEventListener('pointerleave', onLeave);
-      gl.deleteProgram(program);
-      gl.deleteBuffer(buffer);
-      gl.deleteVertexArray(vao);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      canvas.remove();
-    });
-  });
+      cancelAnimationFrame(state.raf)
+      visibility.disconnect()
+      sizes.disconnect()
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
+      document.documentElement.removeEventListener('pointerleave', onLeave)
+      gl.deleteProgram(program)
+      gl.deleteBuffer(buffer)
+      gl.deleteVertexArray(vao)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.remove()
+    })
+  })
 
   return (
     <div
@@ -623,5 +638,5 @@ const prefersReduced = () =>
       class={[ROOT, props.class, props.className].filter(Boolean).join(' ')}
       style={props.style}
     />
-  );
+  )
 }

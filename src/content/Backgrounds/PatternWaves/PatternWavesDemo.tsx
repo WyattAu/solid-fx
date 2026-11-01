@@ -1,4 +1,4 @@
-import PatternWaves from './PatternWaves';
+import PatternWaves from './PatternWaves'
 
 function PatternWavesDemo() {
   return (
@@ -17,7 +17,7 @@ function PatternWavesDemo() {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default PatternWavesDemo;
+export default PatternWavesDemo
