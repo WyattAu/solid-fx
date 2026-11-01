@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
+import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { animate, motionValue } from 'motion';
 import HugeiconsIcon from '@/lib/HugeiconsIcon';
@@ -120,7 +120,6 @@ const SlideCommit = (props: SlideCommitProps) => {
     const v = clamp(x.get(), 0, TRAVEL());
     seen.set(v);
     const R = v + GRIP() + clamp(anchor.get() - v, 0, TRAVEL());
-    edge.set(R);
     if (capsuleEl) {
       capsuleEl.style.clipPath = `inset(0 ${INNER() - R}px 0 0 round ${gripR()}px)`;
       capsuleEl.style.transformOrigin = `${v}px 50%`;
@@ -146,6 +145,7 @@ const SlideCommit = (props: SlideCommitProps) => {
       capsuleEl.setAttribute('aria-valuenow', String(percent));
       capsuleEl.setAttribute('aria-valuetext', `${labelText()}, ${percent}%`);
     });
+    if (spinEl) spinEl.style.opacity = String(spin.get());
     sync();
     onCleanup(() => {
       offs.forEach(off => off());

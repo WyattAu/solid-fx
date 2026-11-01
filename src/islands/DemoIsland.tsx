@@ -24,7 +24,7 @@ export default function DemoIsland(props: { category: string; name: string }) {
         fallback={(err, reset) => (
           <div class="demo-error">
             <p>{String(err)}</p>
-            <button onClick={reset}>retry</button>
+            <button type="button" onClick={reset}>retry</button>
           </div>
         )}
       >
