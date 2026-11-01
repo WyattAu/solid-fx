@@ -630,15 +630,8 @@ const SlicedWaves = (props: SlicedWavesProps) => {
     document.addEventListener('visibilitychange', onVisibility);
     resize();
 
-    let lastDpr = settings().dpr;
     wake = () => {
-      const s = settings();
-      if (s.dpr !== lastDpr) {
-        lastDpr = s.dpr;
-        resize();
-        return;
-      }
-      if (!raf) render(s);
+      if (!raf) render(settings());
       wakeFrame();
     };
 

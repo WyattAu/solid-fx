@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js';
+import { createMemo, onCleanup, onMount } from 'solid-js';
 import type { JSX } from 'solid-js';
 
 export interface WebThreadsProps {
@@ -738,11 +738,9 @@ export default function WebThreads(props: WebThreadsProps) {
     });
   });
 
-  // Upstream re-rendered on every settings change; the tick loop picks the new
-  // settings memo object up by identity on the next frame it draws.
-  createEffect(() => {
-    settings();
-  });
+  // The tick loop reads the settings memo fresh every frame; its
+  // `state.seen !== s` identity check re-renders (and un-quiets) on prop
+  // changes, matching upstream's per-render settingsRef update.
 
   return (
     <div

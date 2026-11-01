@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 
 export interface SoftAuroraProps {
@@ -333,9 +333,11 @@ const SoftAurora = (props: SoftAuroraProps) => {
   );
 
   // Upstream main effect deps: [generation] — re-creates the pipeline after a
-  // WebGL context restore.
+  // WebGL context restore. Only the generation signal re-runs this effect;
+  // every settings read below stays untracked (upstream read settingsRef).
   createEffect(() => {
     const gen = generation();
+    untrack(() => {
     const container = containerRef;
     const canvas = canvasRef;
     if (!container || !canvas) return;
@@ -556,6 +558,7 @@ const SoftAurora = (props: SoftAuroraProps) => {
         gl.deleteVertexArray(vao);
         gl.deleteProgram(shader.program);
       }
+    });
     });
   });
 
