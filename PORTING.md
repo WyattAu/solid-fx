@@ -8,6 +8,9 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
 
 ## 1. Ground rules
 
+> **Toolchain: bun.** This repo uses bun (`bun install`, `bun run <verb>`).
+> Typecheck with `./node_modules/.bin/tsc --noEmit` (or `bun x tsc --noEmit`).
+
 - One dir per component: `src/content/<Category>/<Name>/<Name>.tsx`, plus a demo
   `<Name>Demo.tsx` in the same dir. Nothing else unless upstream has extra files.
 - Component keeps the **same default export name** (`export default Name;`) and
@@ -38,6 +41,7 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
 | `useCallback(fn, deps)` | plain function or `const fn = () => ...` |
 | `useMemo(() => v, deps)` | `createMemo(() => v)` or plain computation if inputs aren't reactive |
 | `useContext` | `useContext` from `solid-js` (rare; only 2 upstream uses) |
+| React "latest callback" ref pattern (`useRef` holding a mutating callback, called at event time) | import `untrack` from `solid-js` (**it is `untrack`, NOT `untracked`**) and wrap the call: `untrack(() => props.onX?.())` |
 | `useReducedMotion()` (motion/react) | `useReducedMotion()` from `@/lib/reducedMotion` — **returns an accessor**, call it: `const reduced = useReducedMotion(); if (reduced()) ...` |
 | `{arr.map(x => <X ... />)}` | `<For each={arr}>{(x) => <X ... />}</For>` — never `.map` in JSX |
 | `{cond && <X/>}` / ternaries | fine, or `<Show when={cond}>` |
@@ -57,9 +61,17 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
 - Event handlers keep React names (`onClick`, `onPointerMove`, `onWheel`, ...).
   Handlers receive the native event; use `e.currentTarget` (typed!) not `e.target`
   for the bound element.
-- `style` objects use camelCase CSS props, same as React. `style={{ width: '100%' }}`.
-- SVG attributes: keep React camelCase (`strokeWidth`, `fillOpacity`,
-  `strokeLinecap`) — Solid's JSX types accept them.
+- `style` objects use **hyphenated CSS property names** — unlike React! Solid's
+  `CSSProperties` type rejects camelCase: write `style={{ 'background-color': x }}`,
+  `{{ 'box-shadow': y }}`, `{{ 'will-change': z }}`, `{{ 'text-align': t }}`.
+- SVG attributes are **hyphenated** too: `stroke-width`, `stroke-dasharray`,
+  `stroke-linecap`, `fill-opacity`. (`pathLength`→`pathLength` stays as-is; it is
+  a real DOM attribute.) Do not pass React-only attrs like `focusable` on `<svg>`.
+- Event handlers must annotate their event type — Solid does not infer it from
+  the JSX the way React TS does: `onPointerDown={(e: PointerEvent) => ...}`.
+  `e.currentTarget` is typed as `EventTarget | null`; narrow it:
+  `const el = e.currentTarget as HTMLDivElement; if (!el) return;`.
+- Everything else keeps React names (`onClick`, `onPointerMove`, `onWheel`, ...).
 - `ref={el}` assignment form: declare `let el!: HTMLDivElement;` above (definite
   assignment `!` because TS can't see the assignment). For elements rendered
   conditionally inside `<Show>`, prefer callback refs:

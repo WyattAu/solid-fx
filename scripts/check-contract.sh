@@ -7,12 +7,18 @@ cd "$(dirname "$0")/.."
 BANNED="react-dom|motion/react|framer-motion|@hugeicons/react|@gsap/react|@use-gesture/react|@react-three/"
 fail=0
 
-if grep -rnE "from '(react|${BANNED})" src/content --include='*.tsx' --include='*.ts'; then
+filter_comments() { grep -vE ':[0-9]+:\s*(//|\*|/\*)' || true; }
+
+banned_hits=$(grep -rnE "from '(react|${BANNED})" src/content --include='*.tsx' --include='*.ts' | filter_comments || true)
+if [ -n "$banned_hits" ]; then
+  echo "$banned_hits"
   echo "FAIL: React-only imports found in src/content (listed above)" >&2
   fail=1
 fi
 
-if grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect|Context)\(" src/content --include='*.tsx'; then
+hook_hits=$(grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect|Context)\(" src/content --include='*.tsx' | filter_comments || true)
+if [ -n "$hook_hits" ]; then
+  echo "$hook_hits"
   echo "FAIL: React hook calls found in src/content (listed above)" >&2
   fail=1
 fi

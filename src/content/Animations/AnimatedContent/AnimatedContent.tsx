@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, splitProps, untracked } from 'solid-js';
+import { createEffect, onCleanup, splitProps, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -105,7 +105,7 @@ const AnimatedContent = (props: AnimatedContentProps) => {
       gsap.set(el, { visibility: 'visible' });
 
       if (reduce) {
-        untracked(() => props.onComplete?.());
+        untrack(() => props.onComplete?.());
         return;
       }
 
@@ -158,7 +158,7 @@ const AnimatedContent = (props: AnimatedContentProps) => {
           delay: disappearAfter,
           duration: disappearDuration,
           ease: disappearEase,
-          onComplete: () => untracked(() => props.onDisappearanceComplete?.())
+          onComplete: () => untrack(() => props.onDisappearanceComplete?.())
         };
         if (blur > 0) out.filter = `blur(${blur}px)`;
         if (stagger > 0) out.stagger = { each: stagger, from: staggerFrom };
@@ -167,9 +167,9 @@ const AnimatedContent = (props: AnimatedContentProps) => {
 
       const tl = gsap.timeline({
         paused: true,
-        onStart: () => untracked(() => props.onStart?.()),
+        onStart: () => untrack(() => props.onStart?.()),
         onComplete: () => {
-          untracked(() => props.onComplete?.());
+          untrack(() => props.onComplete?.());
           settle();
           if (once && !scrub) disappear();
         }

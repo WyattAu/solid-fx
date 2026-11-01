@@ -1,0 +1,417 @@
+import { createEffect, createSignal, onCleanup } from 'solid-js';
+import type { JSX } from 'solid-js';
+import { For, Show } from 'solid-js';
+import { gsap } from 'gsap';
+
+type MenuItem = {
+  label: string;
+  href: string;
+  ariaLabel?: string;
+  rotation?: number;
+  hoverStyles?: {
+    bgColor?: string;
+    textColor?: string;
+  };
+};
+
+export type BubbleMenuProps = {
+  logo: JSX.Element | string;
+  onMenuClick?: (open: boolean) => void;
+  className?: string;
+  class?: string;
+  style?: JSX.CSSProperties;
+  menuAriaLabel?: string;
+  menuBg?: string;
+  menuContentColor?: string;
+  useFixedPosition?: boolean;
+  items?: MenuItem[];
+  animationEase?: string;
+  animationDuration?: number;
+  staggerDelay?: number;
+};
+
+const DEFAULT_ITEMS: MenuItem[] = [
+  {
+    label: 'home',
+    href: '#',
+    ariaLabel: 'Home',
+    rotation: -8,
+    hoverStyles: { bgColor: '#3b82f6', textColor: '#ffffff' }
+  },
+  {
+    label: 'about',
+    href: '#',
+    ariaLabel: 'About',
+    rotation: 8,
+    hoverStyles: { bgColor: '#10b981', textColor: '#ffffff' }
+  },
+  {
+    label: 'projects',
+    href: '#',
+    ariaLabel: 'Documentation',
+    rotation: 8,
+    hoverStyles: { bgColor: '#f59e0b', textColor: '#ffffff' }
+  },
+  {
+    label: 'blog',
+    href: '#',
+    ariaLabel: 'Blog',
+    rotation: 8,
+    hoverStyles: { bgColor: '#ef4444', textColor: '#ffffff' }
+  },
+  {
+    label: 'contact',
+    href: '#',
+    ariaLabel: 'Contact',
+    rotation: -8,
+    hoverStyles: { bgColor: '#8b5cf6', textColor: '#ffffff' }
+  }
+];
+
+export default function BubbleMenu(props: BubbleMenuProps) {
+  const [isMenuOpen, setIsMenuOpen] = createSignal(false);
+  const [showOverlay, setShowOverlay] = createSignal(false);
+
+  let overlay!: HTMLDivElement;
+  const bubbleEls: HTMLAnchorElement[] = [];
+  const labelEls: HTMLSpanElement[] = [];
+
+  const menuItems = () => (props.items?.length ? props.items : DEFAULT_ITEMS);
+
+  const handleToggle = () => {
+    const nextState = !isMenuOpen();
+    if (nextState) setShowOverlay(true);
+    setIsMenuOpen(nextState);
+    props.onMenuClick?.(nextState);
+  };
+
+  // Upstream deps: [isMenuOpen, showOverlay, animationEase, animationDuration, staggerDelay]
+  createEffect(() => {
+    const open = isMenuOpen();
+    const overlayShown = showOverlay();
+    const animationEase = props.animationEase ?? 'back.out(1.5)';
+    const animationDuration = props.animationDuration ?? 0.5;
+    const staggerDelay = props.staggerDelay ?? 0.12;
+    const ov = overlay;
+    const bubbles = bubbleEls.filter(Boolean);
+    const labels = labelEls.filter(Boolean);
+    if (!ov || !bubbles.length) return;
+
+    if (open) {
+      gsap.set(ov, { display: 'flex' });
+      gsap.killTweensOf([...bubbles, ...labels]);
+      gsap.set(bubbles, { scale: 0, transformOrigin: '50% 50%' });
+      gsap.set(labels, { y: 24, autoAlpha: 0 });
+
+      bubbles.forEach((bubble, i) => {
+        const delay = i * staggerDelay + gsap.utils.random(-0.05, 0.05);
+        const tl = gsap.timeline({ delay });
+        tl.to(bubble, {
+          scale: 1,
+          duration: animationDuration,
+          ease: animationEase
+        });
+        if (labels[i]) {
+          tl.to(
+            labels[i],
+            {
+              y: 0,
+              autoAlpha: 1,
+              duration: animationDuration,
+              ease: 'power3.out'
+            },
+            '-=' + animationDuration * 0.9
+          );
+        }
+      });
+    } else if (overlayShown) {
+      gsap.killTweensOf([...bubbles, ...labels]);
+      gsap.to(labels, {
+        y: 24,
+        autoAlpha: 0,
+        duration: 0.2,
+        ease: 'power3.in'
+      });
+      gsap.to(bubbles, {
+        scale: 0,
+        duration: 0.2,
+        ease: 'power3.in',
+        onComplete: () => {
+          gsap.set(ov, { display: 'none' });
+          setShowOverlay(false);
+        }
+      });
+    }
+  });
+
+  // Upstream deps: [isMenuOpen, menuItems]
+  createEffect(() => {
+    const open = isMenuOpen();
+    const items = menuItems();
+    const handleResize = () => {
+      if (open) {
+        const bubbles = bubbleEls.filter(Boolean);
+        const isDesktop = window.innerWidth >= 900;
+        bubbles.forEach((bubble, i) => {
+          const item = items[i];
+          if (bubble && item) {
+            const rotation = isDesktop ? (item.rotation ?? 0) : 0;
+            gsap.set(bubble, { rotation });
+          }
+        });
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    onCleanup(() => window.removeEventListener('resize', handleResize));
+  });
+
+  return (
+    <>
+      {/* Workaround for silly Tailwind capabilities */}
+      <style>{`
+        .bubble-menu .menu-line {
+          transition: transform 0.3s ease, opacity 0.3s ease;
+          transform-origin: center;
+        }
+        .bubble-menu-items .pill-list .pill-col:nth-child(4):nth-last-child(2) {
+          margin-left: calc(100% / 6);
+        }
+        .bubble-menu-items .pill-list .pill-col:nth-child(4):last-child {
+          margin-left: calc(100% / 3);
+        }
+        @media (min-width: 900px) {
+          .bubble-menu-items .pill-link {
+            transform: rotate(var(--item-rot));
+          }
+          .bubble-menu-items .pill-link:hover {
+            transform: rotate(var(--item-rot)) scale(1.06);
+            background: var(--hover-bg) !important;
+            color: var(--hover-color) !important;
+          }
+          .bubble-menu-items .pill-link:active {
+            transform: rotate(var(--item-rot)) scale(.94);
+          }
+        }
+        @media (max-width: 899px) {
+          .bubble-menu-items {
+            padding-top: 120px;
+            align-items: flex-start;
+          }
+          .bubble-menu-items .pill-list {
+            row-gap: 16px;
+          }
+          .bubble-menu-items .pill-list .pill-col {
+            flex: 0 0 100% !important;
+            margin-left: 0 !important;
+            overflow: visible;
+          }
+          .bubble-menu-items .pill-link {
+            font-size: clamp(1.2rem, 3vw, 4rem);
+            padding: clamp(1rem, 2vw, 2rem) 0;
+            min-height: 80px !important;
+          }
+          .bubble-menu-items .pill-link:hover {
+            transform: scale(1.06);
+            background: var(--hover-bg);
+            color: var(--hover-color);
+          }
+          .bubble-menu-items .pill-link:active {
+            transform: scale(.94);
+          }
+        }
+      `}</style>
+
+      <nav
+        class={[
+          'bubble-menu',
+          props.useFixedPosition ? 'fixed' : 'absolute',
+          'left-0 right-0 top-8',
+          'flex items-center justify-between',
+          'gap-4 px-8',
+          'pointer-events-none',
+          'z-[1001]',
+          props.class,
+          props.className
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        style={props.style}
+        aria-label="Main navigation"
+      >
+        <div
+          class={[
+            'bubble logo-bubble',
+            'inline-flex items-center justify-center',
+            'rounded-full',
+            'bg-white',
+            'shadow-[0_4px_16px_rgba(0,0,0,0.12)]',
+            'pointer-events-auto',
+            'h-12 md:h-14',
+            'px-4 md:px-8',
+            'gap-2',
+            'will-change-transform'
+          ].join(' ')}
+          aria-label="Logo"
+          style={{
+            background: props.menuBg ?? '#fff',
+            'min-height': '48px',
+            'border-radius': '9999px'
+          }}
+        >
+          <span
+            class={['logo-content', 'inline-flex items-center justify-center', 'w-[120px] h-full'].join(' ')}
+            style={
+              {
+                '--logo-max-height': '60%',
+                '--logo-max-width': '100%'
+              } as JSX.CSSProperties
+            }
+          >
+            {typeof props.logo === 'string' ? (
+              <img src={props.logo} alt="Logo" class="bubble-logo max-h-[60%] max-w-full object-contain block" />
+            ) : (
+              props.logo
+            )}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class={[
+            'bubble toggle-bubble menu-btn',
+            isMenuOpen() ? 'open' : '',
+            'inline-flex flex-col items-center justify-center',
+            'rounded-full',
+            'bg-white',
+            'shadow-[0_4px_16px_rgba(0,0,0,0.12)]',
+            'pointer-events-auto',
+            'w-12 h-12 md:w-14 md:h-14',
+            'border-0 cursor-pointer p-0',
+            'will-change-transform'
+          ].join(' ')}
+          onClick={handleToggle}
+          aria-label={props.menuAriaLabel ?? 'Toggle menu'}
+          aria-pressed={isMenuOpen()}
+          style={{ background: props.menuBg ?? '#fff' }}
+        >
+          <span
+            class="menu-line block mx-auto rounded-[2px]"
+            style={{
+              width: '26px',
+              height: '2px',
+              background: props.menuContentColor ?? '#111',
+              transform: isMenuOpen() ? 'translateY(4px) rotate(45deg)' : 'none'
+            }}
+          />
+          <span
+            class="menu-line short block mx-auto rounded-[2px]"
+            style={{
+              'margin-top': '6px',
+              width: '26px',
+              height: '2px',
+              background: props.menuContentColor ?? '#111',
+              transform: isMenuOpen() ? 'translateY(-4px) rotate(-45deg)' : 'none'
+            }}
+          />
+        </button>
+      </nav>
+
+      <Show when={showOverlay()}>
+        <div
+          ref={overlay}
+          class={[
+            'bubble-menu-items',
+            props.useFixedPosition ? 'fixed' : 'absolute',
+            'inset-0',
+            'flex items-center justify-center',
+            'pointer-events-none',
+            'z-[1000]'
+          ].join(' ')}
+          aria-hidden={!isMenuOpen()}
+        >
+          <ul
+            class={[
+              'pill-list',
+              'list-none m-0 px-6',
+              'w-full max-w-[1600px] mx-auto',
+              'flex flex-wrap',
+              'gap-x-0 gap-y-1',
+              'pointer-events-auto'
+            ].join(' ')}
+            role="menu"
+            aria-label="Menu links"
+          >
+            <For each={menuItems()}>
+              {(item, idx) => (
+                <li
+                  role="none"
+                  class={[
+                    'pill-col',
+                    'flex justify-center items-stretch',
+                    '[flex:0_0_calc(100%/3)]',
+                    'box-border'
+                  ].join(' ')}
+                >
+                  <a
+                    role="menuitem"
+                    href={item.href}
+                    aria-label={item.ariaLabel || item.label}
+                    class={[
+                      'pill-link',
+                      'w-full',
+                      'rounded-[999px]',
+                      'no-underline',
+                      'bg-white',
+                      'text-inherit',
+                      'shadow-[0_4px_14px_rgba(0,0,0,0.10)]',
+                      'flex items-center justify-center',
+                      'relative',
+                      'transition-[background,color] duration-300 ease-in-out',
+                      'box-border',
+                      'whitespace-nowrap overflow-hidden'
+                    ].join(' ')}
+                    style={
+                      {
+                        '--item-rot': `${item.rotation ?? 0}deg`,
+                        '--pill-bg': props.menuBg ?? '#fff',
+                        '--pill-color': props.menuContentColor ?? '#111',
+                        '--hover-bg': item.hoverStyles?.bgColor || '#f3f4f6',
+                        '--hover-color': item.hoverStyles?.textColor || props.menuContentColor || '#111',
+                        background: 'var(--pill-bg)',
+                        color: 'var(--pill-color)',
+                        'min-height': 'var(--pill-min-h, 160px)',
+                        padding: 'clamp(1.5rem, 3vw, 8rem) 0',
+                        'font-size': 'clamp(1.5rem, 4vw, 4rem)',
+                        'font-weight': '400',
+                        'line-height': '0',
+                        'will-change': 'transform',
+                        height: '10px'
+                      } as JSX.CSSProperties
+                    }
+                    ref={el => {
+                      bubbleEls[idx()] = el;
+                    }}
+                  >
+                    <span
+                      class="pill-label inline-block"
+                      style={{
+                        'will-change': 'transform, opacity',
+                        height: '1.2em',
+                        'line-height': '1.2'
+                      }}
+                      ref={el => {
+                        labelEls[idx()] = el;
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                  </a>
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </Show>
+    </>
+  );
+}

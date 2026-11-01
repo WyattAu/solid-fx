@@ -4,18 +4,20 @@
   "description": "Animated, interactive SolidJS components. A Solid port of react-bits (DavidHDev/react-bits).",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE.md",
+  "author": "Wyatt Au <wyatt_au@protonmail.com>",
+  "repository": "github:WyattAu/solid-bits",
   "scripts": {
     "dev": "vite",
     "gen:index": "node scripts/gen-index.mjs",
     "check": "tsc --noEmit",
-    "build": "npm run gen:index && npm run check && vite build",
-    "test": "npm run gen:index && vitest run",
-    "lint": "npm run check",
+    "build": "bun run gen:index && bun run check && vite build",
+    "test": "bun run gen:index && vitest run",
+    "lint": "bun run check",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check .",
     "contract": "bash scripts/check-contract.sh",
-    "coverage": "npm run gen:index && vitest run --coverage",
-    "ci": "npm run build && npm run test && npm run fmt:check && npm run contract"
+    "coverage": "bun run gen:index && vitest run --coverage",
+    "ci": "bun run build && bun run test && bun run fmt:check && bun run contract"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.3",

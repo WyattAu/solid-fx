@@ -11,14 +11,16 @@ the library itself.
   upstream `src/ts-tailwind`. Categories: `Animations`, `Backgrounds`,
   `Components`, `Micro`, `TextAnimations`.
 - `src/content/<Category>/<Name>/<Name>Demo.tsx` — demo harness, rendered by
-  the dev site (`npm run dev`).
-- `src/content/index.ts` — GENERATED barrel (`npm run gen:index`). Never edit.
+  the dev site (`bun run dev`).
+- `src/content/index.ts` — GENERATED barrel (`bun run gen:index`). Never edit.
 - `src/lib/` — shared Solid helpers (`HugeiconsIcon`, `useReducedMotion`).
 - `src/demo/` — dev site shell (hash-routed category pages).
 - `PORTING.md` — the React→Solid translation contract. **It is law for all
   porting work.** Read it before touching `src/content`.
 
-## Verbs (Makefile == package.json scripts)
+## Verbs (Makefile == package.json scripts — run via **bun**)
+
+Install with `bun install`. Every verb is `bun run <script>` or `make <verb>`.
 
 | Verb | Meaning |
 | --- | --- |
@@ -47,6 +49,6 @@ the library itself.
 4. Strict TS. No `any` unless upstream forces it; justify inline.
 5. Do not edit generated files, do not edit other agents' component dirs, do
    not reformat the whole tree.
-6. Verify your own work: `npx tsc --noEmit` and fix errors in files you own
+6. Verify your own work: `bun x tsc --noEmit` and fix errors in files you own
    (ignore errors in dirs assigned to others).
 7. The dev tree flaps: after any successful milestone, commit immediately.

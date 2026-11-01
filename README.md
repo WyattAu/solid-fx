@@ -20,8 +20,8 @@ contract and `PORTING.md` for the translation rules.
 ## Dev site
 
 ```bash
-npm install
-npm run dev        # hash-routed demo of every component
+bun install
+bun run dev        # hash-routed demo of every component
 ```
 
 ## Install (once the port stabilizes)

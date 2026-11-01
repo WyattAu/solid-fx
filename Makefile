@@ -1,28 +1,28 @@
 .PHONY: build test lint fmt fmt-check coverage contract ci dev
 
 build:
-	npm run build
+	bun run build
 
 test:
-	npm run test
+	bun run test
 
 lint:
-	npm run lint
+	bun run lint
 
 fmt:
-	npm run fmt
+	bun run fmt
 
 fmt-check:
-	npm run fmt:check
+	bun run fmt:check
 
 coverage:
-	npm run coverage
+	bun run coverage
 
 contract:
-	npm run contract
+	bun run contract
 
 ci:
-	npm run ci
+	bun run ci
 
 dev:
-	npm run dev
+	bun run dev
