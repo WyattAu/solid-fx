@@ -366,7 +366,7 @@ const CardSwap = (props: CardSwapProps) => {
       verticalDistance: props.verticalDistance ?? 70,
       depth: Math.max(0, props.depth ?? 90),
       skewAmount: props.skewAmount ?? 6,
-      visible: clamp(Math.round(props.visibleCards ?? 4), 1, Math.max(1, untrack(count))),
+      visible: clamp(Math.round(props.visibleCards ?? 4), 1, Math.max(1, count())),
       hoverSpread: Math.max(0, props.hoverSpread ?? 0.12)
     })
   );

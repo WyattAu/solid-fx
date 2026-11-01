@@ -1,5 +1,5 @@
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js';
-import type { CSSProperties } from 'solid-js';
+import type { JSX } from 'solid-js';
 import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -53,7 +53,7 @@ export interface ModelViewerProps {
   resetOnDoubleClick?: boolean;
   className?: string;
   class?: string;
-  style?: CSSProperties;
+  style?: JSX.CSSProperties;
   onModelLoaded?: () => void;
   /** Upstream forwarded a ref exposing { capture }; pass a callback or a { current } box here. */
   ref?: ((handle: ModelViewerHandle) => void) | { current: ModelViewerHandle | null };
@@ -623,7 +623,13 @@ const ModelViewer = (props: ModelViewerProps) => {
     <div
       ref={containerEl}
       class={`relative ${props.class ?? ''} ${props.className ?? ''}`.trim()}
-      style={{ width: props.width ?? 400, height: props.height ?? 400, ...(props.style as CSSProperties) }}
+      style={
+        {
+          width: props.width ?? 400,
+          height: props.height ?? 400,
+          ...(props.style as Record<string, string | number>)
+        } as JSX.CSSProperties
+      }
     />
   );
 };

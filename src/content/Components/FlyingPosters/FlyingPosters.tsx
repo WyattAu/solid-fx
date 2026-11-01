@@ -1,5 +1,5 @@
 import { createEffect, onCleanup, untrack } from 'solid-js';
-import type { CSSProperties, JSX } from 'solid-js';
+import type { JSX } from 'solid-js';
 
 export type FlyingPostersItem = string | { image: string; link?: string; alt?: string };
 
@@ -28,7 +28,7 @@ export interface FlyingPostersProps {
   onItemClick?: (item: { image: string; link?: string; alt?: string }, index: number) => void;
   className?: string;
   class?: string;
-  style?: CSSProperties;
+  style?: JSX.CSSProperties;
 }
 
 type Engine = { loadItems: (list: FlyingPostersItem[]) => void; wake: () => void };

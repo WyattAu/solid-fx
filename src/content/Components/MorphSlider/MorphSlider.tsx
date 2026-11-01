@@ -1,5 +1,5 @@
 import { createEffect, createSignal, For, onCleanup, onMount, splitProps } from 'solid-js';
-import type { CSSProperties, JSX } from 'solid-js';
+import type { JSX } from 'solid-js';
 import { Renderer, Triangle, Program, Mesh, Texture } from 'ogl';
 import { gsap } from 'gsap';
 
@@ -30,7 +30,7 @@ export interface MorphSliderProps {
   showIndicators?: boolean;
   className?: string;
   class?: string;
-  style?: CSSProperties;
+  style?: JSX.CSSProperties;
   [key: string]: unknown;
 }
 

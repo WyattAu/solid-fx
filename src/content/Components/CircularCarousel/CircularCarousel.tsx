@@ -1075,7 +1075,7 @@ const CircularCarousel = (props: CircularCarouselProps) => {
           aria-hidden="true"
         >
           <Show when={active()} keyed>
-            {() => (
+            {_ => (
               <span class="flex max-w-full flex-col items-center text-[15px] font-medium leading-[1.35] animate-[circular-carousel-title_520ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none">
                 {current()?.title || current()?.alt}
                 {current()?.subtitle && <span class="font-normal opacity-60">{current()?.subtitle}</span>}

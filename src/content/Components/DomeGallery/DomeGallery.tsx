@@ -59,7 +59,7 @@ const DEFAULT_IMAGES: DomeGalleryItem[] = [
     src: 'https://images.unsplash.com/photo-1752588975228-21f44630bb3c?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     alt: 'Textured surface'
   },
-  { src: 'https://picsum.photos/seed/dome-social/774/500', alt: 'Social media image' }
+  { src: 'https://pbs.twimg.com/media/Gyla7NnXMAAXSo_?format=jpg&name=large', alt: 'Social media image' }
 ];
 
 const DEFAULTS = {

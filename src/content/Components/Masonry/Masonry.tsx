@@ -257,7 +257,7 @@ const Masonry = (props: MasonryProps) => {
   const [width, setWidth] = createSignal(0);
   const [order, setOrder] = createSignal<string[] | null>(null);
   const [measured, setMeasured] = createSignal<Measured>({});
-  const [ready, setReady] = createSignal(() => !(props.items ?? []).some(needsMeasure));
+  const [ready, setReady] = createSignal(!(props.items ?? []).some(needsMeasure));
   const [ghosts, setGhosts] = createSignal<Ghost[]>([]);
   const [openId, setOpenId] = createSignal<string | null>(null);
   const [closing, setClosing] = createSignal(false);
@@ -303,7 +303,7 @@ const Masonry = (props: MasonryProps) => {
   });
 
   const layout = createMemo<Layout | null>(() =>
-    width() && ready() ? layoutOf(ordered(), width(), props.columns ?? 'auto', props.columnWidth ?? 240, settingsRef.current.gap, measured()) : null
+    width() && ready() ? layoutOf(ordered(), width(), props.columns ?? 'auto', props.columnWidth ?? 240, Math.max(0, props.gap ?? 12), measured()) : null
   );
 
   const tiles = createMemo(() => layout()?.tiles ?? []);
@@ -703,6 +703,12 @@ const Masonry = (props: MasonryProps) => {
     onCleanup(() => {
       cancelAnimationFrame(engine.raf);
       cancelAnimationFrame(engine.flush);
+      if (dragRef) {
+        window.removeEventListener('pointermove', moveDrag);
+        window.removeEventListener('pointerup', finishDrag);
+        window.removeEventListener('pointercancel', finishDrag);
+        dragRef = null;
+      }
     });
   });
 
@@ -1008,7 +1014,8 @@ const Masonry = (props: MasonryProps) => {
 
   const captionMode = () =>
     CAPTION_MODES.includes(props.captions ?? 'hover') ? (props.captions ?? 'hover') : 'hover';
-  const mode = () => settingsRef.current.hoverEffect;
+  const mode = () =>
+    HOVER_EFFECTS.includes(props.hoverEffect ?? 'zoom') ? (props.hoverEffect ?? 'zoom') : 'zoom';
 
   const tileContent = (item: MasonryItem, id: string) => (
     <span class={MEDIA} data-media="">
@@ -1063,7 +1070,7 @@ const Masonry = (props: MasonryProps) => {
                 else nodes.delete(id);
               }}
               class={ITEM}
-              style={{ width: tile().w, height: tile().h }}
+              style={{ width: `${tile().w}px`, height: `${tile().h}px` }}
               data-id={id}
               role="listitem"
             >
@@ -1134,8 +1141,8 @@ const Masonry = (props: MasonryProps) => {
               }}
               class={GHOST}
               style={{
-                width: ghost().w,
-                height: ghost().h,
+                width: `${ghost().w}px`,
+                height: `${ghost().h}px`,
                 transform: `translate3d(${ghost().x}px, ${ghost().y}px, 0) scale(${ghost().s})`
               }}
               aria-hidden="true"
@@ -1166,16 +1173,16 @@ const Masonry = (props: MasonryProps) => {
               alt={openItem()!.alt ?? openItem()!.title ?? ''}
               draggable={false}
               style={{
-                width: box()!.width,
-                height: box()!.height,
-                left: box()!.left,
-                top: box()!.top,
-                'border-radius': 6
+                width: `${box()!.width}px`,
+                height: `${box()!.height}px`,
+                left: `${box()!.left}px`,
+                top: `${box()!.top}px`,
+                'border-radius': '6px'
               }}
               onClick={closeBox}
             />
             <Show when={box()!.room > 0}>
-              <div class={BOX_CAPTION} data-box-fade="" style={{ top: box()!.top + box()!.height + 18 }}>
+              <div class={BOX_CAPTION} data-box-fade="" style={{ top: `${box()!.top + box()!.height + 18}px` }}>
                 <Show when={openItem()!.title}>
                   <span>{openItem()!.title}</span>
                 </Show>
