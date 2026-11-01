@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, Show, splitProps, untrack } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show, splitProps, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { gsap } from 'gsap';
@@ -485,7 +485,10 @@ const TextType = (props: TextTypeProps) => {
             }}
             class={cursorStyle() === 'character' ? 'ml-1 inline-block' : 'inline-block'}
           >
-            <Show when={cursorStyle() === 'character'} fallback={<span class={SHAPES[cursorStyle()] ?? SHAPES.bar} />}>
+            <Show
+              when={cursorStyle() === 'character'}
+              fallback={<span class={SHAPES[cursorStyle() as 'bar' | 'block' | 'underscore'] ?? SHAPES.bar} />}
+            >
               {props.cursorCharacter ?? '|'}
             </Show>
           </span>
