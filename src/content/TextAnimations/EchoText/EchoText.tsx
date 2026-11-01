@@ -420,9 +420,8 @@ const EchoText = (props: EchoTextProps) => {
   const fontWeight = () => props.fontWeight ?? 800;
 
   const rootStyle = (): JSX.CSSProperties => ({
-    'font-size': typeof (props.fontSize ?? 'clamp(3rem, 9vw, 7rem)') === 'number'
-      ? `${props.fontSize}px`
-      : (props.fontSize ?? 'clamp(3rem, 9vw, 7rem)'),
+    'font-size':
+      typeof props.fontSize === 'number' ? `${props.fontSize}px` : props.fontSize ?? 'clamp(3rem, 9vw, 7rem)',
     'font-weight': fontWeight(),
     color: props.color ?? 'currentColor',
     cursor: canBurst() ? 'pointer' : undefined,

@@ -112,11 +112,10 @@ const CallChip = (props: CallChipProps) => {
 
   onMount(() => {
     setMounted(true);
-    apply(status(), true);
     onCleanup(() => shakeAnim?.cancel());
   });
 
-  // Upstream: useLayoutEffect on [status] plus the mount-time apply — one
+  // Upstream: mount apply (useEffect) + useLayoutEffect on [status] — one
   // effect covers both (Solid effects run after the DOM is ready).
   createEffect(() => {
     apply(status(), true);

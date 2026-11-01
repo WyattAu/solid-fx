@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, createUniqueId, Index, onCleanup, onMount, Show, untrack } from 'solid-js';
+import { createEffect, createMemo, createSignal, createUniqueId, For, Index, onCleanup, onMount, Show, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { animate, motionValue } from 'motion';
 import type { AnimationPlaybackControlsWithThen, MotionValue } from 'motion';
@@ -340,7 +340,7 @@ const CodeSlots = (props: CodeSlotsProps) => {
     if (row && !draining && status() !== 'success') {
       const rect = row.getBoundingClientRect();
       const zoom = rect.width / (row.offsetWidth || rect.width) || 1;
-      const i = Math.floor(((e as MouseEvent).clientX - rect.left) / zoom / pitch());
+      const i = Math.floor((e.clientX - rect.left) / zoom / pitch());
       jumpActive(Math.max(0, Math.min(i, firstEmptyOf(slotsRef))));
     }
     inputEl?.focus();
@@ -505,7 +505,7 @@ const CodeSlots = (props: CodeSlotsProps) => {
           class="absolute inset-0 z-[4] m-0 cursor-[inherit] appearance-none border-0 bg-transparent p-0 text-[16px] text-transparent opacity-0 outline-0 [caret-color:transparent]"
           type="text"
           inputMode="numeric"
-          autoComplete="one-time-code"
+          autocomplete="one-time-code"
           pattern="[0-9]*"
           value=""
           maxLength={length()}
@@ -550,11 +550,11 @@ const CodeSlots = (props: CodeSlotsProps) => {
           data-show={showCaret() ? '' : undefined}
         >
           <span ref={caretEl} class="block h-full w-full">
-            <Index each={[active()]}>
+            <For each={[active()]}>
               {() => (
                 <span class="block h-full w-full bg-[var(--cs-ink)] animate-[code-slots-blink_1s_linear_infinite] motion-reduce:animate-none" />
               )}
-            </Index>
+            </For>
           </span>
         </span>
       </div>

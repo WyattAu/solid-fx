@@ -241,31 +241,36 @@ const DodgeField = (props: DodgeFieldProps) => {
   const index = () =>
     gave() || caught() ? taunts().length - 1 : Math.min(dodges(), Math.max(0, taunts().length - 2));
 
+  // Built once so the taunt spans persist and their data-[active] transitions
+  // animate (upstream re-rendered in place; Solid achieves the same by keeping
+  // the default content static while its attributes stay reactive).
+  const defaultContent = (
+    <button
+      type="button"
+      class="m-0 inline-flex h-[52px] cursor-pointer touch-manipulation items-center justify-center rounded-full border-0 px-7 text-[18px] leading-none font-medium tracking-[-0.012em] select-none [font-family:inherit] [-webkit-tap-highlight-color:transparent] [background:color-mix(in_srgb,var(--df-ink)_8%,transparent)] [color:color-mix(in_srgb,var(--df-ink)_72%,transparent)] [transition:transform_160ms_var(--df-ease-out),background-color_220ms_ease,color_220ms_ease] active:[transform:scale(0.97)] motion-reduce:active:[transform:none] motion-reduce:[transition:background-color_220ms_ease,color_220ms_ease] [@media(hover:hover)_and_(pointer:fine)]:hover:[color:color-mix(in_srgb,var(--df-ink)_90%,transparent)] group-data-[relented=true]:[color:var(--df-ink)] group-data-[relented=true]:hover:[color:var(--df-ink)] group-data-[caught=true]:[background:var(--df-ink)] group-data-[caught=true]:[color:var(--df-contrast)] group-data-[caught=true]:hover:[color:var(--df-contrast)] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:[outline-color:color-mix(in_srgb,var(--df-ink)_60%,transparent)]"
+      aria-label={taunts()[0]}
+    >
+      <span class="grid">
+        <For each={taunts()}>
+          {(taunt, i) => (
+            <span
+              class="[grid-area:1/1] whitespace-nowrap [transition:opacity_200ms_ease,filter_200ms_ease] data-[active=false]:opacity-0 data-[active=false]:[filter:blur(2px)] motion-reduce:data-[active=false]:[filter:none]"
+              data-active={i() === index() ? 'true' : 'false'}
+              aria-hidden="true"
+            >
+              {taunt}
+            </span>
+          )}
+        </For>
+      </span>
+    </button>
+  );
+
   const content = createMemo<JSX.Element>(() => {
     const c = props.children;
     if (typeof c === 'function') return c(state());
     if (c) return c;
-    return (
-      <button
-        type="button"
-        class="m-0 inline-flex h-[52px] cursor-pointer touch-manipulation items-center justify-center rounded-full border-0 px-7 text-[18px] leading-none font-medium tracking-[-0.012em] select-none [font-family:inherit] [-webkit-tap-highlight-color:transparent] [background:color-mix(in_srgb,var(--df-ink)_8%,transparent)] [color:color-mix(in_srgb,var(--df-ink)_72%,transparent)] [transition:transform_160ms_var(--df-ease-out),background-color_220ms_ease,color_220ms_ease] active:[transform:scale(0.97)] motion-reduce:active:[transform:none] motion-reduce:[transition:background-color_220ms_ease,color_220ms_ease] [@media(hover:hover)_and_(pointer:fine)]:hover:[color:color-mix(in_srgb,var(--df-ink)_90%,transparent)] group-data-[relented=true]:[color:var(--df-ink)] group-data-[relented=true]:hover:[color:var(--df-ink)] group-data-[caught=true]:[background:var(--df-ink)] group-data-[caught=true]:[color:var(--df-contrast)] group-data-[caught=true]:hover:[color:var(--df-contrast)] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:[outline-color:color-mix(in_srgb,var(--df-ink)_60%,transparent)]"
-        aria-label={taunts()[0]}
-      >
-        <span class="grid">
-          <For each={taunts()}>
-            {(taunt, i) => (
-              <span
-                class="[grid-area:1/1] whitespace-nowrap [transition:opacity_200ms_ease,filter_200ms_ease] data-[active=false]:opacity-0 data-[active=false]:[filter:blur(2px)] motion-reduce:data-[active=false]:[filter:none]"
-                data-active={i() === index() ? 'true' : 'false'}
-                aria-hidden="true"
-              >
-                {taunt}
-              </span>
-            )}
-          </For>
-        </span>
-      </button>
-    );
+    return defaultContent;
   });
 
   return (
