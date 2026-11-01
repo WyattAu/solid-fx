@@ -21,8 +21,11 @@ contract and `PORTING.md` for the translation rules.
 
 ```bash
 bun install
-bun run dev        # hash-routed demo of every component
+bun run dev        # Astro + Starlight docs site; live demo per component
 ```
+
+Stack: **TypeScript + SolidJS + Tailwind v4** components, **Astro + Starlight**
+docs site (Solid islands), **bun** toolchain, **Biome** lint/format.
 
 ## Install (once the port stabilizes)
 

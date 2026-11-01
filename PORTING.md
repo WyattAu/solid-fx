@@ -24,6 +24,10 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
   `react-dom`, `motion/react`, `framer-motion`, `@hugeicons/react`,
   `@gsap/react`, `@use-gesture/react`, `@react-three/*`, and any React hook
   calls. Do NOT add react-bits' `'use client'` directives.
+- Dependency layering (estate rule): your component and its demo import ONLY
+  `solid-js`/`solid-js/web`, the external libs listed in §5, and `@/lib/*` —
+  never other components, demos, islands, or site code. Shared logic goes in
+  `src/lib` (once). The oracle (`make contract`) fails on `../` imports.
 - Allowed imports: `solid-js`, `solid-js/web`, `motion`, `gsap` (+ its plugin
   subpaths), `ogl`, `three`, `matter-js`, `vgpu`, `@hugeicons/core-free-icons`,
   `@use-gesture/vanilla`, and `@/lib/HugeiconsIcon` / `@/lib/reducedMotion`.

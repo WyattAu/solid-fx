@@ -23,6 +23,15 @@ if [ -n "$hook_hits" ]; then
   fail=1
 fi
 
+# Estate dependency rule: components are self-contained. No relative-parent
+# imports — shared code belongs in src/lib and is imported via @/lib.
+cross_hits=$(grep -rnE "from '\.\./" src/content --include='*.tsx' | filter_comments || true)
+if [ -n "$cross_hits" ]; then
+  echo "$cross_hits"
+  echo "FAIL: cross-component imports found in src/content (shared code belongs in src/lib)" >&2
+  fail=1
+fi
+
 notes=$(grep -rc 'PORT-NOTE' src/content --include='*.tsx' 2>/dev/null | awk -F: '{s+=$2} END {print s+0}' || true)
 
 if [ "$fail" -ne 0 ]; then

@@ -1,0 +1,36 @@
+@import 'tailwindcss';
+
+/* Scan the component library for Tailwind classes (they are not imported
+   anywhere statically — demos are lazy islands). */
+@source '../../src/content';
+@source '../../src/islands';
+
+body {
+  background: #060010;
+}
+
+/* Demo island chrome around third-party animated components */
+.demo-frame {
+  position: relative;
+  display: flex;
+  min-height: 20rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(0 0 0 / 0.35);
+  margin-block: 1rem;
+}
+
+.demo-missing,
+.demo-loading,
+.demo-error {
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: rgb(255 255 255 / 0.5);
+}
+
+.demo-error {
+  color: #fda4af;
+}
