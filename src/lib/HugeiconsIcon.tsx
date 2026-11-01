@@ -1,12 +1,14 @@
-import type { Component, JSX } from 'solid-js';
-import { Dynamic, For } from 'solid-js/web';
+import type { Component, JSX } from 'solid-js'
+import { Dynamic, For } from 'solid-js/web'
 
 /**
  * Icon data shape from @hugeicons/core-free-icons (the type is not exported
  * by the package, so it is declared here): a list of [tagName, attributes]
  * tuples describing the SVG elements of the icon.
  */
-export type IconSvgObject = ([string, { [key: string]: string | number }])[] | readonly (readonly [string, { readonly [key: string]: string | number }])[];
+export type IconSvgObject =
+  | [string, { [key: string]: string | number }][]
+  | readonly (readonly [string, { readonly [key: string]: string | number }])[]
 
 /**
  * Solid replacement for @hugeicons/react's HugeiconsIcon.
@@ -16,16 +18,16 @@ export type IconSvgObject = ([string, { [key: string]: string | number }])[] | r
  * (plus class/style instead of className/style objects).
  */
 export type HugeiconsIconProps = {
-  icon: IconSvgObject;
-  size?: number | string;
-  color?: string;
-  strokeWidth?: number | string;
-  class?: string;
-  style?: JSX.CSSProperties;
-  altText?: string;
-};
+  icon: IconSvgObject
+  size?: number | string
+  color?: string
+  strokeWidth?: number | string
+  class?: string
+  style?: JSX.CSSProperties
+  altText?: string
+}
 
-const HugeiconsIcon: Component<HugeiconsIconProps> = (props) => (
+const HugeiconsIcon: Component<HugeiconsIconProps> = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={props.size ?? 24}
@@ -41,10 +43,8 @@ const HugeiconsIcon: Component<HugeiconsIconProps> = (props) => (
     role="img"
     aria-label={props.altText ?? 'icon'}
   >
-    <For each={props.icon}>
-      {([tag, attrs]) => <Dynamic component={tag} {...attrs} />}
-    </For>
+    <For each={props.icon}>{([tag, attrs]) => <Dynamic component={tag} {...attrs} />}</For>
   </svg>
-);
+)
 
-export default HugeiconsIcon;
+export default HugeiconsIcon
