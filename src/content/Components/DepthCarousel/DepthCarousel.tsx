@@ -1,5 +1,4 @@
 import { createEffect, createMemo, onCleanup, onMount } from 'solid-js';
-import type { JSX } from 'solid-js';
 import { For } from 'solid-js';
 import gsap from 'gsap';
 

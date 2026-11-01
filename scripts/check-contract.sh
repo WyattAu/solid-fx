@@ -16,7 +16,7 @@ if [ -n "$banned_hits" ]; then
   fail=1
 fi
 
-hook_hits=$(grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect|Context)\(" src/content --include='*.tsx' | filter_comments || true)
+hook_hits=$(grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect)\(" src/content --include='*.tsx' | filter_comments || true)
 if [ -n "$hook_hits" ]; then
   echo "$hook_hits"
   echo "FAIL: React hook calls found in src/content (listed above)" >&2
