@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
 import { For } from 'solid-js';
 import gsap from 'gsap';
 
