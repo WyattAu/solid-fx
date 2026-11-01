@@ -1,4 +1,5 @@
 import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js';
+import type { JSX } from 'solid-js';
 
 export type AcidSquaresShape = 'square' | 'round';
 
