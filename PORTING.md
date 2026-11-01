@@ -132,8 +132,10 @@ There is no declarative `<motion.div>` in Solid. Rewrite imperatively:
 
 `<HugeiconsIcon icon={SomeIcon} size={24} color="..." strokeWidth={1.5} />`
 → import the icon data from `@hugeicons/core-free-icons` (same constant name)
-and render with our Solid component: `import HugeiconsIcon from '@/lib/HugeiconsIcon'`.
+and render with our Solid component: `import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'`.
 Same props: `icon`, `size`, `color`, `strokeWidth`, `class`, plus `style`.
+(The package does not export `IconSvgObject`; ours in `@/lib/HugeiconsIcon` is
+the canonical type — import it from there, never redeclare it.)
 
 ### @use-gesture/react
 

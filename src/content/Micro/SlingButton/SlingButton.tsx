@@ -280,7 +280,7 @@ const SlingButton = (props: SlingButtonProps) => {
       slop: e.pointerType === 'touch' ? SLOP.coarse : SLOP.fine
     };
     try {
-      e.currentTarget.setPointerCapture(e.pointerId);
+      (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
     } catch {}
     setHeld(true);
   };
@@ -419,7 +419,7 @@ const SlingButton = (props: SlingButtonProps) => {
           class="fill-none [stroke:var(--sl-accent)] [stroke-width:var(--sl-stroke)] [stroke-linecap:butt] [transition:stroke-width_160ms_cubic-bezier(0.23,1,0.32,1)] group-data-[armed]/root:[stroke-width:calc(var(--sl-stroke)*1.5)]"
           r={arcR()}
           pathLength="1"
-          strokeDasharray="0 1"
+          stroke-dasharray="0 1"
           style={{ opacity: 0 }}
         />
       </svg>
@@ -427,7 +427,7 @@ const SlingButton = (props: SlingButtonProps) => {
         {(_, i) => (
           <span
             ref={el => {
-              dotEls[i] = el;
+              dotEls[i()] = el;
             }}
             class="pointer-events-none absolute top-1/2 left-1/2 rounded-full opacity-0 [width:var(--sl-dot)] [height:var(--sl-dot)] [margin:calc(var(--sl-dot)/-2)_0_0_calc(var(--sl-dot)/-2)] [background:var(--sl-accent)]"
             aria-hidden="true"

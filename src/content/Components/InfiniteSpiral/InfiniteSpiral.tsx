@@ -1,4 +1,4 @@
-import { createEffect, createMemo, onCleanup, For } from 'solid-js';
+import { createEffect, createMemo, onCleanup, onMount, For } from 'solid-js';
 import type { JSX } from 'solid-js';
 
 export interface InfiniteSpiralItem {
@@ -176,13 +176,28 @@ const InfiniteSpiral = (props: InfiniteSpiralProps) => {
     return mode === 'drag' || mode === 'all';
   };
 
+  // Solid JSX has no capture-phase handler attr; suppress post-drag clicks with
+  // a native capture-phase listener so child links don't navigate after a drag.
+  onMount(() => {
+    const suppressClickAfterDrag = (event: MouseEvent) => {
+      if (!dragMoved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      dragMoved = false;
+    };
+    rootEl.addEventListener('click', suppressClickAfterDrag, true);
+    onCleanup(() => rootEl.removeEventListener('click', suppressClickAfterDrag, true));
+  });
+
   const stopDragging = (event: PointerEvent) => {
     if (!dragging) return;
     dragging = false;
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
+    const el = event.currentTarget as HTMLDivElement;
+    if (!el) return;
+    if (el.hasPointerCapture(event.pointerId)) {
+      el.releasePointerCapture(event.pointerId);
     }
-    event.currentTarget.style.cursor = dragEnabled() ? 'grab' : 'default';
+    el.style.cursor = dragEnabled() ? 'grab' : 'default';
   };
 
   const itemClassName =
@@ -227,12 +242,6 @@ const InfiniteSpiral = (props: InfiniteSpiralProps) => {
       }}
       onPointerUp={stopDragging}
       onPointerCancel={stopDragging}
-      onClickCapture={event => {
-        if (!dragMoved) return;
-        event.preventDefault();
-        event.stopPropagation();
-        dragMoved = false;
-      }}
     >
       <div class="absolute inset-0 [transform-style:preserve-3d]" role="list" aria-label="Infinite spiral gallery">
         <For each={normalizedItems()}>

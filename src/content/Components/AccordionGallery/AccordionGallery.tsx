@@ -212,16 +212,16 @@ const AccordionGallery = (props: AccordionGalleryProps) => {
               class="group relative block min-w-0 min-h-0 flex-[1_1_0] cursor-pointer overflow-hidden bg-[#0a0713] no-underline outline-none [transform-style:preserve-3d] [transform-origin:center] [box-shadow:0_10px_30px_-18px_rgba(0,0,0,0.8)] focus-visible:[box-shadow:0_0_0_2px_var(--ag-accent),0_10px_30px_-18px_rgba(0,0,0,0.8)] max-[520px]:min-h-[84px] max-[520px]:!transform-none"
               style={
                 {
-                  borderRadius: `${props.radius ?? 16}px`,
+                  'border-radius': `${props.radius ?? 16}px`,
                   '--ag-accent': props.accentColor ?? '#ffffff',
-                  willChange: 'flex-grow, transform'
+                  'will-change': 'flex-grow, transform'
                 } as JSX.CSSProperties
               }
               href={item().link || undefined}
-              onClick={e => handleClick(i, e)}
+              onClick={(e: MouseEvent) => handleClick(i, e)}
               onMouseEnter={() => handleEnter(i)}
               onFocus={() => setActive(i)}
-              onKeyDown={e => handleKeyDown(i, e)}
+              onKeyDown={(e: KeyboardEvent) => handleKeyDown(i, e)}
               role="listitem"
               tabIndex={0}
               aria-current={isActive() ? 'true' : undefined}
@@ -236,7 +236,7 @@ const AccordionGallery = (props: AccordionGalleryProps) => {
                   style={{
                     width: vertical() ? '100%' : 'var(--ag-media-size, 320px)',
                     height: vertical() ? 'var(--ag-media-size, 320px)' : '100%',
-                    willChange: 'transform, filter'
+                    'will-change': 'transform, filter'
                   }}
                 >
                   <img
@@ -264,7 +264,7 @@ const AccordionGallery = (props: AccordionGalleryProps) => {
                     class="h-[26px] w-[3px] flex-none rounded-[3px] opacity-0"
                     style={{
                       background: props.accentColor ?? '#ffffff',
-                      boxShadow: `0 0 12px color-mix(in srgb, ${props.accentColor ?? '#ffffff'} 60%, transparent)`
+                      'box-shadow': `0 0 12px color-mix(in srgb, ${props.accentColor ?? '#ffffff'} 60%, transparent)`
                     }}
                   />
                   <span

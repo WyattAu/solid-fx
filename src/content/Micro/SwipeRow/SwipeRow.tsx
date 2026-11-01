@@ -1,7 +1,7 @@
 import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount, Show } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { animate, motionValue } from 'motion';
-import type { AnimationPlaybackControls } from 'motion';
+import type { AnimationPlaybackControlsWithThen } from 'motion';
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
 import HugeiconsIcon from '@/lib/HugeiconsIcon';
 import { Delete02Icon } from '@hugeicons/core-free-icons';
@@ -132,13 +132,13 @@ const SwipeRow = (props: SwipeRowProps) => {
   let foldTimer: ReturnType<typeof setTimeout> | undefined;
   let heading: number | null = null;
   let paintRaf = 0;
-  let anims: AnimationPlaybackControls[] = [];
+  let anims: AnimationPlaybackControlsWithThen[] = [];
 
   const x = motionValue(0);
   const spread = motionValue(0);
   const landed = motionValue(0);
 
-  const track = (controls: AnimationPlaybackControls) => {
+  const track = (controls: AnimationPlaybackControlsWithThen) => {
     anims.push(controls);
     void controls.then(() => {
       anims = anims.filter(a => a !== controls);

@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import type { JSX } from 'solid-js';
 
 type HoloPreset = 'bursts' | 'stars' | 'shards' | 'cosmos' | 'rainbow' | 'swirl' | 'glitter' | 'gold';
@@ -634,7 +634,9 @@ const HoloCard = (props: HoloCardProps) => {
 
   const track = (e: PointerEvent) => {
     if (e.pointerType === 'touch' && e.type === 'pointermove' && !e.buttons) return;
-    const rect = e.currentTarget.getBoundingClientRect();
+    const target = e.currentTarget as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
     pointer = {
       x: clamp((e.clientX - rect.left) / rect.width, 0, 1),
       y: clamp((e.clientY - rect.top) / rect.height, 0, 1),

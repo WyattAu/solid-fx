@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, onMount, Show } from 'solid-js';
 import type { JSX } from 'solid-js';
 
 export interface InfiniteMenuItem {
@@ -881,7 +881,7 @@ const InfiniteMenu = (props: InfiniteMenuProps) => {
       aria-label={current()?.title || 'Infinite menu'}
       style={
         {
-          backgroundColor: props.backgroundColor,
+          'background-color': props.backgroundColor,
           '--infinite-menu-text': ink(),
           '--infinite-menu-accent': accent(),
           '--infinite-menu-on-accent': onAccent(),
@@ -892,10 +892,9 @@ const InfiniteMenu = (props: InfiniteMenuProps) => {
       }
     >
       <canvas ref={canvasEl} class={CANVAS} />
-      <Show when={(props.showInfo ?? true) && current()}>
-        {() => {
-          const c = current()!;
-          return props.renderInfo ? (
+      <Show when={(props.showInfo ?? true) && current()} keyed>
+        {(c) =>
+          props.renderInfo ? (
             <div class={CUSTOM}>{props.renderInfo(c, active() % items().length, moving())}</div>
           ) : (
             <div class={LAYER} data-moving={moving()} data-layout={layout()}>
@@ -929,8 +928,8 @@ const InfiniteMenu = (props: InfiniteMenuProps) => {
                 )}
               </Show>
             </div>
-          );
-        }}
+          )
+        }
       </Show>
     </div>
   );

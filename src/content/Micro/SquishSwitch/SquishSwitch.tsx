@@ -1,4 +1,4 @@
-import { createEffect, createSignal, createUniqueId, onCleanup, Show } from 'solid-js';
+import { createEffect, createSignal, createUniqueId, onCleanup, onMount, Show } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { animate, motionValue } from 'motion';
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
@@ -203,7 +203,7 @@ const SquishSwitch = (props: SquishSwitchProps) => {
       slop: e.pointerType === 'touch' ? TAP_SLOP.coarse : TAP_SLOP.fine
     };
     try {
-      e.currentTarget.setPointerCapture(e.pointerId);
+      (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
     } catch {}
     setDragging(true);
   };

@@ -820,19 +820,21 @@ const ShapeGrid = (props: ShapeGridProps) => {
     <div
       ref={container}
       class={`relative h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`.trim()}
-      style={{
-        opacity: clamp(props.opacity ?? 1, 0, 1),
-        backgroundColor: props.backgroundColor ?? 'transparent',
-        ...(mask() === 'none'
-          ? null
-          : {
-              maskImage: mask(),
-              WebkitMaskImage: mask(),
-              maskComposite: 'intersect',
-              WebkitMaskComposite: 'source-in'
-            }),
-        ...props.style
-      }}
+      style={
+        {
+          opacity: clamp(props.opacity ?? 1, 0, 1),
+          'background-color': props.backgroundColor ?? 'transparent',
+          ...(mask() === 'none'
+            ? null
+            : {
+                'mask-image': mask(),
+                '-webkit-mask-image': mask(),
+                'mask-composite': 'intersect',
+                '-webkit-mask-composite': 'source-in'
+              }),
+          ...props.style
+        } as JSX.CSSProperties
+      }
     >
       <canvas ref={canvas} class="absolute left-0 top-0 block origin-top-left" />
     </div>

@@ -68,7 +68,7 @@ export interface GlassSurfaceProps {
   blueOffset?: number;
   xChannel?: GlassSurfaceChannel;
   yChannel?: GlassSurfaceChannel;
-  mixBlendMode?: JSX.CSSProperties['mixBlendMode'];
+  mixBlendMode?: JSX.CSSProperties['mix-blend-mode'];
   refraction?: boolean;
   renderer?: GlassSurfaceRenderer;
   backdrop?: GlassSurfaceBackdropRef | GlassSurfaceBackdrop | null;
@@ -857,8 +857,8 @@ const GlassSurface = (props: GlassSurfaceProps) => {
   const shapeStyle = (): JSX.CSSProperties =>
     outline()
       ? {
-          borderRadius: 0,
-          boxShadow: 'none',
+          'border-radius': 0,
+          'box-shadow': 'none',
           '-webkit-mask': `${maskUrl()} ${maskPlace()}`,
           mask: `${maskUrl()} ${maskPlace()}`
         }
@@ -874,25 +874,25 @@ const GlassSurface = (props: GlassSurfaceProps) => {
 
   const modeStyle = (): JSX.CSSProperties =>
     webgl()
-      ? { boxShadow: WEBGL_SHADOW }
+      ? { 'box-shadow': WEBGL_SHADOW }
       : refractive()
         ? {
             background: `light-dark(hsl(0 0% 100% / ${props.backgroundOpacity ?? 0}), hsl(0 0% 0% / ${props.backgroundOpacity ?? 0}))`,
             'backdrop-filter': `url(#${filterId}) saturate(${props.saturation ?? 1})`,
-            boxShadow: SVG_SHADOW
+            'box-shadow': SVG_SHADOW
           }
         : {
             background: frost(),
             '-webkit-backdrop-filter': fallbackFilter(),
             'backdrop-filter': fallbackFilter(),
-            boxShadow: FALLBACK_SHADOW
+            'box-shadow': FALLBACK_SHADOW
           };
 
   const containerStyle = (): JSX.CSSProperties => ({
     ...props.style,
     width: typeof props.width === 'number' ? `${props.width}px` : props.width,
     height: typeof props.height === 'number' ? `${props.height}px` : props.height,
-    borderRadius: `${props.borderRadius ?? 20}px`,
+    'border-radius': `${props.borderRadius ?? 20}px`,
     ...modeStyle(),
     ...shapeStyle()
   });
@@ -964,7 +964,7 @@ const GlassSurface = (props: GlassSurfaceProps) => {
           class="pointer-events-none absolute inset-0 rounded-[inherit]"
           style={{
             background: `light-dark(hsl(0 0% 100% / ${props.backgroundOpacity ?? 0}), hsl(0 0% 0% / ${props.backgroundOpacity ?? 0}))`,
-            boxShadow: outline() ? 'none' : FRAME_SHADOW
+            'box-shadow': outline() ? 'none' : FRAME_SHADOW
           }}
         />
       </Show>

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untracked } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { For, Show } from 'solid-js';
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
@@ -257,7 +257,7 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
     };
 
     const animateTo = (target: string): number => {
-      const { flipMs, staggerMs, flips, glyphs, order: cascade } = untracked(timing);
+      const { flipMs, staggerMs, flips, glyphs, order: cascade } = untrack(timing);
       const fromPhrase = normalizePhrase(shown ?? target, target.length);
       const randomOrder = cascade === 'random' ? shuffleIndices(target.length) : null;
 
@@ -373,7 +373,7 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
         if (cancelled) return;
 
         if (document.hidden) {
-          scheduleNext(untracked(timing).holdMs);
+          scheduleNext(untrack(timing).holdMs);
           return;
         }
 
@@ -381,7 +381,7 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
         if (nextIndex >= phrasesNow.length && !loop) return;
 
         const duration = show(nextIndex % phrasesNow.length);
-        scheduleNext(untracked(timing).holdMs + duration);
+        scheduleNext(untrack(timing).holdMs + duration);
       }, delay);
     };
 
@@ -409,7 +409,7 @@ const SplitFlapText = (props: SplitFlapTextProps) => {
     }
 
     if (phrasesNow.length > 1) {
-      scheduleNext(untracked(timing).holdMs + startDuration);
+      scheduleNext(untrack(timing).holdMs + startDuration);
     }
 
     onCleanup(() => {

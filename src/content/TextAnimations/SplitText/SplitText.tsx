@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, untracked } from 'solid-js';
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { Dynamic } from 'solid-js/web';
 import { gsap } from 'gsap';
@@ -22,7 +22,7 @@ export interface SplitTextProps {
   threshold?: number;
   rootMargin?: string;
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
-  textAlign?: JSX.CSSProperties['textAlign'];
+  textAlign?: JSX.CSSProperties['text-align'];
   staggerFrom?: 'start' | 'center' | 'end' | 'edges' | 'random';
   mask?: boolean;
   effect?: SplitTextEffect;
@@ -151,7 +151,7 @@ const SplitText = (props: SplitTextProps) => {
     const finish = () => {
       if (completedText === text) return;
       completedText = text;
-      untracked(() => props.onLetterAnimationComplete)?.();
+      untrack(() => props.onLetterAnimationComplete)?.();
     };
 
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
@@ -432,8 +432,8 @@ const SplitText = (props: SplitTextProps) => {
       ref={root}
       class={`split-parent inline-block whitespace-normal ${clip() ? 'overflow-hidden' : 'overflow-visible'} ${(props.trigger ?? 'view') === 'click' ? 'cursor-pointer' : ''} ${props.class ?? ''} ${props.className ?? ''}`}
       style={{
-        textAlign: props.textAlign ?? 'center',
-        wordWrap: 'break-word',
+        'text-align': props.textAlign ?? 'center',
+        'word-wrap': 'break-word',
         color: props.color,
         visibility: ready() ? undefined : 'hidden'
       }}

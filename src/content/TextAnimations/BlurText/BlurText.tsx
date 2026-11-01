@@ -352,7 +352,7 @@ const BlurText = (props: BlurTextProps) => {
       // MotionConfig reducedMotion="user": transforms jump, filter/opacity keep easing.
       const move: ValueTransition = reduce()
         ? { duration: 0 }
-        : { type: 'spring', visualDuration: totalDuration() * fx().settle, bounce: fx().bounce, delay: delayed };
+        : { type: 'spring', visualDuration: totalDuration() * fx().settle, bounce: fx().bounce ?? undefined, delay: delayed };
       for (const key of MOVE_KEYS) if (key in fromSnapshot()) overrides[key] = move;
     }
     return asOptions({ duration: totalDuration(), delay: delayed, ease: fx().fade, ...overrides });

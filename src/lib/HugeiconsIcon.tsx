@@ -6,7 +6,7 @@ import { Dynamic, For } from 'solid-js/web';
  * by the package, so it is declared here): a list of [tagName, attributes]
  * tuples describing the SVG elements of the icon.
  */
-type IconSvgObject = ([string, { [key: string]: string | number }])[] | readonly (readonly [string, { readonly [key: string]: string | number }])[];
+export type IconSvgObject = ([string, { [key: string]: string | number }])[] | readonly (readonly [string, { readonly [key: string]: string | number }])[];
 
 /**
  * Solid replacement for @hugeicons/react's HugeiconsIcon.

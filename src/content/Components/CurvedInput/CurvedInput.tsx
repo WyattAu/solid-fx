@@ -493,19 +493,22 @@ const CurvedInput = (props: CurvedInputProps) => {
 
               <g clip-path={`url(#${clipId})`}>
                 <text
-                  ref={textRef}
+                  ref={(el: SVGTextElement) => {
+                    textRef = el;
+                    // xml:space is not in Solid's SVG JSX types; set it directly.
+                    el.setAttribute('xml:space', 'preserve');
+                  }}
                   style={{ 'font-size': `${props.fontSize ?? 16}px`, 'font-weight': 500 }}
                   fill={fgColor()}
-                  xml:space="preserve"
                   aria-hidden="true"
                 >
                   <textPath href={`#${layoutPathId}`}>{display()}</textPath>
                 </text>
                 <Show when={!display() && props.placeholder}>
                   <text
+                    ref={(el: SVGTextElement) => el.setAttribute('xml:space', 'preserve')}
                     style={{ 'font-size': `${props.fontSize ?? 16}px`, 'font-weight': 500 }}
                     fill={phColor()}
-                    xml:space="preserve"
                     aria-hidden="true"
                   >
                     <textPath href={`#${layoutPathId}`}>{props.placeholder}</textPath>
@@ -604,10 +607,10 @@ const CurvedInput = (props: CurvedInputProps) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         aria-label={props.ariaLabel || props.placeholder || 'Curved input'}
-        autoComplete="off"
-        autoCapitalize="none"
-        autoCorrect="off"
-        spellCheck={false}
+        autocomplete="off"
+        autocapitalize="none"
+        autocorrect="off"
+        spellcheck={false}
       />
     </form>
   );

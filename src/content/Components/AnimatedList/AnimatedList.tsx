@@ -2,7 +2,7 @@ import { createEffect, createMemo, createSignal, createUniqueId, onCleanup, onMo
 import type { JSX } from 'solid-js';
 import { For } from 'solid-js';
 import HugeiconsIcon from '@/lib/HugeiconsIcon';
-import type { IconSvgObject } from '@hugeicons/core-free-icons';
+import type { HugeiconsIconProps } from '@/lib/HugeiconsIcon';
 import {
   CodeIcon,
   FigmaIcon,
@@ -17,6 +17,10 @@ import {
   Table01Icon,
   Video01Icon
 } from '@hugeicons/core-free-icons';
+
+// IconSvgObject is not exported by @hugeicons/core-free-icons; derive the same
+// shape from the shared HugeiconsIcon component's props (its `icon` type).
+type IconSvgObject = HugeiconsIconProps['icon'];
 
 export interface AnimatedListEntry {
   id?: string | number;

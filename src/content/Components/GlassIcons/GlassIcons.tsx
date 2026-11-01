@@ -934,7 +934,9 @@ const GlassIcons = (props: GlassIconsProps) => {
 
   const point = (index: number, event: PointerEvent) => {
     if (event.pointerType === 'touch') return;
-    const rect = event.currentTarget.getBoundingClientRect();
+    const target = event.currentTarget as HTMLElement;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
     engine?.aim(index, clamp(x, -1, 1), clamp(y, -1, 1));
@@ -980,7 +982,7 @@ const GlassIcons = (props: GlassIconsProps) => {
       }
     >
       <Show when={clearGlass() && liquid() && maps()}>
-        <svg class={DEFS} aria-hidden="true" focusable="false">
+        <svg class={DEFS} aria-hidden="true">
           <filter id={filterId} color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
             <feImage
               href={maps()!.refractionUrl}
@@ -1061,16 +1063,17 @@ const GlassIcons = (props: GlassIconsProps) => {
               data-glass-icon=""
               aria-label={item.label}
               onClick={item.onClick}
-              onPointerEnter={event => {
+              onPointerEnter={(event: PointerEvent) => {
                 if (event.pointerType !== 'touch') engine?.hover(index(), true);
               }}
-              onPointerMove={event => point(index(), event)}
+              onPointerMove={(event: PointerEvent) => point(index(), event)}
               onPointerLeave={() => engine?.hover(index(), false)}
               onPointerDown={() => engine?.press(index(), true)}
               onPointerUp={() => engine?.press(index(), false)}
               onPointerCancel={() => engine?.press(index(), false)}
-              onFocus={event => {
-                if (focusVisible(event.currentTarget)) engine?.hover(index(), true);
+              onFocus={(event: FocusEvent) => {
+                const target = event.currentTarget as HTMLElement;
+                if (target && focusVisible(target)) engine?.hover(index(), true);
               }}
               onBlur={() => engine?.hover(index(), false)}
             >
@@ -1088,7 +1091,7 @@ const GlassIcons = (props: GlassIconsProps) => {
                   glassEls[index()] = el;
                 }}
                 class={GLASS}
-                style={{ backdropFilter: glassFilter(), '-webkit-backdrop-filter': glassFilter() }}
+                style={{ 'backdrop-filter': glassFilter(), '-webkit-backdrop-filter': glassFilter() }}
               >
                 <Show when={!gpu() && maps()}>
                   <span class={SHADE} style={{ 'background-image': `url(${maps()!.shadeUrl})` }} />

@@ -899,7 +899,7 @@ const ShapeWaves = (props: ShapeWavesProps) => {
       ref={root}
       class={`pointer-events-none relative isolate h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`}
       data-ready={ready()}
-      style={{ backgroundColor: props.backgroundColor ?? '#000000' }}
+      style={{ 'background-color': props.backgroundColor ?? '#000000' }}
       aria-hidden="true"
     >
       <canvas

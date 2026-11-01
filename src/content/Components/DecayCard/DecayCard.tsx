@@ -496,7 +496,13 @@ const DecayCard = (props: DecayCardProps) => {
     <div
       ref={rootRef}
       class={`${ROOT}${props.class ? ` ${props.class}` : ''}${props.className ? ` ${props.className}` : ''}`}
-      style={{ width: props.width ?? 300, height: props.height ?? 400, ...props.style }}
+      style={
+        {
+          width: `${props.width ?? 300}px`,
+          height: `${props.height ?? 400}px`,
+          ...props.style
+        } as JSX.CSSProperties
+      }
     >
       <canvas ref={canvasRef} class={CANVAS} aria-hidden="true" />
       <Show when={fallback() && props.image}>
@@ -504,7 +510,7 @@ const DecayCard = (props: DecayCardProps) => {
           class={FALLBACK}
           src={props.image}
           alt=""
-          style={{ 'border-radius': props.radius ?? 0, filter: props.grayscale ? 'grayscale(1)' : undefined }}
+          style={{ 'border-radius': `${props.radius ?? 0}px`, filter: props.grayscale ? 'grayscale(1)' : undefined }}
         />
       </Show>
       <Show when={props.children}>

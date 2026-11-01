@@ -199,7 +199,7 @@ const SpringCheck = (props: SpringCheckProps) => {
               }}
               d={TICK_PATH}
               pathLength={1}
-              strokeDasharray={1}
+              stroke-dasharray="1"
               style={{ 'stroke-dashoffset': r.tick }}
             />
           </svg>
