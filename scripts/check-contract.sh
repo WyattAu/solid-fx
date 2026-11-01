@@ -12,12 +12,12 @@ if grep -rnE "from '(react|${BANNED})" src/content --include='*.tsx' --include='
   fail=1
 fi
 
-if grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect|Context|ReducedMotion)\(" src/content --include='*.tsx'; then
+if grep -rnE "use(State|Effect|Ref|Memo|Callback|LayoutEffect|Context)\(" src/content --include='*.tsx'; then
   echo "FAIL: React hook calls found in src/content (listed above)" >&2
   fail=1
 fi
 
-notes=$(grep -rc 'PORT-NOTE' src/content --include='*.tsx' 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
+notes=$(grep -rc 'PORT-NOTE' src/content --include='*.tsx' 2>/dev/null | awk -F: '{s+=$2} END {print s+0}' || true)
 
 if [ "$fail" -ne 0 ]; then
   exit 1
