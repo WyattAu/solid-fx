@@ -256,7 +256,7 @@ export default function ImageTrail(props: ImageTrailProps) {
 
   createEffect(() => {
     // Upstream rebuilt the trail only when the items array changed.
-    props.items;
+    void props.items;
     if (!container) return;
     const dispose = createTrail(container, config);
     onCleanup(dispose);

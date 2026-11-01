@@ -683,7 +683,7 @@ export const LaserFlow = (props: LaserFlowProps) => {
     };
 
     const measure = (s: Settings, width: number, height: number): Surface => {
-      const element = s.surfaceRef ? s.surfaceRef() : null;
+      const element = (s.surfaceRef ? s.surfaceRef() : null) ?? null;
       if (element !== state.observed) {
         if (state.observed) resizeObserver.unobserve(state.observed);
         if (element) resizeObserver.observe(element);

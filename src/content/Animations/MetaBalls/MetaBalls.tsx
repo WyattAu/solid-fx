@@ -305,7 +305,7 @@ const MetaBalls = (props: MetaBallsProps) => {
     };
     let phase = 0;
     let clock = 0;
-    let introAt = (props.intro ?? true) && !reduced ? 0 : -1;
+    const introAt = (props.intro ?? true) && !reduced ? 0 : -1;
     let visible = true;
     let raf = 0;
     let last = 0;

@@ -60,6 +60,7 @@ const ThoughtLine = (props: ThoughtLineProps) => {
   const doneText = () => props.doneLabel || ((props.showTimer ?? true) ? 'Thought for' : 'Done thinking');
   const steps = () => props.steps ?? EMPTY_STEPS;
   const hasTrace = () => steps().length > 0;
+  const glyph = () => props.glyph ?? 'sparkle';
   const depth = () => (reduce() ? Math.min(props.breathDepth ?? 0.45, 0.2) : (props.breathDepth ?? 0.45));
   const period = () => (reduce() ? (props.breathPeriod ?? 1.6) * 1.5 : (props.breathPeriod ?? 1.6));
   const trough = () => 1 - depth();
@@ -83,7 +84,7 @@ const ThoughtLine = (props: ThoughtLineProps) => {
   });
 
   createEffect(() => {
-    const glyphNow = props.glyph;
+    const glyphNow = glyph();
     const glyphNode = glyphEl;
     const breathNode = breathEl;
     if (glyphNow === 'none' || !breathNode) return;
@@ -183,7 +184,7 @@ const ThoughtLine = (props: ThoughtLineProps) => {
   const toggle = () => hasTrace() && (props.collapsible ?? true);
   const head = (
     <>
-      {props.glyph !== undefined && props.glyph !== 'none' ? (
+      {glyph() !== 'none' ? (
         <span
           ref={el => {
             glyphEl = el;
@@ -191,12 +192,12 @@ const ThoughtLine = (props: ThoughtLineProps) => {
           class="mr-[0.2em] inline-flex h-[1.1em] w-[1.1em] flex-none [color:var(--tl-glyph)] [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
           aria-hidden="true"
         >
-          {props.glyph === 'sparkle' ? (
+          {glyph() === 'sparkle' ? (
             <HugeiconsIcon icon={SparklesIcon} size="100%" strokeWidth={2} />
-          ) : props.glyph === 'dot' ? (
+          ) : glyph() === 'dot' ? (
             <span class="m-auto h-[0.5em] w-[0.5em] rounded-full bg-current" />
           ) : (
-            props.glyph
+            glyph()
           )}
         </span>
       ) : null}

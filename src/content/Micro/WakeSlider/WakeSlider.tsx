@@ -1,5 +1,5 @@
 import { createEffect, createSignal, Index, onCleanup } from 'solid-js';
-import { frame, motionValue, springValue } from 'motion';
+import { cancelFrame, frame, motionValue, springValue } from 'motion';
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion';
 
 const SETTLE = 9.23;
@@ -124,7 +124,7 @@ const WakeSlider = (props: WakeSliderProps) => {
   onCleanup(() => {
     offHead();
     offSpeed();
-    if (proc) frame.cancel(proc);
+    if (proc) cancelFrame(proc);
     target.stop();
     head.stop();
     rawSpeed.stop();

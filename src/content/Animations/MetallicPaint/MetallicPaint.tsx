@@ -414,7 +414,10 @@ const solvePoisson = (mask: Uint8Array, width: number, height: number) => {
   const field = new Float32Array(width * height);
   const red: number[] = [];
   const black: number[] = [];
-  interior.forEach(i => (((i % width) + Math.floor(i / width)) % 2 === 0 ? red.push(i) : black.push(i)));
+  interior.forEach(i => {
+    if (((i % width) + Math.floor(i / width)) % 2 === 0) red.push(i);
+    else black.push(i);
+  });
   const relax = (list: number[]) => {
     for (let k = 0; k < list.length; k++) {
       const i = list[k];

@@ -1123,20 +1123,7 @@ export const LogoLoop = (props: LogoLoopProps) => {
   // Upstream deps: [copies, primary, logos, vertical, logoHeight, gap, labels,
   // layout, bend, focus, magnify, tiltX, tiltY, scaleOnHover].
   createEffect(() => {
-    layout().copies;
-    layout().primary;
-    props.logos;
-    vertical();
-    props.logoHeight;
-    props.gap;
-    labels();
-    props.layout;
-    props.bend;
-    props.focus;
-    props.magnify;
-    props.tiltX;
-    props.tiltY;
-    props.scaleOnHover;
+    void [layout().copies, layout().primary, props.logos, vertical(), props.logoHeight, props.gap, labels(), props.layout, props.bend, props.focus, props.magnify, props.tiltX, props.tiltY, props.scaleOnHover];
     engine?.refresh();
   });
 
