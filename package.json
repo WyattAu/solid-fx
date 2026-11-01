@@ -1,0 +1,43 @@
+{
+  "name": "solid-bits",
+  "version": "0.1.0",
+  "description": "Animated, interactive SolidJS components. A Solid port of react-bits (DavidHDev/react-bits).",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "scripts": {
+    "dev": "vite",
+    "gen:index": "node scripts/gen-index.mjs",
+    "check": "tsc --noEmit",
+    "build": "npm run gen:index && npm run check && vite build",
+    "test": "npm run gen:index && vitest run",
+    "lint": "npm run check",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check .",
+    "contract": "bash scripts/check-contract.sh",
+    "coverage": "npm run gen:index && vitest run --coverage",
+    "ci": "npm run build && npm run test && npm run fmt:check && npm run contract"
+  },
+  "dependencies": {
+    "@hugeicons/core-free-icons": "^4.3.3",
+    "@use-gesture/vanilla": "^10.2.27",
+    "gsap": "^3.13.0",
+    "matter-js": "^0.20.0",
+    "motion": "^12.23.12",
+    "ogl": "^1.0.11",
+    "solid-js": "^1.9.5",
+    "three": "^0.180.0",
+    "vgpu": "^0.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.3",
+    "@types/matter-js": "^9.0.17",
+    "@types/three": "^0.180.0",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.3",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0",
+    "vite-plugin-solid": "^2.11.6",
+    "vitest": "^3.0.8",
+    "@vitest/coverage-v8": "^3.0.8"
+  }
+}
