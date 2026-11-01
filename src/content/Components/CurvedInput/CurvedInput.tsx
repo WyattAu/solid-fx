@@ -579,7 +579,8 @@ const CurvedInput = (props: CurvedInputProps) => {
                 {props.buttonText ?? 'Get Started'}
               </text>
             </svg>
-  );
+    );
+  });
 
   return (
     <form

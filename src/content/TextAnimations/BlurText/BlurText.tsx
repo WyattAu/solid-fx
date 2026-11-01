@@ -236,8 +236,6 @@ const BlurText = (props: BlurTextProps) => {
 
   let ref!: HTMLParagraphElement;
   const [phase, setPhase] = createSignal<Phase>(startPhase(props.trigger ?? 'view'));
-  // Upstream captured the first phase in a ref (one-shot read).
-  const firstPhase = phase();
   const [focusWord, setFocusWord] = createSignal(-1);
   // Upstream settledRef — mutable flag read by event handlers.
   let settled = phase() === 'rest';
