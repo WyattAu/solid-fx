@@ -61,7 +61,7 @@ const JellyRadio = (props: JellyRadioProps) => {
   let chipEls: (HTMLButtonElement | null)[] = [];
   let widths: number[] = [];
   const mvs: ChipValues[] = [];
-  let applied = 0;
+  let applied = at();
   const dims = () => SIZES[props.size ?? 'md'] ?? SIZES.md;
 
   const mvFor = (i: number): ChipValues => {
