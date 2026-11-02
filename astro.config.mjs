@@ -6,14 +6,19 @@ import tailwindcss from '@tailwindcss/vite';
 const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds'];
 
 export default defineConfig({
+  site: 'https://wyattau.github.io',
+  base: '/solid-fx',
   output: 'static',
   integrations: [
     starlight({
-      title: 'solid-bits',
+      title: 'solid-fx',
       description:
-        'Animated, interactive SolidJS components — a component-for-component port of react-bits.',
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/WyattAu/solid-bits' }],
+        'Animated, interactive SolidJS components — ports of the best UI effects libraries, installed as source you own.',
+      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/WyattAu/solid-fx' }],
       customCss: ['./src/site/global.css'],
+      components: {
+        ThemeProvider: './src/site/ThemeProvider.astro',
+      },
       sidebar: CATEGORIES.map((category) => ({
         label: category,
         collapsed: true,

@@ -29,13 +29,13 @@ for (const category of CATEGORIES) {
 
 export default defineConfig({
   registry: {
-    name: 'solid-bits',
+    name: 'solid-fx',
     description:
       'Animated, interactive SolidJS components — a component-for-component port of react-bits (TypeScript + Tailwind).',
-    homepage: 'https://github.com/WyattAu/solid-bits',
+    homepage: 'https://github.com/WyattAu/solid-fx',
     authors: ['Wyatt Au'],
-    bugs: 'https://github.com/WyattAu/solid-bits/issues',
-    repository: 'https://github.com/WyattAu/solid-bits',
+    bugs: 'https://github.com/WyattAu/solid-fx/issues',
+    repository: 'https://github.com/WyattAu/solid-fx',
     tags: [
       'solidjs',
       'solid-js',

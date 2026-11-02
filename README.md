@@ -1,4 +1,4 @@
-# solid-bits
+# solid-fx
 
 > 218 animated, interactive components for **SolidJS** — a component-for-component
 > port of [react-bits](https://github.com/DavidHDev/react-bits) (TypeScript +
@@ -36,7 +36,7 @@ docs site (Solid islands), **bun** toolchain, **Biome** lint/format.
 Components are consumed as source, like react-bits:
 
 ```bash
-npx jsrepo add github/WyattAu/solid-bits/src/content/TextAnimations/SplitText
+npx jsrepo add github/WyattAu/solid-fx/src/content/TextAnimations/SplitText
 ```
 
 ## License

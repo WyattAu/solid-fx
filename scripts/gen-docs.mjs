@@ -45,22 +45,66 @@ for (const category of categories) {
 
 const index = [
   '---',
-  "title: 'solid-bits'",
-  "description: 'Animated, interactive SolidJS components — a component-for-component port of react-bits.'",
+  "title: 'solid-fx'",
+  "description: 'Animated, interactive SolidJS components — ports of the best UI effects libraries, installed as source you own.'",
+  'template: splash',
+  'hero:',
+  "  tagline: '218 animated, interactive components for SolidJS — ports of the best UI effects libraries. Source you own; tune every value.'",
+  '  actions:',
+  "    - text: 'Browse components'",
+  "      link: /textanimations/splittext",
+  "      icon: right-arrow",
+  "    - text: 'GitHub'",
+  "      link: https://github.com/WyattAu/solid-fx",
+  "      icon: external",
   '---',
   '',
-  `**${count} components ported so far** (of 218 upstream).`,
+  `**${count} components ported so far** (of 218 upstream react-bits; more sources coming).`,
   '',
-  'Animated, interactive components for SolidJS, ported component-for-component from',
-  '[react-bits](https://reactbits.dev) (TypeScript + Tailwind variant).',
   'Every component is self-contained source at `src/content/<Category>/<Name>/<Name>.tsx` —',
-  'copy it into your project, or grab it with jsrepo. Dependencies are per-component',
-  '(`gsap`, `motion`, `ogl`, `three`, `matter-js`, `vgpu`) and listed in each page.',
+  'copy it into your project, or install it with jsrepo:',
+  '',
+  '```bash',
+  'npx jsrepo add github/WyattAu/solid-fx/src/content/TextAnimations/SplitText',
+  '```',
   '',
   'Browse by category in the sidebar. Each page renders the component live via a',
-  'SolidJS island.',
+  'SolidJS island. Dependencies are per-component (`gsap`, `motion`, `ogl`, `three`,',
+  '`matter-js`, `vgpu`).',
   '',
 ]
 writeFileSync(path.join(docsDir, 'index.mdx'), index.join('\n'))
 
-console.log(`gen-docs: wrote ${count} component pages + index into docs/`)
+// llms.txt projection (docs-gate tier k): machine-readable catalog for AI agents.
+const llms = [
+  '# solid-fx',
+  '',
+  '> Animated, interactive SolidJS components — ports of the best UI effects',
+  '> libraries, installed as source you own. TypeScript + Tailwind; per-component',
+  '> dependencies (gsap, motion, ogl, three, matter-js, vgpu).',
+  '',
+  'Install:',
+  '',
+  '```',
+  'npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>',
+  '```',
+  '',
+]
+
+for (const category of categories) {
+  const categoryDir = path.join(contentDir, category)
+  if (!existsSync(categoryDir)) continue
+  llms.push(`## ${category}`)
+  llms.push('')
+  for (const name of readdirSync(categoryDir).sort()) {
+    if (!existsSync(path.join(categoryDir, name, `${name}.tsx`))) continue
+    llms.push(
+      `- [${name}](https://wyattau.github.io/solid-fx/${category.toLowerCase()}/${name.toLowerCase()}/): ${name} component (source: src/content/${category}/${name}/${name}.tsx)`,
+    )
+  }
+  llms.push('')
+}
+mkdirSync(path.join(root, 'public'), { recursive: true })
+writeFileSync(path.join(root, 'public', 'llms.txt'), llms.join('\n'))
+
+console.log(`gen-docs: wrote ${count} component pages + index into docs/, public/llms.txt`)

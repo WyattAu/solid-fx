@@ -1,4 +1,4 @@
-# AGENTS.md — operating contract for solid-bits
+# AGENTS.md — operating contract for solid-fx
 
 Animated, interactive **SolidJS** components, ported component-for-component
 from [react-bits](https://github.com/DavidHDev/react-bits) (TypeScript +
