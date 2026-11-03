@@ -30,7 +30,7 @@ for (const category of categories) {
     if (seen.has(id)) id = `${category}_${name}`
     if (seen.has(id)) continue
     seen.add(id)
-    lines.push(`export { default as ${id} } from './${category}/${name}/${name}';`)
+    lines.push(`export { default as ${id} } from './${category}/${name}/${name}'`)
     count += 1
   }
 }
