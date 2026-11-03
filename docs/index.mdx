@@ -1,0 +1,27 @@
+---
+title: 'solid-fx'
+description: 'Animated, interactive SolidJS components — ports of the best UI effects libraries, installed as source you own.'
+template: splash
+hero:
+  tagline: '218 animated, interactive components for SolidJS — ports of the best UI effects libraries. Source you own; tune every value.'
+  actions:
+    - text: 'Browse components'
+      link: /solid-fx/textanimations/splittext
+      icon: right-arrow
+    - text: 'GitHub'
+      link: https://github.com/WyattAu/solid-fx
+      icon: external
+---
+
+**218 components ported so far** (of 218 upstream react-bits; more sources coming).
+
+Every component is self-contained source at `src/content/<Category>/<Name>/<Name>.tsx` —
+copy it into your project, or install it with jsrepo:
+
+```bash
+npx jsrepo add github/WyattAu/solid-fx/src/content/TextAnimations/SplitText
+```
+
+Browse by category in the sidebar. Each page renders the component live via a
+SolidJS island. Dependencies are per-component (`gsap`, `motion`, `ogl`, `three`,
+`matter-js`, `vgpu`).

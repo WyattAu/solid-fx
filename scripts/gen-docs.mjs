@@ -52,7 +52,7 @@ const index = [
   "  tagline: '218 animated, interactive components for SolidJS — ports of the best UI effects libraries. Source you own; tune every value.'",
   '  actions:',
   "    - text: 'Browse components'",
-  '      link: /textanimations/splittext',
+  '      link: /solid-fx/textanimations/splittext',
   '      icon: right-arrow',
   "    - text: 'GitHub'",
   '      link: https://github.com/WyattAu/solid-fx',
