@@ -12,11 +12,12 @@ stddev < 6 over the demo region).
 
 | Component | Class | Explanation / next action |
 | --- | --- | --- |
-| BlobCursor, ImageTrail, DodgeField, PixelTrail, SplashCursor, Ribbons | expected | Pointer-driven: animate only under the cursor. Covered by the shoot.mjs pointer sweep; verify on the next run. |
 | AeroShards, ShapeWaves | expected | WebGPU: GitHub CI runners expose no WebGPU adapter. Verify locally in a WebGPU browser. |
 | CRTWarp, SoftAurora | investigate | Shader backgrounds should self-animate — inspect console errors on the live page. |
 | MaskedHeading | investigate | Text animation should be visible at capture time — check intro timing vs the 2.5s settle window. |
 | ModelViewer | investigate | Demo renders an embedded OBJ data-URL; frame is empty in CI. Check OBJLoader parse + lighting (may be black-on-black without env). |
+| ImageTrail, PixelTrail, Ribbons, SplashCursor, DodgeField | investigate | Still blank after the shoot.mjs pointer sweep (v2 run) — the sweep path likely misses each demo's canvas bounds or they listen on container-local coordinates. Per-component: verify in a live browser with the cursor over the frame; adjust demos to self-animate on mount if they only react to the cursor. |
+| Shredder | investigate | Timing-dependent: blank in run 3, rendered in run 1. Possibly a shred animation that ends blank; capture earlier or loop the demo. |
 
 ## Debt
 
