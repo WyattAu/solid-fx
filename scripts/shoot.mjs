@@ -61,6 +61,13 @@ for (const [i, p] of pages.entries()) {
     try {
       await page.goto(p.url, { waitUntil: 'load', timeout: 30000 })
       await page.waitForTimeout(2500) // let intro animations settle
+      // Pointer sweep: interaction-driven components (cursor effects, trails,
+      // drag ribbons) render nothing without pointer movement.
+      for (let step = 0; step < 3; step++) {
+        await page.mouse.move(500 + step * 90, 430, { steps: 8 })
+        await page.mouse.move(780 - step * 90, 420 + step * 10, { steps: 8 })
+      }
+      await page.waitForTimeout(1200)
       await page.screenshot({ path: file, fullPage: false })
       captured = true
       ok += 1
