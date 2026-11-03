@@ -4,3 +4,4 @@ coverage/
 *.tsbuildinfo
 src/content/index.ts
 screenshots/
+screenshots/
