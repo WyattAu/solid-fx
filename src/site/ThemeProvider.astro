@@ -1,13 +1,22 @@
 ---
 // Override of Starlight's ThemeProvider.astro: defaults to DARK (solid-fx
-// components assume a dark stage). The stored preference always wins, so the
-// theme toggle keeps working. The `#theme-icons` template from the default
-// implementation is omitted (its picker icon swap is null-guarded upstream).
+// components assume a dark stage).
+//
+// Planting the stored preference is required, not cosmetic: Starlight's
+// `starlight-theme-select` custom element re-derives the theme on init from
+// `localStorage['starlight-theme'] || 'auto'`, and `auto` follows the OS
+// light/dark setting — which would override any inline default we set here.
+// Planting `dark` (only when unset) makes dark the true first-visit default
+// while the header toggle keeps working: it writes `light`/`dark`/`auto`
+// back to the same key and every later load respects it.
 ---
 
 {/* This is intentionally inlined to avoid FOUC. */}
 <script is:inline>
 	window.StarlightThemeProvider = (() => {
+		if (typeof localStorage !== 'undefined' && !localStorage.getItem('starlight-theme')) {
+			localStorage.setItem('starlight-theme', 'dark');
+		}
 		const storedTheme =
 			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
 		const theme = storedTheme || 'dark';
