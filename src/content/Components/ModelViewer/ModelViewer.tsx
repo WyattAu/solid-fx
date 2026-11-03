@@ -139,7 +139,7 @@ const disposeObject = (object: THREE.Object3D) => {
   })
 }
 
-// PORT-NOTE: drei's ContactShadows is approximated with a radial-gradient
+// SOLID-CONSTRAINT: drei's ContactShadows is approximated with a radial-gradient
 // plane at the model floor (soft round blob shadow).
 const makeShadowTexture = () => {
   const size = 256
@@ -239,7 +239,7 @@ const ModelViewer = (props: ModelViewerProps) => {
     light.position.set(3, 5, 4)
     scene.add(light)
 
-    // PORT-NOTE: drei's <Environment preset> HDRIs are approximated with
+    // SOLID-CONSTRAINT: drei's <Environment preset> HDRIs are approximated with
     // three's RoomEnvironment via PMREM; 'none' disables the env map.
     const pmrem = new THREE.PMREMGenerator(renderer)
     let envTarget: THREE.WebGLRenderTarget | null = null

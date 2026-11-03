@@ -14,7 +14,7 @@ type RevealMode = 'scrub' | 'enter'
 
 export interface ScrollRevealProps {
   children: JSX.Element
-  // PORT-NOTE: React's RefObject<HTMLElement | null> became an element or a
+  // SOLID-ADAPTATION: React's RefObject<HTMLElement | null> became an element or a
   // getter resolving to it (Solid idiom) — pass the scroller element directly
   // or `() => scrollerEl`.
   scrollContainerRef?: HTMLElement | (() => HTMLElement | null | undefined) | null
@@ -104,7 +104,7 @@ const ScrollReveal = (props: ScrollRevealProps) => {
   let containerEl!: HTMLHeadingElement
   let textEl!: HTMLSpanElement
 
-  // PORT-NOTE: upstream used Children.toArray to detect plain-text children;
+  // SOLID-ADAPTATION: upstream used Children.toArray to detect plain-text children;
   // Solid children arrive as strings/numbers/arrays/DOM nodes, so the same
   // check runs on the raw children value.
   const text = createMemo<string | null>(() => {

@@ -64,7 +64,7 @@ interface View {
   id: number
 }
 
-// PORT-NOTE: upstream introspects <Step> children via React.Children to read
+// SOLID-CONSTRAINT: upstream introspects <Step> children via React.Children to read
 // their title/description/icon props. Solid creates child components eagerly,
 // so <Step> instead registers itself into the enclosing <Stepper> through a
 // module-level registrar while the Stepper reads its children; content stays

@@ -68,7 +68,7 @@ const WakeSlider = (props: WakeSliderProps) => {
   let lastAmp = 0
   let latest = value()
 
-  // PORT-NOTE: upstream useSpring(useMotionValue) chain — mapped to the vanilla
+  // SOLID-ADAPTATION: upstream useSpring(useMotionValue) chain — mapped to the vanilla
   // springValue() from `motion`, plus a hand-rolled velocity tracker feeding the
   // smoothed speed spring (vanilla `motion` has no useVelocity).
   const target = motionValue(pct())

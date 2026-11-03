@@ -14,7 +14,7 @@ interface VelocityMapping {
 interface VelocityTextProps {
   children: JSX.Element
   baseVelocity: number
-  // PORT-NOTE: React's RefObject<HTMLElement | null> became an element or a
+  // SOLID-ADAPTATION: React's RefObject<HTMLElement | null> became an element or a
   // getter resolving to it (Solid idiom).
   scrollContainerRef?: HTMLElement | (() => HTMLElement | null | undefined) | null
   className?: string

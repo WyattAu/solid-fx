@@ -61,9 +61,10 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 const snap = (deg: number) => Math.round(deg / 180) * 180
 const isBack = (deg: number) => Math.abs(Math.round(deg / 180)) % 2 === 1
 
-// PORT-NOTE: motion/react's useSpring has no vanilla equivalent; a motionValue
+// SOLID-ADAPTATION: motion/react's useSpring has no vanilla equivalent; a motionValue
 // driven by `animate(..., { type: 'spring', ... })` has the same semantics for
-// `.set()` (animated) and `.jump()` (instant).
+// `.set()` (animated) and `.jump()` (instant) — same solver, same configs
+// (TILT 240/24/0.6, LIFT 320/26, turn restDelta 0.05).
 const springValue = (
   initial: number,
   config: { stiffness: number; damping: number; mass?: number },

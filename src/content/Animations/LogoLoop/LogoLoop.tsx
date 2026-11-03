@@ -1,4 +1,4 @@
-// PORT-NOTE: `node` logo items are rendered once as the primary copy and
+// SOLID-CONSTRAINT: `node` logo items are rendered once as the primary copy and
 // cloned (cloneNode snapshot) into secondary copies — Solid JSX nodes are
 // real DOM nodes and cannot be mounted twice.
 import { createEffect, createSignal, For, onCleanup, onMount } from 'solid-js'
@@ -1195,7 +1195,7 @@ export const LogoLoop = (props: LogoLoopProps) => {
   const isPrimaryCopy = (copyIndex: number) => copyIndex === layout().primary
 
   // Solid cannot mount one JSX node twice; secondary copies get a static
-  // clone of the caller's element (see PORT-NOTE at the top of this file).
+  // clone of the caller's element (see SOLID-CONSTRAINT at the top of this file).
   const logoNode = (node: JSX.Element, primary: boolean): JSX.Element => {
     if (primary) return node
     if (node instanceof Element) return node.cloneNode(true) as JSX.Element

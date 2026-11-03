@@ -441,7 +441,7 @@ const SplitText = (props: SplitTextProps) => {
       (props.effect ?? 'rise') === 'fade')
 
   return (
-    // PORT-NOTE: upstream remounts the element on text change via key; here the
+    // SOLID-CONSTRAINT: upstream remounts the element on text change via key; here the
     // effect re-runs instead (context revert + SplitText re-split), same result.
     <Dynamic
       component={tag()}

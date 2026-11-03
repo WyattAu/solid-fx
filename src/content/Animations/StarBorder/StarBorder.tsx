@@ -2,9 +2,6 @@ import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
-// PORT-NOTE: upstream is polymorphic (`as?: T extends React.ElementType` with a
-// spread of arbitrary element props). Solid ports keep the same job with a tag
-// name for `as` (default 'button') plus pass-through attributes.
 export type StarBorderTheme = 'dark' | 'light'
 
 export type StarBorderHover = 'lap' | 'brighten' | 'reveal' | 'none'
@@ -30,7 +27,8 @@ export interface StarBorderProps {
   backgroundColor?: string
   textColor?: string
   borderColor?: string
-  as?: string
+  /** Upstream polymorphic `as` — Solid renders it through <Dynamic>. */
+  as?: keyof JSX.IntrinsicElements
   type?: string
   [key: string]: unknown
 }

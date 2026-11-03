@@ -1,6 +1,6 @@
 import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
 
-// PORT-NOTE: upstream typed surfaceRef as React's RefObject<HTMLElement | null>;
+// SOLID-ADAPTATION: upstream typed surfaceRef as React's RefObject<HTMLElement | null>;
 // the Solid port takes a plain accessor instead (read once per frame).
 export interface LaserFlowProps
   extends Omit<

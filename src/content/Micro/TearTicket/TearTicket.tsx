@@ -266,7 +266,7 @@ const TearTicket = (props: TearTicketProps) => {
   const stretch = () => props.stretch ?? 30
   const resistance = () => props.resistance ?? 0.45
 
-  // PORT-NOTE: upstream tilt springs (useSpring + useMotionTemplate) are mapped
+  // SOLID-ADAPTATION: upstream tilt springs (useSpring + useMotionTemplate) are mapped
   // to vanilla springValue() following source motion values; the plane/art/ink
   // transforms are written imperatively from their `.on('change')` events.
   const tiltSrcX = motionValue(0)

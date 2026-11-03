@@ -2,6 +2,7 @@ import {
   createContext,
   createEffect,
   createSignal,
+  For,
   onCleanup,
   onMount,
   Show,
@@ -183,10 +184,16 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
   const [textEl, setTextEl] = createSignal<HTMLSpanElement | null>(null)
   let overlayEl: HTMLSpanElement | null = null
   let surfaceEl: HTMLSpanElement | null = null
-  let contentWrapEl: HTMLSpanElement | null = null
   let arrowEl: HTMLSpanElement | null = null
   let prevSwapId: string | null = null
   let presenceAnim: AnimationPlaybackControls | null = null
+  // Upstream AnimatePresence overlaps the exiting and entering content layers
+  // (both `absolute inset-0` inside the surface). The same stack is modeled
+  // here: `layers` holds every payload still rendered; exiting ones animate
+  // out and remove themselves on complete.
+  const [layers, setLayers] = createSignal<Payload[]>([])
+  const wrapEls = new Map<string, HTMLSpanElement>()
+  const exitAnims = new Map<string, AnimationPlaybackControls>()
 
   // Upstream: useMotionValue network (ax/ay/w/h/presence + useVelocity + lean
   // spring). The values stay motion values; the derived transforms are written
@@ -314,9 +321,51 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
     st.instant = mode === 'instant'
     st.current = payload
     st.state = 'open'
+    if (fresh) {
+      // Reopen after a full close: the old portal (and its layers) is gone.
+      exitAnims.forEach(a => a.stop())
+      exitAnims.clear()
+      setLayers([payload])
+    } else if (prev && prev.id !== payload.id) {
+      // Content swap: exit every stale layer, stack the new one on top.
+      exitAnims.get(payload.id)?.stop()
+      exitAnims.delete(payload.id)
+      layers().forEach(layer => {
+        if (layer.id !== payload.id) exitLayer(layer)
+      })
+      setLayers(arr => (arr.some(l => l.id === payload.id) ? arr : [...arr, payload]))
+    } else if (!layers().some(l => l.id === payload.id)) {
+      setLayers([payload])
+    }
     setCurrent(payload)
     setState('open')
     notify()
+  }
+
+  // Upstream LAYER "exit" variant: the old content layer animates out to the
+  // opposite shift + blur while the new one animates in (AnimatePresence
+  // default mode="sync"), then unmounts on complete.
+  const exitLayer = (layer: Payload) => {
+    exitAnims.get(layer.id)?.stop()
+    const el = wrapEls.get(layer.id)
+    if (!el) {
+      setLayers(arr => arr.filter(l => l !== layer))
+      return
+    }
+    const { dir, across } = st.swap
+    const x1 = across ? 0 : -SWAP_SHIFT * dir
+    const y1 = across ? -SWAP_SHIFT * dir : 0
+    const controls = animate(
+      el,
+      { opacity: 0, transform: `translate(${x1}px, ${y1}px)`, filter: 'blur(3px)' },
+      { duration: reduce() ? 0 : SWAP, ease: EASE_OUT },
+    )
+    exitAnims.set(layer.id, controls)
+    void controls.then(() => {
+      if (exitAnims.get(layer.id) !== controls) return
+      exitAnims.delete(layer.id)
+      setLayers(arr => arr.filter(l => l !== layer))
+    })
   }
 
   const beginClose = (instantClose: boolean) => {
@@ -388,6 +437,25 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
     const th = text.offsetHeight + c.py * 2
     const mode = st.mode
     const reduced = reduce()
+    // Enter half of upstream's AnimatePresence (the keyed motion.span's
+    // "enter" -> "show" variants) — runs in every mode, like upstream.
+    const freshWrap = wrapEls.get(c.id)
+    if (prevSwapId !== c.id && freshWrap && st.swap.dir !== 0) {
+      const { dir, across } = st.swap
+      const x0 = across ? 0 : SWAP_SHIFT * dir
+      const y0 = across ? SWAP_SHIFT * dir : 0
+      const swapAnim = animate(
+        freshWrap,
+        {
+          opacity: [0, 1],
+          transform: [`translate(${x0}px, ${y0}px)`, 'translate(0px, 0px)'],
+          filter: ['blur(3px)', 'blur(0px)'],
+        },
+        { duration: reduced ? 0 : SWAP, ease: EASE_OUT },
+      )
+      onCleanup(() => swapAnim.stop())
+    }
+    prevSwapId = c.id
     const travel = props.travel ?? 320
     if (mode === 'move' && !reduced && travel > 0) {
       const spring = { type: 'spring' as const, duration: travel / 1000, bounce: 0.1 }
@@ -416,24 +484,6 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
     } else {
       presence.jump(1)
     }
-    // PORT-NOTE: upstream played the exit half of the AnimatePresence swap on the
-    // old content; only the enter half is reproduced here (single content node).
-    if (prevSwapId !== c.id && contentWrapEl && st.swap.dir !== 0) {
-      const { dir, across } = st.swap
-      const x0 = across ? 0 : SWAP_SHIFT * dir
-      const y0 = across ? SWAP_SHIFT * dir : 0
-      const swapAnim = animate(
-        contentWrapEl,
-        {
-          opacity: [0, 1],
-          transform: [`translate(${x0}px, ${y0}px)`, 'translate(0px, 0px)'],
-          filter: ['blur(3px)', 'blur(0px)'],
-        },
-        { duration: reduced ? 0 : SWAP, ease: EASE_OUT },
-      )
-      onCleanup(() => swapAnim.stop())
-    }
-    prevSwapId = c.id
     write()
   })
 
@@ -469,6 +519,7 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
     clearTimeout(st.leaveTimer)
     clearTimeout(st.warmTimer)
     presenceAnim?.stop()
+    exitAnims.forEach(a => a.stop())
     ax.stop()
     ay.stop()
     w.stop()
@@ -513,28 +564,34 @@ export const WarmTooltipGroup = (props: WarmTooltipGroupProps) => {
                 class="absolute inset-0 rounded-[var(--wt-radius)] [background:var(--wt-surface)] [color:var(--wt-ink)] [box-shadow:0_1px_2px_rgba(0,0,0,0.12),0_8px_24px_-8px_rgba(0,0,0,0.45)] [transform-origin:var(--wt-origin)] contrast-more:[box-shadow:inset_0_0_0_1px_color-mix(in_srgb,var(--wt-ink)_40%,transparent)]"
                 style={{ opacity: 0 }}
               >
-                <span
-                  ref={el => {
-                    contentWrapEl = el
-                    onCleanup(() => {
-                      if (contentWrapEl === el) contentWrapEl = null
-                    })
-                  }}
-                  class="absolute inset-0 flex items-center justify-center"
-                >
-                  <span
-                    ref={el => {
-                      setTextEl(el)
-                    }}
-                    class="inline-flex items-center gap-[7px] whitespace-nowrap font-medium leading-[1.2] tracking-[-0.01em] [font-size:var(--wt-font)]"
-                  >
-                    {c().content}
-                    {c().shortcut ? (
-                      <kbd class="inline-flex h-[1.55em] items-center rounded-[0.4em] px-[0.45em] text-[0.86em] font-medium tracking-[0.02em] tabular-nums [font-family:inherit] [background:color-mix(in_srgb,var(--wt-ink)_9%,transparent)] [box-shadow:inset_0_-1px_0_color-mix(in_srgb,var(--wt-ink)_12%,transparent)] [color:color-mix(in_srgb,var(--wt-ink)_72%,transparent)]">
-                        {c().shortcut}
-                      </kbd>
-                    ) : null}
-                  </span>
+                <span class="absolute inset-0">
+                  <For each={layers()}>
+                    {layer => (
+                      <span
+                        ref={el => {
+                          wrapEls.set(layer.id, el)
+                          onCleanup(() => {
+                            if (wrapEls.get(layer.id) === el) wrapEls.delete(layer.id)
+                          })
+                        }}
+                        class="absolute inset-0 flex items-center justify-center"
+                      >
+                        <span
+                          ref={el => {
+                            setTextEl(el)
+                          }}
+                          class="inline-flex items-center gap-[7px] whitespace-nowrap font-medium leading-[1.2] tracking-[-0.01em] [font-size:var(--wt-font)]"
+                        >
+                          {layer.content}
+                          {layer.shortcut ? (
+                            <kbd class="inline-flex h-[1.55em] items-center rounded-[0.4em] px-[0.45em] text-[0.86em] font-medium tracking-[0.02em] tabular-nums [font-family:inherit] [background:color-mix(in_srgb,var(--wt-ink)_9%,transparent)] [box-shadow:inset_0_-1px_0_color-mix(in_srgb,var(--wt-ink)_12%,transparent)] [color:color-mix(in_srgb,var(--wt-ink)_72%,transparent)]">
+                              {layer.shortcut}
+                            </kbd>
+                          ) : null}
+                        </span>
+                      </span>
+                    )}
+                  </For>
                 </span>
                 {c().arrow ? (
                   <span
@@ -633,7 +690,8 @@ const Trigger = (p: TriggerProps) => {
     onCleanup(() => document.removeEventListener('pointerdown', onOutside, true))
   })
 
-  // Upstream used onClickCapture; Solid capture listeners are attached manually.
+  // SOLID-ADAPTATION: upstream used onClickCapture; Solid has no capture-prop,
+  // so the same capture-phase listener is attached manually (identical behavior).
   createEffect(() => {
     const el = triggerEl
     if (!el || p.disabled) return
@@ -645,6 +703,25 @@ const Trigger = (p: TriggerProps) => {
     }
     el.addEventListener('click', onClickCapture, true)
     onCleanup(() => el.removeEventListener('click', onClickCapture, true))
+  })
+
+  // Upstream cloneElement'd `aria-describedby` onto its single child element.
+  // Solid JSX cannot be cloned, so the same value is written onto the child's
+  // DOM node (group id while active, the caller's original value otherwise).
+  // Non-element children were invalid upstream (cloneElement threw); here they
+  // simply pass through untouched.
+  let originalDescribed: string | null = null
+  let describedCaptured = false
+  createEffect(() => {
+    const child = p.children as unknown
+    if (!(child instanceof HTMLElement)) return
+    if (!describedCaptured) {
+      describedCaptured = true
+      originalDescribed = child.getAttribute('aria-describedby')
+    }
+    const value = active() ? group.id : originalDescribed
+    if (value) child.setAttribute('aria-describedby', value)
+    else child.removeAttribute('aria-describedby')
   })
 
   onCleanup(() => {
@@ -718,8 +795,9 @@ const Trigger = (p: TriggerProps) => {
       }}
       {...handlers}
     >
-      {/* PORT-NOTE: upstream cloneElement'd `aria-describedby` onto the child;
-          Solid cannot clone JSX, so children render without it. */}
+      {/* SOLID-ADAPTATION: upstream cloneElement'd `aria-describedby` onto the
+          child; the effect above writes the same attribute onto the child's DOM
+          node (group id while active, original value otherwise). */}
       {p.children}
       {p.showFuse ? (
         <span

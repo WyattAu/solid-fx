@@ -15,7 +15,7 @@ export type GlassSurfaceRenderer = 'auto' | 'svg' | 'webgl'
 
 export type GlassSurfaceBackdrop = HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
 
-// PORT-NOTE: React's RefObject is replaced by the structurally identical
+// SOLID-ADAPTATION: React's RefObject is replaced by the structurally identical
 // `{ current }` holder; resolveBackdrop() unwraps it the same way.
 export type GlassSurfaceBackdropRef = { current: GlassSurfaceBackdrop | null }
 

@@ -76,6 +76,39 @@ interface EffectPreset {
 }
 
 const WIDTH_SPRING: Transition = { type: 'spring', damping: 34, stiffness: 320 }
+// Upstream MotionConfig reducedMotion="user" disables these (transform) values
+// only — opacity/filter keep animating.
+const TRANSFORM_KEYS = new Set([
+  'x',
+  'y',
+  'z',
+  'translateX',
+  'translateY',
+  'translateZ',
+  'scale',
+  'scaleX',
+  'scaleY',
+  'scaleZ',
+  'rotate',
+  'rotateX',
+  'rotateY',
+  'rotateZ',
+  'skew',
+  'skewX',
+  'skewY',
+  'transformPerspective',
+])
+
+const splitReducedKeyframes = <V,>(
+  keyframes: Record<string, V>,
+): [Record<string, V>, Record<string, V>] => {
+  const transforms: Record<string, V> = {}
+  const rest: Record<string, V> = {}
+  for (const key of Object.keys(keyframes)) {
+    ;(TRANSFORM_KEYS.has(key) ? transforms : rest)[key] = keyframes[key]
+  }
+  return [transforms, rest]
+}
 const FLIP_STYLE: JSX.CSSProperties = {
   'transform-origin': '50% 50% -0.45em',
   'backface-visibility': 'hidden',
@@ -282,14 +315,17 @@ const RotatingText = (props: RotatingTextProps) => {
 
   const liveChars = () => charEls.filter((el): el is HTMLSpanElement => Boolean(el))
 
-  // PORT-NOTE: upstream's `layout={!highlight}` FLIP container animation has no
-  // declarative vanilla-motion equivalent; the highlight pill still tweens via
-  // the width MotionValue below.
+  // PORT-NOTE: upstream's `layout={!highlight}` FLIP animates the root/presence
+  // span boxes (LAYOUT_SPRING) when successive texts have different footprints
+  // in non-highlight mode. No declarative vanilla-motion equivalent exists; the
+  // highlight path is covered by the width MotionValue below, so non-highlight
+  // box changes snap instead of springing.
 
   // Exit half of AnimatePresence: animate the mounted chars out, then swap the
   // shown text so the enter effect mounts + animates the next one.
-  // PORT-NOTE: animatePresenceMode="sync" renders both texts overlapping in
-  // React; here both modes sequence exit -> enter ("wait").
+  // PORT-NOTE: animatePresenceMode is accepted but always behaves as "wait"
+  // (the exit finishes before the next text mounts); upstream "sync" renders
+  // both texts overlapping, which needs parallel dual-subtree mounting.
   createEffect(() => {
     const target = activeIndex()
     const current = shownIndex()
@@ -298,14 +334,23 @@ const RotatingText = (props: RotatingTextProps) => {
     const leave = leaveTo()
     const reduce = reduceMotion()
     let stopped = false
-    const controls = els.map((el, i) => {
+    const controls = els.flatMap((el, i) => {
       const delay = getStaggerDelay(i)
-      const options: Transition = reduce
-        ? { duration: 0 }
-        : exitTransition()
-          ? { ...(exitTransition() as Transition), delay }
-          : { ...charTransition(), delay }
-      return animate(el, leave, options)
+      const base: Transition = exitTransition()
+        ? { ...(exitTransition() as Transition), delay }
+        : { ...charTransition(), delay }
+      if (reduce) {
+        // Upstream MotionConfig reducedMotion="user": transforms jump to their
+        // exit value; opacity/filter still animate on the normal transition.
+        const [transforms, rest] = splitReducedKeyframes(leave as Record<string, string | number>)
+        return [
+          ...(Object.keys(transforms).length
+            ? [animate(el, transforms, { duration: 0, delay })]
+            : []),
+          ...(Object.keys(rest).length ? [animate(el, rest, base)] : []),
+        ]
+      }
+      return [animate(el, leave, base)]
     })
     void Promise.all(controls.map(control => control.then(() => undefined))).then(() => {
       if (!stopped) setShownIndex(target)
@@ -318,9 +363,6 @@ const RotatingText = (props: RotatingTextProps) => {
 
   // Enter half: chars mount with shownIndex's For, then animate from
   // enterFrom to enterTo with their stagger delay.
-  // PORT-NOTE: upstream wrapped everything in MotionConfig reducedMotion="user"
-  // (transform values jump, opacity/filter still animate); reduce here jumps
-  // the whole transition instead.
   createEffect(() => {
     const current = shownIndex()
     const list = elements()
@@ -331,9 +373,9 @@ const RotatingText = (props: RotatingTextProps) => {
     const reduce = reduceMotion()
     const firstMount = !enteredOnce
     enteredOnce = true
-    const controls = els.map((el, i) => {
+    const controls = els.flatMap((el, i) => {
       if (firstMount && !(props.animatePresenceInitial ?? false)) {
-        return animate(el, to, { duration: 0 })
+        return [animate(el, to, { duration: 0 })]
       }
       const fromValues = from as Record<string, string | number>
       const toValues = to as Record<string, string | number>
@@ -345,11 +387,19 @@ const RotatingText = (props: RotatingTextProps) => {
           toValues[key],
         ]
       }
-      return animate(
-        el,
-        keyframes,
-        reduce ? { duration: 0 } : { ...charTransition(), delay: getStaggerDelay(i) },
-      )
+      const delay = getStaggerDelay(i)
+      if (reduce) {
+        // Upstream MotionConfig reducedMotion="user": transforms jump to their
+        // target; opacity/filter still animate on the normal transition.
+        const [transforms, rest] = splitReducedKeyframes(keyframes)
+        return [
+          ...(Object.keys(transforms).length
+            ? [animate(el, transforms, { duration: 0, delay })]
+            : []),
+          ...(Object.keys(rest).length ? [animate(el, rest, { ...charTransition(), delay })] : []),
+        ]
+      }
+      return [animate(el, keyframes, { ...charTransition(), delay })]
     })
     void current
     onCleanup(() => controls.forEach(control => control.stop()))
