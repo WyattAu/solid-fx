@@ -18,35 +18,51 @@ jobs:
           const res = await fetch("https://api.github.com/repos/DavidHDev/react-bits/contents/src/ts-tailwind?per_page=100");
           if (!res.ok) throw new Error(`upstream fetch ${res.status}`);
           const json = await res.json();
-          const upstream = new Set(json.filter(d => d.type === "dir").map(d => d.name));
+          const upstream = new Set(json.filter((d) => d.type === "dir").map((d) => d.name));
           const fs = require("fs");
           const have = new Set();
-          for (const c of ["TextAnimations","Animations","Components","Micro","Backgrounds"]) {
+          for (const c of ["TextAnimations", "Animations", "Components", "Micro", "Backgrounds"]) {
             const dir = `src/content/${c}`;
-            if (fs.existsSync(dir)) for (const d of fs.readdirSync(dir)) {
-              if (fs.existsSync(`${dir}/${d}/${d}.tsx`)) have.add(d);
+            if (fs.existsSync(dir)) {
+              for (const d of fs.readdirSync(dir)) {
+                if (fs.existsSync(`${dir}/${d}/${d}.tsx`)) have.add(d);
+              }
             }
           }
-          const missing = [...upstream].filter(n => !have.has(n)).sort();
-          const extra = [...have].filter(n => !upstream.has(n)).sort();
+          const missing = [...upstream].filter((n) => !have.has(n)).sort();
+          const extra = [...have].filter((n) => !upstream.has(n)).sort();
           console.log(`missing=${missing.length} extra=${extra.length}`);
-          if (missing.length) console.log("MISSING=" + missing.join(" "));
-          if (extra.length) console.log("EXTRA=" + extra.join(" "));
-          require("fs").writeFileSync("/tmp/drift.txt", JSON.stringify({ missing, extra }, null, 2));
+          fs.writeFileSync("/tmp/drift.txt", JSON.stringify({ missing, extra }, null, 2));
+          fs.writeFileSync("/tmp/has-drift.txt", String(missing.length + extra.length > 0));
           '
-          echo "body<<EOF" >> "$GITHUB_OUTPUT"
-          cat /tmp/drift.txt >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "has-drift=$(cat /tmp/has-drift.txt)" >> "$GITHUB_OUTPUT"
+          cat /tmp/drift.txt
       - name: Open or update drift issue
-        if: steps.diff.outputs.body != '{"missing": [], "extra": []}'
+        if: steps.diff.outputs.has-drift == 'true'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const body = `Upstream react-bits drift detected.\n\n\`\`\`json\n${fs.readFileSync('/tmp/drift.txt', 'utf8')}\n\`\`\`\n\nRun the porting pipeline (PORTING.md) for missing components; review EXTRA for upstream removals.`;
-            const issues = await github.rest.issues.listForRepo({ owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'upstream-sync' });
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'upstream-sync',
+            });
             if (issues.data.length) {
-              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issues.data[0].number, body });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body,
+              });
             } else {
-              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title: 'Upstream drift: react-bits has new components', body, labels: ['upstream-sync'] });
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Upstream drift: react-bits has new components',
+                body,
+                labels: ['upstream-sync'],
+              });
             }
