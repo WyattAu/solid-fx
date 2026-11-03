@@ -81,7 +81,7 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.astro", "**/*.mdx", "**/docs/**"],
+      "includes": ["**/*.astro", "**/*.mdx", "**/*.md", "**/docs/**"],
       "formatter": {
         "enabled": false
       },
