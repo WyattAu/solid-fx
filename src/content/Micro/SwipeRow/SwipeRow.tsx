@@ -1,4 +1,4 @@
-import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount, } from 'solid-js'
+import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControlsWithThen } from 'motion'

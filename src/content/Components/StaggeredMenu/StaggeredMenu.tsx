@@ -396,8 +396,7 @@ export const StaggeredMenu = (props: StaggeredMenuProps) => {
   })
 
   const layers = (): string[] => {
-    const raw =
-      props.colors?.length ? props.colors.slice(0, 4) : ['#1e1e22', '#35353c']
+    const raw = props.colors?.length ? props.colors.slice(0, 4) : ['#1e1e22', '#35353c']
     const arr = [...raw]
     if (arr.length >= 3) {
       const mid = Math.floor(arr.length / 2)
@@ -411,11 +410,11 @@ export const StaggeredMenu = (props: StaggeredMenuProps) => {
       class={`sm-scope z-40 ${props.isFixed ? 'fixed top-0 left-0 w-screen h-screen overflow-hidden' : 'w-full h-full'}`}
     >
       <div
-        class={
-          `${props.class || props.className
+        class={`${
+          props.class || props.className
             ? `${`${props.class ?? ''} ${props.className ?? ''} `.trim()} `
-            : ''}staggered-menu-wrapper pointer-events-none relative w-full h-full z-40`
-        }
+            : ''
+        }staggered-menu-wrapper pointer-events-none relative w-full h-full z-40`}
         style={{ '--sm-accent': props.accentColor ?? '#5227FF' } as JSX.CSSProperties}
         data-position={props.position ?? 'right'}
         data-open={open() || undefined}
@@ -539,9 +538,7 @@ export const StaggeredMenu = (props: StaggeredMenuProps) => {
                   <h3 class="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">
                     Socials
                   </h3>
-                  <ul
-                    class="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                  >
+                  <ul class="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap">
                     <For each={props.socialItems}>
                       {(s, _i) => (
                         <li class="sm-socials-item">

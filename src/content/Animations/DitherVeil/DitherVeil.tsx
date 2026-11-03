@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Renderer, Program, Mesh, Triangle, Texture, RenderTarget } from 'ogl'
 

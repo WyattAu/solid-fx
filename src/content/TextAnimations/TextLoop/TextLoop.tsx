@@ -585,11 +585,7 @@ const TextLoop = (props: TextLoopProps) => {
           </Show>
         </defs>
 
-        <text
-          ref={measureEl}
-          class="invisible pointer-events-none"
-          style={textStyle()}
-        >
+        <text ref={measureEl} class="invisible pointer-events-none" style={textStyle()}>
           {unit()}
         </text>
 

@@ -449,7 +449,7 @@ const Shredder = <T extends ShredderItem>(props: ShredderProps<T>) => {
       const prev = sim.tops.get(slot)
       next.set(slot, top)
       if (slot === active || still) return
-      const fresh = (entering?.has(slot)) || (prev === undefined && sim.tops.size > 0)
+      const fresh = entering?.has(slot) || (prev === undefined && sim.tops.size > 0)
       if (fresh) {
         const rec = shiftOf(slot)
         const el = itemEls.get(item.id) || null

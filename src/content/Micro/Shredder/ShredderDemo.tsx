@@ -1,4 +1,3 @@
-
 import Shredder from './Shredder'
 
 interface Card {

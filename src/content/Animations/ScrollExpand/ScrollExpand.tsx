@@ -1,7 +1,7 @@
 import { createEffect, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 
-const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v , b))
+const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v, b))
 
 const smoothstep = (edge0: number, edge1: number, x: number): number => {
   const t = clamp((x - edge0) / (edge1 - edge0 || 1e-6), 0, 1)

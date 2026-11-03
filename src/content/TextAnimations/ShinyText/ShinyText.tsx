@@ -81,10 +81,7 @@ const parseColor = (value: string): number[] | null => {
 
 const blend = (from: number[], to: number[], amount: number) => {
   const channel = (a: number, b: number) =>
-    Math.round(
-      ((a / 255) ** 2.2 * (1 - amount) + (b / 255) ** 2.2 * amount) ** (1 / 2.2) *
-        255,
-    )
+    Math.round(((a / 255) ** 2.2 * (1 - amount) + (b / 255) ** 2.2 * amount) ** (1 / 2.2) * 255)
   const alpha = from[3] * (1 - amount) + to[3] * amount
   if (alpha <= 0) return 'rgba(0, 0, 0, 0)'
   const weigh = (a: number, b: number) => (a * from[3] * (1 - amount) + b * to[3] * amount) / alpha

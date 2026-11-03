@@ -611,7 +611,8 @@ const AnimatedList = (props: AnimatedListProps) => {
           'max-height': size(props.maxHeight ?? 440),
           'mask-image': (props.showGradients ?? true) ? FADE_MASK : undefined,
           '-webkit-mask-image': (props.showGradients ?? true) ? FADE_MASK : undefined,
-        }} tabIndex="0"
+        }}
+        tabIndex="0"
       >
         <div ref={trackEl} class="relative flex flex-col gap-[var(--al-gap)]">
           <For each={items()}>

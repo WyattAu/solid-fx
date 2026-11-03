@@ -102,7 +102,7 @@ const resolvePattern = (
 ): ResolvedPattern => {
   if (typeof pattern === 'string') {
     const named = PATTERNS[pattern]
-    return (named?.[grid]) || (PATTERNS[DEFAULT_PATTERN[grid]][grid] as ResolvedPattern)
+    return named?.[grid] || (PATTERNS[DEFAULT_PATTERN[grid]][grid] as ResolvedPattern)
   }
   const cells = Array.from({ length: grid * grid }, (_, i) => pattern.cells[i] ?? null)
   const max = Math.max(0, ...cells.filter(v => v != null))

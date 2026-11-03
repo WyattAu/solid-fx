@@ -1,4 +1,3 @@
-
 import SlideCommit from './SlideCommit'
 
 function SlideCommitDemo() {

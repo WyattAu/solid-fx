@@ -10,17 +10,17 @@ if (!window.matchMedia) {
     addEventListener() {},
     removeEventListener() {},
     dispatchEvent: () => false,
-  })) as unknown as typeof window.matchMedia;
+  })) as unknown as typeof window.matchMedia
 }
 
-const g = globalThis as Record<string, unknown>;
+const g = globalThis as Record<string, unknown>
 
 if (!g.ResizeObserver) {
   g.ResizeObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}
-  };
+  }
 }
 
 if (!g.IntersectionObserver) {
@@ -29,12 +29,14 @@ if (!g.IntersectionObserver) {
     unobserve() {}
     disconnect() {}
     takeRecords() {
-      return [];
+      return []
     }
-  };
+  }
 }
 
 if (!g.requestAnimationFrame) {
-  g.requestAnimationFrame = ((cb: FrameRequestCallback) => setTimeout(() => cb(performance.now()), 0)) as unknown as typeof requestAnimationFrame;
-  g.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as unknown as typeof cancelAnimationFrame;
+  g.requestAnimationFrame = ((cb: FrameRequestCallback) =>
+    setTimeout(() => cb(performance.now()), 0)) as unknown as typeof requestAnimationFrame
+  g.cancelAnimationFrame = ((id: number) =>
+    clearTimeout(id)) as unknown as typeof cancelAnimationFrame
 }

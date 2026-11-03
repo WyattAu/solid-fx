@@ -265,8 +265,7 @@ const EchoText = (props: EchoTextProps) => {
             desiredY += Math.sin(phase) * Math.cos(phase) * swing * 1.3
           }
 
-          const lerp =
-            1 - (1 - clamp(0.34 / (1 + index * safeLag * 4.2), 0.018, 0.36)) ** step
+          const lerp = 1 - (1 - clamp(0.34 / (1 + index * safeLag * 4.2), 0.018, 0.36)) ** step
           const bendLerp = 1 - (1 - 0.3 / (1 + depth * (1 + safeLag * 8))) ** step
 
           current.x += (desiredX - current.x) * lerp

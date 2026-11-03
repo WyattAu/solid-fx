@@ -1,6 +1,6 @@
-import path from 'node:path';
-import solid from 'vite-plugin-solid';
-import { defineConfig } from 'vitest/config';
+import path from 'node:path'
+import solid from 'vite-plugin-solid'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [solid()],
@@ -13,4 +13,4 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
   },
-});
+})

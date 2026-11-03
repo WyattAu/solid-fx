@@ -73,8 +73,7 @@ const clamp = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max)
 const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3
 const easeInFall = (t: number): number => t ** 1.7
-const easeInOutCubic = (t: number): number =>
-  t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+const easeInOutCubic = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 const fadeAlpha = (level: number): number => 0.35 + (0.65 * level) / (FADES - 1)
 const wrapHalfTurn = (angle: number): number =>
   (((angle % Math.PI) + Math.PI * 1.5) % Math.PI) - Math.PI / 2

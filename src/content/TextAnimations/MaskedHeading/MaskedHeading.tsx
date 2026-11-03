@@ -13,7 +13,7 @@ import { Dynamic } from 'solid-js/web'
 import { Show } from 'solid-js'
 import { gsap } from 'gsap'
 
-const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v , b))
+const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v, b))
 
 const SPOT_MASK = `radial-gradient(circle var(--mh-spot-r, 160px) at var(--mh-spot-x, 50%) var(--mh-spot-y, 50%), ${Array.from(
   { length: 9 },

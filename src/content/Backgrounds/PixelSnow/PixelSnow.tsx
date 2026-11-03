@@ -545,9 +545,7 @@ export default function PixelSnow(props: PixelSnowProps) {
     const pickLevel = (r: number, s: Settings) => {
       const shift = s.flakeSize - 1
       let total = 0
-      const weights = LEVEL_WEIGHTS.map(
-        (weight, level) => weight * 2.2 ** (shift * (level - 1.5)),
-      )
+      const weights = LEVEL_WEIGHTS.map((weight, level) => weight * 2.2 ** (shift * (level - 1.5)))
       const sum = weights.reduce((a, b) => a + b, 0)
       for (let level = 0; level < LEVELS; level++) {
         total += weights[level] / sum
@@ -700,8 +698,7 @@ export default function PixelSnow(props: PixelSnowProps) {
       for (const flake of flakes) {
         const level = flake.level
         const depthLight = 1 - s.depth * (1 - LEVEL_LIGHT[level])
-        const spark =
-          Math.max(0, Math.sin(state.time * 0.9 + flake.sparkle)) ** 60 * s.twinkle
+        const spark = Math.max(0, Math.sin(state.time * 0.9 + flake.sparkle)) ** 60 * s.twinkle
         const reveal =
           flake.reveal < 0 || state.intro >= 1
             ? 1

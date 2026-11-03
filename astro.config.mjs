@@ -1,9 +1,9 @@
-import { defineConfig } from 'astro/config';
-import solidJs from '@astrojs/solid-js';
-import starlight from '@astrojs/starlight';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config'
+import solidJs from '@astrojs/solid-js'
+import starlight from '@astrojs/starlight'
+import tailwindcss from '@tailwindcss/vite'
 
-const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds'];
+const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds']
 
 export default defineConfig({
   site: 'https://wyattau.github.io',
@@ -19,7 +19,7 @@ export default defineConfig({
       components: {
         ThemeProvider: './src/site/ThemeProvider.astro',
       },
-      sidebar: CATEGORIES.map((category) => ({
+      sidebar: CATEGORIES.map(category => ({
         label: category,
         collapsed: true,
         items: [{ autogenerate: { directory: category.toLowerCase() } }],
@@ -30,4 +30,4 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-});
+})

@@ -57,7 +57,7 @@ const SPRINGS = {
   tilt: { stiffness: 150, damping: 18 },
 } as const
 
-const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v , b))
+const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v, b))
 
 // useSpring(mv, config).set(x) from motion/react, redone on vanilla motion:
 // each set starts (and supersedes) a spring animation on the motion value.

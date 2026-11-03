@@ -951,10 +951,7 @@ const GooeyNav = (props: GooeyNavProps) => {
         <span class={RIM} />
       </Show>
       <div ref={stageEl} class="relative max-w-full">
-        <canvas
-          ref={canvasEl}
-          class="pointer-events-none absolute left-0 top-0"
-        />
+        <canvas ref={canvasEl} class="pointer-events-none absolute left-0 top-0" />
         <span
           ref={fallbackEl}
           class="pointer-events-none absolute left-0 top-0 hidden rounded-full bg-[var(--gn-pill)]"

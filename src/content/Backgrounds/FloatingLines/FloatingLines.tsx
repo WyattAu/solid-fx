@@ -450,9 +450,7 @@ const FloatingLines = (props: FloatingLinesProps) => {
         const height = canvas.height
         const eased = reveal * reveal * (3 - 2 * reveal)
         const ratio = width / Math.max(1, container.clientWidth)
-        const stops = s.stops.map(value =>
-          parse(value, [1, 1, 1]).map(channel => channel ** 2.2),
-        )
+        const stops = s.stops.map(value => parse(value, [1, 1, 1]).map(channel => channel ** 2.2))
         const mouseX = (2 * mouse.x - width) / height
         const mouseY = -(2 * mouse.y - height) / height
         s.waves.forEach((wave, index) => {

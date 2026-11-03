@@ -2422,10 +2422,7 @@ export default function FlyingButton(props: FlyingButtonProps) {
         <path style={{ stroke: 'var(--fly-ramp)', 'stroke-linejoin': 'round' }} />
         <path style={{ stroke: edge(), 'stroke-width': '1.5', 'stroke-linejoin': 'round' }} />
       </svg>
-      <canvas
-        ref={canvasEl}
-        class="pointer-events-none absolute inset-0 block h-full w-full"
-      />
+      <canvas ref={canvasEl} class="pointer-events-none absolute inset-0 block h-full w-full" />
       <button
         ref={buttonEl}
         type="button"

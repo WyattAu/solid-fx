@@ -648,7 +648,11 @@ export default function Radar(props: RadarProps) {
 
     const _fit = (s: Settings) => (s.scale * Math.min(view.width, view.height)) / view.height
 
-    const camera = (s: Settings) => ({ distance: (2 * FOCAL) / _fit(s), focal: FOCAL, tilt: s.tilt })
+    const camera = (s: Settings) => ({
+      distance: (2 * FOCAL) / _fit(s),
+      focal: FOCAL,
+      tilt: s.tilt,
+    })
 
     const toPlane = (s: Settings, x: number, y: number): [number, number] | null => {
       const { distance, focal, tilt } = camera(s)

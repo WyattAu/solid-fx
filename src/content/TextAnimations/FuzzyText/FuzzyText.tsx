@@ -462,8 +462,7 @@ const FuzzyText = (props: FuzzyTextProps) => {
           const envelope = (1 - progress) ** 2.5
           level += (INTRO_PEAK - level) * envelope
           energy = Math.max(energy, envelope)
-          canvas.style.opacity =
-            progress < 0.3 ? (1 - (1 - progress / 0.3) ** 2).toFixed(3) : ''
+          canvas.style.opacity = progress < 0.3 ? (1 - (1 - progress / 0.3) ** 2).toFixed(3) : ''
           if (progress >= 1) introState.done = true
         }
       }

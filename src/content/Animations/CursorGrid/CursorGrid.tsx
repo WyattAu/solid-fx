@@ -650,10 +650,7 @@ const CursorGrid = (props: CursorGridProps) => {
         .join(' ')}
       style={own.style}
     >
-      <canvas
-        ref={canvasEl}
-        class="pointer-events-none absolute inset-0 block h-full w-full"
-      />
+      <canvas ref={canvasEl} class="pointer-events-none absolute inset-0 block h-full w-full" />
       {own.children ? <div class="relative h-full w-full">{own.children}</div> : null}
     </div>
   )

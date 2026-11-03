@@ -487,7 +487,7 @@ const CurvedLoop = (props: CurvedLoopProps) => {
               </textPath>
             </text>
             <Show when={accent()}>
-              <text class={textClass()} fill="none" >
+              <text class={textClass()} fill="none">
                 <textPath href={`#${pathId}`}>
                   <For each={copyIndexes()}>
                     {() => (

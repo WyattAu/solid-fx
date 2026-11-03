@@ -1,7 +1,7 @@
 import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { animate, motionValue } from 'motion'
-import type { AnimationPlaybackControls, } from 'motion'
+import type { AnimationPlaybackControls } from 'motion'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).

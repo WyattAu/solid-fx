@@ -141,10 +141,7 @@ const Shuffle = (props: ShuffleProps) => {
 
     const el = rootEl
     if (!el || !text || !fontsLoadedNow) return
-    if (
-      respectReducedMotion &&
-      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    ) {
+    if (respectReducedMotion && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setReady(true)
       untrack(() => props.onShuffleComplete?.())
       return

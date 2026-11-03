@@ -331,9 +331,7 @@ const GradientBlinds = (props: GradientBlindsProps) => {
 
   const buildSettings = (): Settings => {
     const gradientColors = props.gradientColors
-    const colorKey = (
-      gradientColors?.length ? gradientColors : ['#FF9FFC', '#5227FF']
-    ).join(',')
+    const colorKey = (gradientColors?.length ? gradientColors : ['#FF9FFC', '#5227FF']).join(',')
     return {
       paused: props.paused ?? false,
       colorKey,

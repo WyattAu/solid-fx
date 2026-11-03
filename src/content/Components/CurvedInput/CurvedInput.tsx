@@ -469,9 +469,7 @@ const CurvedInput = (props: CurvedInputProps) => {
         <path id={layoutPathId} d={layoutPath} fill="none" />
 
         <Show when={props.showIcon ?? true}>
-          <g
-            transform={`translate(${round2(ix)} ${round2(iy)}) rotate(${round2(iconAngle)})`}
-          >
+          <g transform={`translate(${round2(ix)} ${round2(iy)}) rotate(${round2(iconAngle)})`}>
             {props.icon || (
               <>
                 <rect

@@ -635,8 +635,7 @@ void main() {
       const t = ((local % CYCLE) + CYCLE) % CYCLE
       const life = introLive && local < 0 ? 0 : pulseLife(t)
       return {
-        radius:
-          s.baseRadius + index * s.radiusStep + (1 - (1 - t / CYCLE) ** 2) * s.expansion,
+        radius: s.baseRadius + index * s.radiusStep + (1 - (1 - t / CYCLE) ** 2) * s.expansion,
         life,
         virtual: index,
         mix,
@@ -985,10 +984,7 @@ void main() {
       class={`relative h-full w-full overflow-hidden ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={props.style}
     >
-      <canvas
-        ref={canvas}
-        class="pointer-events-none absolute inset-0 block h-full w-full"
-      />
+      <canvas ref={canvas} class="pointer-events-none absolute inset-0 block h-full w-full" />
     </div>
   )
 }

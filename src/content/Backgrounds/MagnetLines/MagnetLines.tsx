@@ -852,8 +852,7 @@ void main() {
       const introTime = introLive ? clock - introStart : Infinity
       let introBusy = false
 
-      const stiffness =
-        s.inertia <= 0 || reduced ? 0 : (6 + 42 * (1 - s.inertia) ** 2) ** 2
+      const stiffness = s.inertia <= 0 || reduced ? 0 : (6 + 42 * (1 - s.inertia) ** 2) ** 2
       const damping = stiffness ? 2 * Math.sqrt(stiffness) * (1 - 0.75 * s.bounce) : 0
       const steps = stiffness ? Math.max(1, Math.ceil(dt / (1 / 240))) : 0
       const h = steps ? dt / steps : 0

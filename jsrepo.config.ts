@@ -1,16 +1,16 @@
-import { existsSync, readdirSync } from 'node:fs';
-import path from 'node:path';
-import { defineConfig, type RegistryItem } from 'jsrepo';
+import { existsSync, readdirSync } from 'node:fs'
+import path from 'node:path'
+import { defineConfig, type RegistryItem } from 'jsrepo'
 
-const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds'];
+const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds']
 
-const items: RegistryItem[] = [];
+const items: RegistryItem[] = []
 for (const category of CATEGORIES) {
-  const categoryDir = path.join('src/content', category);
-  if (!existsSync(categoryDir)) continue;
+  const categoryDir = path.join('src/content', category)
+  if (!existsSync(categoryDir)) continue
   for (const name of readdirSync(categoryDir).sort()) {
-    const component = path.join(categoryDir, name, `${name}.tsx`);
-    if (!existsSync(component)) continue;
+    const component = path.join(categoryDir, name, `${name}.tsx`)
+    if (!existsSync(component)) continue
     items.push({
       name: `${category}/${name}`,
       title: name,
@@ -23,7 +23,7 @@ for (const category of CATEGORIES) {
           target: `${name}/${name}.tsx`,
         },
       ],
-    });
+    })
   }
 }
 
@@ -51,4 +51,4 @@ export default defineConfig({
     excludeDeps: ['solid-js'],
     items,
   },
-});
+})

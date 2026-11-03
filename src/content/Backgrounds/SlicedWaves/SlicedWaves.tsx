@@ -492,8 +492,7 @@ const SlicedWaves = (props: SlicedWavesProps) => {
       for (const b of bars) {
         const hw = halfBar * b.scale
         const across = b.sx / Math.max(w, 1)
-        const lift =
-          state.lift * Math.exp(-(((b.sx - state.liftX) / Math.max(w * 0.12, 60)) ** 2))
+        const lift = state.lift * Math.exp(-(((b.sx - state.liftX) / Math.max(w * 0.12, 60)) ** 2))
         const blurPx =
           (0.5 + s.blur * 0.6 + blurScale * Math.abs(focus / b.Z - 1)) * (s.lightMode ? 0.55 : 1)
         for (let r = 0; r < s.ribbons; r++) {

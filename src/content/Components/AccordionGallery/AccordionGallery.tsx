@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, } from 'solid-js'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { Index } from 'solid-js'
 import { Dynamic } from 'solid-js/web'

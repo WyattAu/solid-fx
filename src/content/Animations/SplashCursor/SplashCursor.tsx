@@ -682,7 +682,7 @@ const SplashCursor = (props: SplashCursorProps) => {
 
       const radiusFor = (scale: number) => {
         const aspect = canvas.width / canvas.height
-        return ((0.2 * settingsRef.current.size * scale) / 100) * (Math.max(aspect , 1))
+        return ((0.2 * settingsRef.current.size * scale) / 100) * Math.max(aspect, 1)
       }
 
       const splat = (
