@@ -81,7 +81,7 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.astro", "**/*.mdx", "docs/**"],
+      "includes": ["**/*.astro", "**/*.mdx", "**/docs/**"],
       "formatter": {
         "enabled": false
       },
@@ -95,7 +95,7 @@
       }
     },
     {
-      "includes": ["src/content/**/*.tsx"],
+      "includes": ["**/src/content/**/*.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -113,13 +113,15 @@
             "noSvgWithoutTitle": "off",
             "useButtonType": "off",
             "noStaticElementInteractions": "warn",
-            "useKeyWithClickEvents": "warn"
+            "useKeyWithClickEvents": "warn",
+            "useAriaPropsSupportedByRole": "warn",
+            "useFocusableInteractive": "warn"
           }
         }
       }
     },
     {
-      "includes": ["scripts/**", "tests/**"],
+      "includes": ["**/scripts/**", "**/tests/**"],
       "linter": {
         "rules": {
           "suspicious": {
