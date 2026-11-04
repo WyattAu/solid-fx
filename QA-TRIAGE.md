@@ -2,28 +2,28 @@
 
 Source of truth: the CI `screenshots` workflow (runs on demand + weekly,
 uploads `screenshots/` as an artifact). `scripts/shoot.mjs` additionally
-performs a pointer sweep so interaction-driven components render.
+performs a pointer sweep so interaction-driven components render, and the
+five interaction-driven demos self-animate via
+`src/lib/syntheticPointer.ts` (`autoPointer()` — synthesized pointermove/
+down/click on a Lissajous path inside the demo host).
 
-Baseline run (2026-11-03): 218/218 pages captured, 0 crashes,
-**206 verified rendering, 12 near-blank frames** (pixel-variance scan,
-stddev < 6 over the demo region).
+Latest baseline (run 41844145222): **210/218 verified rendering, 8 blanks**.
 
-## Blank-frame triage
+## Blank-frame triage (8 remaining)
 
 | Component | Class | Explanation / next action |
 | --- | --- | --- |
-| AeroShards, ShapeWaves | expected | WebGPU: GitHub CI runners expose no WebGPU adapter. Verify locally in a WebGPU browser. |
-| CRTWarp, SoftAurora | investigate | Shader backgrounds should self-animate — inspect console errors on the live page. |
-| MaskedHeading | investigate | Text animation should be visible at capture time — check intro timing vs the 2.5s settle window. |
-| ModelViewer | investigate | Demo renders an embedded OBJ data-URL; frame is empty in CI. Check OBJLoader parse + lighting (may be black-on-black without env). |
-| ImageTrail, PixelTrail, Ribbons, SplashCursor, DodgeField | investigate | Still blank after the shoot.mjs pointer sweep (v2 run) — the sweep path likely misses each demo's canvas bounds or they listen on container-local coordinates. Per-component: verify in a live browser with the cursor over the frame; adjust demos to self-animate on mount if they only react to the cursor. |
-| Shredder | investigate | Timing-dependent: blank in run 3, rendered in run 1. Possibly a shred animation that ends blank; capture earlier or loop the demo. |
+| AeroShards, ShapeWaves | environment | WebGPU: CI runners expose no WebGPU adapter. Render pattern identical to working ogl siblings; verify these two locally in a WebGPU browser. |
+| CRTWarp, SoftAurora | investigate | Flat 0.0 stddev (pure black) while sibling shader backgrounds render — likely a WebGL context or uniform failure specific to these two. Debug with console capture on the live page. |
+| ModelViewer | investigate | Embedded-OBJ demo renders empty in CI; check OBJLoader parse + lighting (black-on-black without env light). |
+| DodgeField | investigate | std 3.6 (near-blank, marginal). DodgeField dodges the cursor; the synthetic pointer may not register as inside the field — tune autoPointer amplitude/host. |
+| Shredder | investigate | Timing: shreds to blank by capture time — capture earlier or loop the demo. |
+| MaskedHeading | investigate | Text animation invisible at capture time — check intro timing vs the settle window. |
 
 ## Debt
 
-- PORT-NOTE markers: **3** (grep `PORT-NOTE` in src/content) — RotatingText
-  FLIP layout, RotatingText AnimatePresence mode, ScrollVelocity scroll
-  physics. Everything else was burned down or reclassified as
-  SOLID-ADAPTATION / SOLID-CONSTRAINT.
+- PORT-NOTE markers: **0** — fully burned down. ScrollVelocity physics
+  reclassified SOLID-ADAPTATION; RotatingText FLIP width-animation and
+  sync-presence mode implemented.
 - a11y advisories (~18) and ~200 style warnings in `src/content` are
   warn-level by design (upstream-fidelity patterns); burn down during visual QA.
