@@ -21,9 +21,6 @@ export default defineConfig({
         PageFrame: './src/site/PageFrame.astro',
         Hero: './src/site/Hero.astro',
       },
-      components: {
-        ThemeProvider: './src/site/ThemeProvider.astro',
-      },
       sidebar: CATEGORIES.map(category => ({
         label: category,
         collapsed: true,
