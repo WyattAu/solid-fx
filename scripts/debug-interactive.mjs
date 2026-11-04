@@ -65,7 +65,10 @@ const frameProbe = page =>
   })
 
 const browser = await chromium.launch({ timeout: 480000 })
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 }, colorScheme: 'dark' })
+const ctx = await browser.newContext({
+  viewport: { width: 1280, height: 720 },
+  colorScheme: 'dark',
+})
 
 for (const [cat, name] of PAGES) {
   const page = await ctx.newPage()
@@ -74,7 +77,8 @@ for (const [cat, name] of PAGES) {
   page.on('pageerror', err => errors.push(`pageerror: ${String(err).split('\n')[0]}`))
   page.on('console', msg => {
     const text = msg.text()
-    if (msg.type() === 'error' || msg.type() === 'warning') logs.push(`${msg.type()}: ${text.slice(0, 160)}`)
+    if (msg.type() === 'error' || msg.type() === 'warning')
+      logs.push(`${msg.type()}: ${text.slice(0, 160)}`)
   })
   const url = `${BASE}/${cat}/${name}/`
   try {
@@ -89,7 +93,8 @@ for (const [cat, name] of PAGES) {
   const before = await frameProbe(page)
   console.log(`\n=== ${name} (${url})`)
   console.log(`before: ${JSON.stringify(before)}`)
-  if (before?.canvases) console.log(`canvas sizes before: ${before.canvasSizes.join(', ') || 'none'}`)
+  if (before?.canvases)
+    console.log(`canvas sizes before: ${before.canvasSizes.join(', ') || 'none'}`)
   if (!before) {
     console.log('NO .demo-frame — page layout mismatch?')
     await page.close()
@@ -108,11 +113,16 @@ for (const [cat, name] of PAGES) {
   await page.screenshot({ path: path.join(OUT, `${name}-2.png`) })
   const after = await frameProbe(page)
 
-  console.log(`mid:   html=${mid?.htmlLength} canvases=${mid?.canvases} sizes=${mid?.canvasSizes?.join(',')}`)
-  console.log(`after: html=${after?.htmlLength} canvases=${after?.canvases} sizes=${after?.canvasSizes?.join(',')}`)
+  console.log(
+    `mid:   html=${mid?.htmlLength} canvases=${mid?.canvases} sizes=${mid?.canvasSizes?.join(',')}`,
+  )
+  console.log(
+    `after: html=${after?.htmlLength} canvases=${after?.canvases} sizes=${after?.canvasSizes?.join(',')}`,
+  )
   if (errors.length) console.log(`ERRORS:\n${errors.slice(0, 10).join('\n')}`)
   else console.log('errors: none')
-  if (logs.length) console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
+  if (logs.length)
+    console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
   await page.close()
 }
 

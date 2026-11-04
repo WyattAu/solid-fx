@@ -443,10 +443,7 @@ const RotatingText = (props: RotatingTextProps) => {
         if (reduce) {
           // Upstream MotionConfig reducedMotion="user": transforms jump to
           // their exit value; opacity/filter still animate on the transition.
-          const [transforms, rest] = splitReducedKeyframes(leave as Record<
-            string,
-            string | number
-          >)
+          const [transforms, rest] = splitReducedKeyframes(leave as Record<string, string | number>)
           return [
             ...(Object.keys(transforms).length
               ? [animate(el, transforms, { duration: 0, delay })]

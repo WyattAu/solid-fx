@@ -17,7 +17,10 @@ function ImageTrailDemo() {
     if (trail) autoPointer(trail as HTMLElement, { mouse: true, hz: 30 })
   })
   return (
-    <div ref={host} class="flex h-96 w-full items-center justify-center overflow-hidden bg-neutral-950">
+    <div
+      ref={host}
+      class="flex h-96 w-full items-center justify-center overflow-hidden bg-neutral-950"
+    >
       <ImageTrail
         items={IMAGES}
         size={190}

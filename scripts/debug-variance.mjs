@@ -34,5 +34,7 @@ for (const file of files) {
   }
   const mean = sum / pixels
   const std = Math.sqrt(sumSq / pixels - mean * mean)
-  console.log(`${stem.padEnd(24)} mean=${mean.toFixed(1).padStart(6)} stddev=${std.toFixed(1).padStart(6)} colors~${colors.size}`)
+  console.log(
+    `${stem.padEnd(24)} mean=${mean.toFixed(1).padStart(6)} stddev=${std.toFixed(1).padStart(6)} colors~${colors.size}`,
+  )
 }
