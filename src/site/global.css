@@ -5,6 +5,14 @@
 @source "../../src/content";
 @source "../../src/islands";
 
+/* Brand accent for the Starlight chrome (dark + light). */
+:root,
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #4a044e;
+  --sl-color-accent: #d946ef;
+  --sl-color-accent-high: #f5d0fe;
+}
+
 body {
   background: #060010;
 }
@@ -33,4 +41,140 @@ body {
 
 .demo-error {
   color: #fda4af;
+}
+
+/* ---------- landing ---------- */
+
+.fx-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 26rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  margin-block: 1rem;
+  isolation: isolate;
+}
+
+.fx-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.fx-hero-aurora {
+  width: 100%;
+  height: 100%;
+}
+
+.fx-hero-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.fx-kicker {
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.65);
+  margin: 0;
+}
+
+.fx-wordmark {
+  font-size: clamp(2.6rem, 8vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-shadow: 0 2px 30px rgb(0 0 0 / 0.55);
+}
+
+.fx-title {
+  color: #fff;
+}
+
+.fx-tagline {
+  max-width: 34rem;
+  font-size: 1rem;
+  color: rgb(255 255 255 / 0.75);
+  margin: 0;
+}
+
+.fx-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.fx-cta-link {
+  display: inline-block;
+  padding: 0.55rem 1.4rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.fx-count {
+  font-size: 0.75rem;
+  color: rgb(255 255 255 / 0.45);
+  margin: 0.25rem 0 0;
+}
+
+.fx-grid-section {
+  padding-block: 1rem 2rem;
+}
+
+.fx-grid-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.fx-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.03);
+  text-decoration: none;
+  transition:
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+.fx-card:hover {
+  border-color: rgb(217 70 239 / 0.6);
+  transform: translateY(-2px);
+}
+
+.fx-card-count {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #d946ef;
+}
+
+.fx-card-name {
+  font-weight: 700;
+  color: #fff;
+}
+
+.fx-card-blurb {
+  font-size: 0.8rem;
+  color: rgb(255 255 255 / 0.55);
 }

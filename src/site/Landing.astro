@@ -1,0 +1,74 @@
+---
+/**
+ * Landing (index, splash template): cinematic hero with LIVE component
+ * islands — Aurora as the background, SplitText for the wordmark,
+ * StarBorder on the CTAs — plus a category grid.
+ *
+ * The islands ARE the marketing: the landing is composed from the library
+ * itself (the src/scenes idea, proven at the entry page).
+ */
+import Aurora from '../content/Backgrounds/Aurora/Aurora';
+import SplitText from '../content/TextAnimations/SplitText/SplitText';
+import StarBorder from '../content/Components/StarBorder/StarBorder';
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+
+const categories = [
+  { name: 'TextAnimations', blurb: 'Split, scramble, decrypt, warp' },
+  { name: 'Animations', blurb: 'Cursor effects, reveals, WebGL' },
+  { name: 'Components', blurb: 'Carousels, docks, menus, cards' },
+  { name: 'Micro', blurb: 'Switches, sliders, buttons, toasts' },
+  { name: 'Backgrounds', blurb: 'Shader scenes for whole sections' },
+];
+
+const countFor = (name: string): number => {
+  const dir = path.join('src/content', name);
+  if (!existsSync(dir)) return 0;
+  return readdirSync(dir).filter((n) => existsSync(path.join(dir, n, `${n}.tsx`))).length;
+};
+
+let total = 0;
+const cards = categories.map((c) => {
+  const count = countFor(c.name);
+  total += count;
+  return { ...c, count, href: `/solid-fx/${c.name.toLowerCase()}/` };
+});
+---
+
+<section class="fx-hero">
+  <div class="fx-hero-bg">
+    <Aurora client:only="solid" class="fx-hero-aurora" speed={0.3} scale={0.9} noise={0.1} />
+  </div>
+  <div class="fx-hero-inner">
+    <p class="fx-kicker">Animated, interactive components for SolidJS</p>
+    <div class="fx-wordmark">
+      <SplitText client:only="solid" text="solid-fx" class="fx-title" delay={80} duration={900} />
+    </div>
+    <p class="fx-tagline">
+      Ports of the best UI effects libraries — installed as source you own.
+      Tune every value. This page is built from the library itself.
+    </p>
+    <div class="fx-ctas">
+      <StarBorder client:only="solid" class="fx-cta">
+        <a class="fx-cta-link" href="/solid-fx/textanimations/splittext/">Browse components</a>
+      </StarBorder>
+      <StarBorder client:only="solid" class="fx-cta" spotlightColor="#38bdf8">
+        <a class="fx-cta-link" href="https://github.com/WyattAu/solid-fx">GitHub</a>
+      </StarBorder>
+    </div>
+    <p class="fx-count">{total} components · TypeScript + Tailwind · MIT + Commons Clause</p>
+  </div>
+</section>
+
+<section class="fx-grid-section">
+  <h2 class="fx-grid-title">Browse by category</h2>
+  <div class="fx-grid">
+    {cards.map((card) => (
+      <a class="fx-card" href={card.href}>
+        <span class="fx-card-count">{card.count}</span>
+        <span class="fx-card-name">{card.name}</span>
+        <span class="fx-card-blurb">{card.blurb}</span>
+      </a>
+    ))}
+  </div>
+</section>

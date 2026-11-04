@@ -1,0 +1,20 @@
+---
+/**
+ * PageFrame override (starlight-sites pattern): landing pages — the docs
+ * entry `index` with the splash template — render the cinematic solid-fx
+ * landing (live component islands) instead of the stock doc shell content.
+ * Every other page falls through to Starlight's stock PageFrame.
+ */
+import PageFrame from '@astrojs/starlight/components/PageFrame.astro';
+import Landing from './Landing.astro';
+
+const { starlightRoute } = Astro.locals;
+const { entry } = starlightRoute;
+
+const isLanding =
+  (entry.id === '' || entry.id === 'index') && entry.data.template === 'splash';
+---
+
+<PageFrame>
+  {isLanding ? <Landing /> : <slot />}
+</PageFrame>
