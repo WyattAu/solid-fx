@@ -4,6 +4,7 @@ import { Show } from 'solid-js'
 import { animate, motionValue } from 'motion'
 import type {
   AnimationPlaybackControls,
+  AnimationPlaybackControlsWithThen,
   MotionValue,
   Target,
   TargetAndTransition,
@@ -429,7 +430,7 @@ const RotatingText = (props: RotatingTextProps) => {
   const animateCharsOut = (
     els: (HTMLSpanElement | null)[],
     delayOf: (charIndex: number) => number,
-  ): AnimationPlaybackControls[] => {
+  ): AnimationPlaybackControlsWithThen[] => {
     const leave = leaveTo()
     const reduce = reduceMotion()
     return els
