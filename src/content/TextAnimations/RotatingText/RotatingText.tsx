@@ -75,6 +75,40 @@ interface EffectPreset {
   exitTransition?: Transition
 }
 
+interface WordElement {
+  characters: string[]
+  needsSpace: boolean
+}
+
+interface StaggerOrder {
+  total: number
+  shuffled: number[]
+}
+
+interface ExitingText {
+  id: number
+  index: number
+}
+
+/** Layout box snapshot for the FLIP reproduction of upstream's `layout` prop. */
+interface Box {
+  w: number
+  h: number
+  x: number
+  y: number
+}
+
+const FLIP_EPSILON = 0.5
+
+// offset* metrics ignore transforms, so mid-flight measurements stay stable.
+const boxOf = (el: HTMLElement): Box => ({
+  w: el.offsetWidth,
+  h: el.offsetHeight,
+  x: el.offsetLeft,
+  y: el.offsetTop,
+})
+
+const LAYOUT_SPRING: Transition = { type: 'spring', damping: 25, stiffness: 300 }
 const WIDTH_SPRING: Transition = { type: 'spring', damping: 34, stiffness: 320 }
 // Upstream MotionConfig reducedMotion="user" disables these (transform) values
 // only — opacity/filter keep animating.
@@ -177,9 +211,21 @@ const RotatingText = (props: RotatingTextProps) => {
   let index = 0
   let rootEl!: HTMLSpanElement
   let contentEl: HTMLSpanElement | null = null
+  let presenceEl: HTMLSpanElement | null = null
   const charEls: (HTMLSpanElement | null)[] = []
   let enteredOnce = false
   let widthAuto = true
+
+  // FLIP state reproducing upstream's `layout={!highlight}` (LAYOUT_SPRING).
+  let flipControls: AnimationPlaybackControls | null = null
+  let flipPrev: { root: Box; presence: Box | null } | null = null
+
+  // AnimatePresence mode="sync": outgoing texts render as absolutely
+  // positioned overlays while the next text enters concurrently.
+  const [exitingItems, setExitingItems] = createSignal<ExitingText[]>([])
+  let overlaySeq = 0
+  const overlayElsById = new Map<number, (HTMLSpanElement | null)[]>()
+  const overlayControls = new Set<AnimationPlaybackControls>()
 
   const reduceMotion = usePrefersReducedMotion()
 
@@ -188,8 +234,8 @@ const RotatingText = (props: RotatingTextProps) => {
   const activeIndex = () => Math.min(currentTextIndex(), lastIndex())
   const splitBy = () => props.splitBy ?? 'characters'
 
-  const elements = createMemo(() => {
-    const currentText: string = texts()[shownIndex()] ?? ''
+  const elementsFor = (index: number): WordElement[] => {
+    const currentText: string = texts()[index] ?? ''
     if (splitBy() === 'characters') {
       const words = currentText.split(' ')
       return words.map((word, i) => ({
@@ -213,16 +259,20 @@ const RotatingText = (props: RotatingTextProps) => {
       characters: [part],
       needsSpace: i !== arr.length - 1,
     }))
-  })
+  }
 
-  const order = createMemo(() => {
-    const total = elements().reduce((sum, word) => sum + word.characters.length, 0)
+  const elements = createMemo(() => elementsFor(shownIndex()))
+
+  const orderFor = (list: WordElement[]): StaggerOrder => {
+    const total = list.reduce((sum, word) => sum + word.characters.length, 0)
     const shuffled = Array.from({ length: total }, (_, i) => i).sort(() => Math.random() - 0.5)
     return { total, shuffled }
-  })
+  }
 
-  const getStaggerDelay = (charIndex: number): number => {
-    const { total, shuffled } = order()
+  const order = createMemo(() => orderFor(elements()))
+
+  const delayFor = (ord: StaggerOrder, charIndex: number): number => {
+    const { total, shuffled } = ord
     const staggerDuration = props.staggerDuration ?? 0
     const staggerFrom = props.staggerFrom ?? 'first'
     if (staggerFrom === 'first') return charIndex * staggerDuration
@@ -232,6 +282,8 @@ const RotatingText = (props: RotatingTextProps) => {
     if (staggerFrom === 'random') return shuffled[charIndex] * staggerDuration
     return Math.abs(staggerFrom - charIndex) * staggerDuration
   }
+
+  const getStaggerDelay = (charIndex: number): number => delayFor(order(), charIndex)
 
   const goTo = (next: number) => {
     if (next === index) return
@@ -313,45 +365,129 @@ const RotatingText = (props: RotatingTextProps) => {
     })
   })
 
+  // FLIP reproduction of upstream's `layout={!highlight}`: measure the root
+  // (and presence) layout boxes before the swap commit, measure again after,
+  // and animate the delta with the same LAYOUT_SPRING / transition prop.
+  // The root box covers shrink-to-fit contexts (scale + translate morph); the
+  // presence box covers full-width roots; one or the other, never both —
+  // scaling both would compound the distortion.
+  const stopFlip = () => {
+    flipControls?.stop()
+    flipControls = null
+    rootEl.style.transform = ''
+    if (presenceEl) presenceEl.style.transform = ''
+  }
+  onCleanup(stopFlip)
+
+  const captureFlip = () => {
+    if (highlight()) return
+    stopFlip()
+    flipPrev = { root: boxOf(rootEl), presence: presenceEl ? boxOf(presenceEl) : null }
+  }
+
+  const applyFlip = () => {
+    const prev = flipPrev
+    flipPrev = null
+    if (!prev || highlight() || reduceMotion()) return
+    const spring = props.transition ?? LAYOUT_SPRING
+    const morph = (el: HTMLSpanElement, from: Box, to: Box) => {
+      const keyframes: Record<string, number[]> = {}
+      if (Math.abs(to.x - from.x) > FLIP_EPSILON) keyframes.x = [from.x - to.x, 0]
+      if (Math.abs(to.y - from.y) > FLIP_EPSILON) keyframes.y = [from.y - to.y, 0]
+      if (Math.abs(to.w - from.w) > FLIP_EPSILON && to.w > 0) keyframes.scaleX = [from.w / to.w, 1]
+      if (Math.abs(to.h - from.h) > FLIP_EPSILON && to.h > 0) keyframes.scaleY = [from.h / to.h, 1]
+      if (Object.keys(keyframes).length === 0) return null
+      el.style.setProperty('transform-origin', '0 0')
+      const controls = animate(el, keyframes, {
+        ...spring,
+        onComplete: () => {
+          if (flipControls === controls) flipControls = null
+          el.style.transform = ''
+        },
+      })
+      return controls
+    }
+    const rootBox = boxOf(rootEl)
+    const rootChanged =
+      Math.abs(rootBox.x - prev.root.x) > FLIP_EPSILON ||
+      Math.abs(rootBox.y - prev.root.y) > FLIP_EPSILON ||
+      Math.abs(rootBox.w - prev.root.w) > FLIP_EPSILON ||
+      Math.abs(rootBox.h - prev.root.h) > FLIP_EPSILON
+    if (rootChanged) {
+      flipControls = morph(rootEl, prev.root, rootBox)
+      return
+    }
+    if (prev.presence && presenceEl) {
+      flipControls = morph(presenceEl, prev.presence, boxOf(presenceEl))
+    }
+  }
+
   const liveChars = () => charEls.filter((el): el is HTMLSpanElement => Boolean(el))
 
-  // PORT-NOTE: upstream's `layout={!highlight}` FLIP animates the root/presence
-  // span boxes (LAYOUT_SPRING) when successive texts have different footprints
-  // in non-highlight mode. No declarative vanilla-motion equivalent exists; the
-  // highlight path is covered by the width MotionValue below, so non-highlight
-  // box changes snap instead of springing.
+  // Shared exit half of AnimatePresence: animate each char toward its leave
+  // state with its stagger delay. Used by both presence modes.
+  const animateCharsOut = (
+    els: (HTMLSpanElement | null)[],
+    delayOf: (charIndex: number) => number,
+  ): AnimationPlaybackControls[] => {
+    const leave = leaveTo()
+    const reduce = reduceMotion()
+    return els
+      .filter((el): el is HTMLSpanElement => Boolean(el))
+      .flatMap((el, i) => {
+        const delay = delayOf(i)
+        const base: Transition = exitTransition()
+          ? { ...(exitTransition() as Transition), delay }
+          : { ...charTransition(), delay }
+        if (reduce) {
+          // Upstream MotionConfig reducedMotion="user": transforms jump to
+          // their exit value; opacity/filter still animate on the transition.
+          const [transforms, rest] = splitReducedKeyframes(leave as Record<
+            string,
+            string | number
+          >)
+          return [
+            ...(Object.keys(transforms).length
+              ? [animate(el, transforms, { duration: 0, delay })]
+              : []),
+            ...(Object.keys(rest).length ? [animate(el, rest, base)] : []),
+          ]
+        }
+        return [animate(el, leave, base)]
+      })
+  }
 
-  // Exit half of AnimatePresence: animate the mounted chars out, then swap the
-  // shown text so the enter effect mounts + animates the next one.
-  // PORT-NOTE: animatePresenceMode is accepted but always behaves as "wait"
-  // (the exit finishes before the next text mounts); upstream "sync" renders
-  // both texts overlapping, which needs parallel dual-subtree mounting.
+  // Swap driver. animatePresenceMode "wait" (upstream default): animate the
+  // mounted chars out, then swap the shown text so the enter effect mounts +
+  // animates the next one. "sync": swap immediately, keep the outgoing text as
+  // an absolutely positioned overlay, and run its exit animation concurrently
+  // with the incoming enter animation (upstream keeps multiple exiting
+  // children, so rapid swaps stack overlays until each exit completes).
   createEffect(() => {
     const target = activeIndex()
     const current = shownIndex()
     if (target === current) return
-    const els = liveChars()
-    const leave = leaveTo()
-    const reduce = reduceMotion()
+    captureFlip()
+    if ((props.animatePresenceMode ?? 'wait') === 'sync') {
+      const ord = order()
+      const id = ++overlaySeq
+      overlayElsById.set(id, [])
+      setExitingItems(list => [...list, { id, index: current }])
+      setShownIndex(target)
+      queueMicrotask(() => {
+        const controls = animateCharsOut(overlayElsById.get(id) ?? [], i => delayFor(ord, i))
+        controls.forEach(control => overlayControls.add(control))
+        void Promise.all(controls.map(control => control.then(() => undefined))).then(() => {
+          controls.forEach(control => overlayControls.delete(control))
+          overlayElsById.delete(id)
+          setExitingItems(list => list.filter(item => item.id !== id))
+        })
+      })
+      onCleanup(() => overlayElsById.delete(id))
+      return
+    }
+    const controls = animateCharsOut(liveChars(), getStaggerDelay)
     let stopped = false
-    const controls = els.flatMap((el, i) => {
-      const delay = getStaggerDelay(i)
-      const base: Transition = exitTransition()
-        ? { ...(exitTransition() as Transition), delay }
-        : { ...charTransition(), delay }
-      if (reduce) {
-        // Upstream MotionConfig reducedMotion="user": transforms jump to their
-        // exit value; opacity/filter still animate on the normal transition.
-        const [transforms, rest] = splitReducedKeyframes(leave as Record<string, string | number>)
-        return [
-          ...(Object.keys(transforms).length
-            ? [animate(el, transforms, { duration: 0, delay })]
-            : []),
-          ...(Object.keys(rest).length ? [animate(el, rest, base)] : []),
-        ]
-      }
-      return [animate(el, leave, base)]
-    })
     void Promise.all(controls.map(control => control.then(() => undefined))).then(() => {
       if (!stopped) setShownIndex(target)
     })
@@ -368,6 +504,8 @@ const RotatingText = (props: RotatingTextProps) => {
     const list = elements()
     void list
     const els = liveChars()
+    // DOM for the swapped-in text is committed here — measure + FLIP the box.
+    applyFlip()
     const from = enterFrom()
     const to = enterTo()
     const reduce = reduceMotion()
@@ -457,48 +595,56 @@ const RotatingText = (props: RotatingTextProps) => {
     }
   })
 
+  const presenceClass = () =>
+    splitBy() === 'lines' ? 'flex flex-col w-full' : 'flex flex-wrap whitespace-pre-wrap relative'
+
+  const renderChars = (list: WordElement[], els?: (HTMLSpanElement | null)[]) => (
+    <For each={list}>
+      {(wordObj, wordIndex) => {
+        const previousCharsCount = () =>
+          list.slice(0, wordIndex()).reduce((sum, word) => sum + word.characters.length, 0)
+        return (
+          <span class={`inline-flex ${props.splitLevelClassName ?? ''}`}>
+            <For each={wordObj.characters}>
+              {(char, charIndex) => (
+                <span
+                  ref={(el: HTMLSpanElement) => {
+                    if (els) {
+                      els[previousCharsCount() + charIndex()] = el
+                      return
+                    }
+                    charEls[previousCharsCount() + charIndex()] = el
+                    onCleanup(() => {
+                      if (charEls[previousCharsCount() + charIndex()] === el) {
+                        charEls[previousCharsCount() + charIndex()] = null
+                      }
+                    })
+                  }}
+                  class={`inline-block ${props.elementLevelClassName ?? ''}`}
+                  style={charStyle()}
+                >
+                  {char}
+                </span>
+              )}
+            </For>
+            <Show when={wordObj.needsSpace}>
+              <span class="whitespace-pre"> </span>
+            </Show>
+          </span>
+        )
+      }}
+    </For>
+  )
+
   const presence = () => (
     <span
-      class={
-        splitBy() === 'lines'
-          ? 'flex flex-col w-full'
-          : 'flex flex-wrap whitespace-pre-wrap relative'
-      }
+      ref={(el: HTMLSpanElement) => {
+        presenceEl = el
+      }}
+      class={presenceClass()}
       aria-hidden="true"
     >
-      <For each={elements()}>
-        {(wordObj, wordIndex) => {
-          const previousCharsCount = () =>
-            elements()
-              .slice(0, wordIndex())
-              .reduce((sum, word) => sum + word.characters.length, 0)
-          return (
-            <span class={`inline-flex ${props.splitLevelClassName ?? ''}`}>
-              <For each={wordObj.characters}>
-                {(char, charIndex) => (
-                  <span
-                    ref={(el: HTMLSpanElement) => {
-                      charEls[previousCharsCount() + charIndex()] = el
-                      onCleanup(() => {
-                        if (charEls[previousCharsCount() + charIndex()] === el) {
-                          charEls[previousCharsCount() + charIndex()] = null
-                        }
-                      })
-                    }}
-                    class={`inline-block ${props.elementLevelClassName ?? ''}`}
-                    style={charStyle()}
-                  >
-                    {char}
-                  </span>
-                )}
-              </For>
-              <Show when={wordObj.needsSpace}>
-                <span class="whitespace-pre"> </span>
-              </Show>
-            </span>
-          )
-        }}
-      </For>
+      {renderChars(elements())}
     </span>
   )
 
@@ -526,6 +672,21 @@ const RotatingText = (props: RotatingTextProps) => {
           {presence()}
         </span>
       </Show>
+      <For each={exitingItems()}>
+        {item => (
+          <span
+            class={presenceClass()}
+            style={
+              highlight()
+                ? { position: 'absolute', top: '0.1em', left: '0.28em' }
+                : { position: 'absolute', top: '0', left: '0' }
+            }
+            aria-hidden="true"
+          >
+            {renderChars(elementsFor(item.index), overlayElsById.get(item.id))}
+          </span>
+        )}
+      </For>
     </span>
   )
 }

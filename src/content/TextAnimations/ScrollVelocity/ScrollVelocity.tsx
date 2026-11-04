@@ -89,11 +89,16 @@ function wrap(min: number, max: number, v: number): number {
   return mod + min
 }
 
-// PORT-NOTE: upstream built this from motion/react's useScroll + useVelocity +
-// useSpring + useTransform + useAnimationFrame. Per the porting contract those
-// map to scroll listeners, a per-frame damped spring integration, a manual
-// two-point interpolation, and a persistent rAF loop; the spring/velocity
-// decay are close approximations of the React feel.
+// SOLID-ADAPTATION: upstream built this from motion/react's useScroll +
+// useVelocity + useSpring + useTransform + useAnimationFrame. Per the porting
+// contract those map to scroll listeners, MotionValue-style velocity
+// bookkeeping (inter-event delta clamped to MAX_VELOCITY_DELTA = 30ms, value
+// snapping to 0 once 30ms pass without a scroll update — verified against
+// motion-dom's MotionValue.getVelocity and framer-motion's useVelocity), a
+// per-frame spring integration using the same stiffness/damping constants
+// (semi-implicit Euler vs the upstream analytic spring — same steady state),
+// a manual two-point linear interpolation matching useTransform's
+// { clamp: false }, and a persistent rAF loop.
 function VelocityText(props: VelocityTextProps) {
   const reduce = usePrefersReducedMotion()
 
@@ -142,8 +147,10 @@ function VelocityText(props: VelocityTextProps) {
     const onScroll = () => {
       const pos = scroller instanceof HTMLElement ? scroller.scrollTop : window.scrollY
       const now = performance.now()
-      const dt = Math.max(now - lastTime, 1) / 1000
-      rawVelocity.set((pos - lastPos) / dt)
+      // MotionValue.getVelocity: velocity between the last two updates with
+      // the delta clamped to MAX_VELOCITY_DELTA (30ms); a 0ms delta reads 0.
+      const delta = Math.min(Math.max(now - lastTime, 0), 30)
+      rawVelocity.set(delta > 0 ? ((pos - lastPos) * 1000) / delta : 0)
       lastPos = pos
       lastTime = now
       lastScrollAt = now
@@ -178,17 +185,18 @@ function VelocityText(props: VelocityTextProps) {
     lastFrame = performance.now()
 
     const tick = (now: number) => {
-      const delta = Math.min(now - lastFrame, 64)
+      const delta = Math.max(now - lastFrame, 0)
       lastFrame = now
       if (!reduce()) {
         const grab = drag
-        const seconds = delta / 1000
+        const seconds = Math.min(delta, 64) / 1000
         const targetPace = grab.active || (props.pauseOnHover && props.hovered.current) ? 0 : 1
         pace += (targetPace - pace) * (1 - Math.exp(-delta / 150))
 
-        // useVelocity stops emitting once scrolling stops; decay the raw
-        // value to 0 on the same cadence so the spring can settle.
-        if (now - lastScrollAt > 90) rawVelocity.set(rawVelocity.get() * Math.exp(-delta / 120))
+        // useVelocity resamples getVelocity() every frame while the value is
+        // nonzero; past MAX_VELOCITY_DELTA (30ms) since the last scroll
+        // update the sample is 0 — a snap, not a decay.
+        if (now - lastScrollAt > 30) rawVelocity.set(0)
 
         // Spring integrate toward the raw velocity (useSpring equivalent).
         const stiffness = props.stiffness
