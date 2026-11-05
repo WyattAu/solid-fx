@@ -3,6 +3,8 @@ import { splitProps, Index } from 'solid-js'
 import type { JSX } from 'solid-js'
 
 interface MarqueeProps extends JSX.HTMLAttributes<HTMLDivElement> {
+  /** React parity alias; merges with `class`. */
+  className?: string
   /**
    * Whether to reverse the animation direction
    * @default false
