@@ -14,7 +14,8 @@ Latest baseline (run 41844145222): **210/218 verified rendering, 8 blanks**.
 | Component | Class | Explanation / next action |
 | --- | --- | --- |
 | AeroShards, ShapeWaves | environment | WebGPU: CI runners expose no WebGPU adapter. Render pattern identical to working ogl siblings; verify these two locally in a WebGPU browser. |
-| CRTWarp, SoftAurora | investigate | Flat 0.0 stddev (pure black) while sibling shader backgrounds render — likely a WebGL context or uniform failure specific to these two. Debug with console capture on the live page. |
+| CRTWarp | verified | Renders pixel-perfect on a real mobile GPU (phone screencap proof, 2026-11-03). CI/desktop black frame is a software-GL limitation of the build box. |
+| SoftAurora | re-test | Phone capture was inconclusive (mid-navigation). Clean re-test needed: load page fresh, wait 10s, capture. |
 | ModelViewer | investigate | Embedded-OBJ demo renders empty in CI; check OBJLoader parse + lighting (black-on-black without env light). |
 | DodgeField | investigate | std 3.6 (near-blank, marginal). DodgeField dodges the cursor; the synthetic pointer may not register as inside the field — tune autoPointer amplitude/host. |
 | Shredder | investigate | Timing: shreds to blank by capture time — capture earlier or loop the demo. |
