@@ -21,11 +21,18 @@ export default defineConfig({
         PageFrame: './src/site/PageFrame.astro',
         Hero: './src/site/Hero.astro',
       },
-      sidebar: CATEGORIES.map(category => ({
-        label: category,
-        collapsed: true,
-        items: [{ autogenerate: { directory: category.toLowerCase() } }],
-      })),
+      sidebar: [
+        ...CATEGORIES.map(category => ({
+          label: category,
+          collapsed: true,
+          items: [{ autogenerate: { directory: category.toLowerCase() } }],
+        })),
+        {
+          label: 'Extras',
+          collapsed: true,
+          items: [{ autogenerate: { directory: 'extras' } }],
+        },
+      ],
     }),
     solidJs(),
   ],

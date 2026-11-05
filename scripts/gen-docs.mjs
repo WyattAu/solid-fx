@@ -43,6 +43,8 @@ for (const category of categories) {
   }
 }
 
+const EXTRAS_SOURCES = [{ source: 'magic-ui', label: 'Magic UI (MIT)' }]
+
 const index = [
   '---',
   "title: 'solid-fx'",
@@ -74,6 +76,46 @@ const index = [
   '',
 ]
 writeFileSync(path.join(docsDir, 'index.mdx'), index.join('\n'))
+
+// Extras sources (src/extras/<source>/<Category>/<Name>/<Name>.tsx) —
+// non-react-bits ports, one Starlight page each + an "Extras" sidebar group.
+const EXTRAS = [{ source: 'magic-ui', label: 'Magic UI' }]
+const extrasDir = path.join(root, 'src', 'extras')
+
+for (const { source, label } of EXTRAS) {
+  const sourceDir = path.join(extrasDir, source)
+  if (!existsSync(sourceDir)) continue
+  const outDir = path.join(docsDir, 'extras', source)
+  mkdirSync(outDir, { recursive: true })
+  let extrasCount = 0
+  for (const category of readdirSync(sourceDir)) {
+    const catDir = path.join(sourceDir, category)
+    if (!statSync(catDir, { throwIfNoEntry: false })?.isDirectory()) continue
+    const catOut = path.join(outDir, category.toLowerCase())
+    mkdirSync(catOut, { recursive: true })
+    for (const name of readdirSync(catDir).sort()) {
+      if (!name.endsWith('.tsx') || name.endsWith('Demo.tsx')) continue
+      const base = name.replace(/\.tsx$/, '')
+      if (!existsSync(path.join(catDir, base, base))) continue
+      const mdx = [
+        '---',
+        `title: ${base}`,
+        `description: SolidJS port of the Magic UI ${base} component (source: ${source}).`,
+        '---',
+        '',
+        `import DemoIsland from '../../../../src/islands/DemoIsland'`,
+        '',
+        `<DemoIsland client:only="solid" tree="extras/${source}" category="${category}" name="${base}" />`,
+        '',
+        `Source: \`src/extras/${source}/${category}/${base}/${base}.tsx\``,
+        '',
+      ]
+      writeFileSync(path.join(catOut, `${base}.mdx`), mdx.join('\n'))
+      extrasCount++
+    }
+  }
+  console.log(`gen-docs: extras/${source} — ${extrasCount} pages`)
+}
 
 // llms.txt projection (docs-gate tier k): machine-readable catalog for AI agents.
 const llms = [

@@ -1,14 +1,20 @@
 import type { Component } from 'solid-js'
 import { ErrorBoundary, Suspense, lazy } from 'solid-js'
 
-const demoModules = import.meta.glob<{ default: Component }>('/src/content/**/*Demo.tsx')
+const demoModules = {
+  ...import.meta.glob<{ default: Component }>('/src/content/**/*Demo.tsx'),
+  ...import.meta.glob<{ default: Component }>('/src/extras/**/*Demo.tsx'),
+}
 
 /**
  * The single consumer of every <Name>Demo.tsx. Starlight pages (generated)
- * embed one island per component: <DemoIsland client:only="solid" category="..." name="..." />
+ * embed one island per component:
+ *   content pages: <DemoIsland client:only="solid" category="..." name="..." />
+ *   extras pages:  <DemoIsland client:only="solid" tree="extras/magic-ui" category="Ui" name="..." />
  */
-export default function DemoIsland(props: { category: string; name: string }) {
-  const key = `/src/content/${props.category}/${props.name}/${props.name}Demo.tsx`
+export default function DemoIsland(props: { tree?: string; category: string; name: string }) {
+  const tree = props.tree ?? 'content'
+  const key = `/src/${tree}/${props.category}/${props.name}/${props.name}Demo.tsx`
   const loader = demoModules[key]
   if (!loader) {
     return (

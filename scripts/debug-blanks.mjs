@@ -141,7 +141,22 @@ async function variance(page, rect, file) {
   return { mean, std, colors: colors.size }
 }
 
-const browser = await chromium.launch({ timeout: 480000 })
+// Launch with retries: this box is heavily contended (load spikes from
+// parallel builds) and the CDP pipe handshake can starve past the timeout.
+async function launchWithRetry(attempts = 3) {
+  let lastErr: unknown
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await chromium.launch({ timeout: 120000 })
+    } catch (err) {
+      lastErr = err
+      console.log(`launch attempt ${i + 1}/${attempts} failed: ${String(err).split('\n')[0]}`)
+      await new Promise(r => setTimeout(r, 15000))
+    }
+  }
+  throw lastErr
+}
+const browser = await launchWithRetry()
 const ctx = await browser.newContext({
   viewport: { width: 1280, height: 720 },
   colorScheme: 'dark',
@@ -150,7 +165,9 @@ const ctx = await browser.newContext({
 const verdicts = []
 
 for (const [cat, name] of PAGES) {
-  const page = await ctx.newPage()
+  let page
+  try {
+    page = await ctx.newPage()
   const errors = []
   const logs = []
   page.on('pageerror', err => errors.push(`pageerror: ${String(err).split('\n')[0]}`))
@@ -205,7 +222,15 @@ for (const [cat, name] of PAGES) {
   else console.log('errors: none')
   if (logs.length)
     console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
-  await page.close()
+  try {
+    await page.close()
+  } catch {}
+  } catch (err) {
+    console.log(`\n=== ${name}: FAILED ${String(err).split('\n')[0]}`)
+    try {
+      await page?.close()
+    } catch {}
+  }
 }
 
 await browser.close()
