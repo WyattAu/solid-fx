@@ -2,7 +2,7 @@
 // Generates Starlight docs pages (docs/<category>/<Name>.mdx) — one page per
 // ported component, each embedding a DemoIsland. Canonical source of truth is
 // the src/content directory layout; run via `bun run gen:docs`.
-import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
