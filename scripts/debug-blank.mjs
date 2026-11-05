@@ -29,10 +29,7 @@ const probe = page =>
     const r = frame.getBoundingClientRect()
     const canvases = [...frame.querySelectorAll('canvas')]
     const glInfo = canvases.map(c => {
-      const gl =
-        c.getContext('webgl2') ??
-        c.getContext('webgl') ??
-        c.getContext('2d')
+      const gl = c.getContext('webgl2') ?? c.getContext('webgl') ?? c.getContext('2d')
       return {
         size: `${c.width}x${c.height}`,
         client: `${c.clientWidth}x${c.clientHeight}`,

@@ -27,9 +27,7 @@ const TRIAGE = [
   ['micro', 'shredder'],
   ['textanimations', 'maskedheading'],
 ]
-const PAGES = TRIAGE.filter(
-  ([, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase(),
-)
+const PAGES = TRIAGE.filter(([, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
 
 // Same sweep shoot.mjs performs on every page before its capture.
 async function ciSweep(page) {
@@ -52,8 +50,9 @@ const frameProbe = page =>
       htmlLength: frame.innerHTML.length,
       canvases: frame.querySelectorAll('canvas').length,
       canvasSizes: [...frame.querySelectorAll('canvas')].map(c => `${c.width}x${c.height}`),
-      imgs: [...frame.querySelectorAll('img')].map(i =>
-        `${(i.currentSrc || i.src || '').slice(0, 60)} complete=${i.complete} natural=${i.naturalWidth}x${i.naturalHeight}`,
+      imgs: [...frame.querySelectorAll('img')].map(
+        i =>
+          `${(i.currentSrc || i.src || '').slice(0, 60)} complete=${i.complete} natural=${i.naturalWidth}x${i.naturalHeight}`,
       ),
       text: frame.textContent?.trim().replace(/\s+/g, ' ').slice(0, 100),
     }
@@ -134,7 +133,8 @@ async function variance(page, rect, file) {
     const v = data[p * ch]
     sum += v
     sumSq += v * v
-    if (p % 21 === 0) colors.add(`${data[p * ch] >> 4},${data[p * ch + 1] >> 4},${data[p * ch + 2] >> 4}`)
+    if (p % 21 === 0)
+      colors.add(`${data[p * ch] >> 4},${data[p * ch + 1] >> 4},${data[p * ch + 2] >> 4}`)
   }
   const mean = sum / pixels
   const std = Math.sqrt(sumSq / pixels - mean * mean)
@@ -203,12 +203,15 @@ for (const [cat, name] of PAGES) {
   verdicts.push([name, best])
   if (errors.length) console.log(`ERRORS:\n${errors.slice(0, 10).join('\n')}`)
   else console.log('errors: none')
-  if (logs.length) console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
+  if (logs.length)
+    console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
   await page.close()
 }
 
 await browser.close()
 console.log(`\n=== verdicts (threshold std >= ${BLANK_STD})`)
 for (const [name, best] of verdicts)
-  console.log(`${name.padEnd(16)} best std=${best.toFixed(1)} -> ${best >= BLANK_STD ? 'OK' : 'BLANK'}`)
+  console.log(
+    `${name.padEnd(16)} best std=${best.toFixed(1)} -> ${best >= BLANK_STD ? 'OK' : 'BLANK'}`,
+  )
 console.log(`screenshots -> ${OUT}`)
