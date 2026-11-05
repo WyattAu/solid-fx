@@ -94,9 +94,9 @@ for (const { source, label } of EXTRAS) {
     const catOut = path.join(outDir, category.toLowerCase())
     mkdirSync(catOut, { recursive: true })
     for (const name of readdirSync(catDir).sort()) {
-      if (!name.endsWith('.tsx') || name.endsWith('Demo.tsx')) continue
-      const base = name.replace(/\.tsx$/, '')
-      if (!existsSync(path.join(catDir, base, base))) continue
+      const comp = path.join(catDir, name, `${name}.tsx`)
+      if (!existsSync(comp)) continue
+      const base = name
       const mdx = [
         '---',
         `title: ${base}`,
