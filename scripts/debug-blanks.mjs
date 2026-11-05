@@ -144,7 +144,7 @@ async function variance(page, rect, file) {
 // Launch with retries: this box is heavily contended (load spikes from
 // parallel builds) and the CDP pipe handshake can starve past the timeout.
 async function launchWithRetry(attempts = 3) {
-  let lastErr: unknown
+  let lastErr
   for (let i = 0; i < attempts; i++) {
     try {
       return await chromium.launch({ timeout: 120000 })
@@ -168,63 +168,63 @@ for (const [cat, name] of PAGES) {
   let page
   try {
     page = await ctx.newPage()
-  const errors = []
-  const logs = []
-  page.on('pageerror', err => errors.push(`pageerror: ${String(err).split('\n')[0]}`))
-  page.on('console', msg => {
-    const text = msg.text()
-    if (msg.type() === 'error' || msg.type() === 'warning')
-      logs.push(`${msg.type()}: ${text.slice(0, 200)}`)
-  })
-  const url = `${BASE}/${cat}/${name}/`
-  try {
-    await page.goto(url, { waitUntil: 'load', timeout: 45000 })
-  } catch (err) {
-    console.log(`\n=== ${name}: NAV FAIL ${String(err).split('\n')[0]}`)
-    await page.close()
-    continue
-  }
+    const errors = []
+    const logs = []
+    page.on('pageerror', err => errors.push(`pageerror: ${String(err).split('\n')[0]}`))
+    page.on('console', msg => {
+      const text = msg.text()
+      if (msg.type() === 'error' || msg.type() === 'warning')
+        logs.push(`${msg.type()}: ${text.slice(0, 200)}`)
+    })
+    const url = `${BASE}/${cat}/${name}/`
+    try {
+      await page.goto(url, { waitUntil: 'load', timeout: 45000 })
+    } catch (err) {
+      console.log(`\n=== ${name}: NAV FAIL ${String(err).split('\n')[0]}`)
+      await page.close()
+      continue
+    }
 
-  const load = Date.now()
-  const captures = []
-  for (const t of [1000, 3000, 5000]) {
-    const wait = t - (Date.now() - load)
-    if (wait > 0) await page.waitForTimeout(wait)
-    const rect = await frameProbe(page)
-    if (!rect) break
-    const v = await variance(page, rect, path.join(OUT, `${name}-${t / 1000}s.png`))
-    captures.push([`${t / 1000}s`, rect, v])
-  }
+    const load = Date.now()
+    const captures = []
+    for (const t of [1000, 3000, 5000]) {
+      const wait = t - (Date.now() - load)
+      if (wait > 0) await page.waitForTimeout(wait)
+      const rect = await frameProbe(page)
+      if (!rect) break
+      const v = await variance(page, rect, path.join(OUT, `${name}-${t / 1000}s.png`))
+      captures.push([`${t / 1000}s`, rect, v])
+    }
 
-  // CI-equivalent capture: settle, sweep, settle, shoot.
-  await page.waitForTimeout(1200)
-  await ciSweep(page)
-  await page.waitForTimeout(1200)
-  const rectCi = await frameProbe(page)
-  if (rectCi) {
-    const v = await variance(page, rectCi, path.join(OUT, `${name}-ci.png`))
-    captures.push(['ci', rectCi, v])
-  }
+    // CI-equivalent capture: settle, sweep, settle, shoot.
+    await page.waitForTimeout(1200)
+    await ciSweep(page)
+    await page.waitForTimeout(1200)
+    const rectCi = await frameProbe(page)
+    if (rectCi) {
+      const v = await variance(page, rectCi, path.join(OUT, `${name}-ci.png`))
+      captures.push(['ci', rectCi, v])
+    }
 
-  const probe = probes[name] ? await probes[name](page) : {}
-  console.log(`\n=== ${name} (${url})`)
-  console.log(`probe: ${JSON.stringify(probe)}`)
-  for (const [label, rect, v] of captures) {
-    const verdict = v.std >= BLANK_STD ? 'OK' : 'BLANK'
-    console.log(
-      `${label.padEnd(5)} std=${v.std.toFixed(1).padStart(6)} mean=${v.mean.toFixed(1).padStart(6)} colors~${String(v.colors).padEnd(4)} html=${String(rect.htmlLength).padEnd(6)} canvas=${rect.canvases} [${rect.canvasSizes.join(',')}] imgs=${rect.imgs.length} -> ${verdict}`,
-    )
-    if (rect.imgs.length) for (const i of rect.imgs) console.log(`      img: ${i}`)
-  }
-  const best = Math.max(...captures.map(([, , v]) => v.std))
-  verdicts.push([name, best])
-  if (errors.length) console.log(`ERRORS:\n${errors.slice(0, 10).join('\n')}`)
-  else console.log('errors: none')
-  if (logs.length)
-    console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
-  try {
-    await page.close()
-  } catch {}
+    const probe = probes[name] ? await probes[name](page) : {}
+    console.log(`\n=== ${name} (${url})`)
+    console.log(`probe: ${JSON.stringify(probe)}`)
+    for (const [label, rect, v] of captures) {
+      const verdict = v.std >= BLANK_STD ? 'OK' : 'BLANK'
+      console.log(
+        `${label.padEnd(5)} std=${v.std.toFixed(1).padStart(6)} mean=${v.mean.toFixed(1).padStart(6)} colors~${String(v.colors).padEnd(4)} html=${String(rect.htmlLength).padEnd(6)} canvas=${rect.canvases} [${rect.canvasSizes.join(',')}] imgs=${rect.imgs.length} -> ${verdict}`,
+      )
+      if (rect.imgs.length) for (const i of rect.imgs) console.log(`      img: ${i}`)
+    }
+    const best = Math.max(...captures.map(([, , v]) => v.std))
+    verdicts.push([name, best])
+    if (errors.length) console.log(`ERRORS:\n${errors.slice(0, 10).join('\n')}`)
+    else console.log('errors: none')
+    if (logs.length)
+      console.log(`console warnings/errors:\n${[...new Set(logs)].slice(0, 8).join('\n')}`)
+    try {
+      await page.close()
+    } catch {}
   } catch (err) {
     console.log(`\n=== ${name}: FAILED ${String(err).split('\n')[0]}`)
     try {
