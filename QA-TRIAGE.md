@@ -16,10 +16,10 @@ Latest baseline (run 41844145222): **210/218 verified rendering, 8 blanks**.
 | AeroShards, ShapeWaves | environment | WebGPU: CI runners expose no WebGPU adapter. Render pattern identical to working ogl siblings; verify these two locally in a WebGPU browser. |
 | CRTWarp | verified | Renders pixel-perfect on a real mobile GPU (phone screencap proof, 2026-11-03). CI/desktop black frame is a software-GL limitation of the build box. |
 | SoftAurora | re-test | Phone capture was inconclusive (mid-navigation). Clean re-test needed: load page fresh, wait 10s, capture. |
-| ModelViewer | investigate | Embedded-OBJ demo renders empty in CI; check OBJLoader parse + lighting (black-on-black without env light). |
-| DodgeField | investigate | std 3.6 (near-blank, marginal). DodgeField dodges the cursor; the synthetic pointer may not register as inside the field — tune autoPointer amplitude/host. |
+| ModelViewer | **fixed** | Root cause: the data-URL demo (`data:model/obj,…`) has no file extension, so format dispatch fell through to GLTFLoader → JSON.parse error. Fixed: dispatch now recognizes `data:model/(obj|gltf|glb|fbx)` mime prefixes. Verify visually next screenshots run. |
+| DodgeField | investigate | Page main-thread hangs with autoPointer active (suspected feedback loop between synthesized pointermove and dodge logic). Debug with the pointer disabled, then re-enable with amplitude guard. |
 | Shredder | investigate | Timing: shreds to blank by capture time — capture earlier or loop the demo. |
-| MaskedHeading | investigate | Text animation invisible at capture time — check intro timing vs the settle window. |
+| MaskedHeading | investigate | Content in DOM but glyphs never position (0/20) — sync() is wired (ResizeObserver + fonts.ready) yet never completes. Debug the measure/sync path: likely `measureEl`/wordEls refs empty at first sync and no later trigger fires. |
 
 ## Debt
 
