@@ -100,7 +100,7 @@ for (const { source, label } of EXTRAS) {
       const mdx = [
         '---',
         `title: ${base}`,
-        `description: SolidJS port of the Magic UI ${base} component (source: ${source}).`,
+        `description: 'SolidJS port of the Magic UI ${base} component (source: ${source}).'`,
         '---',
         '',
         `import DemoIsland from '../../../../src/islands/DemoIsland'`,
