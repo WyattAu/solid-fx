@@ -539,7 +539,12 @@ const ModelViewer = (props: ModelViewerProps) => {
     visibility.observe(container)
 
     const loadModel = (url: string, token: number) => {
-      const extension = (url.split('?')[0].split('.').pop() ?? '').toLowerCase()
+      // data: URLs carry their format in the mime (data:model/obj,…); file
+      // URLs in the extension.
+      const dataMatch = /^data:model\/(obj|gltf|glb|fbx)[;,]/i.exec(url)
+      const extension = (
+        dataMatch ? dataMatch[1] : (url.split('?')[0].split('.').pop() ?? '')
+      ).toLowerCase()
       const onError = (error: unknown) => {
         if (token === loadToken) console.error('ModelViewer: failed to load model', error)
       }

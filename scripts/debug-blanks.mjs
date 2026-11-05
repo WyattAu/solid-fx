@@ -1,39 +1,33 @@
 #!/usr/bin/env node
-// Debug harness for the near-blank CI captures (QA-TRIAGE "investigate" rows).
+// Debug harness for the blank/near-blank CI captures (QA-TRIAGE "investigate" rows).
 // Per page: console + pageerror capture, .demo-frame bounds / innerHTML length /
-// canvas + img presence, screenshots at 0.5s / 2s / 5s after load, then a
-// CI-equivalent capture (shoot.mjs timing: settle 2.5s -> pointer sweep -> 1.2s)
-// with pixel stddev computed on the frame crop (sharp, red channel).
+// canvas + img presence, per-component DOM probes, screenshots at 1s / 3s / 5s
+// after load, then a CI-equivalent capture (shoot.mjs timing: settle 2.5s ->
+// pointer sweep -> 1.2s) with pixel stddev computed on the frame crop (sharp,
+// red channel).
 //
 // Usage:
-//   node scripts/debug-blanks.mjs                          # the 3 triage pages, live site
+//   node scripts/debug-blanks.mjs                          # the 4 triage pages, live site
 //   BASE=http://localhost:4321/solid-fx node scripts/debug-blanks.mjs
 //   ONLY=shredder node scripts/debug-blanks.mjs            # one component
-//   ALL=1 node scripts/debug-blanks.mjs                    # every docs page (slow)
 import { chromium } from 'playwright'
 import sharp from 'sharp'
 import { mkdirSync } from 'node:fs'
 import path from 'node:path'
 
 const BASE = process.env.BASE ?? 'https://wyattau.github.io/solid-fx'
-const OUT = '/tmp/opencode/debug3'
+const OUT = process.env.OUT ?? '/tmp/opencode/debug3'
 const ONLY = process.env.ONLY
-const BLANK_STD = Number(process.env.BLANK_STD ?? 8) // stddev under this = blank frame
+const BLANK_STD = Number(process.env.BLANK_STD ?? 6) // stddev under this = blank frame
 mkdirSync(OUT, { recursive: true })
 
 const TRIAGE = [
-  ['textanimations', 'maskedheading'],
-  ['micro', 'shredder'],
+  ['components', 'modelviewer'],
   ['micro', 'dodgefield'],
+  ['micro', 'shredder'],
+  ['textanimations', 'maskedheading'],
 ]
-const ALL = [
-  ...TRIAGE,
-  ['animations', 'imagetrail'],
-  ['animations', 'pixeltrail'],
-  ['animations', 'ribbons'],
-  ['animations', 'splashcursor'],
-]
-const PAGES = (process.env.ALL ? ALL : TRIAGE).filter(
+const PAGES = TRIAGE.filter(
   ([, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase(),
 )
 
@@ -65,6 +59,59 @@ const frameProbe = page =>
     }
   })
 
+// Component-specific diagnostics (kept small; one line each).
+const probes = {
+  modelviewer: page =>
+    page.evaluate(() => {
+      const c = document.querySelector('.demo-frame canvas')
+      return {
+        canvas: c ? `${c.width}x${c.height} opacity=${getComputedStyle(c).opacity}` : 'none',
+        model: document.querySelectorAll('.demo-frame canvas').length ? 'mounted' : 'missing',
+      }
+    }),
+  dodgefield: page =>
+    page.evaluate(() => {
+      const frame = document.querySelector('.demo-frame')
+      const field = frame?.querySelector('[style*="--df-ink"]')
+      const mover = field?.firstElementChild
+      return {
+        hoverFine: matchMedia('(hover: hover) and (pointer: fine)').matches,
+        coarse: !!field?.hasAttribute('data-coarse'),
+        moverTransform: mover ? getComputedStyle(mover).transform.slice(0, 40) : 'none',
+        fieldHTML: field ? `${field.innerHTML.length}ch` : 'missing',
+      }
+    }),
+  shredder: page =>
+    page.evaluate(() => {
+      const root = document.querySelector('.demo-frame [style*="--sh-w"]')
+      const slots = root ? [...root.querySelectorAll('li')] : []
+      const gone = slots.filter(li => li.dataset.gone !== undefined)
+      return {
+        slots: `${slots.length} total, ${slots.length - gone.length} live, ${gone.length} gone`,
+        canvas: root?.querySelector('canvas')
+          ? `${root.querySelector('canvas').width}x${root.querySelector('canvas').height}`
+          : 'none',
+      }
+    }),
+  maskedheading: page =>
+    page.evaluate(() => {
+      const root = document.querySelector('.demo-frame h2, .demo-frame h1')
+      const glyphs = root ? [...root.querySelectorAll('clipPath text')] : []
+      const positioned = glyphs.filter(t => t.hasAttribute('x')).length
+      const clip = root?.querySelector('[style*="clip-path"]')
+      const reveal = clip?.parentElement
+      return {
+        fontSize: root ? getComputedStyle(root).fontSize : 'none',
+        glyphs: `${positioned}/${glyphs.length} positioned`,
+        clipPath: clip ? getComputedStyle(clip).clipPath.slice(0, 60) : 'none',
+        revealOpacity: reveal ? getComputedStyle(reveal).opacity : 'none',
+        filter: root?.querySelector('[style*="filter"]')
+          ? getComputedStyle(root.querySelector('[style*="filter"]')).filter.slice(0, 50)
+          : 'none',
+      }
+    }),
+}
+
 // Pixel stddev of the frame crop (clipped to the viewport), red channel — the
 // same metric debug-variance.mjs reports for CI artifacts.
 async function variance(page, rect, file) {
@@ -83,7 +130,7 @@ async function variance(page, rect, file) {
   const colors = new Set()
   const pixels = info.width * info.height
   const ch = info.channels
-  for (let p = 0; p < pixels; p += 3) {
+  for (let p = 0; p < pixels; p++) {
     const v = data[p * ch]
     sum += v
     sumSq += v * v
@@ -123,7 +170,7 @@ for (const [cat, name] of PAGES) {
 
   const load = Date.now()
   const captures = []
-  for (const t of [500, 2000, 5000]) {
+  for (const t of [1000, 3000, 5000]) {
     const wait = t - (Date.now() - load)
     if (wait > 0) await page.waitForTimeout(wait)
     const rect = await frameProbe(page)
@@ -142,7 +189,9 @@ for (const [cat, name] of PAGES) {
     captures.push(['ci', rectCi, v])
   }
 
+  const probe = probes[name] ? await probes[name](page) : {}
   console.log(`\n=== ${name} (${url})`)
+  console.log(`probe: ${JSON.stringify(probe)}`)
   for (const [label, rect, v] of captures) {
     const verdict = v.std >= BLANK_STD ? 'OK' : 'BLANK'
     console.log(
