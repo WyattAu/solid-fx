@@ -4,17 +4,28 @@
  * entry `index` with the splash template — render the cinematic solid-fx
  * landing (live component islands) instead of the stock doc shell content.
  * Every other page falls through to Starlight's stock PageFrame.
+ *
+ * IMPORTANT: Starlight's Page passes the site header and sidebar as NAMED
+ * slots (`header`, `sidebar`) — they must be explicitly forwarded, a plain
+ * `<slot />` only forwards the default slot. Without this forwarding the
+ * header and sidebar render empty and the docs lose all navigation.
  */
-import PageFrame from '@astrojs/starlight/components/PageFrame.astro';
-import Landing from './Landing.astro';
+import PageFrame from '@astrojs/starlight/components/PageFrame.astro'
+import Landing from './Landing.astro'
 
-const { starlightRoute } = Astro.locals;
-const { entry } = starlightRoute;
+const { starlightRoute } = Astro.locals
+const { entry } = starlightRoute
 
 const isLanding =
-  (entry.id === '' || entry.id === 'index') && entry.data.template === 'splash';
+  (entry.id === '' || entry.id === 'index') && entry.data.template === 'splash'
 ---
 
 <PageFrame>
+  <Fragment slot="header">
+    <slot name="header" />
+  </Fragment>
+  <Fragment slot="sidebar">
+    <slot name="sidebar" />
+  </Fragment>
   {isLanding ? <Landing /> : <slot />}
 </PageFrame>
