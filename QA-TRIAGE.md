@@ -25,6 +25,17 @@ contamination and shows the correct purple warp.)
 | Shredder | verified (timing) | Port matches upstream loop logic exactly (loopAfterDelete revive / loop-when-empty). CI blank = legit empty stage between shred cycles at capture time. Capture earlier or accept. |
 | MaskedHeading | investigate | Content in DOM but glyphs never position (0/20) — sync() is wired (ResizeObserver + fonts.ready) yet never completes. Debug the measure/sync path: likely `measureEl`/wordEls refs empty at first sync and no later trigger fires. |
 
+## Site chrome (fixed 2026-11-06)
+
+- PageFrame named-slot forwarding restored the site header (site title,
+  Search Ctrl+K, theme select, GitHub) and the sidebar pane on all doc
+  pages — verified live via playwright (header buttons enumerated,
+  theme select present).
+- Follow-up (minor): Starlight prev/next pagination container renders but
+  stays empty on doc pages — likely needs explicit `prev`/`next` frontmatter
+  or a sidebar-order hint per category. Low priority: sidebar + search cover
+  navigation.
+
 ## Debt
 
 - PORT-NOTE markers: **0** — fully burned down. ScrollVelocity physics
