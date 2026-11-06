@@ -7,9 +7,32 @@ import { docsSchema } from '@astrojs/starlight/schema'
 // scripts/gen-docs.mjs into docs/ — never edit them by hand.
 // (Starlight 0.42's docsLoader() hardcodes src/content/docs, so we use the
 // plain glob loader with the same schema.)
+//
+// generateId slugifies the path (lowercased, like Starlight's own docsLoader)
+// so that sidebar `autogenerate: { directory: 'textanimations' }` matches the
+// generated entries — with Astro's default generateId the ids keep the
+// original file casing and the sidebar groups end up EMPTY.
+function slugifyId(entryPath: string): string {
+  return entryPath
+    .replace(/\.mdx?$/, '')
+    .split('/')
+    .map((part) =>
+      part
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, ''),
+    )
+    .join('/')
+}
+
 export const collections = {
   docs: defineCollection({
-    loader: glob({ pattern: '**/*.mdx', base: './docs' }),
+    loader: glob({
+      pattern: '**/*.mdx',
+      base: './docs',
+      generateId: ({ entry }) =>
+        slugifyId(String(entry).replace(/\\/g, '/').replace(/\.mdx$/, '')),
+    }),
     schema: docsSchema(),
   }),
 }
