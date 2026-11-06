@@ -16,7 +16,7 @@ function slugifyId(entryPath: string): string {
   return entryPath
     .replace(/\.mdx?$/, '')
     .split('/')
-    .map((part) =>
+    .map(part =>
       part
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
@@ -31,7 +31,11 @@ export const collections = {
       pattern: '**/*.mdx',
       base: './docs',
       generateId: ({ entry }) =>
-        slugifyId(String(entry).replace(/\\/g, '/').replace(/\.mdx$/, '')),
+        slugifyId(
+          String(entry)
+            .replace(/\\/g, '/')
+            .replace(/\.mdx$/, ''),
+        ),
     }),
     schema: docsSchema(),
   }),
