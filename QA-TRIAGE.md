@@ -7,14 +7,18 @@ five interaction-driven demos self-animate via
 `src/lib/syntheticPointer.ts` (`autoPointer()` — synthesized pointermove/
 down/click on a Lissajous path inside the demo host).
 
-Latest baseline (run 41844145222): **210/218 verified rendering, 8 blanks**.
+Latest baseline (run 41844145222): **206/218 verified rendering, 12 blanks**
+(re-baselined 2026-11-05: the phone-rig captures were contaminated — the rig
+shares Chrome with active user browsing; CI screenshots remain the source of
+truth. CRTWarp's phone verification stands: its capture predates the
+contamination and shows the correct purple warp.)
 
 ## Blank-frame triage (8 remaining)
 
 | Component | Class | Explanation / next action |
 | --- | --- | --- |
 | AeroShards, ShapeWaves | environment | WebGPU: CI runners expose no WebGPU adapter. Render pattern identical to working ogl siblings; verify these two locally in a WebGPU browser. |
-| CRTWarp | verified | Renders pixel-perfect on a real mobile GPU (phone screencap proof, 2026-11-03). CI/desktop black frame is a software-GL limitation of the build box. |
+| CRTWarp | verified (mobile) | Renders pixel-perfect on a real mobile GPU (phone screencap, 2026-11-03 — captured before the rig contamination). CI/desktop black frame is a software-GL limitation of the build box. |
 | SoftAurora | re-test (rig) | Phone re-test contaminated: the device hit Chrome's WebGL context cap after the test marathon (ModelViewer on the same rig showed "Error creating WebGL context"). Port code verified faithful (uniforms + loop byte-diff clean). Clean re-test: close Chrome tabs / clear contexts, reload. |
 | ModelViewer | **fixed** | Root cause: the data-URL demo (`data:model/obj,…`) has no file extension, so format dispatch fell through to GLTFLoader → JSON.parse error. Fixed: dispatch now recognizes `data:model/(obj|gltf|glb|fbx)` mime prefixes. Verify visually next screenshots run. |
 | DodgeField | investigate | Page main-thread hangs with autoPointer active (suspected feedback loop between synthesized pointermove and dodge logic). Debug with the pointer disabled, then re-enable with amplitude guard. |
