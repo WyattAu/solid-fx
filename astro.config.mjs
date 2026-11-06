@@ -25,7 +25,7 @@ function catGroup(category) {
     collapsed: true,
     items: names.map(name => ({
       label: name,
-      link: `/solid-fx/${category.toLowerCase()}/${name.toLowerCase()}/`,
+      link: `/${category.toLowerCase()}/${name.toLowerCase()}/`,
     })),
   }
 }
