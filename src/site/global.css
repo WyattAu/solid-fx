@@ -4,6 +4,7 @@
    anywhere statically — demos are lazy islands). */
 @source "../../src/content";
 @source "../../src/islands";
+@source "../../src/extras";
 
 /* Brand accent for the Starlight chrome (dark + light). */
 :root,

@@ -43,7 +43,11 @@ for (const category of categories) {
   }
 }
 
-const EXTRAS_SOURCES = [{ source: 'magic-ui', label: 'Magic UI (MIT)' }]
+const EXTRAS_SOURCES = [
+  { source: 'magic-ui', label: 'Magic UI (MIT)' },
+  { source: 'tsparticles', label: 'tsParticles (MIT)' },
+  { source: 'anime-js', label: 'anime.js (MIT)' },
+]
 
 const index = [
   '---',
@@ -79,7 +83,13 @@ writeFileSync(path.join(docsDir, 'index.mdx'), index.join('\n'))
 
 // Extras sources (src/extras/<source>/<Category>/<Name>/<Name>.tsx) —
 // non-react-bits ports, one Starlight page each + an "Extras" sidebar group.
-const EXTRAS = [{ source: 'magic-ui', label: 'Magic UI' }]
+// Extras sources (src/extras/<source>/<Category>/<Name>/<Name>.tsx) —
+// non-react-bits ports, one Starlight page each + an "Extras" sidebar group.
+const EXTRAS = [
+  { source: 'magic-ui', label: 'Magic UI' },
+  { source: 'tsparticles', label: 'tsParticles' },
+  { source: 'anime-js', label: 'anime.js' },
+]
 const extrasDir = path.join(root, 'src', 'extras')
 
 for (const { source, label } of EXTRAS) {

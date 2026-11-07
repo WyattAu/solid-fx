@@ -24,6 +24,9 @@
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.3",
+    "@tsparticles/confetti": "^4.5.3",
+    "@tsparticles/engine": "^4.5.3",
+    "@tsparticles/slim": "^4.5.3",
     "@use-gesture/vanilla": "^10.2.27",
     "animejs": "^4.5.0",
     "gsap": "^3.13.0",
