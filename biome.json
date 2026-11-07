@@ -81,7 +81,12 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.astro", "**/*.mdx", "**/*.md", "**/docs/**"],
+      "includes": [
+        "**/*.astro",
+        "**/*.mdx",
+        "**/*.md",
+        "**/docs/**"
+      ],
       "formatter": {
         "enabled": false
       },
@@ -95,7 +100,9 @@
       }
     },
     {
-      "includes": ["**/src/content/**/*.tsx"],
+      "includes": [
+        "**/src/content/**/*.tsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -115,21 +122,54 @@
             "noStaticElementInteractions": "warn",
             "useKeyWithClickEvents": "warn",
             "useAriaPropsSupportedByRole": "warn",
-            "useFocusableInteractive": "warn"
+            "useFocusableInteractive": "warn",
+            "noAriaHiddenOnFocusable": "warn"
           }
         }
       }
     },
     {
-      "includes": ["**/scripts/**", "**/tests/**"],
+      "includes": [
+        "**/scripts/**",
+        "**/tests/**"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
             "noConsole": "off",
-            "noAssignInExpressions": "off"
+            "noAssignInExpressions": "off",
+            "useIterableCallbackReturn": "warn"
           },
           "correctness": {
             "noUnusedVariables": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/src/extras/**/*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off",
+            "noExplicitAny": "warn",
+            "noImplicitAnyLet": "warn",
+            "noAssignInExpressions": "warn",
+            "useIterableCallbackReturn": "warn"
+          },
+          "style": {
+            "useForOf": "warn",
+            "noNonNullAssertion": "off"
+          },
+          "a11y": {
+            "noSvgWithoutTitle": "off",
+            "useButtonType": "off",
+            "noStaticElementInteractions": "warn",
+            "useKeyWithClickEvents": "warn",
+            "noAriaHiddenOnFocusable": "warn",
+            "useFocusableInteractive": "warn"
           }
         }
       }
