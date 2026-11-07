@@ -47,6 +47,7 @@ const EXTRAS_SOURCES = [
   { source: 'magic-ui', label: 'Magic UI (MIT)' },
   { source: 'tsparticles', label: 'tsParticles (MIT)' },
   { source: 'anime-js', label: 'anime.js (MIT)' },
+  { source: 'motion-primitives', label: 'Motion Primitives (MIT)' },
 ]
 
 const index = [
@@ -89,6 +90,7 @@ const EXTRAS = [
   { source: 'magic-ui', label: 'Magic UI' },
   { source: 'tsparticles', label: 'tsParticles' },
   { source: 'anime-js', label: 'anime.js' },
+  { source: 'motion-primitives', label: 'Motion Primitives' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 
