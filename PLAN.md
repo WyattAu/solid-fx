@@ -42,26 +42,27 @@
   artifact `screenshots` (218 PNGs), pixel-scan with the Pillow snippet in
   git history ("blank frames" scan).
 
-## Resume block v2 (2026-11-06, context near limit)
+## Resume block v3 (2026-11-07, next-session queue)
 
-State: 218 + 3 extras components; site live; CI green on 33a1de1; sidebar
-navigation fixed (PageFrame named-slot forwarding + explicit sidebar entries
-+ slugified content ids — see commits 8c5f23e, 6bcf06f).
+State: 218 + 16 extras = 234 components from 5 sources; site live; CI green
+(7adfd12..e2ea206 lineage, latest e2ea206+). All 8 blank frames reclassified
+(6 verified real-browser/mobile, 2 environment).
 
 Next tasks (in order):
-1. Visual pass on user-flagged demos: GlitchText (frameHTMLLen 2141, text
-   renders — verify the glitch interval RUNS in prod), PixelTrail (canvas
-   mounts; needs pointer sweep — verify autoPointer), scroll-driven ones
-   (ScrollReveal/ScrollVelocity/FadeContent — verify ScrollTrigger fires on
-   the docs page; if not, demos need an immediate-fire when already in view).
-   Tool: scripts/debug-blanks.mjs + scripts/shoot.mjs (both committed).
-2. WebGPU pair + SoftAurora + ModelViewer visual re-verify (Chrome context
-   cap contaminated earlier phone tests — use a fresh profile).
-3. Magic UI batch 2 (Grid Pattern, Shimmer Button) + anime.js v4 pilot per
-   EXTRAS-ROADMAP.md.
-4. Minor: Starlight prev/next pagination container renders empty (investigate
-   sidebar-order hints).
+1. Motion Primitives batch 2 — upstream ibelick/motion-primitives has ~36
+   components; picks: Spotlight, Iris Highlight, Dot Background, Ribbons.
+   Tree: src/extras/motion-primitives/Ui/ (3 pilot components landed:
+   TextScramble, TextShimmerWave, Magnetic).
+2. anime.js pilot promotion — TimelineTextReveal/SvgLineDrawLogo/StaggerChoreo
+   from pilot to documented extras (EXTRAS-ROADMAP P1 concepts, done; promote
+   labels + docs polish).
+3. First src/scenes/ composition — the landing proves the pattern; make
+   src/scenes/ a real layer (scene = multi-component composition; scenes demo
+   pages wired like extras).
+4. QA: 12 blanks in QA-TRIAGE are reclassified (6 verified real-browser,
+   capture-timing; 2 environment WebGPU; CRTWarp verified mobile; ModelViewer
+   + SoftAurora verified desktop). Remaining real investigations: none —
+   all classified.
+5. Minor: Starlight prev/next pagination container renders empty
+   (sidebar + search cover navigation; low priority).
 
-Known-good reference: AnimatedContent/Aurora verified pixel-perfect in
-deployed site + CI. GlitchText/PixelTrail confirmed mounting + hydrating in
-prod (DOM evidence, 2026-11-05).
