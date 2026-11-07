@@ -1,12 +1,5 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/flickering-grid.tsx@37ce829f18dd7d0a7219531a4249b664419933ea. License: MIT.
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  onCleanup,
-  onMount,
-  splitProps,
-} from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 
 interface FlickeringGridProps extends JSX.HTMLAttributes<HTMLDivElement> {

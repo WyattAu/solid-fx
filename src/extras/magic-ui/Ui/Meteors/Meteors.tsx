@@ -89,13 +89,16 @@ export const Meteors = (props: MeteorsProps) => {
     const maxDurationValue = maxDuration()
     const angleValue = angle()
 
-    const styles = Array.from({ length: count }, (): MeteorStyle => ({
-      '--angle': `${-angleValue}deg`,
-      top: '-5%',
-      left: `calc(0% + ${Math.floor(Math.random() * window.innerWidth)}px)`,
-      'animation-delay': `${Math.random() * (max - min) + min}s`,
-      'animation-duration': `${Math.floor(Math.random() * (maxDurationValue - minDurationValue) + minDurationValue)}s`,
-    }))
+    const styles = Array.from(
+      { length: count },
+      (): MeteorStyle => ({
+        '--angle': `${-angleValue}deg`,
+        top: '-5%',
+        left: `calc(0% + ${Math.floor(Math.random() * window.innerWidth)}px)`,
+        'animation-delay': `${Math.random() * (max - min) + min}s`,
+        'animation-duration': `${Math.floor(Math.random() * (maxDurationValue - minDurationValue) + minDurationValue)}s`,
+      }),
+    )
     setMeteorStyles(styles)
   })
 
