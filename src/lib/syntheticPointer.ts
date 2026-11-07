@@ -18,7 +18,10 @@ export interface AutoPointerOptions {
  * listeners too. Must be called during component setup (registers onCleanup).
  */
 export function autoPointer(el: HTMLElement, options: AutoPointerOptions = {}): void {
-  const hz = options.hz ?? 20
+  // Rate-limit guard: >10 dispatches/s starved the DodgeField page's main
+  // thread in CI captures (each synthetic move schedules spring work in the
+  // component). 100ms between moves is enough for any listener to look alive.
+  const hz = Math.min(options.hz ?? 20, 10)
   const roam = options.roam ?? 0.55
   const interval = 1000 / hz
   const phase = Math.random() * Math.PI * 2

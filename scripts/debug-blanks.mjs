@@ -26,6 +26,13 @@ const TRIAGE = [
   ['micro', 'dodgefield'],
   ['micro', 'shredder'],
   ['textanimations', 'maskedheading'],
+  // Task-2 pages: mounted but possibly not animating (user-flagged + scroll-driven).
+  ['textanimations', 'glitchtext'],
+  ['animations', 'pixeltrail'],
+  ['textanimations', 'scrollreveal'],
+  ['textanimations', 'scrollvelocity'],
+  ['animations', 'fadecontent'],
+  ['animations', 'animatedcontent'],
 ]
 const PAGES = TRIAGE.filter(([, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
 
@@ -59,6 +66,23 @@ const frameProbe = page =>
   })
 
 // Component-specific diagnostics (kept small; one line each).
+const samples = async (page, select, props, spanMs = 1000) =>
+  // Sample computed style values ~spanMs apart; animation evidence = change.
+  page.evaluate(
+    async ({ sel, names, span }) => {
+      const el = document.querySelector(sel)
+      if (!el) return { el: 'missing' }
+      const read = () =>
+        Object.fromEntries(names.map(n => [n, el.style.getPropertyValue(n) || getComputedStyle(el).getPropertyValue(n)]))
+      const first = read()
+      await new Promise(r => setTimeout(r, span))
+      const second = read()
+      const changed = Object.fromEntries(names.map(n => [n, first[n] !== second[n]]))
+      return { first, second, changed }
+    },
+    { sel: select, names: props, span: spanMs },
+  )
+
 const probes = {
   modelviewer: page =>
     page.evaluate(() => {
@@ -109,6 +133,52 @@ const probes = {
           : 'none',
       }
     }),
+  glitchtext: page =>
+    samples(
+      page,
+      '.demo-frame [class*="font-black"]',
+      ['--glitch-a-top', '--glitch-a-x', '--glitch-b-x', '--glitch-a-shadow'],
+    ),
+  scrollreveal: page =>
+    page.evaluate(() => {
+      const root = document.querySelector('.demo-frame')
+      const chars = root ? [...root.querySelectorAll('[style*="opacity"]')] : []
+      const opaque = chars.filter(s => Number(getComputedStyle(s).opacity) > 0.5).length
+      const piece = root?.querySelector('[style]') // first styled span as sample
+      return {
+        styledSpans: chars.length,
+        opaqueSpans: opaque,
+        firstOpacity: piece ? getComputedStyle(piece).opacity : 'none',
+        sampleTransform: piece ? getComputedStyle(piece).transform.slice(0, 40) : 'none',
+      }
+    }),
+  scrollvelocity: page =>
+    samples(
+      page,
+      '.demo-frame [class*="flex"]',
+      ['transform'],
+    ),
+  fadecontent: page =>
+    page.evaluate(() => {
+      const root = document.querySelector('.demo-frame')
+      const inner = root?.firstElementChild
+      return {
+        rootClass: root?.className.slice(0, 60),
+        visibility: inner ? getComputedStyle(inner).visibility : 'none',
+        opacity: inner ? getComputedStyle(inner).opacity : 'none',
+        filter: inner ? getComputedStyle(inner).filter.slice(0, 40) : 'none',
+      }
+    }),
+  animatedcontent: page =>
+    page.evaluate(() => {
+      const root = document.querySelector('.demo-frame')
+      const inner = root?.firstElementChild
+      return {
+        visibility: inner ? getComputedStyle(inner).visibility : 'none',
+        opacity: inner ? getComputedStyle(inner).opacity : 'none',
+        transform: inner ? getComputedStyle(inner).transform.slice(0, 40) : 'none',
+      }
+    }),
 }
 
 // Pixel stddev of the frame crop (clipped to the viewport), red channel — the
@@ -121,7 +191,7 @@ async function variance(page, rect, file) {
   const width = Math.min(Math.floor(rect.width), vp.width - left)
   const height = Math.min(Math.floor(rect.height), vp.height - top)
   const { data, info } = await sharp(file)
-    .extract({ left, top, width, height })
+    .extract({ left, top, width: Math.max(1, width), height: Math.max(1, height) })
     .raw()
     .toBuffer({ resolveWithObject: true })
   let sum = 0

@@ -171,9 +171,14 @@ const GlitchText = (props: GlitchTextProps) => {
 
   const childText = () => (typeof props.children === 'string' ? props.children : '')
 
-  const safeMode = createMemo<GlitchMode>(() =>
-    MODES.includes(props.mode ?? 'slices') ? (props.mode as GlitchMode) : 'slices',
-  )
+  const safeMode = createMemo<GlitchMode>(() => {
+    // Upstream destructured `mode = 'slices'`, so the include-check always saw
+    // a real string; apply the same default before checking (props.mode is
+    // undefined when the prop is absent — returning it would disable every
+    // mode branch and freeze the glitch at its rest values).
+    const mode = props.mode ?? 'slices'
+    return MODES.includes(mode) ? mode : 'slices'
+  })
   const activeTrigger = createMemo<GlitchTrigger>(() => {
     const trigger = props.trigger ?? 'always'
     return trigger === 'hover' || trigger === 'click'

@@ -264,8 +264,12 @@ const MaskedHeading = (props: MaskedHeadingProps) => {
     for (let w = 0; w < wordEls.length; w += 1) {
       const box = wordEls[w]
       const base = baseEls[w]
-      const node = box?.firstChild as Text | null | undefined
-      if (!box || !base || !node || node.nodeType !== 3) {
+      // Solid wraps interpolated text in comment markers, so the word's text
+      // node is NOT necessarily firstChild (React could assume it was).
+      const node = box
+        ? ([...box.childNodes].find((n): n is Text => n.nodeType === 3) ?? null)
+        : null
+      if (!box || !base || !node) {
         index += Array.from(box?.textContent ?? '').length
         continue
       }
@@ -333,7 +337,18 @@ const MaskedHeading = (props: MaskedHeadingProps) => {
     let alive = true
     const ro = new ResizeObserver(() => sync())
     ro.observe(root)
-    if (document.fonts?.ready) document.fonts.ready.then(() => alive && sync()).catch(() => {})
+    // Re-measure once the first paint settles and again after webfonts land —
+    // the initial sync can run before layout has final glyph metrics.
+    let syncRaf = 0
+    const syncOnFrame = () => {
+      if (syncRaf) cancelAnimationFrame(syncRaf)
+      syncRaf = requestAnimationFrame(() => {
+        syncRaf = 0
+        if (alive) sync()
+      })
+    }
+    syncOnFrame()
+    if (document.fonts?.ready) document.fonts.ready.then(() => alive && syncOnFrame()).catch(() => {})
 
     const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     const off = offset
@@ -440,6 +455,7 @@ const MaskedHeading = (props: MaskedHeadingProps) => {
       alive = false
       cancelAnimationFrame(raf)
       raf = 0
+      if (syncRaf) cancelAnimationFrame(syncRaf)
       wakeRef.current = () => {}
       ro.disconnect()
       io.disconnect()

@@ -25,6 +25,7 @@
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.3",
     "@use-gesture/vanilla": "^10.2.27",
+    "animejs": "^4.5.0",
     "gsap": "^3.13.0",
     "matter-js": "^0.20.0",
     "motion": "^12.23.12",

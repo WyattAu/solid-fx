@@ -84,6 +84,10 @@ type Settings = {
 
 type Bounds = { scale: number; center: THREE.Vector3; radius: number; floor: number }
 
+// React converted numeric style values to px at assignment; Solid does not.
+const px = (value: string | number | undefined): string | number | undefined =>
+  typeof value === 'number' ? `${value}px` : value
+
 type Motion = {
   yaw: number
   pitch: number
@@ -656,9 +660,13 @@ const ModelViewer = (props: ModelViewerProps) => {
       class={`relative ${props.class ?? ''} ${props.className ?? ''}`.trim()}
       style={
         {
-          width: props.width ?? 400,
-          height: props.height ?? 400,
-          ...(props.style as Record<string, string | number>),
+          // React coerced numeric style values to px; Solid's style object
+          // assigns them raw (`style.width = 320` is invalid CSS and is
+          // dropped), which left the container shrink-wrapped at the canvas
+          // default 300x150. Stringify dimensioned numbers explicitly.
+          width: px(props.width ?? 400),
+          height: px(props.height ?? 400),
+          ...(props.style as Record<string, string | number | undefined>),
         } as JSX.CSSProperties
       }
     />

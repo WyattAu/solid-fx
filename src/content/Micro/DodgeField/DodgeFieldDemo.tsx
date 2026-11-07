@@ -6,9 +6,11 @@ function DodgeFieldDemo() {
   const [dodges, setDodges] = createSignal(0)
   let host!: HTMLDivElement
   // PORTING.md §6: look alive without interaction — synthesize a pointer
-  // circling the field center (flee radius is measured from it) and a
+  // sweeping past the flee radius (roam 0.55 re-arms the dodge counter each
+  // pass, so the mover never settles into the terminal "relented" pose) and a
   // periodic click so the relent → caught → reset cycle keeps looping.
-  onMount(() => autoPointer(host, { hz: 30, roam: 0.3, clickEvery: 7000 }))
+  // autoPointer rate-limits moves to >=100ms internally (main-thread guard).
+  onMount(() => autoPointer(host, { hz: 10, roam: 0.55, clickEvery: 2600 }))
   return (
     <div ref={host} class="h-96 w-full bg-zinc-950 p-8 text-white">
       <DodgeField notice="Touch devices: the button surrenders." onDodge={setDodges}>
