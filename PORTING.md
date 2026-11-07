@@ -29,8 +29,13 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
   never other components, demos, islands, or site code. Shared logic goes in
   `src/lib` (once). The oracle (`make contract`) fails on `../` imports.
 - Allowed imports: `solid-js`, `solid-js/web`, `motion`, `gsap` (+ its plugin
-  subpaths), `ogl`, `three`, `matter-js`, `vgpu`, `@hugeicons/core-free-icons`,
-  `@use-gesture/vanilla`, and `@/lib/HugeiconsIcon` / `@/lib/reducedMotion`.
+  subpaths), `ogl`, `three`, `matter-js`, `vgpu`, `animejs` (v4 ESM: animate,
+  createTimeline, stagger, svg, utils — disposal via `.revert()` in
+  onCleanup), `@tsparticles/engine` + `@tsparticles/slim` +
+  `@tsparticles/confetti` (init once with an idempotent module-level
+  promise; disposal via `container.destroy()`),
+  `@hugeicons/core-free-icons`, `@use-gesture/vanilla`, and
+  `@/lib/HugeiconsIcon` / `@/lib/reducedMotion` / `@/lib/syntheticPointer`.
 
 ## 2. Core mapping
 
