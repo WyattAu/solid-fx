@@ -130,7 +130,7 @@ export const StaggerChoreo = (
       <For each={cells()}>
         {() => (
           <div
-            ref={(el) => tileEls.push(el)}
+            ref={el => tileEls.push(el)}
             class="rounded-md will-change-transform"
             style={{ 'background-color': REST_COLOR }}
           />

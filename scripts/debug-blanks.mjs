@@ -73,7 +73,12 @@ const samples = async (page, select, props, spanMs = 1000) =>
       const el = document.querySelector(sel)
       if (!el) return { el: 'missing' }
       const read = () =>
-        Object.fromEntries(names.map(n => [n, el.style.getPropertyValue(n) || getComputedStyle(el).getPropertyValue(n)]))
+        Object.fromEntries(
+          names.map(n => [
+            n,
+            el.style.getPropertyValue(n) || getComputedStyle(el).getPropertyValue(n),
+          ]),
+        )
       const first = read()
       await new Promise(r => setTimeout(r, span))
       const second = read()
@@ -134,11 +139,12 @@ const probes = {
       }
     }),
   glitchtext: page =>
-    samples(
-      page,
-      '.demo-frame [class*="font-black"]',
-      ['--glitch-a-top', '--glitch-a-x', '--glitch-b-x', '--glitch-a-shadow'],
-    ),
+    samples(page, '.demo-frame [class*="font-black"]', [
+      '--glitch-a-top',
+      '--glitch-a-x',
+      '--glitch-b-x',
+      '--glitch-a-shadow',
+    ]),
   scrollreveal: page =>
     page.evaluate(() => {
       const root = document.querySelector('.demo-frame')
@@ -152,12 +158,7 @@ const probes = {
         sampleTransform: piece ? getComputedStyle(piece).transform.slice(0, 40) : 'none',
       }
     }),
-  scrollvelocity: page =>
-    samples(
-      page,
-      '.demo-frame [class*="flex"]',
-      ['transform'],
-    ),
+  scrollvelocity: page => samples(page, '.demo-frame [class*="flex"]', ['transform']),
   fadecontent: page =>
     page.evaluate(() => {
       const root = document.querySelector('.demo-frame')

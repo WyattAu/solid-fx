@@ -348,7 +348,8 @@ const MaskedHeading = (props: MaskedHeadingProps) => {
       })
     }
     syncOnFrame()
-    if (document.fonts?.ready) document.fonts.ready.then(() => alive && syncOnFrame()).catch(() => {})
+    if (document.fonts?.ready)
+      document.fonts.ready.then(() => alive && syncOnFrame()).catch(() => {})
 
     const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     const off = offset

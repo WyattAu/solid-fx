@@ -2,8 +2,7 @@
 import { splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 
-export interface ShimmerButtonProps
-  extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ShimmerButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * The color of the shimmer sweep.
    */

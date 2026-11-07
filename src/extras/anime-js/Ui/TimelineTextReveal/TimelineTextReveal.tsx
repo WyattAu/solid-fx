@@ -77,7 +77,7 @@ export const TimelineTextReveal = (
 
   const reduced = useReducedMotion()
 
-  const charsByLine = createMemo(() => local.lines.map((line) => Array.from(line)))
+  const charsByLine = createMemo(() => local.lines.map(line => Array.from(line)))
 
   // Callback refs collect char spans in document order; read once at mount.
   const charEls: HTMLSpanElement[][] = []
@@ -114,7 +114,7 @@ export const TimelineTextReveal = (
             <Index each={chars}>
               {(char, charIndex) => (
                 <span
-                  ref={(el) => {
+                  ref={el => {
                     if (!charEls[lineIndex()]) charEls[lineIndex()] = []
                     charEls[lineIndex()][charIndex] = el
                   }}
