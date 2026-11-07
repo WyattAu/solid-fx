@@ -1,0 +1,14 @@
+{
+	"pid": 3379264,
+	"port": 4322,
+	"url": "http://localhost:4322",
+	"urls": {
+		"local": [
+			"http://localhost:4322/solid-fx"
+		],
+		"network": [],
+		"networkInterfaceNames": []
+	},
+	"background": true,
+	"startedAt": "2026-11-07T05:42:24.030Z"
+}
