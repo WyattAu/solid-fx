@@ -15,12 +15,13 @@ const CARDS: Card[] = [
 
 function ShredderDemo() {
   // The stage legitimately drains between shred cycles (loop revives only
-  // after the last card clears), so CI captures can land on an empty tray.
-  // Remount the whole shredder on a ~6s cycle: every capture window then has
-  // fresh cards mid-feed/mid-shred instead of a keyed-blank stage.
+  // after the last card clears, ~7s into autoAnimate's idle-gated sequence),
+  // so CI captures can land on an empty tray. Remount the whole shredder on a
+  // 3.2s cycle — shorter than the drain window, so every capture phase lands
+  // on fresh cards or mid-feed/mid-shred strips instead of a blank stage.
   const [cycle, setCycle] = createSignal(0)
   onMount(() => {
-    const t = setInterval(() => setCycle(c => c + 1), 6000)
+    const t = setInterval(() => setCycle(c => c + 1), 3200)
     onCleanup(() => clearInterval(t))
   })
   return (

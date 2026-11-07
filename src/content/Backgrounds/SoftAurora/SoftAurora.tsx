@@ -581,7 +581,12 @@ const SoftAurora = (props: SoftAuroraProps) => {
       ref={containerRef}
       class={`relative h-full w-full overflow-hidden ${own.class ?? ''} ${own.className ?? ''}`.trim()}
       style={own.style}
-    />
+    >
+      {/* Upstream mounts the GL canvas in JSX; the port must too — without it
+          canvasRef stays undefined and the init effect bails before creating
+          the WebGL2 context (black frame on every GPU). */}
+      <canvas ref={canvasRef} class="absolute inset-0 block h-full w-full" aria-hidden="true" />
+    </div>
   )
 }
 
