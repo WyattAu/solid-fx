@@ -18,7 +18,12 @@ function DodgeFieldDemo() {
   onMount(() => autoPointer(host, { hz: 10, roam: 0.55, clickEvery: 2600 }))
   return (
     <div ref={host} class="h-96 w-full bg-zinc-950 p-8 text-white">
-      <DodgeField fieldHeight={320} reach={90} notice="Touch devices: the button surrenders." onDodge={setDodges}>
+      <DodgeField
+        fieldHeight={320}
+        reach={90}
+        notice="Touch devices: the button surrenders."
+        onDodge={setDodges}
+      >
         {state => (
           <div class="flex h-24 w-64 flex-col items-center justify-center gap-1 rounded-2xl bg-white text-zinc-950 shadow-xl">
             <span class="text-2xl font-bold tracking-tight">

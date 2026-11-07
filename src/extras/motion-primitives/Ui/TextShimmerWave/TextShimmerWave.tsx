@@ -89,11 +89,7 @@ export function TextShimmerWave(props: TextShimmerWaveProps) {
             // PORT-NOTE: var() keyframes are resolved by motion against the
             // span (which inherits these custom properties from the root), so
             // the dark-mode palette flip keeps working without re-animation.
-            color: [
-              'var(--base-color)',
-              'var(--base-gradient-color)',
-              'var(--base-color)',
-            ],
+            color: ['var(--base-color)', 'var(--base-gradient-color)', 'var(--base-color)'],
           },
           {
             duration: duration,
@@ -117,10 +113,7 @@ export function TextShimmerWave(props: TextShimmerWaveProps) {
     >
       <Index each={chars()}>
         {(char, i) => (
-          <span
-            ref={el => spanEls.set(i, el)}
-            class={CHAR_CLASSES}
-          >
+          <span ref={el => spanEls.set(i, el)} class={CHAR_CLASSES}>
             {char()}
           </span>
         )}

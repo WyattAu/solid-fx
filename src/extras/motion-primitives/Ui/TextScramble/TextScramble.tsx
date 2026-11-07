@@ -22,8 +22,7 @@ export type TextScrambleProps = {
   onScrambleComplete?: () => void
 } & Omit<JSX.HTMLAttributes<HTMLElement>, 'children' | 'class'>
 
-const defaultChars =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+const defaultChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
 export function TextScramble(props: TextScrambleProps) {
   const [own, rest] = splitProps(props, [
@@ -70,8 +69,7 @@ export function TextScramble(props: TextScrambleProps) {
         if (progress * text.length > i) {
           scrambled += text[i]
         } else {
-          scrambled +=
-            characterSet[Math.floor(Math.random() * characterSet.length)]
+          scrambled += characterSet[Math.floor(Math.random() * characterSet.length)]
         }
       }
 
