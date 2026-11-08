@@ -35,6 +35,30 @@ for (const category of categories) {
   }
 }
 
+// Extras trees (src/extras/<source>/<Category>/<Name>/) — page URLs mirror
+// the generated docs: /solid-fx/extras/<source>/<category-lower>/<name>/
+const extrasRoot = path.join('src/extras')
+if (existsSync(extrasRoot)) {
+  for (const source of readdirSync(extrasRoot)) {
+    const sourceDir = path.join(extrasRoot, source)
+    if (!existsSync(sourceDir)) continue
+    for (const category of readdirSync(sourceDir)) {
+      const catDir = path.join(sourceDir, category)
+      if (!existsSync(catDir)) continue
+      if (ONLY && ONLY.toLowerCase() !== category.toLowerCase()) continue
+      for (const name of readdirSync(catDir).sort()) {
+        if (existsSync(path.join(catDir, name, `${name}.tsx`))) {
+          pages.push({
+            category: `${source}/${category}`,
+            name,
+            url: `${BASE}/extras/${source}/${category.toLowerCase()}/${name.toLowerCase()}/`,
+          })
+        }
+      }
+    }
+  }
+}
+
 mkdirSync(OUT, { recursive: true })
 
 let browser = await chromium.launch({ timeout: 180000 })
