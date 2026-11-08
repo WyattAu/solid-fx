@@ -10,7 +10,7 @@
 // Crash-resilient: if a page kills the renderer, the browser relaunches and
 // the offending page is recorded and skipped after one retry.
 import { chromium } from 'playwright'
-import { mkdirSync, readdirSync, existsSync, appendFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 const BASE = process.env.SHOOT_BASE ?? 'http://localhost:4321/solid-fx'
@@ -41,7 +41,7 @@ const extrasRoot = path.join('src/extras')
 if (existsSync(extrasRoot)) {
   for (const source of readdirSync(extrasRoot)) {
     const sourceDir = path.join(extrasRoot, source)
-    if (!existsSync(sourceDir)) continue
+    if (!existsSync(sourceDir) || !statSync(sourceDir).isDirectory()) continue
     for (const category of readdirSync(sourceDir)) {
       const catDir = path.join(sourceDir, category)
       if (!existsSync(catDir)) continue
@@ -103,7 +103,6 @@ for (const [i, p] of pages.entries()) {
       } else {
         failed += 1
         crashed.push(`${p.category}/${p.name}: ${msg}`)
-        appendFileSync(CRASH_LOG, `${crashed.at(-1)}\n`)
         console.error(`FAIL ${p.name}: ${msg}`)
       }
       await respawn()
