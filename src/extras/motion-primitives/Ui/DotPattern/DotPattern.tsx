@@ -7,7 +7,15 @@
 // same upstream file; extras trees never cross-import (layering rule), so this
 // tree carries a self-contained port.
 
-import { createMemo, createSignal, createUniqueId, onCleanup, onMount, splitProps, For } from 'solid-js'
+import {
+  createMemo,
+  createSignal,
+  createUniqueId,
+  onCleanup,
+  onMount,
+  splitProps,
+  For,
+} from 'solid-js'
 import type { JSX } from 'solid-js'
 import { animate } from 'motion'
 
