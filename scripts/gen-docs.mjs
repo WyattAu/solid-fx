@@ -129,6 +129,41 @@ for (const { source, label } of EXTRAS) {
   console.log(`gen-docs: extras/${source} — ${extrasCount} pages`)
 }
 
+// Scenes (src/scenes/<Scene>/<Scene>.tsx) — full-page compositions, one
+// Starlight page each at docs/scenes/<scene-lower>/<scene-lower>.mdx plus a
+// "Scenes" sidebar group in astro.config.mjs. Scene demos are one level
+// shallower than component demos, hence tree="scenes" without a category.
+const scenesDir = path.join(root, 'src', 'scenes')
+
+if (existsSync(scenesDir)) {
+  const scenesOut = path.join(docsDir, 'scenes')
+  mkdirSync(scenesOut, { recursive: true })
+  let scenesCount = 0
+  for (const scene of readdirSync(scenesDir).sort()) {
+    if (!existsSync(path.join(scenesDir, scene, `${scene}.tsx`))) continue
+    const slug = scene.toLowerCase()
+    const sceneOut = path.join(scenesOut, slug)
+    mkdirSync(sceneOut, { recursive: true })
+    const mdx = [
+      '---',
+      `title: ${scene}`,
+      `description: Full-page scene composition built from solid-fx components (${scene}).`,
+      '---',
+      '',
+      "import DemoIsland from '../../../src/islands/DemoIsland';",
+      '',
+      `<DemoIsland client:only="solid" tree="scenes" name="${scene}" />`,
+      '',
+      `Source: \`src/scenes/${scene}/${scene}.tsx\` — a Scenes-layer composition;`,
+      'scenes are the only layer allowed to compose multiple src/content components.',
+      '',
+    ]
+    writeFileSync(path.join(sceneOut, `${slug}.mdx`), mdx.join('\n'))
+    scenesCount += 1
+  }
+  console.log(`gen-docs: scenes — ${scenesCount} pages`)
+}
+
 // llms.txt projection (docs-gate tier k): machine-readable catalog for AI agents.
 const llms = [
   '# solid-fx',

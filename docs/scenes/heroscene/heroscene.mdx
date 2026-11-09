@@ -1,0 +1,11 @@
+---
+title: HeroScene
+description: Full-page scene composition built from solid-fx components (HeroScene).
+---
+
+import DemoIsland from '../../../src/islands/DemoIsland';
+
+<DemoIsland client:only="solid" tree="scenes" name="HeroScene" />
+
+Source: `src/scenes/HeroScene/HeroScene.tsx` — a Scenes-layer composition;
+scenes are the only layer allowed to compose multiple src/content components.

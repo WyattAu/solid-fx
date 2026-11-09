@@ -1,4 +1,5 @@
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
+import path from 'node:path'
 import { defineConfig } from 'astro/config'
 import solidJs from '@astrojs/solid-js'
 import starlight from '@astrojs/starlight'
@@ -30,6 +31,38 @@ function catGroup(category) {
   }
 }
 
+// "Scenes" sidebar group from the generated docs/scenes tree — one dir per
+// scene at docs/scenes/<scene-lower>/<scene-lower>.mdx. Labels come from the
+// frontmatter title so the sidebar keeps the original scene casing.
+function sceneGroup() {
+  const base = './docs/scenes'
+  let dirs = []
+  try {
+    dirs = readdirSync(base, { withFileTypes: true })
+      .filter(e => e.isDirectory())
+      .map(e => e.name)
+      .sort()
+  } catch {
+    dirs = []
+  }
+  const items = dirs.flatMap(dir =>
+    readdirSync(path.join(base, dir))
+      .filter(f => f.endsWith('.mdx'))
+      .map(f => {
+        let label = dir
+        try {
+          const frontmatter = readFileSync(path.join(base, dir, f), 'utf8').split('---')[1] ?? ''
+          const title = frontmatter.match(/^title: (.+)$/m)
+          if (title) label = title[1].trim()
+        } catch {
+          // keep the dir-name fallback label
+        }
+        return { label, link: `/scenes/${dir}/${path.basename(f, '.mdx')}/` }
+      }),
+  )
+  return { label: 'Scenes', collapsed: true, items }
+}
+
 export default defineConfig({
   site: 'https://wyattau.github.io',
   base: '/solid-fx',
@@ -46,7 +79,7 @@ export default defineConfig({
         PageFrame: './src/site/PageFrame.astro',
         Hero: './src/site/Hero.astro',
       },
-      sidebar: [...CATEGORIES.map(catGroup)],
+      sidebar: [...CATEGORIES.map(catGroup), sceneGroup()],
     }),
     solidJs(),
   ],

@@ -4,6 +4,7 @@ import { ErrorBoundary, Suspense, lazy } from 'solid-js'
 const demoModules = {
   ...import.meta.glob<{ default: Component }>('/src/content/**/*Demo.tsx'),
   ...import.meta.glob<{ default: Component }>('/src/extras/**/*Demo.tsx'),
+  ...import.meta.glob<{ default: Component }>('/src/scenes/**/*SceneDemo.tsx'),
 }
 
 /**
@@ -11,10 +12,15 @@ const demoModules = {
  * embed one island per component:
  *   content pages: <DemoIsland client:only="solid" category="..." name="..." />
  *   extras pages:  <DemoIsland client:only="solid" tree="extras/magic-ui" category="Ui" name="..." />
+ *   scene pages:   <DemoIsland client:only="solid" tree="scenes" name="HeroScene" />
  */
-export default function DemoIsland(props: { tree?: string; category: string; name: string }) {
+export default function DemoIsland(props: { tree?: string; category?: string; name: string }) {
   const tree = props.tree ?? 'content'
-  const key = `/src/${tree}/${props.category}/${props.name}/${props.name}Demo.tsx`
+  // Scenes sit one level shallower than components: src/scenes/<Scene>/<Scene>Demo.tsx
+  const key =
+    tree === 'scenes'
+      ? `/src/scenes/${props.name}/${props.name}Demo.tsx`
+      : `/src/${tree}/${props.category}/${props.name}/${props.name}Demo.tsx`
   const loader = demoModules[key]
   if (!loader) {
     return (
