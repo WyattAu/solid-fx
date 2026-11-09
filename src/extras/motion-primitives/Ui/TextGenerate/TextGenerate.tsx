@@ -13,7 +13,7 @@
 // duration / segments.length } maps to motion's stagger(interval,
 // { startDelay: delay }) per PORTING.md §5.
 
-import { createSignal, For, onCleanup, onMount, splitProps } from 'solid-js'
+import { For, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 import { animate, stagger } from 'motion'
 import type { AnimationOptions, AnimationPlaybackControls, DOMKeyframesDefinition } from 'motion'
@@ -172,15 +172,14 @@ export function TextGenerate(props: TextGenerateProps) {
         return own.children.split('')
       case 'line':
         return own.children.split('\n')
-      case 'text':
       default:
         return [own.children]
     }
   }
 
   let rootEl!: HTMLElement
-  let segEls: HTMLSpanElement[] = []
-  const controls: AnimationPlaybackControls[] = []
+  const segEls: HTMLSpanElement[] = []
+  const holder: { controls: AnimationPlaybackControls[] } = { controls: [] }
 
   const spans = () => segEls.slice(0, segments().length).filter(Boolean)
 
@@ -228,7 +227,7 @@ export function TextGenerate(props: TextGenerateProps) {
       const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            controls = play()
+            holder.controls = play()
             if (once()) observer.disconnect()
           }
         }
@@ -237,9 +236,9 @@ export function TextGenerate(props: TextGenerateProps) {
       onCleanup(() => observer.disconnect())
     } else {
       // Upstream: animate="show" immediately.
-      controls = play()
+      holder.controls = play()
     }
-    onCleanup(() => controls.forEach(c => c.stop()))
+    onCleanup(() => holder.controls.forEach(c => c.stop()))
   })
 
   return (

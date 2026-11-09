@@ -19,7 +19,7 @@ function BlurFadeDemo() {
               <img
                 class="size-full rounded-lg object-contain"
                 src={imageUrl}
-                alt={`Stock photo ${idx() + 1}`}
+                alt={`Gradient frame ${idx() + 1}`}
               />
             </BlurFade>
           )}
