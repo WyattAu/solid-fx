@@ -75,7 +75,7 @@ function Digit(props: { value: number; place: number }) {
     >
       <div class="invisible">0</div>
       <Index each={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}>
-        {(number) => (
+        {number => (
           <span
             class={`absolute inset-0 flex items-center justify-center ${height() ? '' : 'invisible'}`}
             style={{ transform: `translateY(${yFor(number())}px)` }}
@@ -98,7 +98,13 @@ export type SlidingNumberProps = {
 }
 
 export function SlidingNumber(props: SlidingNumberProps) {
-  const [own, rest] = splitProps(props, ['value', 'padStart', 'decimalSeparator', 'class', 'className'])
+  const [own, rest] = splitProps(props, [
+    'value',
+    'padStart',
+    'decimalSeparator',
+    'class',
+    'className',
+  ])
 
   const absValue = () => Math.abs(own.value)
   const parts = () => absValue().toString().split('.')
@@ -116,10 +122,7 @@ export function SlidingNumber(props: SlidingNumberProps) {
       <Show when={own.value < 0}>-</Show>
       <Index each={integerDigits()}>
         {(_, index) => (
-          <Digit
-            value={integerValue()}
-            place={Math.pow(10, integerDigits().length - index - 1)}
-          />
+          <Digit value={integerValue()} place={Math.pow(10, integerDigits().length - index - 1)} />
         )}
       </Index>
       <Show when={decimalPart()}>

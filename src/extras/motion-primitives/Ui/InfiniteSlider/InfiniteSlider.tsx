@@ -145,9 +145,9 @@ export function InfiniteSlider(props: InfiniteSliderProps) {
           gap: `${gap()}px`,
           'flex-direction': flexDirection(),
           transform:
-            direction() === 'horizontal' ?
-              `translateX(${offset()}px)`
-            : `translateY(${offset()}px)`,
+            direction() === 'horizontal'
+              ? `translateX(${offset()}px)`
+              : `translateY(${offset()}px)`,
         }}
         onMouseEnter={own.speedOnHover !== undefined ? onHoverStart : undefined}
         onMouseLeave={own.speedOnHover !== undefined ? onHoverEnd : undefined}

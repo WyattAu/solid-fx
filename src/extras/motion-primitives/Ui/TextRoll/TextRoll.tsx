@@ -95,10 +95,7 @@ export function TextRoll(props: TextRollProps) {
               ease: ease(),
               duration: duration(),
               delay: getExitDelay()(i()),
-              onComplete:
-                isLast ?
-                  () => untrack(() => own.onAnimationComplete?.())
-                : undefined,
+              onComplete: isLast ? () => untrack(() => own.onAnimationComplete?.()) : undefined,
             })
             controls = [c1, c2]
             onCleanup(() => controls?.forEach(c => c.stop()))

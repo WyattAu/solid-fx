@@ -16,7 +16,11 @@ import { animate } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
 
 type TargetState = Record<string, number | string>
-type LoopTransition = { duration?: number; delay?: number; ease?: 'linear' | 'easeIn' | 'easeOut' | 'easeInOut' }
+type LoopTransition = {
+  duration?: number
+  delay?: number
+  ease?: 'linear' | 'easeIn' | 'easeOut' | 'easeInOut'
+}
 
 /** Merge two target objects into motion's per-property keyframe array form. */
 const toKeyframes = (from: TargetState, to: TargetState) => {
