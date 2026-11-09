@@ -204,7 +204,7 @@ export function TextGenerate(props: TextGenerateProps) {
   }
 
   const play = () => {
-    controls.forEach(c => c.stop())
+    holder.controls.forEach(c => c.stop())
     const targets = spans()
     if (targets.length === 0) return []
     const preset = PRESETS[animation()]
