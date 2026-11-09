@@ -142,15 +142,13 @@ if (existsSync(scenesDir)) {
   for (const scene of readdirSync(scenesDir).sort()) {
     if (!existsSync(path.join(scenesDir, scene, `${scene}.tsx`))) continue
     const slug = scene.toLowerCase()
-    const sceneOut = path.join(scenesOut, slug)
-    mkdirSync(sceneOut, { recursive: true })
     const mdx = [
       '---',
       `title: ${scene}`,
       `description: Full-page scene composition built from solid-fx components (${scene}).`,
       '---',
       '',
-      "import DemoIsland from '../../../src/islands/DemoIsland';",
+      "import DemoIsland from '../../src/islands/DemoIsland';",
       '',
       `<DemoIsland client:only="solid" tree="scenes" name="${scene}" />`,
       '',
@@ -158,7 +156,7 @@ if (existsSync(scenesDir)) {
       'scenes are the only layer allowed to compose multiple src/content components.',
       '',
     ]
-    writeFileSync(path.join(sceneOut, `${slug}.mdx`), mdx.join('\n'))
+    writeFileSync(path.join(scenesOut, `${slug}.mdx`), mdx.join('\n'))
     scenesCount += 1
   }
   console.log(`gen-docs: scenes — ${scenesCount} pages`)
