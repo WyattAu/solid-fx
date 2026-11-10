@@ -157,7 +157,8 @@
             "noStaticElementInteractions": "warn",
             "useKeyWithClickEvents": "warn",
             "noAriaHiddenOnFocusable": "warn",
-            "useFocusableInteractive": "warn"
+            "useFocusableInteractive": "warn",
+            "useAriaPropsSupportedByRole": "warn"
           }
         }
       }
