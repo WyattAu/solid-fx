@@ -7,7 +7,7 @@ five interaction-driven demos self-animate via
 `src/lib/syntheticPointer.ts` (`autoPointer()` — synthesized pointermove/
 down/click on a Lissajous path inside the demo host).
 
-Latest baseline: **277 components** (218 react-bits + 59 extras across 6 sources — magic-ui, tsparticles, anime-js, motion-primitives, animata) — **all verified rendering or classified**; the CI screenshot harness covers content + extras trees (234+ pages per run). Zero port bugs remain in the blank set.
+Latest baseline: **271 components** (218 react-bits + 53 extras across 5 sources — magic-ui, tsparticles, anime-js, motion-primitives, animata) — **all verified rendering or classified**; the CI screenshot harness covers content + extras trees (234+ pages per run). Zero port bugs remain in the blank set.
 (re-baselined 2026-11-05: the phone-rig captures were contaminated — the rig
 shares Chrome with active user browsing; CI screenshots remain the source of
 truth. CRTWarp's phone verification stands: its capture predates the
