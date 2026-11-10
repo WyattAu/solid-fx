@@ -18,22 +18,8 @@ export type GlowEffectProps = {
   className?: string
   style?: JSX.CSSProperties
   colors?: string[]
-  mode?:
-    | 'rotate'
-    | 'pulse'
-    | 'breathe'
-    | 'colorShift'
-    | 'flowHorizontal'
-    | 'static'
-  blur?:
-    | number
-    | 'softest'
-    | 'soft'
-    | 'medium'
-    | 'strong'
-    | 'stronger'
-    | 'strongest'
-    | 'none'
+  mode?: 'rotate' | 'pulse' | 'breathe' | 'colorShift' | 'flowHorizontal' | 'static'
+  blur?: number | 'softest' | 'soft' | 'medium' | 'strong' | 'stronger' | 'strongest' | 'none'
   transition?: Transition
   scale?: number
   duration?: number
@@ -147,8 +133,7 @@ export function GlowEffect(props: GlowEffectProps) {
 
     controls?.stop()
     if (mode === 'static') {
-      el.style.background =
-        typeof target.background === 'string' ? target.background : ''
+      el.style.background = typeof target.background === 'string' ? target.background : ''
       controls = undefined
       return
     }
