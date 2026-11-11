@@ -169,7 +169,7 @@ export default function TypewriterTitle(props: TypewriterTitleProps) {
   // Upstream `position` / `random` / `sequencesRef` mutable refs — plain
   // closure variables; the component body runs once per instance.
   let position: Position = { sequence: 0, char: 0, deleting: false }
-  const random: () => number = createRandom(seed())
+  let random: () => number = createRandom(seed())
   let currentSequences = sequences()
 
   createEffect(() => {
