@@ -3,10 +3,14 @@ name: screenshots
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 4 * * 0" # Sundays 04:00 UTC
+    - cron: '0 4 * * 0' # Sundays 04:00 UTC
 
 permissions:
   contents: read
+
+concurrency:
+  group: screenshots
+  cancel-in-progress: true
 
 jobs:
   shoot:
@@ -15,8 +19,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      # Cache the playwright browser + system deps to survive transient
+      # GitHub runner apt-mirror DNS failures (seen 2026-11-08..11).
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-v1
+      - name: Install playwright chromium (browser only, no apt deps)
+        run: bunx playwright install chromium
+      - name: Install system deps (best-effort; cached browsers usually suffice)
+        run: bunx playwright install-deps chromium || echo "::warning::apt install failed — continuing with cached browser"
       - run: bun run build
-      - run: bunx playwright install --with-deps chromium
       - name: Serve dist and capture all component pages
         run: |
           (bunx astro preview --port 4321 &)
