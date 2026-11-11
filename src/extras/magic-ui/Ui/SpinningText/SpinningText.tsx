@@ -32,8 +32,7 @@ interface MotionVariants {
   item?: Record<string, Record<string, unknown>>
 }
 
-interface SpinningTextProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'style'> {
+interface SpinningTextProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'style'> {
   children: string | string[]
   duration?: number
   reverse?: boolean

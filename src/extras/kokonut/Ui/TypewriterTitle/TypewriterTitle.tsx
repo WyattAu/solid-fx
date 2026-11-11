@@ -88,7 +88,7 @@ const KEY_ROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']
 /** The keys around a letter on a QWERTY keyboard, in the same case. */
 function neighbours(char: string) {
   const lower = char.toLowerCase()
-  const row = KEY_ROWS.findIndex((keys) => keys.includes(lower))
+  const row = KEY_ROWS.findIndex(keys => keys.includes(lower))
   if (row === -1) {
     return ''
   }
@@ -403,7 +403,11 @@ export default function TypewriterTitle(props: TypewriterTitleProps) {
       <style>{CARET_KEYFRAMES}</style>
       {/* Screen readers get every phrase once instead of whatever partial
           string is on screen. */}
-      <span class="sr-only">{sequences().map((sequence) => sequence.text).join(', ')}</span>
+      <span class="sr-only">
+        {sequences()
+          .map(sequence => sequence.text)
+          .join(', ')}
+      </span>
       <span
         ref={el}
         aria-hidden="true"
@@ -415,13 +419,11 @@ export default function TypewriterTitle(props: TypewriterTitleProps) {
             as wide as the widest one as rendered (proportional fonts, CJK)
             and the text grows from a fixed left edge. */}
         <Index each={sequences()}>
-          {(sequence) => (
-            <span class="invisible col-start-1 row-start-1">{sequence().text}</span>
-          )}
+          {sequence => <span class="invisible col-start-1 row-start-1">{sequence().text}</span>}
         </Index>
         <span class="col-start-1 row-start-1 min-h-[1.2em]">
           {kept()}
-          <Caret caretRef={(el) => (caretEl = el)} />
+          <Caret caretRef={el => (caretEl = el)} />
           <Show when={selected().length > 0}>
             <span class="rounded-[0.08em] bg-sky-500/25 dark:bg-sky-400/30">{selected()}</span>
           </Show>
@@ -441,7 +443,7 @@ function Caret(props: { caretRef: (el: HTMLSpanElement) => void }) {
       <span
         class="absolute bottom-[-0.1em] left-[0.04em] h-[1.05em] w-[0.08em] min-w-[2px] bg-current motion-safe:data-[idle=true]:animate-[kokonutui-typewriter-caret_1s_linear_infinite]"
         data-idle="true"
-        ref={(el) => props.caretRef(el)}
+        ref={el => props.caretRef(el)}
       />
     </span>
   )

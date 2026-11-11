@@ -96,7 +96,9 @@ export function TypingAnimation(props: TypingAnimationProps) {
     onCleanup(() => observer.disconnect())
   })
 
-  const wordsToAnimate = createMemo<string[]>(() => own.words ?? (own.children ? [own.children] : []))
+  const wordsToAnimate = createMemo<string[]>(
+    () => own.words ?? (own.children ? [own.children] : []),
+  )
   const hasMultipleWords = () => wordsToAnimate().length > 1
 
   const typingSpeed = () => own.typeSpeed ?? own.duration ?? 100
@@ -201,7 +203,9 @@ export function TypingAnimation(props: TypingAnimationProps) {
     () =>
       (own.showCursor ?? true) &&
       !isComplete() &&
-      (hasMultipleWords() || (own.loop ?? false) || currentCharIndex() < currentWordGraphemes().length),
+      (hasMultipleWords() ||
+        (own.loop ?? false) ||
+        currentCharIndex() < currentWordGraphemes().length),
   )
 
   const getCursorChar = () => {
@@ -232,9 +236,7 @@ export function TypingAnimation(props: TypingAnimationProps) {
       >
         {displayedText()}
         {shouldShowCursor() && (
-          <span
-            class={`inline-block ${(own.blinkCursor ?? true) ? 'animate-blink-cursor' : ''}`}
-          >
+          <span class={`inline-block ${(own.blinkCursor ?? true) ? 'animate-blink-cursor' : ''}`}>
             {getCursorChar()}
           </span>
         )}

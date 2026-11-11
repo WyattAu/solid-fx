@@ -113,12 +113,7 @@ export const PulsatingButton = (props: PulsatingButtonProps) => {
       attributes: true,
     })
 
-    const syncEvents = [
-      'blur',
-      'focus',
-      'pointerenter',
-      'pointerleave',
-    ] as const
+    const syncEvents = ['blur', 'focus', 'pointerenter', 'pointerleave'] as const
 
     for (const eventName of syncEvents) {
       button.addEventListener(eventName, scheduleBgUpdate)

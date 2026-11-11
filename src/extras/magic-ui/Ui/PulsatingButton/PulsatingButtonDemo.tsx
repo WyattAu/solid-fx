@@ -6,9 +6,7 @@ import PulsatingButton from './PulsatingButton'
 function PulsatingButtonDemo() {
   return (
     <div class="flex h-96 w-full flex-col items-center justify-center gap-10 rounded-lg border border-gray-800 bg-gray-950">
-      <PulsatingButton class="bg-sky-500 text-sky-50">
-        Join Affiliate Program
-      </PulsatingButton>
+      <PulsatingButton class="bg-sky-500 text-sky-50">Join Affiliate Program</PulsatingButton>
       <PulsatingButton
         variant="ripple"
         class="bg-emerald-500 text-emerald-50"

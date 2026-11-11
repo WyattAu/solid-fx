@@ -39,7 +39,7 @@ export interface SplitFlapTextProps {
 const DEFAULT_WORDS = ['NOW BOARDING', 'GATE 12', 'ON TIME', 'LAST CALL']
 
 const clean = (value: string) =>
-  [...value.toUpperCase()].map((c) => (CHARSET.includes(c) ? c : ' ')).join('')
+  [...value.toUpperCase()].map(c => (CHARSET.includes(c) ? c : ' ')).join('')
 
 function Half(props: {
   char: string
@@ -53,7 +53,7 @@ function Half(props: {
       class={`backface-hidden absolute inset-x-0 h-1/2 overflow-hidden bg-inherit ${
         props.half === 'top' ? 'top-0 rounded-t-[0.12em]' : 'bottom-0 rounded-b-[0.12em]'
       } ${props.class ?? ''}`}
-      ref={(el) => props.ref?.(el)}
+      ref={el => props.ref?.(el)}
       style={props.style}
     >
       <span
@@ -73,12 +73,7 @@ interface Flip {
   to: string
 }
 
-function Tile(props: {
-  target: string
-  delay: number
-  reduceMotion: boolean
-  class?: string
-}) {
+function Tile(props: { target: string; delay: number; reduceMotion: boolean; class?: string }) {
   const [shown, setShown] = createSignal(props.target)
   const [flip, setFlip] = createSignal<Flip | null>(null)
   // Upstream `shownRef` (mutable value ref) — a plain closure variable; the
@@ -159,7 +154,7 @@ function Tile(props: {
         ref={shadeEl}
       />
       <Show when={flip()} keyed>
-        {(f) => (
+        {f => (
           <>
             {/* Upstream keys these halves by flip id to remount each flap —
                 `keyed` Show re-renders on the new flip object for the same
@@ -167,13 +162,13 @@ function Tile(props: {
             <Half
               char={f.from}
               half="top"
-              ref={(el) => (topEl = el)}
+              ref={el => (topEl = el)}
               style={{ 'transform-origin': '50% 100%' }}
             />
             <Half
               char={f.to}
               half="bottom"
-              ref={(el) => (bottomEl = el)}
+              ref={el => (bottomEl = el)}
               style={{ 'transform-origin': '50% 0%', transform: 'rotateX(90deg)' }}
             />
           </>
@@ -208,16 +203,17 @@ export default function SplitFlapText(props: SplitFlapTextProps) {
       return
     }
     const id = window.setInterval(
-      () => setIndex((i) => (i + 1) % words().length),
+      () => setIndex(i => (i + 1) % words().length),
       props.interval ?? 3800,
     )
     onCleanup(() => window.clearInterval(id))
   })
 
   const value = createMemo(() => clean(props.text ?? words()[index()] ?? ''))
-  const size = createMemo(() =>
-    props.length ??
-    Math.max(value().length, ...(props.text === undefined ? words().map((w) => w.length) : [0])),
+  const size = createMemo(
+    () =>
+      props.length ??
+      Math.max(value().length, ...(props.text === undefined ? words().map(w => w.length) : [0])),
   )
   const padded = createMemo(() => value().padEnd(size(), ' '))
 

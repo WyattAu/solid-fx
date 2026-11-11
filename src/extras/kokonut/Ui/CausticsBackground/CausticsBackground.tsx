@@ -205,17 +205,7 @@ function createWater(gl: WebGL2RenderingContext): Water | null {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  gl.texImage2D(
-    gl.TEXTURE_2D,
-    0,
-    gl.R8,
-    1,
-    1,
-    0,
-    gl.RED,
-    gl.UNSIGNED_BYTE,
-    new Uint8Array([0]),
-  )
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, 1, 1, 0, gl.RED, gl.UNSIGNED_BYTE, new Uint8Array([0]))
 
   gl.useProgram(program)
   gl.uniform1i(u.mask, 0)
@@ -226,7 +216,7 @@ function createWater(gl: WebGL2RenderingContext): Water | null {
       gl.viewport(0, 0, w, h)
       gl.uniform2f(u.res, cssW, cssH)
     },
-    setMask: (source) => {
+    setMask: source => {
       gl.activeTexture(gl.TEXTURE0)
       gl.bindTexture(gl.TEXTURE_2D, mask)
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source)
@@ -235,10 +225,10 @@ function createWater(gl: WebGL2RenderingContext): Water | null {
       gl.uniform3f(u.water, water[0], water[1], water[2])
       gl.uniform3f(u.light, light[0], light[1], light[2])
     },
-    setRipples: (data) => {
+    setRipples: data => {
       gl.uniform4fv(u.ripples, data)
     },
-    draw: (time) => {
+    draw: time => {
       gl.uniform1f(u.time, time)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     },
@@ -279,8 +269,7 @@ function drawMask(canvas: HTMLCanvasElement, root: HTMLElement) {
       ctx.textBaseline = 'alphabetic'
       const word = el.textContent ?? ''
       const m = ctx.measureText(word)
-      const baseline =
-        y + (box.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2
+      const baseline = y + (box.height + m.fontBoundingBoxAscent - m.fontBoundingBoxDescent) / 2
       ctx.fillText(word, x, baseline)
     } else {
       const radius = Number.parseFloat(getComputedStyle(el).borderRadius) || 0
@@ -306,9 +295,7 @@ export default function CausticsBackground(props: CausticsBackgroundProps) {
       antialias: false,
       depth: false,
     })
-    const probe = document
-      .createElement('canvas')
-      .getContext('2d', { willReadFrequently: true })
+    const probe = document.createElement('canvas').getContext('2d', { willReadFrequently: true })
     const water = gl ? createWater(gl) : null
     if (!(root && canvas && probe && water)) {
       return
