@@ -31,35 +31,32 @@ function catGroup(category) {
   }
 }
 
-// "Scenes" sidebar group from the generated docs/scenes tree — one dir per
-// scene at docs/scenes/<scene-lower>/<scene-lower>.mdx. Labels come from the
-// frontmatter title so the sidebar keeps the original scene casing.
+// "Scenes" sidebar group from the generated docs/scenes tree — flat
+// docs/scenes/<scene-lower>.mdx pages (gen-docs.mjs writes one file per
+// scene, no per-scene dirs). Labels come from the frontmatter title so the
+// sidebar keeps the original scene casing.
 function sceneGroup() {
   const base = './docs/scenes'
-  let dirs = []
+  let slugs = []
   try {
-    dirs = readdirSync(base, { withFileTypes: true })
-      .filter(e => e.isDirectory())
-      .map(e => e.name)
+    slugs = readdirSync(base)
+      .filter(f => f.endsWith('.mdx'))
+      .map(f => f.replace('.mdx', ''))
       .sort()
   } catch {
-    dirs = []
+    slugs = []
   }
-  const items = dirs.flatMap(dir =>
-    readdirSync(path.join(base, dir))
-      .filter(f => f.endsWith('.mdx'))
-      .map(f => {
-        let label = dir
-        try {
-          const frontmatter = readFileSync(path.join(base, dir, f), 'utf8').split('---')[1] ?? ''
-          const title = frontmatter.match(/^title: (.+)$/m)
-          if (title) label = title[1].trim()
-        } catch {
-          // keep the dir-name fallback label
-        }
-        return { label, link: `/scenes/${dir}/${path.basename(f, '.mdx')}/` }
-      }),
-  )
+  const items = slugs.map(slug => {
+    let label = slug
+    try {
+      const frontmatter = readFileSync(path.join(base, `${slug}.mdx`), 'utf8').split('---')[1] ?? ''
+      const title = frontmatter.match(/^title: (.+)$/m)
+      if (title) label = title[1].trim()
+    } catch {
+      // keep the slug fallback label
+    }
+    return { label, link: `/scenes/${slug}/` }
+  })
   return { label: 'Scenes', collapsed: true, items }
 }
 
