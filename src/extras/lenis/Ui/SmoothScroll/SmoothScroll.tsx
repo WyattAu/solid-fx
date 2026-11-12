@@ -99,11 +99,7 @@ export function SmoothScroll(props: SmoothScrollProps) {
   })
 
   return (
-    <div
-      {...rest}
-      class={`${own.class ?? ''} ${own.className ?? ''}`}
-      style={own.style}
-    >
+    <div {...rest} class={`${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
       <style>{STYLE}</style>
       {own.children}
     </div>

@@ -30,14 +30,7 @@ interface StackingCardsProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 export function StackingCards(props: StackingCardsProps) {
-  const [own, rest] = splitProps(props, [
-    'class',
-    'className',
-    'style',
-    'cards',
-    'lenis',
-    'shrink',
-  ])
+  const [own, rest] = splitProps(props, ['class', 'className', 'style', 'cards', 'lenis', 'shrink'])
 
   const reduced = useReducedMotion()
   const cards = () => own.cards ?? []
