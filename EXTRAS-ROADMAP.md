@@ -3,7 +3,8 @@
 Companion to `LICENSE-SOURCES.md` (license verdicts) and `PORTING.md` (law).
 Everything here targets `src/extras/<source>/<Category>/<Name>/<Name>.tsx` per
 LICENSE-SOURCES.md rule 2. Verified 2026-11-06; backlog candidates license-vetted
-2026-11-07.
+2026-11-07; new candidates (Lenis, Paper Shaders, gradient-gl, daisyUI, Originkit,
+Spline, Framer, casberry) vetted 2026-11-12.
 
 ## Priority 1 — anime.js v4 engine adoption (pilot)
 
@@ -167,7 +168,107 @@ runtime dependencies.
   effects subset is small (hover transitions, marquees, animated stats).
   Pick on docs-site need, not as a bulk source.
 
+## New candidates (vetted 2026-11-12)
+
+### Lenis — smooth scroll engine (recommended next engine)
+
+**Status: license-vetted (MIT), not started.**
+
+- Repo: https://github.com/darkroomengineering/lenis (17.2k★, pushed 2026-11 —
+  very active). `LICENSE` verified MIT © 2024 darkroom.engineering; npm `lenis`
+  1.3.27 ships `license: MIT`.
+- Engine layer: vanilla, framework-agnostic (own rAF loop + virtual scroll).
+  Official wrappers exist for React/Vue/Svelte/Astro but **no Solid adapter —
+  skip wrappers entirely**: instantiate in `onMount`, drive `lenis.raf(time)`
+  in the component's rAF loop, `onCleanup(() => lenis.destroy())`. Lenis owns
+  the document scroll, so a missing destroy is worse than a leaked tween —
+  never leave one alive. Single zero-dependency runtime package.
+- Picks (first wave, `src/extras/lenis/`): `SmoothScroll` (page-level
+  smooth-scroll wrapper), `StackingCards` (sticky scroll stack),
+  `ParallaxLayers` (depth-on-scroll). Overlap check (rule 4) before porting:
+  react-bits `ScrollFloat`/`ScrollVelocity`/`ScrollReveal` are native-scroll
+  text effects — lenis adds virtual smoothing, no direct dupes.
+- Wiring: same checklist as the anime.js pilot — add `lenis` to PORTING.md §1
+  and `{ source: 'lenis', label: 'Lenis' }` to the gen-docs `EXTRAS` array
+  when the first port lands.
+
+### Paper Shaders — shader background source (ShaderGradient replacement)
+
+**Status: license-vetted (Apache-2.0 — NOT MIT), not started.**
+
+- Repo: https://github.com/paper-design/shaders (3.9k★, pushed 2026-11).
+  Root `LICENSE` verified Apache-2.0; npm `@paper-design/shaders` /
+  `@paper-design/shaders-react` 0.0.82 both `license: Apache-2.0`. Docs:
+  https://shaders.paper.design.
+- The candidate the ShaderGradient exclusion pointed to: zero-dependency
+  canvas shader backgrounds with a **framework-agnostic vanilla core**
+  (`@paper-design/shaders`). Skip `shaders-react`. README examples are
+  React-first — verify the vanilla API shape at shaders.paper.design before
+  the first port.
+- Two contract differences from the MIT sources: (1) Apache-2.0 → LICENSE.md
+  NOTICE must carry the full attribution + license text reference per
+  LICENSE-SOURCES.md rule 5, not the MIT one-liner; (2) upstream warns
+  "pin your dependency — we will ship breaking changes under 0.0.x", so the
+  PORTING.md §5 entry must pin an exact version, not a caret range.
+- Picks (first wave, `src/extras/paper-shaders/Backgrounds/`):
+  `MeshGradient`, `DotOrbit`, `Waves`.
+
+### gradient-gl — micro source (optional)
+
+**Status: license-vetted (MIT), not started.**
+
+- https://github.com/metaory/gradient-gl (59★, pushed 2026-10). `LICENSE`
+  verified MIT © 2025 metaory **at branch `master`** (`main` does not exist);
+  npm `gradient-gl` 2.1.0 ships `license: MIT`.
+- Tiny vanilla WebGL library for deterministic seed-driven procedural
+  gradient animations — no React layer at all, ports are canvas + rAF +
+  `onCleanup` only. Niche: pick on docs-site need, not as a bulk source.
+  Lands under `src/extras/gradient-gl/`.
+
+### daisyUI — Tailwind plugin, not a source
+
+Verified MIT © 2020 Pouya Saadeghi (`LICENSE` at github.com/saadeghi/daisyui
+branch `master`; npm `daisyui` 5.7.50 MIT; 42.8k★). 68 CSS-only components on
+daisyui.com. There is no component code to port — it is a Tailwind plugin
+whose class names work in any framework, Solid included, so it belongs as an
+optional styling layer for demos rather than a tree in `src/extras/`. No
+picks; listed in LICENSE-SOURCES.md as a dependency option only.
+
+### Originkit — conditional, per-pick vetting
+
+The only public repo, `vellum-ai/originkit` (31★, pushed 2026-07), is a
+Vellum MCP importer plugin — MIT © 2026 Vellum, Inc. (`LICENSE` verified) —
+that browses/fetches Originkit's 250+ animated components (React/Next/Vite/
+Framer stacks) from originkit.dev. The component library itself has **no
+published license and no public repo** (no `/license` page; only a "terms"
+link). Treat exactly like 21st.dev: per-component provenance check before
+any port, and the Vellum repo's MIT does **not** cover the components.
+No picks until originkit.dev publishes terms.
+
 ## Excluded / unchanged
+
+Casberry particles: **Excluded** (vetted 2026-11-12) — particles.casberry.in is
+a proprietary web toy by CasberryTech Pvt. Ltd., not a library: the effect
+source is not published (`github.com/casberry` has only an unlicensed
+portfolio repo; nothing on npm). Nothing redistributable exists.
+
+Spline: **Excluded** (vetted 2026-11-12) — `@splinetool/react-spline` is MIT
+© 2022 Spline, Inc. (LICENSE verified), but it is a thin wrapper over
+`@splinetool/runtime`, which ships **no license**: no `license` field in
+package.json (v2.0.173), zero LICENSE/NOTICE files across the 372-file
+published tarball, and the repo npm points to (`splinetool/spline`) is
+private/404. Same precedent as ShaderGradient: a wrapper license without a
+grant on the engine is not a license. Re-vet only if Spline publishes the
+runtime; Solid portability is moot (the vanilla runtime would have been the
+portable part).
+
+Framer: **Excluded — tooling, not a source** (vetted 2026-11-12). framer.com
+is a closed-source site builder; official developer docs state "Framer has no
+code export" and code flows *into* Framer as React code components. The
+third-party exporters (Unframer, Deframer, Proofly React Export) emit
+generated React-19 bundles behind paid services with their own runtime
+packages — not portable source and nothing license-vettable.
+`framer-motion` is already allowed as `motion`.
 
 Cursify: **Excluded** — `ui-layouts/cursify` ships no license (GitHub API
 `license: null`; request open since Mar 2025). The prior "MIT Approved" row in
