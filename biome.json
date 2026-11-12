@@ -81,7 +81,12 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.astro", "**/*.mdx", "**/*.md", "**/docs/**"],
+      "includes": [
+        "**/*.astro",
+        "**/*.mdx",
+        "**/*.md",
+        "**/docs/**"
+      ],
       "formatter": {
         "enabled": false
       },
@@ -95,7 +100,9 @@
       }
     },
     {
-      "includes": ["**/src/content/**/*.tsx"],
+      "includes": [
+        "**/src/content/**/*.tsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -122,7 +129,10 @@
       }
     },
     {
-      "includes": ["**/scripts/**", "**/tests/**"],
+      "includes": [
+        "**/scripts/**",
+        "**/tests/**"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -137,7 +147,9 @@
       }
     },
     {
-      "includes": ["**/src/extras/**/*.tsx"],
+      "includes": [
+        "**/src/extras/**/*.tsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {
@@ -159,7 +171,11 @@
             "useKeyWithClickEvents": "warn",
             "noAriaHiddenOnFocusable": "warn",
             "useFocusableInteractive": "warn",
-            "useAriaPropsSupportedByRole": "warn"
+            "useAriaPropsSupportedByRole": "warn",
+            "noNoninteractiveTabindex": "warn"
+          },
+          "correctness": {
+            "noUnusedFunctionParameters": "warn"
           }
         }
       }
