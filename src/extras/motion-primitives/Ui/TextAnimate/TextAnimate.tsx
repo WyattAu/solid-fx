@@ -16,7 +16,6 @@ import type { AnimationPlaybackControls, DOMKeyframesDefinition, Transition } fr
 import {
   createEffect,
   createMemo,
-  createSignal,
   For,
   onCleanup,
   onMount,
