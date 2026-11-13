@@ -4,7 +4,8 @@ Companion to `LICENSE-SOURCES.md` (license verdicts) and `PORTING.md` (law).
 Everything here targets `src/extras/<source>/<Category>/<Name>/<Name>.tsx` per
 LICENSE-SOURCES.md rule 2. Verified 2026-11-06; backlog candidates license-vetted
 2026-11-07; new candidates (Lenis, Paper Shaders, gradient-gl, daisyUI, Originkit,
-Spline, Framer, casberry) vetted 2026-11-12.
+Spline, Framer, casberry) vetted 2026-11-12; shader sweep + iamtechartist
+(gl-transitions, curtains.js, LYGIA) vetted 2026-11-13.
 
 ## Priority 1 — anime.js v4 engine adoption (pilot)
 
@@ -245,7 +246,69 @@ link). Treat exactly like 21st.dev: per-component provenance check before
 any port, and the Vellum repo's MIT does **not** cover the components.
 No picks until originkit.dev publishes terms.
 
+## Shader sweep (vetted 2026-11-13)
+
+### gl-transitions — GLSL transition shader collection (recommended next shader source)
+
+**Status: license-vetted (MIT), not started.**
+
+- Repo: https://github.com/gl-transitions/gl-transitions (2.2k★, pushed 2026-11 —
+  very active). `LICENSE` verified MIT © 2017-present gl-transitions contributors.
+  Note: the GitHub API flags the repo license "Other"/NOASSERTION — a detection
+  quirk; the file text is standard MIT and governs.
+- 217 GLSL transition shaders under `transitions/`, one file per effect
+  (`CrossZoom`, `GridFlip`, `GlitchDisplace`, `Chessboard`, …). The repo grew into
+  a multi-platform monorepo (npm packages, Rust, Android, Swift) — ignore all of
+  it; the `.glsl` files are the only source.
+- Port class identical to Paper Shaders: each shader is a
+  `transition(vec2 uv, vec4 from, vec4 to, float progress)`-style function — render
+  two images/texts to offscreen canvases, drive `progress` via rAF, dispose the
+  WebGL context in `onCleanup`. No React layer to strip.
+- Picks (first wave, `src/extras/gl-transitions/Transitions/`): `CrossZoom`,
+  `GridFlip`, `GlitchDisplace`. Provenance pins the exact
+  `transitions/<Name>.glsl` + commit (rule 3).
+
+### curtains.js — vanilla WebGL DOM planes (optional, stale upstream)
+
+**Status: license-vetted (MIT), not started.**
+
+- Repo: https://github.com/martinlaxenaire/curtainsjs (1.8k★ — the username has
+  **no hyphen**; `martin-laxenaire/curtainsjs` 404s). MIT verified (GitHub API
+  spdx `MIT`); npm `curtainsjs` 8.1.6 ships `license: MIT`.
+- Vanilla WebGL engine that turns existing DOM elements into shader-driven
+  planes/textures (v8+ dropped its three.js dependency): image hover-distortion,
+  slideshow transitions, scroll-bound planes. Framework-agnostic — mount in
+  `onMount`, destroy the context in `onCleanup`.
+- Caveat: upstream is stale (last push 2025-04). Fine as a niche source — pick on
+  docs-site need, do not adopt it as a core engine. Lands under
+  `src/extras/curtains/`.
+
 ## Excluded / unchanged
+
+iamtechartist.com: **Excluded — portfolio, not a source** (vetted 2026-11-13).
+The site is a WordPress blog/portfolio of standalone Three.js demo apps
+("3D · interactive worlds · games · education"). The GitHub profile
+github.com/iamtechartist holds ~30 such projects, most carrying MIT licenses per
+the GitHub API (coastal-simulation 66★, ocean-simulation 46★) — but none is a
+component library: each repo is a full scene/app with no registry, no component
+surface, and third-party embedded assets (e.g. Meshy AI models). Nothing
+portable to port; the MIT repos may be studied for techniques only.
+
+LYGIA: **Excluded** (vetted 2026-11-13) — github.com/patriciogonzalezvivo/lygia
+(3.5k★, active, pushed 2026-10) looks like the ideal shader-function library
+(GLSL/HLSL/Metal/WGSL/CUDA), but `LICENSE.md` is the **Prosperity Public License
+3.0.0**: free for non-commercial use, commercial use requires a paid license
+after a 30-day trial. Non-commercial grant = same bucket as Codrops' restrictive
+demos. Re-vet only on relicense.
+
+Also swept and skipped (2026-11-13 GitHub shader-background search, top results):
+`xemantic/shader-web-background` (GPL-3.0 — copyleft), `ebruneton/black_hole_shader`
+(BSD-3, single-effect demo, outside the MIT/Apache/ISC bar), ShaderToyVid +
+Shadertoy-derivative class (per-shader licensing, already excluded), `Azkun/balatroShader`
+(no license), `idleCyrex/topolines` (GitHub "Other"), `wrennly/shabon-fx` (MIT but 8★
+React-coupled, too immature), `TheNaubit/react-aurora-background` (MIT, 9★ single
+component), `vinayakkulkarni/nxui` (MIT but a Vue-3 component library, wrong-framework
+source — not a shader library).
 
 Casberry particles: **Excluded** (vetted 2026-11-12) — particles.casberry.in is
 a proprietary web toy by CasberryTech Pvt. Ltd., not a library: the effect
@@ -255,7 +318,8 @@ portfolio repo; nothing on npm). Nothing redistributable exists.
 Spline: **Excluded** (vetted 2026-11-12) — `@splinetool/react-spline` is MIT
 © 2022 Spline, Inc. (LICENSE verified), but it is a thin wrapper over
 `@splinetool/runtime`, which ships **no license**: no `license` field in
-package.json (v2.0.173), zero LICENSE/NOTICE files across the 372-file
+package.json (v2.0.179, re-checked 2026-11-13 — still none), zero
+LICENSE/NOTICE files across the 372-file
 published tarball, and the repo npm points to (`splinetool/spline`) is
 private/404. Same precedent as ShaderGradient: a wrapper license without a
 grant on the engine is not a license. Re-vet only if Spline publishes the
