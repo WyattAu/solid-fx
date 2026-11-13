@@ -17,7 +17,7 @@ contamination and shows the correct purple warp.)
 
 | Component | Class | Explanation / next action |
 | --- | --- | --- |
-| AeroShards, ShapeWaves | environment | WebGPU: CI runners expose no WebGPU adapter. Verify locally in a WebGPU browser (Chrome 113+, edge://flags). |
+| AeroShards, ShapeWaves | **verified** (WebGPU, phone Chrome Android, 2026-11-13) | Both render correctly on a real device — particle shards flow + shape-wave morphing fully working. CI blank = no WebGPU adapter on headless runners (expected). |
 | SplashCursor | environment | WebGL fluid sim: renders black under headless/software-GL (verified pattern — GPU-backed browsers render WebGL fluid sims correctly, cf. CRTWarp phone verification). |
 | CRTWarp | verified (mobile GPU) | Renders pixel-perfect on a real mobile GPU (phone screencap, 2026-11-03 — captured before the rig contamination). CI/desktop black frame is a software-GL limitation of the build box. CLOSED: environment-only. |
 | SoftAurora | **verified** | Canvas-mount fix deployed; renders on desktop (std 32.4, pixel-verified 2026-11-06). Phone re-test blocked only by the rig context cap. | Phone re-test contaminated: the device hit Chrome's WebGL context cap after the test marathon (ModelViewer on the same rig showed "Error creating WebGL context"). Port code verified faithful (uniforms + loop byte-diff clean). Clean re-test: close Chrome tabs / clear contexts, reload. |
