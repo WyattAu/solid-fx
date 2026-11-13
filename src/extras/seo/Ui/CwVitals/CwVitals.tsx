@@ -1,5 +1,5 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props).
-import { createMemo, Show, splitProps } from 'solid-js'
+import { For, createMemo, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 
 export type CwVitalsVariant = 'rings' | 'bars'
