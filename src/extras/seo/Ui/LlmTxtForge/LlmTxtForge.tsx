@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props).
-import { createSignal, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createSignal, Show } from 'solid-js'
 
 export interface LlmTxtForgeProps {
   /** Initial site title (the `# H1` of the generated file). */

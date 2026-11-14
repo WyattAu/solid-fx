@@ -11,7 +11,11 @@
       "!**/*.min.css",
       "!**/*.svg",
       "!**/bun.lock",
-      "!docs"
+      "!docs",
+      "!**/dist-islands",
+      "!**/.docs-islands-build",
+      "!**/docs-site-src",
+      "!**/_site"
     ]
   },
   "formatter": {

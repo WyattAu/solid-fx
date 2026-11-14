@@ -16,11 +16,11 @@
 //
 // Usage: bun run build:islands [--out <dir>]  (default dist-islands)
 
-import { build } from 'vite'
-import solid from 'vite-plugin-solid'
-import tailwindcss from '@tailwindcss/vite'
 import fs from 'node:fs'
 import path from 'node:path'
+import tailwindcss from '@tailwindcss/vite'
+import { build } from 'vite'
+import solid from 'vite-plugin-solid'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
 const TREES = [
@@ -28,18 +28,21 @@ const TREES = [
   { dir: 'src/extras', prefix: 'extras' },
   { dir: 'src/scenes', prefix: 'scenes' },
 ]
-const OUT = path.resolve(ROOT, process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : 'dist-islands')
+const OUT = path.resolve(
+  ROOT,
+  process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : 'dist-islands',
+)
 const BUILD = path.resolve(ROOT, '.docs-islands-build')
 const SHIM_SRC = path.resolve(ROOT, '../docs-core/islands')
 
-const kebab = (s) => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+const kebab = s => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
 
 // Discover every <Name>Demo.tsx, keyed by a unique island name.
 const islands = []
 for (const { dir, prefix } of TREES) {
   const base = path.join(ROOT, dir)
   if (!fs.existsSync(base)) continue
-  walk(base).forEach((demoPath) => {
+  walk(base).forEach(demoPath => {
     const rel = path.relative(ROOT, demoPath)
     const name = path.basename(demoPath).replace(/Demo\.tsx$/, '')
     const parts = rel.split(path.sep) // e.g. src/extras/osint/Foo/FooDemo.tsx
@@ -103,7 +106,9 @@ await build({
     emptyOutDir: true,
     minify: 'esbuild',
     lib: { entry: entries, formats: ['es'], fileName: (_f, name) => `${name}.js` },
-    rollupOptions: { output: { chunkFileNames: 'shared/[name]-[hash].js', assetFileNames: '[name][extname]' } },
+    rollupOptions: {
+      output: { chunkFileNames: 'shared/[name]-[hash].js', assetFileNames: '[name][extname]' },
+    },
   },
 })
 
@@ -116,7 +121,7 @@ for (const f of ['island.mjs', 'island-core.mjs']) {
 
 // The emitted stylesheet is named after the package; normalize it to
 // islands.css so site.toml has a stable URL.
-const emittedCss = fs.readdirSync(OUT).find((f) => f.endsWith('.css'))
+const emittedCss = fs.readdirSync(OUT).find(f => f.endsWith('.css'))
 if (emittedCss && emittedCss !== 'islands.css') {
   fs.renameSync(path.join(OUT, emittedCss), path.join(OUT, 'islands.css'))
 }
@@ -135,7 +140,7 @@ fs.writeFileSync(
     'stylesheet = "/_assets/islands/islands.css"',
     'island_shim = "/_assets/islands/island.mjs"',
     '',
-].join('\n'),
+  ].join('\n'),
 )
 
 const byCategory = new Map()
@@ -148,9 +153,7 @@ for (const island of islands) {
 for (const [group, groupIslands] of byCategory) {
   const dir = path.join(SITE, group)
   fs.mkdirSync(dir, { recursive: true })
-  const links = groupIslands
-    .map((i) => `- [${i.key}](./${i.key}.html)`)
-    .join('\n')
+  const links = groupIslands.map(i => `- [${i.key}](./${i.key}.html)`).join('\n')
   fs.writeFileSync(
     path.join(dir, 'index.md'),
     `---\ntitle: ${group}\ndescription: ${groupIslands.length} interactive component(s) in this category.\nslug: index\n---\n\n# ${group}\n\n${links}\n`,
@@ -166,7 +169,7 @@ for (const [group, groupIslands] of byCategory) {
         '',
         `# ${island.key}`,
         '',
-        '```island ' + island.key + ' client=visible',
+        `\\\`\\\`\\\`island ${island.key} client=visible`,
         '{}',
         '```',
         '',
@@ -175,14 +178,12 @@ for (const [group, groupIslands] of byCategory) {
   }
 }
 
-const shared = fs
-  .readdirSync(OUT)
-  .filter((f) => f.startsWith('shared/') || f.endsWith('.css'))
+const shared = fs.readdirSync(OUT).filter(f => f.startsWith('shared/') || f.endsWith('.css'))
 fs.writeFileSync(
   path.join(OUT, 'manifest.json'),
   JSON.stringify(
     {
-      islands: Object.fromEntries(islands.map((i) => [i.key, `${i.key}.js`])),
+      islands: Object.fromEntries(islands.map(i => [i.key, `${i.key}.js`])),
       shared,
       shim: ['island.mjs', 'island-core.mjs'],
     },
@@ -190,4 +191,6 @@ fs.writeFileSync(
     2,
   ),
 )
-console.log(`islands: ${islands.length}, site pages: ${islands.length + byCategory.size} -> docs-site-src/`)
+console.log(
+  `islands: ${islands.length}, site pages: ${islands.length + byCategory.size} -> docs-site-src/`,
+)

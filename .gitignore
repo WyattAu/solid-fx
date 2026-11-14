@@ -9,3 +9,4 @@ PLAN.md
 dist-islands/
 docs-site-src/
 .docs-islands-build/
+_site/

@@ -1,6 +1,7 @@
 // solid-fx OSINT widget — original component (not a port). Free OSINT API: archive.org availability (archive.org/wayback/available, no key, CORS-open). The CDX endpoint has no CORS header, so the browser probes year-by-year instead.
-import { createEffect, createResource, createSignal, onCleanup, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js'
 
 export interface WaybackTimelineProps {
   /** Initial URL to inspect (e.g. example.com). */
