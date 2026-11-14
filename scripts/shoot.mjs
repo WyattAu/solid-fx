@@ -44,7 +44,7 @@ if (existsSync(extrasRoot)) {
     if (!existsSync(sourceDir) || !statSync(sourceDir).isDirectory()) continue
     for (const category of readdirSync(sourceDir)) {
       const catDir = path.join(sourceDir, category)
-      if (!existsSync(catDir)) continue
+      if (!existsSync(catDir) || !statSync(catDir).isDirectory()) continue
       if (ONLY && ONLY.toLowerCase() !== category.toLowerCase()) continue
       for (const name of readdirSync(catDir).sort()) {
         if (existsSync(path.join(catDir, name, `${name}.tsx`))) {
