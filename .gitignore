@@ -6,3 +6,6 @@ src/content/index.ts
 screenshots/
 screenshots/
 PLAN.md
+dist-islands/
+docs-site-src/
+.docs-islands-build/

@@ -20,7 +20,8 @@
     "coverage": "bun run gen:index && vitest run --coverage",
     "ci": "bun run build && bun run test && bun run fmt:check && bun run lint && bun run contract",
     "shoot": "bun run build && (bunx astro preview --port 4321 &) && sleep 3 && node scripts/shoot.mjs",
-    "shoot:dev": "node scripts/shoot.mjs"
+    "shoot:dev": "node scripts/shoot.mjs",
+    "build:islands": "node scripts/build-islands.mjs"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.3",
