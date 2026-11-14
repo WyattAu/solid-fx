@@ -8,10 +8,10 @@
 // Upstream spreads the remaining MotionProps onto the animated div; there is no
 // declarative motion layer here, so `rest` carries standard HTML attributes.
 
-import { createEffect, onCleanup, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
 
 export type TransitionPanelVariants = {
   enter: DOMKeyframesDefinition

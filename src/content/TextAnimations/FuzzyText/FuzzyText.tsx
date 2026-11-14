@@ -1,5 +1,5 @@
-import { createEffect, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 
 const INTRO_PEAK = 2
 const BURST_ATTACK = 70

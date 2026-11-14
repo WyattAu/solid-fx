@@ -1,7 +1,6 @@
-import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js'
-import { For } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationOptions, Easing, ValueTransition } from 'motion'
+import { animate } from 'motion'
+import { createEffect, createMemo, createSignal, For, onCleanup } from 'solid-js'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).

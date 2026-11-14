@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+import { readdirSync } from 'node:fs'
+import path from 'node:path'
 // Pixel-variance check for debug screenshots: a "blank" demo frame has
 // near-zero stddev / almost no distinct colors inside the .demo-frame crop.
 // Usage: node scripts/debug-variance.mjs /tmp/opencode/debug [<names...>]
 import sharp from 'sharp'
-import { readdirSync } from 'node:fs'
-import path from 'node:path'
 
 const dir = process.argv[2] ?? '/tmp/opencode/debug'
 const only = process.argv.slice(3).map(s => s.toLowerCase())

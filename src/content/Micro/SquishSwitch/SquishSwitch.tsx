@@ -1,6 +1,6 @@
-import { createEffect, createSignal, createUniqueId, onCleanup, onMount, Show } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, createUniqueId, onCleanup, onMount, Show } from 'solid-js'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export interface SquishSwitchProps {

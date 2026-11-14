@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js'
-import Dock from './Dock'
 import type { DockItemData } from './Dock'
+import Dock from './Dock'
 
 const ITEMS: DockItemData[] = [
   { icon: <span class="text-2xl">📁</span>, label: 'Files' },

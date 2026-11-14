@@ -1,8 +1,8 @@
-import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { gsap } from 'gsap'
-import { SplitText } from 'gsap/SplitText'
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin'
+import { SplitText } from 'gsap/SplitText'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 
 gsap.registerPlugin(SplitText, ScrambleTextPlugin)
 

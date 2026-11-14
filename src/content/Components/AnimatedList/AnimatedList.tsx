@@ -1,17 +1,4 @@
 import {
-  createEffect,
-  createMemo,
-  createSignal,
-  createUniqueId,
-  onCleanup,
-  onMount,
-  untrack,
-} from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import type { HugeiconsIconProps } from '@/lib/HugeiconsIcon'
-import {
   CodeIcon,
   FigmaIcon,
   File01Icon,
@@ -25,6 +12,19 @@ import {
   Table01Icon,
   Video01Icon,
 } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  createUniqueId,
+  For,
+  onCleanup,
+  onMount,
+  untrack,
+} from 'solid-js'
+import type { HugeiconsIconProps } from '@/lib/HugeiconsIcon'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 // IconSvgObject is not exported by @hugeicons/core-free-icons; derive the same
 // shape from the shared HugeiconsIcon component's props (its `icon` type).

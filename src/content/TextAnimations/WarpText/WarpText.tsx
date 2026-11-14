@@ -1,6 +1,6 @@
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js'
+import { Mesh, type OGLRenderingContext, Program, Renderer, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, Texture, type OGLRenderingContext } from 'ogl'
+import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js'
 
 export type WarpTextLens = 'bulge' | 'pinch' | 'swirl'
 

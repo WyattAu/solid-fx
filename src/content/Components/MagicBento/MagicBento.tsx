@@ -1,17 +1,4 @@
 import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  onCleanup,
-  onMount,
-  Show,
-  untrack,
-} from 'solid-js'
-import type { Component, JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import {
   FigmaIcon,
   FingerPrintIcon,
   GitBranchIcon,
@@ -22,6 +9,19 @@ import {
   SparklesIcon,
   Tick02Icon,
 } from '@hugeicons/core-free-icons'
+import type { Component, JSX } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js'
+import { Dynamic } from 'solid-js/web'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export type MagicBentoVisual =
   | 'analytics'

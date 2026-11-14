@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 export interface MetallicPaintProps {
   imageSrc?: string

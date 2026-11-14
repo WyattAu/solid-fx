@@ -1,8 +1,9 @@
 // Demo harness for the Accordion port. Dark-stage friendly, self-contained.
 // PORT-NOTE: upstream demos import ChevronDown from lucide-react; the
 // identical SVG (24×24, stroke-based) is inlined here (ShiningButton precedent).
-import Accordion, { AccordionContent, AccordionItem, AccordionTrigger } from './Accordion'
+
 import { For } from 'solid-js'
+import Accordion, { AccordionContent, AccordionItem, AccordionTrigger } from './Accordion'
 
 function ChevronDownIcon() {
   return (

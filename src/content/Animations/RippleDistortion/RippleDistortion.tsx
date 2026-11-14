@@ -1,6 +1,6 @@
-import { createEffect, onCleanup, untrack } from 'solid-js'
+import { Geometry, Mesh, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Geometry, Triangle, Texture, RenderTarget } from 'ogl'
+import { createEffect, onCleanup, untrack } from 'solid-js'
 
 const MAX_WAVES = 100
 const QUALITY_SCALE: Record<string, number> = { low: 0.4, medium: 0.7, high: 1 }

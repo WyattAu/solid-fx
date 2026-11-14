@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { Show } from 'solid-js/web'
 
 export type ASCIITextProps = {

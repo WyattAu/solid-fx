@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: native fetch of any public robots.txt (no key).
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 
 export type RobotsTxtStatus = 'idle' | 'loading' | 'error' | 'ok'
 

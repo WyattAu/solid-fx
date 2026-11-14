@@ -1,9 +1,9 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { defineConfig } from 'astro/config'
 import solidJs from '@astrojs/solid-js'
 import starlight from '@astrojs/starlight'
 import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'astro/config'
 
 const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds']
 

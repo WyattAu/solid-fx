@@ -6,11 +6,11 @@
 // when duration changes (PORTING.md §5). `--spread` stays a plain style var so
 // children/spread changes apply declaratively without touching the animation.
 
-import { createEffect, onCleanup, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 export type TextShimmerProps = {
   children: string

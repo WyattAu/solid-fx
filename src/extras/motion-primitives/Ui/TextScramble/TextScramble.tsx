@@ -1,7 +1,7 @@
 // Source: github.com/ibelick/motion-primitives components/core/text-scramble.tsx@120f64f6ca60348e251f929e9c81f11ccbe45eda. License: MIT.
 
-import { createEffect, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 // PORT-NOTE: upstream intersects MotionProps (framer-motion) and spreads the

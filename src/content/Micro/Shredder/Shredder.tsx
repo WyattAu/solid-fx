@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
 
 const FOLLOW = 30
 const SETTLE = 16

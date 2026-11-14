@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js'
-import Ribbons from './Ribbons'
 import { autoPointer } from '@/lib/syntheticPointer'
+import Ribbons from './Ribbons'
 
 function RibbonsDemo() {
   let host!: HTMLDivElement

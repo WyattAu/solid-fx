@@ -4,10 +4,10 @@
 // elements, which write their styles directly on change (PORTING.md §5).
 // The React context value carries Solid accessors plus the raw motionValue.
 
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls, MotionValue, SpringOptions } from 'motion'
-import { createContext, createSignal, onCleanup, onMount, splitProps, useContext } from 'solid-js'
+import { animate, motionValue } from 'motion'
 import type { Accessor, JSX } from 'solid-js'
+import { createContext, createSignal, onCleanup, onMount, splitProps, useContext } from 'solid-js'
 
 type ImageComparisonContextValue = {
   sliderPosition: Accessor<number>

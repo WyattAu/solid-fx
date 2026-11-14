@@ -1,14 +1,14 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
   createSignal,
   createUniqueId,
+  For,
   onCleanup,
   onMount,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For } from 'solid-js'
 
 export interface CounterProps {
   value?: number

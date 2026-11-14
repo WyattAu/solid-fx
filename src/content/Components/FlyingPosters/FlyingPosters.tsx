@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, untrack } from 'solid-js'
 
 export type FlyingPostersItem = string | { image: string; link?: string; alt?: string }
 

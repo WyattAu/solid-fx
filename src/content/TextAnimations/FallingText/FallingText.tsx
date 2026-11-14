@@ -1,6 +1,6 @@
-import { createEffect, createMemo, For, onCleanup, onMount, Show } from 'solid-js'
-import type { JSX } from 'solid-js'
 import Matter from 'matter-js'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup, onMount, Show } from 'solid-js'
 
 export interface FallingTextProps {
   text?: string

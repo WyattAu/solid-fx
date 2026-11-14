@@ -11,6 +11,9 @@
 // The component root is a display:contents wrapper so children keep the exact
 // layout they would have as direct siblings.
 
+import type { DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createSignal,
@@ -20,9 +23,6 @@ import {
   splitProps,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
-import type { DOMKeyframesDefinition, Transition } from 'motion'
 
 // PORT-NOTE: framer's default layout transition (no `transition` prop) is a
 // spring; approximated here.

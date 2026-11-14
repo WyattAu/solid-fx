@@ -1,6 +1,7 @@
 // Source: github.com/codse/animata animata/card/flip-card.tsx@25c27e5a874c60a56dcc1609df3b2c4f5f8456f8. License: MIT.
-import { createContext, createMemo, splitProps, useContext } from 'solid-js'
+
 import type { Accessor, JSX } from 'solid-js'
+import { createContext, createMemo, splitProps, useContext } from 'solid-js'
 
 export type FlipCardRotate = 'x' | 'y'
 

@@ -1,6 +1,6 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
+import { Mesh, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, RenderTarget, Texture } from 'ogl'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 type SwellPreset = 'swell' | 'tide' | 'storm' | 'signal'
 type Rgba = [number, number, number, number]

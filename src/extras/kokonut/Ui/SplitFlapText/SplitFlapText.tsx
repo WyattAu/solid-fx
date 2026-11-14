@@ -10,8 +10,8 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
-import { createEffect, createMemo, createSignal, Index, onCleanup, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, Index, onCleanup, Show } from 'solid-js'
 
 /** The order the flaps are printed in. A tile can only flip forward. */
 const CHARSET = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:.-/&!?'

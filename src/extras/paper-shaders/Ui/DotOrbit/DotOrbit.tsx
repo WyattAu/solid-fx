@@ -3,17 +3,17 @@
 // PORT-NOTE: vanilla-core port (`@paper-design/shaders` ShaderMount, no shaders-react). Upstream extends React div props; the Solid
 // port accepts class/className/style/width/height plus the mount-tuning props only. Uniform updates go through a reactive effect.
 
-import { createEffect, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
+import type { DotOrbitParams, ShaderMountUniforms } from '@paper-design/shaders'
 import {
-  ShaderMount,
-  ShaderFitOptions,
   defaultPatternSizing,
+  dotOrbitFragmentShader,
   getShaderColorFromString,
   getShaderNoiseTexture,
-  dotOrbitFragmentShader,
+  ShaderFitOptions,
+  ShaderMount,
 } from '@paper-design/shaders'
-import type { DotOrbitParams, ShaderMountUniforms } from '@paper-design/shaders'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 export interface DotOrbitProps extends DotOrbitParams {
   /**

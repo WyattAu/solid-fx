@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 
 export interface DarkVeilProps
   extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'children' | 'class' | 'className' | 'ref'> {

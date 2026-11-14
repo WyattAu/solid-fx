@@ -3,8 +3,9 @@
 // template-joins, equivalent for the plain strings passed here. `bg-background` is
 // an upstream shadcn theme token — replaced with a white background-color default
 // the caller can override via `style` (same approach as the Dot port).
-import { splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
 
 interface DiagonalLinesProps {
   /**

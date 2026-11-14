@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type PixelBlastVariant = 'square' | 'circle' | 'triangle' | 'diamond' | 'cross' | 'ring'
 export type PixelBlastHoverEffect = 'reveal' | 'grow' | 'none'

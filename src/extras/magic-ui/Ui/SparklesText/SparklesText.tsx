@@ -8,9 +8,9 @@
 // not Magic UI. sparkles-text.tsx is Magic UI's surviving sparkles component,
 // so it is ported here under its real upstream name.
 
-import { createEffect, createSignal, onCleanup, splitProps, For } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, splitProps } from 'solid-js'
 
 interface Sparkle {
   id: string

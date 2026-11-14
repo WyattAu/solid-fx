@@ -1,3 +1,5 @@
+import { type AnimationPlaybackControls, animate, motionValue, springValue } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createContext,
   createEffect,
@@ -5,15 +7,13 @@ import {
   For,
   onCleanup,
   onMount,
-  Show,
-  untrack,
   // Imported under an alias: scripts/check-contract.sh flags the upstream hook
   // name as a React call, but this is Solid's useContext (contract §2).
   useContext as readContext,
+  Show,
+  untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { Portal } from 'solid-js/web'
-import { animate, motionValue, springValue, type AnimationPlaybackControls } from 'motion'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export type WarmTooltipSide = 'top' | 'bottom' | 'left' | 'right'

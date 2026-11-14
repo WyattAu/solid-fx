@@ -1,7 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props; widths measured via canvas).
 
 import type { JSX } from 'solid-js'
-import { createSignal, For, Show } from 'solid-js'
+import { createSignal, Show } from 'solid-js'
 
 export interface SerpPreviewProps {
   /** Initial page title (Google truncates around 580px at 20px Arial). */

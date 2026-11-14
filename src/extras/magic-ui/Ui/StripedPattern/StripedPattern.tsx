@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/striped-pattern.tsx@fbddfb8bdaa054138bdaae73a4247631d97a1c23. License: MIT.
-import { createUniqueId, splitProps, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createUniqueId, Show, splitProps } from 'solid-js'
 
 interface StripedPatternProps extends Omit<JSX.SvgSVGAttributes<SVGSVGElement>, 'direction'> {
   direction?: 'left' | 'right'

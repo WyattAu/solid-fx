@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/shine-border.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { createMemo, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, splitProps } from 'solid-js'
 
 export interface ShineBorderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'style'> {
   /**

@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/meteors.tsx@37ce829f18dd7d0a7219531a4249b664419933ea. License: MIT.
-import { createEffect, createSignal, splitProps, For } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, splitProps } from 'solid-js'
 
 interface MeteorsProps {
   /**

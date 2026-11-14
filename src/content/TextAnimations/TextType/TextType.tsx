@@ -1,3 +1,5 @@
+import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -9,9 +11,7 @@ import {
   splitProps,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { gsap } from 'gsap'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).

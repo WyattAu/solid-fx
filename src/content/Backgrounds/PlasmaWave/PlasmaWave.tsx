@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 
 export interface PlasmaWaveProps
   extends Omit<

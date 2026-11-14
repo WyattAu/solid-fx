@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, Show, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, Show, untrack } from 'solid-js'
 
 type Variant = 'streak' | 'twin' | 'sheen'
 type Mode = 'hover' | 'follow' | 'loop' | 'click'

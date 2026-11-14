@@ -1,5 +1,5 @@
-import { createEffect, createSignal, createUniqueId, onCleanup, onMount, untrack } from 'solid-js'
 import { animate, motionValue } from 'motion'
+import { createEffect, createSignal, createUniqueId, onCleanup, onMount, untrack } from 'solid-js'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export type ScrubFieldSize = 'sm' | 'md' | 'lg'

@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magic-ui apps/www/registry/magicui/shimmer-button.tsx@37ce829f18dd7d0a7219531a4249b664419933ea. License: MIT.
-import { splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
 
 export interface ShimmerButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   /**

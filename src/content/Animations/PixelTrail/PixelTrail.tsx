@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 const TRAIL_SIZE = 512
 const AGE_SIZE = 256

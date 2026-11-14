@@ -1,5 +1,5 @@
-import { createEffect, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 
 const DEFAULT_SRC =
   'https://images.unsplash.com/photo-1693250707557-a846a014b321?q=80&w=1400&auto=format&fit=crop'

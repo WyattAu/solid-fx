@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 type Box = { x1: number; y1: number; x2: number; y2: number }
 type Art = { image: HTMLCanvasElement; left: number; top: number }

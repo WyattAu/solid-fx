@@ -1,6 +1,6 @@
-import { createEffect, createSignal, For, Index, onCleanup } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, Index, onCleanup } from 'solid-js'
 
 export interface StaggeredMenuItem {
   label: string

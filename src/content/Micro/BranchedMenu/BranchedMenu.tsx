@@ -1,6 +1,3 @@
-import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
 import {
   CursorPointer01Icon,
   Download04Icon,
@@ -11,6 +8,9 @@ import {
   Settings02Icon,
   TextFontIcon,
 } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
+import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
 
 export interface BranchedMenuChild {
   value: string

@@ -1,8 +1,9 @@
 // SOLID-CONSTRAINT: `node` logo items are rendered once as the primary copy and
 // cloned (cloneNode snapshot) into secondary copies — Solid JSX nodes are
 // real DOM nodes and cannot be mounted twice.
-import { createEffect, createSignal, For, onCleanup, onMount } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount } from 'solid-js'
 
 export type LogoItem =
   | {

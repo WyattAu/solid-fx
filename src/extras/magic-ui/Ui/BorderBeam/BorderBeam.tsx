@@ -1,8 +1,9 @@
 // Source: github.com/magicuidesign/magic-ui apps/www/registry/magicui/border-beam.tsx@37ce829f18dd7d0a7219531a4249b664419933ea. License: MIT.
-import { onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
+
 import type { Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { onCleanup, onMount } from 'solid-js'
 
 interface BorderBeamProps {
   /**

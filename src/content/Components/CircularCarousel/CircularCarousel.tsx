@@ -1,6 +1,15 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import { For, Index, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Index,
+  onCleanup,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js'
 // Solid helper from src/lib/reducedMotion (returns an accessor, must be called).
 import { useReducedMotion } from '@/lib/reducedMotion'
 

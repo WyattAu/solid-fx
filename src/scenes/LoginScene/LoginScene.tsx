@@ -3,8 +3,8 @@ import type { JSX } from 'solid-js'
 import { createSignal, createUniqueId, Show } from 'solid-js'
 import Aurora from '@/content/Backgrounds/Aurora/Aurora'
 import GlassSurface from '@/content/Components/GlassSurface/GlassSurface'
-import SquishSwitch from '@/content/Micro/SquishSwitch/SquishSwitch'
 import SpringCheck from '@/content/Micro/SpringCheck/SpringCheck'
+import SquishSwitch from '@/content/Micro/SquishSwitch/SquishSwitch'
 
 export interface LoginCredentials {
   username: string

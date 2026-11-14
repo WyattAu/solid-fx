@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 const FOV = 50
 const CAMERA_Z = 20

@@ -1,6 +1,6 @@
-import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { FavouriteIcon, StarIcon, ThumbsUpIcon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
 import type { IconSvgObject } from '@/lib/HugeiconsIcon'
 
 export type PulseHeartIcon = 'heart' | 'star' | 'thumb'

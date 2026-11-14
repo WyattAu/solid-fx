@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/animated-gradient-text.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
 
 export interface AnimatedGradientTextProps extends JSX.HTMLAttributes<HTMLSpanElement> {
   className?: string

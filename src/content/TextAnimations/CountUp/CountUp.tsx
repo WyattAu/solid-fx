@@ -1,3 +1,5 @@
+import { animate, cubicBezier } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -9,8 +11,6 @@ import {
   Show,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, cubicBezier } from 'motion'
 
 type Easing = 'easeOut' | 'linear' | 'expo' | 'spring'
 

@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
 
 const ROOT = 'relative h-full w-full'
 const CANVAS = 'pointer-events-none absolute inset-0 block h-full w-full'

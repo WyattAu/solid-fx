@@ -6,7 +6,7 @@
  * import across src/content; `@/lib` helpers stay usable from any layer.
  */
 import type { JSX } from 'solid-js'
-import { For, Show, onCleanup } from 'solid-js'
+import { For, onCleanup, Show } from 'solid-js'
 import GlassSurface from '@/content/Components/GlassSurface/GlassSurface'
 import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
 

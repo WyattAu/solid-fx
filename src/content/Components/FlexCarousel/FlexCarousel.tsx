@@ -1,7 +1,15 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import { For, Show } from 'solid-js'
+import { Mesh, Plane, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, Plane, Texture, RenderTarget } from 'ogl'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+  untrack,
+} from 'solid-js'
 
 type BendPreset = 'liquid' | 'ribbon' | 'vortex' | 'arch'
 type CurlMode = 'twist' | 'rise' | 'fall'

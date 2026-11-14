@@ -1,7 +1,6 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For, Show } from 'solid-js'
 import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 
 type MenuItem = {
   label: string

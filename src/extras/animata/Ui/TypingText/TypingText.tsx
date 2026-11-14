@@ -4,8 +4,9 @@
 // (useTypingInterval/useTypingEndpoint) become inline createEffects — signals
 // auto-track, so the dependency arrays disappear. The latest-callback ref pattern
 // (onCompleteRef) maps to untrack(() => props.onComplete?.()).
-import { createEffect, createSignal, For, on, onCleanup, Show, untrack } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, on, onCleanup, Show, untrack } from 'solid-js'
 
 interface TypingTextProps {
   /**

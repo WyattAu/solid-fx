@@ -7,10 +7,10 @@
 // same CSS custom properties and transform as upstream). The container
 // variants animation maps to a vanilla motion animate() per PORTING.md §5.
 
-import { For, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { For, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type SpinningTextProps = {
   children: string

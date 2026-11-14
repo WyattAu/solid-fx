@@ -1,6 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js'
-import { For } from 'solid-js'
 import gsap from 'gsap'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount } from 'solid-js'
 
 export type DepthCarouselItem = string | { image: string; alt?: string }
 type TiltDirection = 'left' | 'right'

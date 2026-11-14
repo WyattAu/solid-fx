@@ -1,5 +1,5 @@
-import LogoLoop from './LogoLoop'
 import type { LogoItem } from './LogoLoop'
+import LogoLoop from './LogoLoop'
 
 const NAMES = ['Solid Bits', 'Astro', 'Tailwind', 'GSAP', 'TypeScript', 'Vite']
 

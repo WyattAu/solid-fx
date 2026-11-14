@@ -10,9 +10,9 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
+import { animate } from 'motion'
 import { createEffect, createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import { animate } from 'motion'
 import { useReducedMotion } from '@/lib/reducedMotion'
 
 interface TypewriterSequence {
@@ -168,7 +168,7 @@ export default function TypewriterTitle(props: TypewriterTitleProps) {
   const shouldReduceMotion = useReducedMotion()
   // Upstream `position` / `random` / `sequencesRef` mutable refs — plain
   // closure variables; the component body runs once per instance.
-  let position: Position = { sequence: 0, char: 0, deleting: false }
+  const position: Position = { sequence: 0, char: 0, deleting: false }
   let random: () => number = createRandom(seed())
   let currentSequences = sequences()
 

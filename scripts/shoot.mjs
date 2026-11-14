@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
+import path from 'node:path'
 // Screenshot harness: captures every component docs page from a built site.
 // Usage:
 //   bun run build && bun run preview &        # serve dist on :4321
@@ -10,8 +12,6 @@
 // Crash-resilient: if a page kills the renderer, the browser relaunches and
 // the offending page is recorded and skipped after one retry.
 import { chromium } from 'playwright'
-import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
-import path from 'node:path'
 
 const BASE = process.env.SHOOT_BASE ?? 'http://localhost:4321/solid-fx'
 const OUT = path.resolve('screenshots')

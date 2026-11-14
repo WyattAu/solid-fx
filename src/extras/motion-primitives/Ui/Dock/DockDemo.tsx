@@ -1,8 +1,9 @@
 // Demo harness for the Dock port. Dark-stage friendly, self-contained.
 // PORT-NOTE: upstream demos import icons from lucide-react; identical inline
 // SVGs (24×24, stroke-based) are inlined here (ShiningButton precedent).
-import Dock, { DockIcon, DockItem, DockLabel } from './Dock'
+
 import { For } from 'solid-js'
+import Dock, { DockIcon, DockItem, DockLabel } from './Dock'
 
 function HomeIcon() {
   return (

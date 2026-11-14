@@ -11,10 +11,10 @@
 // records only (no Variant resolvers), matching the Cursor precedent.
 // `memo` is dropped (Solid is fine-grained).
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, DOMKeyframesDefinition, Transition } from 'motion'
-import { createEffect, createMemo, For, onCleanup, onMount, Show, splitProps } from 'solid-js'
+import { animate } from 'motion'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup, onMount, Show, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 type AnimationType = 'text' | 'word' | 'character' | 'line'

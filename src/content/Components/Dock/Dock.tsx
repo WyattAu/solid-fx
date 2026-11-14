@@ -1,13 +1,14 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createRenderEffect,
   createSignal,
+  For,
   onCleanup,
   onMount,
+  Show,
   untrack,
 } from 'solid-js'
-import { For, Show } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { Portal } from 'solid-js/web'
 
 export type DockSide = 'bottom' | 'top' | 'left' | 'right'

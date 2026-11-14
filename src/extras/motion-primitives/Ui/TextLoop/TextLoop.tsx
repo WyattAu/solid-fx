@@ -10,10 +10,10 @@
 // duration/ease/delay. React's Children.toArray normalization maps to
 // accepting a single node or an array of nodes for `children`.
 
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 
 type TargetState = Record<string, number | string>
 type LoopTransition = {

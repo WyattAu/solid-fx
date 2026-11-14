@@ -6,10 +6,10 @@
 // to animate(); `transition` honors ease (delay/duration are overridden by
 // `duration` and the per-letter delay functions, exactly as upstream does).
 
-import { For, onCleanup, onMount, splitProps, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { For, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 
 /** Upstream framer `Target` subset accepted by vanilla animate(). */
 type TargetState = Record<string, number | string>

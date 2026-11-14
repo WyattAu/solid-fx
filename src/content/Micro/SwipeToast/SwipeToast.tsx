@@ -1,9 +1,9 @@
-import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
+import { Cancel01Icon } from '@hugeicons/core-free-icons'
 import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
-import { Cancel01Icon } from '@hugeicons/core-free-icons'
 
 export type SwipeToastCloseReason =
   | 'timeout'

@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type CursorGridFalloff = 'linear' | 'smooth' | 'sharp'
 export type CursorGridHighlight = 'area' | 'cell'

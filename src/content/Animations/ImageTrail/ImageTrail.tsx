@@ -1,7 +1,6 @@
-import { createEffect, onCleanup } from 'solid-js'
-import { For } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
+import { createEffect, For, onCleanup } from 'solid-js'
 
 interface ImageTrailProps {
   items?: string[]

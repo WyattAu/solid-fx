@@ -1,4 +1,6 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/retro-grid.tsx@fbddfb8bdaa054138bdaae73a4247631d97a1c23. License: MIT.
+
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -8,7 +10,6 @@ import {
   Show,
   splitProps,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 const ANIMATION_DURATION_SECONDS = 15
 const GRID_HEIGHT_RATIO = 3

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { mkdirSync } from 'node:fs'
+import path from 'node:path'
 // Debug harness for the 3 near-blank demos (CRTWarp, SoftAurora, ModelViewer).
 // Per page: console + pageerror capture, canvas/WebGL2 context probe,
 // .demo-frame innerHTML length, screenshot (for debug-variance.mjs).
@@ -8,8 +10,6 @@
 //   BASE=http://localhost:4321/solid-fx node scripts/debug-blank.mjs
 //   ONLY=crtwarp node scripts/debug-blank.mjs
 import { chromium } from 'playwright'
-import { mkdirSync } from 'node:fs'
-import path from 'node:path'
 
 const BASE = process.env.BASE ?? 'https://wyattau.github.io/solid-fx'
 const OUT = process.env.OUT ?? '/tmp/opencode/debug'

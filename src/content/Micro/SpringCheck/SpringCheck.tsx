@@ -1,8 +1,8 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 import { Tick02Icon } from '@hugeicons/core-free-icons'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export type StrikeSide = 'left' | 'center' | 'right' | 'none'
 

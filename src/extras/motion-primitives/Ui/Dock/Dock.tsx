@@ -9,8 +9,9 @@
 // (DockLabel) is sequenced manually: the exit animation runs, then the
 // element unmounts on completion.
 
-import { animate, motionValue, transform } from 'motion'
 import type { AnimationPlaybackControlsWithThen, MotionValue, SpringOptions } from 'motion'
+import { animate, motionValue, transform } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createContext,
   createEffect,
@@ -21,7 +22,6 @@ import {
   splitProps,
   useContext,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 const DOCK_HEIGHT = 128
 const DEFAULT_MAGNIFICATION = 80

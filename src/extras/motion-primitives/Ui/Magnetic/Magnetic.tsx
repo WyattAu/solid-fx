@@ -1,9 +1,9 @@
 // Source: github.com/ibelick/motion-primitives components/core/magnetic.tsx@120f64f6ca60348e251f929e9c81f11ccbe45eda. License: MIT.
 
-import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls, SpringOptions } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 const SPRING_CONFIG: SpringOptions = { stiffness: 26.7, damping: 4.1, mass: 0.2 }
 

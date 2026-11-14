@@ -41,11 +41,11 @@ export const MorphingText = (props: MorphingTextProps) => {
     if (!text1Ref || !text2Ref) return
 
     text2Ref.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`
-    text2Ref.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`
+    text2Ref.style.opacity = `${fraction ** 0.4 * 100}%`
 
     const invertedFraction = 1 - fraction
     text1Ref.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`
-    text1Ref.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`
+    text1Ref.style.opacity = `${invertedFraction ** 0.4 * 100}%`
 
     text1Ref.textContent = own.texts[textIndex % own.texts.length] ?? ''
     text2Ref.textContent = own.texts[(textIndex + 1) % own.texts.length] ?? ''

@@ -1,9 +1,9 @@
-import { createEffect, createSignal, For, onCleanup, untrack } from 'solid-js'
+import { ArrowDown01Icon, SparklesIcon, Tick02Icon } from '@hugeicons/core-free-icons'
+import { type AnimationPlaybackControls, animate } from 'motion'
 import type { JSX } from 'solid-js'
-import { animate, type AnimationPlaybackControls } from 'motion'
+import { createEffect, createSignal, For, onCleanup, untrack } from 'solid-js'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
-import { ArrowDown01Icon, SparklesIcon, Tick02Icon } from '@hugeicons/core-free-icons'
 
 export type ThoughtLineGlyph = 'sparkle' | 'dot' | 'none' | JSX.Element
 

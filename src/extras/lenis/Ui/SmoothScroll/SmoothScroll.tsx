@@ -1,8 +1,9 @@
 // Built with Lenis (github.com/darkroomengineering/lenis) — MIT. Smooth scroll engine pilot per EXTRAS-ROADMAP.md.
-import { onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import Lenis from 'lenis'
+
 import type { Orientation } from 'lenis'
+import Lenis from 'lenis'
+import type { JSX } from 'solid-js'
+import { onCleanup, onMount, splitProps } from 'solid-js'
 
 interface SmoothScrollProps extends JSX.HTMLAttributes<HTMLDivElement> {
   /** React parity alias; merges with `class`. */

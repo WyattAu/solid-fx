@@ -1,9 +1,9 @@
-import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText as GSAPSplitText } from 'gsap/SplitText'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 gsap.registerPlugin(ScrollTrigger, GSAPSplitText)
 

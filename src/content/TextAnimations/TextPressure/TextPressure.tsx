@@ -1,6 +1,7 @@
 // Component ported from https://codepen.io/JuanFuentes/full/rgXKGQ
-import { createEffect, createMemo, createSignal, Index, onCleanup, onMount } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, Index, onCleanup, onMount } from 'solid-js'
 
 type IdleMode = 'none' | 'wave' | 'pulse'
 

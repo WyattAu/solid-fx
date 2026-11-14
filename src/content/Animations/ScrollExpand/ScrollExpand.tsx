@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, Show, splitProps } from 'solid-js'
 
 const clamp = (v: number, a: number, b: number): number => (v < a ? a : Math.min(v, b))
 

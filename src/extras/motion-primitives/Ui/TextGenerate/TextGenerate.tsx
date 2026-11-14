@@ -13,10 +13,10 @@
 // duration / segments.length } maps to motion's stagger(interval,
 // { startDelay: delay }) per PORTING.md §5.
 
-import { For, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, stagger } from 'motion'
 import type { AnimationOptions, AnimationPlaybackControls, DOMKeyframesDefinition } from 'motion'
+import { animate, stagger } from 'motion'
+import type { JSX } from 'solid-js'
+import { For, onCleanup, onMount, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 export type TextGenerateBy = 'text' | 'word' | 'character' | 'line'

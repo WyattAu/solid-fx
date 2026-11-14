@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 export type ParticlesShape = 'circle' | 'square' | 'ring' | 'sparkle'
 export type ParticlesHoverEffect = 'parallax' | 'repel' | 'attract'

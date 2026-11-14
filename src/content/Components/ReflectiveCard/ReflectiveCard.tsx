@@ -1,7 +1,7 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { CheckmarkBadge01Icon, FingerPrintIcon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export interface ReflectiveCardProps {
   name?: string

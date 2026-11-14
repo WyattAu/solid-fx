@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import * as THREE from 'three'
 
 type Orientation = 'portrait' | 'landscape'

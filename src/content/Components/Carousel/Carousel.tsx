@@ -1,7 +1,3 @@
-import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For, Show } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
@@ -11,6 +7,9 @@ import {
   Layers01Icon,
   Timer02Icon,
 } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount, Show, untrack } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export interface CarouselItem {
   id?: string | number

@@ -6,10 +6,10 @@
 // precedent). motion's left/top/translateX/translateY/rotate/scale composition
 // maps to one style update applied on spring change (translate order preserved).
 
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControlsWithThen } from 'motion'
-import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
+import { animate, motionValue } from 'motion'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
 
 export interface SmoothCursorProps {
   /** Custom cursor node rendered at the pointer position. */

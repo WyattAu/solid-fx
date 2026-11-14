@@ -1,16 +1,16 @@
+import { BeachIcon, BridgeIcon, CloudIcon, SunsetIcon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
 import {
+  children,
   createEffect,
   createMemo,
-  children,
+  Index,
   onCleanup,
   onMount,
   splitProps,
   untrack,
 } from 'solid-js'
-import { Index } from 'solid-js'
-import type { JSX } from 'solid-js'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import { BeachIcon, BridgeIcon, CloudIcon, SunsetIcon } from '@hugeicons/core-free-icons'
 
 export interface CardSwapItem {
   title?: string

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { mkdirSync } from 'node:fs'
+import path from 'node:path'
 // Debug harness for interaction-driven demos that render blank on the docs site.
 // Per component: open the docs page, collect console/page errors, locate the
 // .demo-frame, sweep the pointer WITHIN the frame bounds (plus a click), then
@@ -10,8 +12,6 @@
 //   BASE=http://localhost:4321/solid-fx node scripts/debug-interactive.mjs
 //   ONLY=ImageTrail node scripts/debug-interactive.mjs     # one component
 import { chromium } from 'playwright'
-import { mkdirSync } from 'node:fs'
-import path from 'node:path'
 
 const BASE = process.env.BASE ?? 'https://wyattau.github.io/solid-fx'
 const OUT = '/tmp/opencode/debug'

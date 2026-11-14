@@ -1,7 +1,8 @@
 // solid-fx OSINT widget — original component (not a port). Free OSINT APIs: none — educational reference grid (browsers cannot open raw TCP sockets; no packets are sent).
-import { createSignal, onCleanup, onMount, For, Show } from 'solid-js'
-import type { JSX } from 'solid-js'
+
 import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createSignal, For, onCleanup, onMount, Show } from 'solid-js'
 import GridPattern from '@/extras/magic-ui/Ui/GridPattern/GridPattern'
 
 export interface PortSpec {

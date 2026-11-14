@@ -1,9 +1,9 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import type { IconSvgObject } from '@/lib/HugeiconsIcon'
 import { FavouriteIcon, FlashIcon, StarIcon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
+import type { IconSvgObject } from '@/lib/HugeiconsIcon'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export type PeekRatingShape = 'star' | 'heart' | 'bolt'
 

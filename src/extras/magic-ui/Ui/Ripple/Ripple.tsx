@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/ripple.tsx@fbddfb8bdaa054138bdaae73a4247631d97a1c23. License: MIT.
-import { splitProps, For } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { For, splitProps } from 'solid-js'
 
 interface RippleProps extends JSX.HTMLAttributes<HTMLDivElement> {
   mainCircleSize?: number

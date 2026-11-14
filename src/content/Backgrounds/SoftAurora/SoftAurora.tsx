@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 
 export interface SoftAuroraProps {
   speed?: number

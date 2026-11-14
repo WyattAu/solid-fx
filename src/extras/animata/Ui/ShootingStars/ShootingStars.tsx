@@ -5,7 +5,7 @@
 // via <For>; ResizeObserver + rAF are disposed in onCleanup. The className
 // merge is a template join, equivalent to upstream's cn() for plain strings.
 import type { JSX } from 'solid-js'
-import { For, createSignal, onCleanup, onMount } from 'solid-js'
+import { createSignal, For, onCleanup, onMount } from 'solid-js'
 
 interface Star {
   id: number

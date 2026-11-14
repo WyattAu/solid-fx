@@ -1,7 +1,7 @@
 // solid-fx SEO widget demo — original component (not a port).
 import { createSignal, For } from 'solid-js'
-import MetaPreview from './MetaPreview'
 import type { MetaPreviewVariant } from './MetaPreview'
+import MetaPreview from './MetaPreview'
 
 const VARIANTS: MetaPreviewVariant[] = ['all', 'google', 'og', 'twitter']
 

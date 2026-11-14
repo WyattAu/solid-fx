@@ -1,3 +1,4 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -8,7 +9,6 @@ import {
   Show,
   splitProps,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 const FADE_FLOOR = 0.16
 const FADE_PEAK = 0.62

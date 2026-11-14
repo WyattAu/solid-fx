@@ -1,7 +1,7 @@
-import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
 import type { MotionValue, ValueAnimationTransition } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 type Layout = 'fan' | 'cascade' | 'deck' | 'pile'

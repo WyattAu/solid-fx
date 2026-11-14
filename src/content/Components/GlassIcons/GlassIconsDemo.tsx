@@ -1,5 +1,5 @@
-import GlassIcons from './GlassIcons'
 import type { GlassIconsItem } from './GlassIcons'
+import GlassIcons from './GlassIcons'
 
 const PATHS = [
   'M4 11 12 4l8 7v9h-5v-6H9v6H4v-9Z',

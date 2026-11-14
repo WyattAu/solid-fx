@@ -1,5 +1,5 @@
-import { createEffect, createMemo, For, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup } from 'solid-js'
 
 export type GradualBlurPosition = 'top' | 'bottom' | 'left' | 'right'
 export type GradualBlurCurve = 'linear' | 'bezier' | 'ease-in' | 'ease-out' | 'ease-in-out'

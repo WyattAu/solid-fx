@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: native fetch of any public sitemap.xml (no key).
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 
 export type SitemapVizStatus = 'idle' | 'loading' | 'error' | 'ok'
 

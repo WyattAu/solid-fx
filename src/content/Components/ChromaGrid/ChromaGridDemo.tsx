@@ -1,5 +1,5 @@
-import ChromaGrid from './ChromaGrid'
 import type { ChromaItem } from './ChromaGrid'
+import ChromaGrid from './ChromaGrid'
 
 const items: ChromaItem[] = Array.from({ length: 6 }, (_, i) => ({
   image: `https://picsum.photos/seed/chroma${i + 1}/800/540`,

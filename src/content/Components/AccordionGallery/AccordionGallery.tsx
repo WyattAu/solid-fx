@@ -1,8 +1,7 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Index } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
 import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, Index, onCleanup } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 export interface AccordionGalleryItem {
   image: string

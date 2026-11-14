@@ -7,7 +7,7 @@
 // (clsx + tailwind-merge); this port template-joins, equivalent for the plain
 // strings passed here.
 
-import { animate, type AnimationPlaybackControls } from 'motion'
+import { type AnimationPlaybackControls, animate } from 'motion'
 import type { JSX } from 'solid-js'
 import { createEffect, createSignal, For, onCleanup, onMount } from 'solid-js'
 

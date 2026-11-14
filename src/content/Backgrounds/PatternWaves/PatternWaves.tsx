@@ -1,6 +1,6 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
+import { Mesh, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, RenderTarget, Texture } from 'ogl'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 type SurfacePreset = 'silk' | 'ocean' | 'pond' | 'lines' | 'terminal' | 'mesh'
 type PatternKind = 'dot' | 'square' | 'plus' | 'line' | 'glyph'

@@ -13,19 +13,19 @@
 // renders exactly children[0] and children[1]; the port renders all provided
 // children, which is identical for the documented two-part composition.
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControlsWithThen, DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { Accessor, JSX } from 'solid-js'
 import {
   createContext,
   createEffect,
   createSignal,
   createUniqueId,
   onCleanup,
+  Show,
   splitProps,
   useContext,
-  Show,
 } from 'solid-js'
-import type { Accessor, JSX } from 'solid-js'
 
 export type DisclosureVariants = {
   expanded: DOMKeyframesDefinition

@@ -1,3 +1,5 @@
+import { gsap } from 'gsap'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -7,8 +9,6 @@ import {
   onCleanup,
   Show,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { gsap } from 'gsap'
 
 export type TextLoopShape = 'wave' | 'circle' | 'infinity' | 'arch' | 'line'
 export type TextLoopDirection = 'forward' | 'reverse'

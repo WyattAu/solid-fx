@@ -1,5 +1,5 @@
-import { children as childrenHelper, createEffect, createMemo, For, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { children as childrenHelper, createEffect, createMemo, For, onCleanup } from 'solid-js'
 
 export interface ScrollStackItemProps {
   children?: JSX.Element

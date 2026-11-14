@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, untrack } from 'solid-js'
 
 export type PixelTransitionPattern = 'random' | 'dither' | 'ripple' | 'wipe'
 export type PixelTransitionAnimation = 'pop' | 'grow' | 'fade'

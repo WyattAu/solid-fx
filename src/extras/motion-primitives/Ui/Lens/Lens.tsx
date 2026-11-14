@@ -10,8 +10,9 @@
 // clone source is unambiguous. `class`/`className` are accepted as a Solid
 // parity superset (upstream LensProps carries no className).
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControlsWithThen } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -21,7 +22,6 @@ import {
   Show,
   splitProps,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 interface Position {
   /** The x coordinate of the lens */

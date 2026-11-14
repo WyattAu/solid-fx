@@ -10,8 +10,8 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
-import { createEffect, createMemo, Index, onCleanup, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, Index, onCleanup, Show } from 'solid-js'
 
 export interface CausticsBackgroundProps {
   /** The headline. It floats on the water and casts a shadow on the floor. */

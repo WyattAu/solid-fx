@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/hexagon-pattern.tsx@2712647e193295d2fd85b65e58095fb2009736d7. License: MIT.
-import { createMemo, createUniqueId, splitProps, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, createUniqueId, For, Show, splitProps } from 'solid-js'
 
 /**
  * HexagonPattern Component Props

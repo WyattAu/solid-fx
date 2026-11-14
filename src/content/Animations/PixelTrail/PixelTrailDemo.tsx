@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js'
-import PixelTrail from './PixelTrail'
 import { autoPointer } from '@/lib/syntheticPointer'
+import PixelTrail from './PixelTrail'
 
 function PixelTrailDemo() {
   let host!: HTMLDivElement

@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/typing-animation.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { createEffect, createMemo, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 // PORT-NOTE: upstream ships the cursor blink through the Tailwind theme

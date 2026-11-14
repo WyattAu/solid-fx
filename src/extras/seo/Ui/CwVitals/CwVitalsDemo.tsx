@@ -1,7 +1,7 @@
 // solid-fx SEO widget demo — original component (not a port).
 import { createSignal, For } from 'solid-js'
-import CwVitals from './CwVitals'
 import type { CwVitalsVariant } from './CwVitals'
+import CwVitals from './CwVitals'
 
 const VARIANTS: CwVitalsVariant[] = ['rings', 'bars']
 

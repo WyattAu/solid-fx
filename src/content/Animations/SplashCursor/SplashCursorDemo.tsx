@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js'
-import SplashCursor from './SplashCursor'
 import { autoPointer } from '@/lib/syntheticPointer'
+import SplashCursor from './SplashCursor'
 
 function SplashCursorDemo() {
   let host!: HTMLDivElement

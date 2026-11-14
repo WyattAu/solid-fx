@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props; favicon via Google S2, optional).
-import { createMemo, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, Show } from 'solid-js'
 
 export type MetaPreviewVariant = 'google' | 'og' | 'twitter' | 'all'
 

@@ -1,8 +1,3 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
-import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 import {
   ArrowDown01Icon,
   Attachment01Icon,
@@ -18,6 +13,11 @@ import {
   SparklesIcon,
   Tick02Icon,
 } from '@hugeicons/core-free-icons'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import HugeiconsIcon, { type IconSvgObject } from '@/lib/HugeiconsIcon'
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export interface PromptBarSource {
   key: string

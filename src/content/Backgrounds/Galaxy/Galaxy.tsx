@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 
 export type GalaxyDirection = 'forward' | 'backward'
 

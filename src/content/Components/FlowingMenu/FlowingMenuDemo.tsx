@@ -1,5 +1,5 @@
-import FlowingMenu from './FlowingMenu'
 import type { FlowingMenuItem } from './FlowingMenu'
+import FlowingMenu from './FlowingMenu'
 
 const ITEMS: FlowingMenuItem[] = [
   { text: 'About', meta: '01', marquee: 'About us' },

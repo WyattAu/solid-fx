@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, Show, splitProps } from 'solid-js'
 
 export interface GlowCursorProps
   extends Omit<

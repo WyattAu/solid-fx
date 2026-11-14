@@ -14,8 +14,9 @@
 // `children` do not propagate to the duplicates. A `default` export is added
 // (ScrollVelocityRow) per tree convention; upstream exports are all named.
 
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControlsWithThen, MotionValue } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createContext,
   createSignal,
@@ -25,7 +26,6 @@ import {
   splitProps,
   useContext,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 export const wrap = (min: number, max: number, v: number) => {
   const rangeSize = max - min

@@ -1,8 +1,8 @@
 // Source: github.com/ibelick/motion-primitives components/core/spotlight.tsx@120f64f6ca60348e251f929e9c81f11ccbe45eda. License: MIT.
 
-import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls, SpringOptions } from 'motion'
+import { animate, motionValue } from 'motion'
+import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type SpotlightProps = {
   class?: string

@@ -7,10 +7,10 @@
 // inline `filter: blur(Npx)` instead of upstream's dynamic `blur-[${n}px]`
 // class, which Tailwind cannot generate at runtime.
 
-import { createEffect, onCleanup, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
 
 export type GlowEffectProps = {
   class?: string

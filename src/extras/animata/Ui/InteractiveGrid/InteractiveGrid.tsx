@@ -6,8 +6,9 @@
 // classes with cn(); this port template-joins / uses classList, and the
 // scale/opacity conflict (scale-90 vs scale-100 in the same class list) is
 // resolved by branching the class string instead of relying on tailwind-merge.
-import { createMemo, createSignal, For, onCleanup, onMount } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, createSignal, For, onCleanup, onMount } from 'solid-js'
 
 function plotSquares(width: number, height: number, size: number): { x: number; y: number }[] {
   const squares: { x: number; y: number }[] = []

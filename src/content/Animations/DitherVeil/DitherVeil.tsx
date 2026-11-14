@@ -1,6 +1,6 @@
-import { createEffect, onCleanup } from 'solid-js'
+import { Mesh, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, Texture, RenderTarget } from 'ogl'
+import { createEffect, onCleanup } from 'solid-js'
 
 type Pattern = 'bayer' | 'noise' | 'atkinson' | 'floyd' | 'lines'
 type Palette = 'duotone' | 'rgb'

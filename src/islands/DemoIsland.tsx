@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js'
-import { ErrorBoundary, Suspense, lazy } from 'solid-js'
+import { ErrorBoundary, lazy, Suspense } from 'solid-js'
 
 const demoModules = {
   ...import.meta.glob<{ default: Component }>('/src/content/**/*Demo.tsx'),

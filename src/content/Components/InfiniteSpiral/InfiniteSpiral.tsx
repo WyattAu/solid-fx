@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount, For } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup, onMount } from 'solid-js'
 
 export interface InfiniteSpiralItem {
   id?: string | number

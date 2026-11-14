@@ -1,3 +1,6 @@
+import { Tick02Icon } from '@hugeicons/core-free-icons'
+import type { AnimationPlaybackControlsWithThen, MotionValue } from 'motion'
+import { animate, motionValue } from 'motion'
 import {
   createEffect,
   createMemo,
@@ -10,14 +13,11 @@ import {
   Show,
   untrack,
 } from 'solid-js'
-import { animate, motionValue } from 'motion'
-import type { AnimationPlaybackControlsWithThen, MotionValue } from 'motion'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 // Imported under an alias: scripts/check-contract.sh flags the upstream hook
 // name as a React call, but this is the Solid helper from src/lib/reducedMotion
 // (returns an accessor, must be called).
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import { Tick02Icon } from '@hugeicons/core-free-icons'
 
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
 const WASH_IN = 0.3

@@ -1,15 +1,16 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props).
+
+import type { JSX } from 'solid-js'
 import {
+  createEffect,
   createMemo,
   createSignal,
-  createEffect,
+  For,
   onCleanup,
   onMount,
-  splitProps,
-  For,
   Show,
+  splitProps,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 export type LighthouseRingVariant = 'rings' | 'bars'
 
@@ -96,7 +97,7 @@ function ScoreRing(props: {
     }
     const tick = (now: number) => {
       const t = Math.min(1, Math.max(0, (now - start) / duration))
-      const eased = 1 - Math.pow(1 - t, 3)
+      const eased = 1 - (1 - t) ** 3
       setShown(Math.round(props.score * eased))
       if (t < 1) raf = requestAnimationFrame(tick)
     }

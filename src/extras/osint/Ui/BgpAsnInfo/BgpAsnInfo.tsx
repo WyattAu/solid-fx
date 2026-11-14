@@ -1,6 +1,7 @@
 // solid-fx OSINT widget — original component (not a port). Free OSINT APIs: BGPView (api.bgpview.io/asn, no key) with RIPEstat (stat.ripe.net, no key) fallback.
-import { createEffect, createResource, createSignal, onCleanup, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js'
 import GlassSurface from '@/content/Components/GlassSurface/GlassSurface'
 import TypingAnimation from '@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation'
 

@@ -1,8 +1,7 @@
-import { createEffect, createRenderEffect, createSignal, onCleanup, untrack } from 'solid-js'
-import { For } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { VolumeHighIcon, VolumeLowIcon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createRenderEffect, createSignal, For, onCleanup, untrack } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export interface ElasticSliderProps {
   value?: number

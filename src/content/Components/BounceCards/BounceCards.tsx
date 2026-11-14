@@ -1,6 +1,5 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { For } from 'solid-js'
+import { createEffect, For, onCleanup, onMount } from 'solid-js'
 
 export type BounceCardImage = string | { src: string; alt?: string }
 

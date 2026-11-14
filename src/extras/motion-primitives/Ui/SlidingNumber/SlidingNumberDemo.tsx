@@ -1,7 +1,8 @@
 // Source: github.com/ibelick/motion-primitives app/docs/sliding-number/sliding-number-demo-1.tsx@120f64f6ca60348e251f929e9c81f11ccbe45eda. License: MIT.
-import { createSignal, onCleanup, onMount } from 'solid-js'
-import { animate } from 'motion'
+
 import type { AnimationPlaybackControls } from 'motion'
+import { animate } from 'motion'
+import { createSignal, onCleanup, onMount } from 'solid-js'
 import SlidingNumber from './SlidingNumber'
 
 function SlidingNumberDemo() {

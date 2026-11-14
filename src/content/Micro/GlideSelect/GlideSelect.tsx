@@ -1,7 +1,7 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { ArrowDown01Icon, Tick02Icon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export interface GlideSelectOption {
   value: string

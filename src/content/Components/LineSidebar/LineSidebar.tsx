@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, createSignal, For, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 
 type Falloff = 'linear' | 'smooth' | 'sharp'
 

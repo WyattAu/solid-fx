@@ -1,7 +1,8 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/spinning-text.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { createEffect, onCleanup, splitProps, For } from 'solid-js'
-import type { JSX } from 'solid-js'
+
 import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, For, onCleanup, splitProps } from 'solid-js'
 
 // PORT-NOTE: vanilla `motion` does not re-export motion/react's `Transition`
 // and `Variants` types; structural equivalents matching upstream usage

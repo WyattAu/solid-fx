@@ -1,7 +1,8 @@
 // Built with Lenis (github.com/darkroomengineering/lenis) — MIT. Smooth scroll engine pilot per EXTRAS-ROADMAP.md.
-import { For, Show, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
+
 import Lenis from 'lenis'
+import type { JSX } from 'solid-js'
+import { For, onCleanup, onMount, Show, splitProps } from 'solid-js'
 import { useReducedMotion } from '@/lib/reducedMotion'
 
 export interface StackingCard {

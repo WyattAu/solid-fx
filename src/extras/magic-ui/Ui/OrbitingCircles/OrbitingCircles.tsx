@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/orbiting-circles.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { children, splitProps, Show, Index } from 'solid-js'
-import type { JSX, Accessor } from 'solid-js'
+
+import type { Accessor, JSX } from 'solid-js'
+import { children, Index, Show, splitProps } from 'solid-js'
 
 export interface OrbitingCirclesProps extends JSX.HTMLAttributes<HTMLDivElement> {
   className?: string

@@ -13,8 +13,8 @@
 // kept as-is for behavioral parity. React.memo/displayName dropped per
 // PORTING.md §2.
 
-import { splitProps, For } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { For, splitProps } from 'solid-js'
 
 export type RippleProps = {
   mainCircleSize?: number

@@ -4,16 +4,16 @@
 // port accepts class/className/style/width/height plus the mount-tuning props only. Uniform updates go through a reactive effect.
 // Upstream Waves is a static pattern: no speed/frame params (matches React Waves, which never sets motion params).
 
-import { createEffect, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
+import type { ShaderMountUniforms, WavesParams } from '@paper-design/shaders'
 import {
-  ShaderMount,
-  ShaderFitOptions,
   defaultPatternSizing,
   getShaderColorFromString,
+  ShaderFitOptions,
+  ShaderMount,
   wavesFragmentShader,
 } from '@paper-design/shaders'
-import type { WavesParams, ShaderMountUniforms } from '@paper-design/shaders'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 export interface WavesProps extends WavesParams {
   /**

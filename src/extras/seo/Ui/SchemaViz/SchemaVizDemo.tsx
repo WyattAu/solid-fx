@@ -1,7 +1,7 @@
 // solid-fx SEO widget demo — original component (not a port).
 import { createSignal, For } from 'solid-js'
-import SchemaViz from './SchemaViz'
 import type { SchemaVizVariant } from './SchemaViz'
+import SchemaViz from './SchemaViz'
 
 const SAMPLE_SCHEMA = {
   '@context': 'https://schema.org',

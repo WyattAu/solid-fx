@@ -1,7 +1,7 @@
 // Inspired by https://vercel.com/labs
 import { createEffect, createMemo, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import { effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu'
 import type { Gpu, StorageBuffer, Texture } from 'vgpu'
+import { effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu'
 
 type ChargeBuffer = StorageBuffer & { destroy(): void }
 

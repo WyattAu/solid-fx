@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, For, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup } from 'solid-js'
 
 export type LatticeStatus = 'working' | 'done' | 'error'
 export type LatticePatternName =

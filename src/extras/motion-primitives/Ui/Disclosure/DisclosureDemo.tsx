@@ -1,6 +1,7 @@
 // Demo harness for the Disclosure port. Dark-stage friendly, self-contained.
-import { Disclosure, DisclosureContent, DisclosureTrigger } from './Disclosure'
+
 import { For } from 'solid-js'
+import { Disclosure, DisclosureContent, DisclosureTrigger } from './Disclosure'
 
 const FAQS = [
   {

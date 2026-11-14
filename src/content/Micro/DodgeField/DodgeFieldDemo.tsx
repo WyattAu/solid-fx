@@ -1,6 +1,6 @@
 import { createSignal, onMount } from 'solid-js'
-import DodgeField from './DodgeField'
 import { autoPointer } from '@/lib/syntheticPointer'
+import DodgeField from './DodgeField'
 
 function DodgeFieldDemo() {
   const [dodges, setDodges] = createSignal(0)

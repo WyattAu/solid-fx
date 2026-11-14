@@ -9,10 +9,10 @@
 // useId it keyed on has no remaining role in the port. Digits render hidden
 // until the first height measurement, matching upstream's conditional render.
 
-import { Index, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, Index, onCleanup, onMount, Show, splitProps } from 'solid-js'
 
 const SPRING = {
   stiffness: 280,
@@ -122,7 +122,7 @@ export function SlidingNumber(props: SlidingNumberProps) {
       <Show when={own.value < 0}>-</Show>
       <Index each={integerDigits()}>
         {(_, index) => (
-          <Digit value={integerValue()} place={Math.pow(10, integerDigits().length - index - 1)} />
+          <Digit value={integerValue()} place={10 ** (integerDigits().length - index - 1)} />
         )}
       </Index>
       <Show when={decimalPart()}>
@@ -132,7 +132,7 @@ export function SlidingNumber(props: SlidingNumberProps) {
             {(_, index) => (
               <Digit
                 value={parseInt(decimalPart()!, 10)}
-                place={Math.pow(10, decimalPart()!.length - index - 1)}
+                place={10 ** (decimalPart()!.length - index - 1)}
               />
             )}
           </Index>

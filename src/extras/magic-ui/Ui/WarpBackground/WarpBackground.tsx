@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/warp-background.tsx@2712647e193295d2fd85b65e58095fb2009736d7. License: MIT.
-import { createMemo, For, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, For, splitProps } from 'solid-js'
 
 // PORT-NOTE: upstream drives each beam with motion/react
 // (`initial y:100cqmax → animate y:-100%`, `repeat: Infinity, ease: linear`,

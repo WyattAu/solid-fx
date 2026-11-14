@@ -1,8 +1,8 @@
-import { createEffect, createSignal, createUniqueId, onCleanup, onMount, untrack } from 'solid-js'
+import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
 import type { Component, JSX } from 'solid-js'
+import { createEffect, createSignal, createUniqueId, onCleanup, onMount, untrack } from 'solid-js'
 import { Dynamic, For } from 'solid-js/web'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
 
 export interface CardNavLink {
   label: string

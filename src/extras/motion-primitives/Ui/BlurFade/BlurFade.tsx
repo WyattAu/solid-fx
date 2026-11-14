@@ -12,8 +12,8 @@
 // animated property (transform/opacity/filter) carries the same delay and
 // duration — expressed here as one CSS `transition` declaration.
 
-import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type BlurFadeDirection = 'up' | 'down' | 'left' | 'right'
 

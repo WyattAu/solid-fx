@@ -1,4 +1,6 @@
 // Demo harness for the Carousel port. Dark-stage friendly, self-contained.
+
+import { For } from 'solid-js'
 import {
   Carousel,
   CarouselContent,
@@ -6,7 +8,6 @@ import {
   CarouselItem,
   CarouselNavigation,
 } from './Carousel'
-import { For } from 'solid-js'
 
 const SLIDES = [
   { seed: 'carousel-aurora', caption: 'Aurora' },

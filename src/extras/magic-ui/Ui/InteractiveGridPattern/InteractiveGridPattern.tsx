@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/interactive-grid-pattern.tsx@2712647e193295d2fd85b65e58095fb2009736d7. License: MIT.
-import { createMemo, createSignal, splitProps, For } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, createSignal, For, splitProps } from 'solid-js'
 
 /**
  * InteractiveGridPattern Component Props

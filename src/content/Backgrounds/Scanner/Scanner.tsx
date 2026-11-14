@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 const MAX_PINGS = 6
 const INTRO_SECONDS = 2

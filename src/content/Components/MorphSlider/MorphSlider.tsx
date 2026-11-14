@@ -1,7 +1,7 @@
-import { createEffect, createSignal, For, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Renderer, Triangle, Program, Mesh, Texture } from 'ogl'
 import { gsap } from 'gsap'
+import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type MorphTransition = 'melt' | 'ripple' | 'shear' | 'swirl'
 

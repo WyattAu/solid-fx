@@ -1,5 +1,5 @@
-import { createEffect, createMemo, on, onCleanup, createSignal, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, on, onCleanup, splitProps } from 'solid-js'
 
 const BLOOM_LEVELS = 4
 const MAX_PULSES = 4

@@ -2,8 +2,9 @@
 // PORT-NOTE: upstream spreads all span props ({...props}: React.HTMLProps<HTMLSpanElement>);
 // this port accepts class/className/style + children and merges the class aliases —
 // the same surface every other port in this tree exposes.
-import { splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
 
 interface DoubleUnderlineProps {
   children?: JSX.Element

@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, untrack } from 'solid-js'
 
 const MAX_COLORS = 8
 const BLOOM_LEVELS = 4

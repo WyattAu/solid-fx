@@ -1,5 +1,5 @@
-import FlexCarousel from './FlexCarousel'
 import type { FlexCarouselItem } from './FlexCarousel'
+import FlexCarousel from './FlexCarousel'
 
 const ITEMS: FlexCarouselItem[] = [
   {

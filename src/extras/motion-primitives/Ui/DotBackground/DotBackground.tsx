@@ -9,17 +9,17 @@
 // loops per PORTING.md §5. The DotPattern port in this tree covers the static
 // mode with a runtime `glow` prop.
 
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createMemo,
   createSignal,
   createUniqueId,
+  For,
   onCleanup,
   onMount,
   splitProps,
-  For,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 
 export type DotBackgroundProps = {
   /** The horizontal spacing between dots */

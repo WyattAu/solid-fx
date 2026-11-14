@@ -1,6 +1,5 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
-import { Show } from 'solid-js'
+import { createEffect, onCleanup, onMount, Show } from 'solid-js'
 
 type Variant = 'linear' | 'flow' | 'conic'
 

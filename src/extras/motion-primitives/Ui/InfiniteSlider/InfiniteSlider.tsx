@@ -9,10 +9,10 @@
 // gap-sized flex slots so inter-item spacing (and the cross-copy gap) matches
 // upstream's flat gap list exactly.
 
-import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type InfiniteSliderProps = {
   children: JSX.Element

@@ -1,7 +1,7 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { Mail01Icon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 type Palette = 'dark' | 'light'
 

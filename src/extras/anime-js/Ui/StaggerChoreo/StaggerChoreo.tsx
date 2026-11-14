@@ -1,8 +1,9 @@
 // Built with anime.js v4 (github.com/juliangarnier/anime) — MIT. Demo concept from EXTRAS-ROADMAP.md P1.
-import { For, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, stagger } from 'animejs'
+
 import type { StaggerParams } from 'animejs'
+import { animate, stagger } from 'animejs'
+import type { JSX } from 'solid-js'
+import { createMemo, For, onCleanup, onMount, splitProps } from 'solid-js'
 import { useReducedMotion } from '@/lib/reducedMotion'
 
 // Resting tile color the grid pulses back to each alternate pass.

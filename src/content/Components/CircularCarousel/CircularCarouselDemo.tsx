@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js'
-import CircularCarousel from './CircularCarousel'
 import type { CircularCarouselItem } from './CircularCarousel'
+import CircularCarousel from './CircularCarousel'
 
 const ITEMS: CircularCarouselItem[] = [
   { src: 'https://picsum.photos/seed/ring-1/700/700', title: 'Valley', subtitle: 'Landscape' },

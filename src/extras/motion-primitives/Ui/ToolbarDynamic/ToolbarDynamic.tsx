@@ -6,10 +6,10 @@
 // disposed in onCleanup). lucide-react icons are inlined as identical SVGs
 // (ShiningButton precedent). React `autoFocus` maps to a ref-callback focus.
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, Transition } from 'motion'
-import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js'
+import { animate } from 'motion'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, Show } from 'solid-js'
 
 const transition: Transition = {
   type: 'spring',

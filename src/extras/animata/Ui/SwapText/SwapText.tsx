@@ -7,8 +7,9 @@
 // (same approach as the ZigZag port). cn() merges become template joins +
 // classList; the arbitrary-div-props spread is dropped for explicit props
 // (like the ZigZag port).
-import { createSignal, Show, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createSignal, Show, splitProps } from 'solid-js'
 
 interface SwapTextProps {
   /**

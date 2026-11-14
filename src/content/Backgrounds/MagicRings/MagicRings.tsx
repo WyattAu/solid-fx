@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
 
 type Motion = 'pulse' | 'ripple' | 'breathe'
 type Pass = 'glow' | 'compose' | 'line'

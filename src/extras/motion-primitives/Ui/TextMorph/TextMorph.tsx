@@ -11,11 +11,10 @@
 // ghosts anchor to it (upstream popLayout achieves the same via layout
 // projection).
 
-import { createMemo, createUniqueId, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createMemo, createUniqueId, For, onCleanup, onMount, splitProps } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 export type TextMorphVariants = {

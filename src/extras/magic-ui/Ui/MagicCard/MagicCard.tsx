@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/magic-card.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { createEffect, createSignal, onCleanup, onMount, splitProps, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
 
 interface MagicCardBaseProps {
   children?: JSX.Element

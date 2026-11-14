@@ -99,7 +99,7 @@
       }
     },
     {
-      "includes": ["**/src/content/**/*.tsx"],
+      "includes": ["src/content/**/*.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -141,7 +141,7 @@
       }
     },
     {
-      "includes": ["**/src/extras/**/*.tsx"],
+      "includes": ["src/extras/**/*.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -166,6 +166,33 @@
             "useAriaPropsSupportedByRole": "warn",
             "noNoninteractiveTabindex": "warn"
           },
+          "correctness": {
+            "noUnusedFunctionParameters": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/extras/**/*.tsx", "src/scenes/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noAssignInExpressions": "warn",
+            "useIterableCallbackReturn": "warn"
+          },
+          "style": {
+            "useForOf": "warn"
+          },
+          "correctness": {
+            "noUnusedFunctionParameters": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["scripts/debug-*.mjs"],
+      "linter": {
+        "rules": {
           "correctness": {
             "noUnusedFunctionParameters": "warn"
           }

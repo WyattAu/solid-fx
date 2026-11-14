@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/pulsating-button.tsx@1ac985adca3cdfab9b1739253fd14209687c4e9c. License: MIT.
-import { createEffect, onCleanup, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, splitProps } from 'solid-js'
 
 export interface PulsatingButtonProps
   extends Omit<JSX.ButtonHTMLAttributes<HTMLButtonElement>, 'ref'> {

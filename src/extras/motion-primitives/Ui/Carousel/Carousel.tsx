@@ -7,8 +7,9 @@
 // release is approximated with a short spring. lucide-react icons are inlined
 // as identical SVGs (ShiningButton precedent).
 
-import { animate, motionValue } from 'motion'
 import type { AnimationPlaybackControls, Transition } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { Accessor, JSX } from 'solid-js'
 import {
   children,
   createContext,
@@ -19,7 +20,6 @@ import {
   splitProps,
   useContext,
 } from 'solid-js'
-import type { Accessor, JSX } from 'solid-js'
 
 function ChevronLeftIcon(props: { class?: string }) {
   return (

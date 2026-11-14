@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js'
-import ImageTrail from './ImageTrail'
 import { autoPointer } from '@/lib/syntheticPointer'
+import ImageTrail from './ImageTrail'
 
 const IMAGES = Array.from(
   { length: 10 },

@@ -7,17 +7,17 @@
 // same upstream file; extras trees never cross-import (layering rule), so this
 // tree carries a self-contained port.
 
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createMemo,
   createSignal,
   createUniqueId,
+  For,
   onCleanup,
   onMount,
   splitProps,
-  For,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 
 /**
  *  DotPattern Component Props

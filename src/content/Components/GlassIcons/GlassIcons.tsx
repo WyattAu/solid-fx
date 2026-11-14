@@ -1,15 +1,15 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
   createSignal,
-  onCleanup,
-  onMount,
   createUniqueId,
   For,
+  onCleanup,
+  onMount,
   Show,
 } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
-import type { JSX } from 'solid-js'
 
 export interface GlassIconsItem {
   icon: JSX.Element

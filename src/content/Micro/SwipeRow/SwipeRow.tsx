@@ -1,10 +1,10 @@
-import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate, motionValue } from 'motion'
-import type { AnimationPlaybackControlsWithThen } from 'motion'
-import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { Delete02Icon } from '@hugeicons/core-free-icons'
+import type { AnimationPlaybackControlsWithThen } from 'motion'
+import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
+import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 const HYST = 10
 const FLICK = 110

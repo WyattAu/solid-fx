@@ -5,8 +5,8 @@
 // derives segmentSize from blurLayers (not the max()ed layer count); kept
 // as-is for visual parity.
 
-import { For, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { For, splitProps } from 'solid-js'
 
 export const GRADIENT_ANGLES = {
   top: 0,

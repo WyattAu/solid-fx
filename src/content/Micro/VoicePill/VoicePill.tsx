@@ -1,6 +1,6 @@
+import { ArrowLeft01Icon, Mic01Icon } from '@hugeicons/core-free-icons'
 import { createEffect, createSignal, onCleanup } from 'solid-js'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
-import { ArrowLeft01Icon, Mic01Icon } from '@hugeicons/core-free-icons'
 
 export type VoicePillShape = 'pill' | 'rounded'
 export type VoicePillMode = 'auto' | 'hold' | 'toggle'

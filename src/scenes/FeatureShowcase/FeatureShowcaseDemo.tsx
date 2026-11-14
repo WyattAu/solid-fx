@@ -1,5 +1,5 @@
+import { CpuIcon, SparkleIcon, WandIcon } from '@hugeicons/core-free-icons'
 import FeatureShowcase from './FeatureShowcase'
-import { SparkleIcon, WandIcon, CpuIcon } from '@hugeicons/core-free-icons'
 
 function FeatureShowcaseDemo() {
   return (

@@ -13,10 +13,6 @@
 // after a reveal, trigger=false plays the exit schedule and the segments stay
 // at their exit values (upstream unmounts the subtree — visually identical).
 
-import { createEffect, createMemo, onCleanup, splitProps, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { For, Index, Show } from 'solid-js'
-import { animate } from 'motion'
 import type {
   AnimationPlaybackControls,
   DOMKeyframesDefinition,
@@ -25,6 +21,18 @@ import type {
   Variant,
   Variants,
 } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  For,
+  Index,
+  onCleanup,
+  Show,
+  splitProps,
+  untrack,
+} from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 export type PresetType = 'blur' | 'fade-in-blur' | 'scale' | 'fade' | 'slide'

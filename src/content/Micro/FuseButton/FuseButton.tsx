@@ -1,7 +1,7 @@
-import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
-import HugeiconsIcon from '@/lib/HugeiconsIcon'
 import { Archive02Icon, Tick02Icon, Undo02Icon } from '@hugeicons/core-free-icons'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, untrack } from 'solid-js'
+import HugeiconsIcon from '@/lib/HugeiconsIcon'
 
 export type FusePosition = 'outline' | 'bottom' | 'top'
 export type FuseCommitOn = 'press' | 'fuseEnd'

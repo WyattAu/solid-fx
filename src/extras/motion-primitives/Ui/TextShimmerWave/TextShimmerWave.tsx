@@ -1,10 +1,10 @@
 // Source: github.com/ibelick/motion-primitives components/core/text-shimmer-wave.tsx@120f64f6ca60348e251f929e9c81f11ccbe45eda. License: MIT.
 
-import { createEffect, onCleanup, splitProps, Index } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import { animate } from 'motion'
 import type { AnimationPlaybackControls, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, Index, onCleanup, splitProps } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 export type TextShimmerWaveProps = {
   children: string

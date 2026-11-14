@@ -7,11 +7,11 @@
 // typed as DOMKeyframesDefinition — the same shape the vanilla animate()
 // consumes.
 
-import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
-import { animate } from 'motion'
 import type { DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+import { Dynamic } from 'solid-js/web'
 
 /** Upstream `UseInViewOptions` (motion/react), element instead of ref-object root. */
 export type InViewOptions = {

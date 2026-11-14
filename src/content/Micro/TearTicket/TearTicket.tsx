@@ -1,3 +1,5 @@
+import { motionValue, springValue } from 'motion'
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -7,8 +9,6 @@ import {
   onMount,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { motionValue, springValue } from 'motion'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export type TearTicketOrientation = 'horizontal' | 'vertical'

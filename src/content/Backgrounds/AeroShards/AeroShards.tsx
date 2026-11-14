@@ -1,5 +1,5 @@
-import { createMemo, onCleanup, onMount, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createMemo, onCleanup, onMount, untrack } from 'solid-js'
 import { draw, effect, frame, init, sampler, storage, surface, target, uniforms } from 'vgpu'
 
 export interface AeroShardsProps {

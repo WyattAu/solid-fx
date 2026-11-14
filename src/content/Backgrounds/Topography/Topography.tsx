@@ -1,5 +1,6 @@
-import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, splitProps, untrack } from 'solid-js'
+
 const FOV = 0.32
 const ORBIT = 9
 const NEAR = 0.05

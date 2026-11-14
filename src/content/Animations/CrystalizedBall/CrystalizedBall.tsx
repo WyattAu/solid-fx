@@ -1,6 +1,6 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
+import { Geometry, Mesh, Program, Renderer, RenderTarget, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, Geometry, RenderTarget, Texture } from 'ogl'
+import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
 
 type Preset = 'plasma' | 'aurora' | 'nebula' | 'ember' | 'frost' | 'solar' | 'eclipse' | 'abyss'
 type Motion = 'rise' | 'fall' | 'drift' | 'orbit'

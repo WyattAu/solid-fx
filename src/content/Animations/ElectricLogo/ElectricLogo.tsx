@@ -1,6 +1,6 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
+import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl'
 import type { JSX } from 'solid-js'
-import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 const BOLT = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M39 3 12 37h17l-4 24 27-34H35z" fill="#fff"/></svg>',

@@ -1,3 +1,4 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
@@ -7,7 +8,6 @@ import {
   onMount,
   Show,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 const DEG = 180 / Math.PI
 

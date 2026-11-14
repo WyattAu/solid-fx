@@ -4,8 +4,9 @@
 // renders the same near-white hairlines, matching this repo's dark demo stage.
 // React auto-appends px to numeric marginTop; the px is written out explicitly
 // here (Solid does not). cn() merges become template joins + classList.
-import { For, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { For, splitProps } from 'solid-js'
 
 function fibonacci(n: number): number {
   if (n <= 1) return n

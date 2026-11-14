@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/aurora-text.tsx@fbddfb8bdaa054138bdaae73a4247631d97a1c23. License: MIT.
-import { createMemo } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo } from 'solid-js'
 
 interface AuroraTextProps {
   children: JSX.Element

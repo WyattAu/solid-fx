@@ -11,10 +11,10 @@
 // { opacity: 0, y: -50 }, animate { opacity: 1, y: 0 }, exit
 // { opacity: 0, y: 50 }, transition { duration: 0.25, ease: 'easeOut' }.
 
-import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
-import { animate } from 'motion'
 import type { AnimationOptions, AnimationPlaybackControls, DOMKeyframesDefinition } from 'motion'
+import { animate } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type WordsRotateProps = {
   words: string[]

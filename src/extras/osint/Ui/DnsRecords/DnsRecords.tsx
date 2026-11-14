@@ -1,6 +1,7 @@
 // solid-fx OSINT widget — original component (not a port). Free OSINT APIs: Google DNS-over-HTTPS (dns.google/resolve, no key).
-import { createEffect, createResource, createSignal, onCleanup, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createResource, createSignal, For, onCleanup, Show } from 'solid-js'
 import TypingAnimation from '@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation'
 
 export type DnsRecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SOA' | 'TXT'

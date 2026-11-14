@@ -10,8 +10,9 @@
 // accepts Variant resolvers; only static keyframes (DOMKeyframesDefinition)
 // are supported here.
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControlsWithThen, DOMKeyframesDefinition, Transition } from 'motion'
+import { animate } from 'motion'
+import type { Accessor, JSX } from 'solid-js'
 import {
   createContext,
   createEffect,
@@ -21,7 +22,6 @@ import {
   splitProps,
   useContext,
 } from 'solid-js'
-import type { Accessor, JSX } from 'solid-js'
 
 /** React `React.Key` parity. */
 export type AccordionKey = string | number

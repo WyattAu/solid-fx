@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, Show, splitProps } from 'solid-js'
 
 const FONT_IMPORT =
   "@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');"

@@ -8,15 +8,15 @@
 // actually works. The `variants` prop accepts Variant resolvers upstream;
 // only static keyframes (DOMKeyframesDefinition) are supported here.
 
-import { animate, motionValue } from 'motion'
 import type {
   AnimationPlaybackControlsWithThen,
   DOMKeyframesDefinition,
   SpringOptions,
   Transition,
 } from 'motion'
-import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
+import { animate, motionValue } from 'motion'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, Show, splitProps } from 'solid-js'
 
 export type CursorVariants = {
   initial: DOMKeyframesDefinition

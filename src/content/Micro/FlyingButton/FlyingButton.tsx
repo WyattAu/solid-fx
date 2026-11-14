@@ -1,5 +1,5 @@
-import { createEffect, For, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, For, onCleanup, onMount } from 'solid-js'
 
 const G = 1100
 const SPRING = 380

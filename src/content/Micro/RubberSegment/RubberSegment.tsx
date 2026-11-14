@@ -1,6 +1,6 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { animate, motionValue } from 'motion'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, untrack } from 'solid-js'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 export type RubberSegmentSize = 'sm' | 'md' | 'lg'

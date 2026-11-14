@@ -1,8 +1,8 @@
 // Component created by Dominik Koch
 // https://x.com/dominikkoch
 
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js'
 
 type OrbitShape =
   | 'ellipse'

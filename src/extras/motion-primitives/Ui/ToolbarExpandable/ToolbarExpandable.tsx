@@ -9,10 +9,10 @@
 // be mounted twice. lucide-react icons are inlined as identical SVGs
 // (ShiningButton precedent).
 
-import { animate } from 'motion'
 import type { AnimationPlaybackControlsWithThen, Transition } from 'motion'
-import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
+import { animate } from 'motion'
 import type { Accessor, JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js'
 
 const transition: Transition = {
   type: 'spring',

@@ -1,6 +1,5 @@
-import { createEffect, createSignal, onCleanup, onMount, splitProps, untrack } from 'solid-js'
-import { For } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, For, onCleanup, onMount, splitProps, untrack } from 'solid-js'
 
 export type GalleryItem = {
   image: string

@@ -1,5 +1,5 @@
-import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, onCleanup, onMount, splitProps } from 'solid-js'
 
 export type RippleGridVariant = 'lines' | 'dots' | 'cross'
 export type RippleGridAutoRipple = 'center' | 'random' | 'none'

@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount } from 'solid-js'
 
 type Direction = 'right' | 'left' | 'up' | 'down' | 'diagonal'
 type Mode = 'entrance' | 'pointer' | 'both'

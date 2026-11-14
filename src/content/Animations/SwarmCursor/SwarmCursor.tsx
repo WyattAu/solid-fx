@@ -1,5 +1,5 @@
-import { createEffect, onCleanup, onMount, splitProps, Show } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount, Show, splitProps } from 'solid-js'
 
 export type SwarmShape = 'dot' | 'streak' | 'square'
 export type SwarmIdle = 'roam' | 'gather' | 'hide'

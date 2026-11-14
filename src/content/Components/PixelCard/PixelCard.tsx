@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 
 export interface PixelCardProps {
   variant?: 'default' | 'blue' | 'yellow' | 'pink'

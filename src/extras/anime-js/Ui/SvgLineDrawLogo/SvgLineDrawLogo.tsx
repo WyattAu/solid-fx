@@ -1,8 +1,9 @@
 // Built with anime.js v4 (github.com/juliangarnier/anime) — MIT. Demo concept from EXTRAS-ROADMAP.md P1.
-import { Show, onCleanup, onMount, splitProps } from 'solid-js'
-import type { JSX } from 'solid-js'
+
 import { animate, stagger } from 'animejs'
 import { createDrawable } from 'animejs/svg'
+import type { JSX } from 'solid-js'
+import { onCleanup, onMount, Show, splitProps } from 'solid-js'
 import { useReducedMotion } from '@/lib/reducedMotion'
 
 // Default stroke-based mark: ring + bolt + baseline. Geometry only, so every

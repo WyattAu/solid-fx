@@ -1,5 +1,5 @@
-import { createMemo, onCleanup, onMount } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createMemo, onCleanup, onMount } from 'solid-js'
 
 export interface MoltenMetalProps {
   colors?: string[]

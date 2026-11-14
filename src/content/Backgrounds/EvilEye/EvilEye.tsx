@@ -1,4 +1,4 @@
-import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl'
+import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl'
 import { createEffect, onCleanup } from 'solid-js'
 
 interface EvilEyeProps {

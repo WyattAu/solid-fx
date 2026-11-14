@@ -1,5 +1,5 @@
-import { createEffect, createSignal, createUniqueId, For, onCleanup, Show, untrack } from 'solid-js'
 import type { Component, JSX } from 'solid-js'
+import { createEffect, createSignal, createUniqueId, For, onCleanup, Show, untrack } from 'solid-js'
 import { Dynamic } from 'solid-js/web'
 
 export interface PillNavItem {

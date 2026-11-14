@@ -1,15 +1,15 @@
+import type { JSX } from 'solid-js'
 import {
   createEffect,
   createMemo,
   createSignal,
-  children as resolveChildren,
   For,
   onCleanup,
   onMount,
+  children as resolveChildren,
   Show,
   untrack,
 } from 'solid-js'
-import type { JSX } from 'solid-js'
 
 export interface FolderItem {
   title?: string

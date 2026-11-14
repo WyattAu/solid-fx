@@ -1,6 +1,7 @@
 // Source: github.com/codse/animata animata/background/dot.tsx@25c27e5a874c60a56dcc1609df3b2c4f5f8456f8. License: MIT.
-import { splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { splitProps } from 'solid-js'
 
 interface DotProps {
   /**

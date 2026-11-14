@@ -1,5 +1,5 @@
-import { createEffect, createSignal, Index, onCleanup } from 'solid-js'
 import { cancelFrame, frame, motionValue, springValue } from 'motion'
+import { createEffect, createSignal, Index, onCleanup } from 'solid-js'
 import { useReducedMotion as usePrefersReducedMotion } from '@/lib/reducedMotion'
 
 const SETTLE = 9.23

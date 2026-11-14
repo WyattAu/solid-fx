@@ -10,8 +10,8 @@
  */
 import type { JSX } from 'solid-js'
 import { Show } from 'solid-js'
-import Aurora from '@/content/Backgrounds/Aurora/Aurora'
 import StarBorder from '@/content/Animations/StarBorder/StarBorder'
+import Aurora from '@/content/Backgrounds/Aurora/Aurora'
 import SplitText from '@/content/TextAnimations/SplitText/SplitText'
 
 export interface HeroSceneCta {

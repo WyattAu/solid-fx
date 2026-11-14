@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (all computed from props).
-import { createMemo, createSignal, For, Show, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createMemo, createSignal, For, Show, splitProps } from 'solid-js'
 
 export type SchemaVizVariant = 'tree' | 'json' | 'both'
 

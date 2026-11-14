@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/neon-gradient-card.tsx@2712647e193295d2fd85b65e58095fb2009736d7. License: MIT.
-import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js'
 
 interface NeonColorsProps {
   firstColor: string

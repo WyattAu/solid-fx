@@ -1,5 +1,5 @@
-import { createEffect, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, onCleanup } from 'solid-js'
 
 export type CrosshairLineStyle = 'solid' | 'dashed' | 'dotted'
 

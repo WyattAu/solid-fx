@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { mkdirSync } from 'node:fs'
+import path from 'node:path'
 // Debug harness for the blank/near-blank CI captures (QA-TRIAGE "investigate" rows).
 // Per page: console + pageerror capture, .demo-frame bounds / innerHTML length /
 // canvas + img presence, per-component DOM probes, screenshots at 1s / 3s / 5s
@@ -12,8 +14,6 @@
 //   ONLY=shredder node scripts/debug-blanks.mjs            # one component
 import { chromium } from 'playwright'
 import sharp from 'sharp'
-import { mkdirSync } from 'node:fs'
-import path from 'node:path'
 
 const BASE = process.env.BASE ?? 'https://wyattau.github.io/solid-fx'
 const OUT = process.env.OUT ?? '/tmp/opencode/debug3'

@@ -1,5 +1,5 @@
-import Masonry from './Masonry'
 import type { MasonryItem } from './Masonry'
+import Masonry from './Masonry'
 
 const ITEMS: MasonryItem[] = [1, 2, 3, 4, 5, 6].map(n => ({
   id: n,

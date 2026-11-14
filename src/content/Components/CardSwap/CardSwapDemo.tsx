@@ -1,8 +1,8 @@
-import { createSignal } from 'solid-js'
-import CardSwap from './CardSwap'
-import type { CardSwapHandle, CardSwapItem } from './CardSwap'
 import { SunsetIcon } from '@hugeicons/core-free-icons'
+import { createSignal } from 'solid-js'
 import HugeiconsIcon from '@/lib/HugeiconsIcon'
+import type { CardSwapHandle, CardSwapItem } from './CardSwap'
+import CardSwap from './CardSwap'
 
 const ITEMS: CardSwapItem[] = [
   {

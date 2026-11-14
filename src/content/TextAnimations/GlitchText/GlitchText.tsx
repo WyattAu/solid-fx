@@ -1,5 +1,5 @@
-import { createEffect, createMemo, For, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup } from 'solid-js'
 
 export type GlitchMode = 'slices' | 'rgb' | 'scan' | 'noise'
 export type GlitchTrigger = 'always' | 'hover' | 'click'

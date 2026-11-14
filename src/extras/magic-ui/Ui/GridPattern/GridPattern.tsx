@@ -1,6 +1,7 @@
 // Source: github.com/magicuidesign/magic-ui apps/www/registry/magicui/grid-pattern.tsx@37ce829f18dd7d0a7219531a4249b664419933ea. License: MIT.
-import { createUniqueId, splitProps, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createUniqueId, For, Show, splitProps } from 'solid-js'
 
 interface GridPatternProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
   width?: number

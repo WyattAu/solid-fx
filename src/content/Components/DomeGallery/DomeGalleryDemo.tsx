@@ -1,5 +1,5 @@
-import DomeGallery from './DomeGallery'
 import type { DomeGalleryItem } from './DomeGallery'
+import DomeGallery from './DomeGallery'
 
 const IMAGES: DomeGalleryItem[] = [
   'https://picsum.photos/seed/dome-1/774/500',

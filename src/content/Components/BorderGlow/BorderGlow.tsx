@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
 
 interface BorderGlowProps {
   children?: JSX.Element

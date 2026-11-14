@@ -1,7 +1,7 @@
 // solid-fx SEO widget demo — original component (not a port).
 import { createSignal, For } from 'solid-js'
-import LighthouseRing from './LighthouseRing'
 import type { LighthouseRingVariant } from './LighthouseRing'
+import LighthouseRing from './LighthouseRing'
 
 const VARIANTS: LighthouseRingVariant[] = ['rings', 'bars']
 

@@ -1,5 +1,5 @@
-import CircularGallery from './CircularGallery'
 import type { GalleryItem } from './CircularGallery'
+import CircularGallery from './CircularGallery'
 
 const ITEMS: GalleryItem[] = [
   { image: 'https://picsum.photos/seed/circ-1/800/600', text: 'Bridge' },

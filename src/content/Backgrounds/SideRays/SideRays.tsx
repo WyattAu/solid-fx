@@ -1,5 +1,5 @@
-import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createMemo, createSignal, onCleanup, untrack } from 'solid-js'
 
 type Origin = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'right' | 'left'
 

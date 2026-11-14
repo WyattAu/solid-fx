@@ -1,4 +1,7 @@
 ---
+import { existsSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import StarBorder from '../content/Animations/StarBorder/StarBorder';
 /**
  * Landing (index, splash template): cinematic hero with LIVE component
  * islands — Aurora as the background, SplitText for the wordmark,
@@ -9,9 +12,6 @@
  */
 import Aurora from '../content/Backgrounds/Aurora/Aurora';
 import SplitText from '../content/TextAnimations/SplitText/SplitText';
-import StarBorder from '../content/Animations/StarBorder/StarBorder';
-import { existsSync, readdirSync } from 'node:fs';
-import path from 'node:path';
 
 const categories = [
   { name: 'TextAnimations', blurb: 'Split, scramble, decrypt, warp' },

@@ -1,7 +1,6 @@
-import { createEffect, createMemo, onCleanup, onMount } from 'solid-js'
-import { For } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { Gesture } from '@use-gesture/vanilla'
+import type { JSX } from 'solid-js'
+import { createEffect, createMemo, For, onCleanup, onMount } from 'solid-js'
 
 export type DomeGalleryItem = string | { src: string; alt?: string }
 

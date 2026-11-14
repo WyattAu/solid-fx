@@ -1,5 +1,5 @@
 import type { JSX } from 'solid-js'
-import { onCleanup, onMount, createEffect } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 import * as THREE from 'three'
 
 type ColorBendsProps = {

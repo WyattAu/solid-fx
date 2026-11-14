@@ -1,7 +1,7 @@
-import { createEffect, onCleanup, onMount } from 'solid-js'
-import type { JSX } from 'solid-js'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import type { JSX } from 'solid-js'
+import { createEffect, onCleanup, onMount } from 'solid-js'
 
 gsap.registerPlugin(ScrollTrigger)
 

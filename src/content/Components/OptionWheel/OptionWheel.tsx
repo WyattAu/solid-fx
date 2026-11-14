@@ -1,4 +1,4 @@
-import { createEffect, createSignal, onCleanup, onMount, Index } from 'solid-js'
+import { createEffect, createSignal, Index, onCleanup, onMount } from 'solid-js'
 
 type Side = 'left' | 'right'
 

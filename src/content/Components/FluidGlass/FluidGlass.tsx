@@ -1,5 +1,5 @@
-import { createEffect, createSignal, onCleanup, Show, untrack } from 'solid-js'
 import type { JSX } from 'solid-js'
+import { createEffect, createSignal, onCleanup, Show, untrack } from 'solid-js'
 
 type Shape = 'lens' | 'blob' | 'cube' | 'pill' | 'torus' | 'prism' | 'diamond'
 type Interaction = 'follow' | 'drag' | 'static'
