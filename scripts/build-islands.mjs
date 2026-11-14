@@ -114,6 +114,13 @@ for (const f of ['island.mjs', 'island-core.mjs']) {
   else console.warn(`shim missing: ${src} (clone docs-core beside solid-fx)`)
 }
 
+// The emitted stylesheet is named after the package; normalize it to
+// islands.css so site.toml has a stable URL.
+const emittedCss = fs.readdirSync(OUT).find((f) => f.endsWith('.css'))
+if (emittedCss && emittedCss !== 'islands.css') {
+  fs.renameSync(path.join(OUT, emittedCss), path.join(OUT, 'islands.css'))
+}
+
 // The docs-site markdown: category indexes + one page per component.
 const SITE = path.resolve(ROOT, 'docs-site-src')
 fs.rmSync(SITE, { recursive: true, force: true })
@@ -133,7 +140,8 @@ fs.writeFileSync(
 
 const byCategory = new Map()
 for (const island of islands) {
-  const group = `${island.tree}/${island.category}`
+  // Routes drop the `src/` prefix: content/TextAnimations, extras/osint, ...
+  const group = `${island.tree}/${island.category}`.replace(/^src\//, '')
   if (!byCategory.has(group)) byCategory.set(group, [])
   byCategory.get(group).push(island)
 }
