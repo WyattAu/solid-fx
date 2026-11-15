@@ -35,10 +35,15 @@ const AnimatedSquare = (props: AnimatedSquareProps) => {
 
   createEffect(() => {
     const square = props.square
-    // Annotated: motion's ObjectTarget<SVGRectElement> overload omits CSS
-    // properties like opacity; the generic Element overload accepts them.
+    // PORT-NOTE: motion's animate() overload for SVG elements
+    // (ObjectTarget<SVGRectElement>) types only SVG attributes — CSS
+    // properties like opacity are rejected. Route through the HTMLElement
+    // overload, which accepts the full DOMKeyframesDefinition (same pattern
+    // as motion-primitives TextAnimate); runtime path is identical (WAAPI on
+    // the Element).
+    const target = el as unknown as HTMLElement
     const keyframes: DOMKeyframesDefinition = { opacity: [0, props.maxOpacity, 0] }
-    const controls: AnimationPlaybackControls = animate(el, keyframes, {
+    const controls: AnimationPlaybackControls = animate(target, keyframes, {
       duration: props.duration * 2,
       delay: props.index * 0.1,
       easing: 'ease-in-out',
