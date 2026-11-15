@@ -69,6 +69,8 @@ const EXTRAS_GROUPS = [
   ['tsparticles', 'tsParticles'],
   ['anime-js', 'anime.js'],
   ['motion-primitives', 'Motion Primitives'],
+  ['animata', 'Animata'],
+  ['kokonut', 'Kokonut'],
   ['osint', 'OSINT'],
   ['seo', 'SEO'],
 ]

@@ -2,24 +2,35 @@
 
 > 218 animated, interactive components for **SolidJS** — a component-for-component
 > port of [react-bits](https://github.com/DavidHDev/react-bits) (TypeScript +
-> Tailwind variant) to SolidJS idioms.
+> Tailwind variant) to SolidJS idioms, plus 154 extras widgets from seven
+> additional sources and 8 full-page scenes.
 
-**Status: `CURRENT`** — 218/218 components ported. Every component typechecks
-(`tsc --noEmit` clean), the barrel smoke test passes, the React-free contract
-oracle is green, and the Starlight site builds all 218 demo pages
-(`bun run build`). 21 `PORT-NOTE` markers remain as the greppable debt ledger
-(`make contract --strict` eventually must reach zero); visual QA against
-reactbits.dev is the next milestone.
+**Status: `CURRENT`** — 218/218 react-bits components ported with **0
+`PORT-NOTE` markers** (React-free contract oracle green), plus 154 extras
+widgets (Magic UI ×40, Motion Primitives ×43, Animata ×36, tsParticles ×9,
+anime.js ×5, Kokonut ×3, original OSINT ×8, original SEO ×10) and 8
+scenes. Every component typechecks (`tsc --noEmit` clean), the barrel
+smoke test passes, and the Starlight site builds all 380 demo pages with
+sidebar navigation (`bun run build`; live at
+https://wyattau.github.io/solid-fx/).
 
 ## What this is
 
 - Text animations, animations, components, micro-interactions, and backgrounds
   (218 total), each a single self-contained `.tsx` under
   `src/content/<Category>/<Name>/<Name>.tsx`.
+- Extras in `src/extras/<source>/<Category>/<Name>/<Name>.tsx` — ported
+  widgets plus two original categories (OSINT, SEO) built on free keyless
+  APIs.
+- Scenes in `src/scenes/` — full-page compositions; the only layer allowed
+  to compose multiple components.
 - TypeScript strict + Tailwind CSS v4.
 - Copy-paste friendly: components import nothing outside `solid-js`/`solid-js/web`,
-  the libraries they actually use (`gsap`, `motion`, `ogl`, `three`, `matter-js`,
-  `vgpu`), and at most `src/lib` helpers.
+  the libraries they actually use (`gsap`, `motion`, `ogl`, `three`,
+  `matter-js`, `vgpu`, `@tsparticles`, `animejs`), and at most `src/lib`
+  helpers.
+- `research/` — scored survey of 200 browser-native design/widget concepts
+  driving the extras roadmap (batches 11–15).
 
 ## Dev site
 

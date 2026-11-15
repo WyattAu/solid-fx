@@ -83,6 +83,8 @@ const EXTRAS = [
   { source: 'tsparticles', label: 'tsParticles' },
   { source: 'anime-js', label: 'anime.js' },
   { source: 'motion-primitives', label: 'Motion Primitives' },
+  { source: 'animata', label: 'Animata' },
+  { source: 'kokonut', label: 'Kokonut' },
   { source: 'osint', label: 'OSINT' },
   { source: 'seo', label: 'SEO' },
 ]

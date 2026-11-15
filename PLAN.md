@@ -42,27 +42,38 @@
   artifact `screenshots` (218 PNGs), pixel-scan with the Pillow snippet in
   git history ("blank frames" scan).
 
-## Resume block v3 (2026-11-07, next-session queue)
+## Resume block v4 (2026-11-15, next-session queue)
 
-State: 218 + 16 extras = 234 components from 5 sources; site live; CI green
-(7adfd12..e2ea206 lineage, latest e2ea206+). All 8 blank frames reclassified
-(6 verified real-browser/mobile, 2 environment).
+State: 218 content + 53 extras + 8 scenes; 6 extras sources with sidebar
+navigation (magic-ui 40, tsparticles 9, anime-js 5, motion-primitives 43,
+osint 8, seo 10 pages); CI + deploy green on 6b83d1b. Contract clean (React
+imports 0, PORT-NOTEs 0). Research notes for the 200-concept design survey
+landed in research/ (README + 4 files, scored tiers/effort/verdicts).
+
+Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
+(5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8
+(4), OSINT ×8 + SEO ×10 wired with docs + sidebar (gen-docs EXTRAS +
+astro.config EXTRAS_GROUPS), scenes ×8, batch-8 TS repairs (motion
+DOMKeyframes cast + ease option fix; WordRotate Required defaults;
+autoplay/playsinline casing; FaqSchemaGen createMemo import).
 
 Next tasks (in order):
-1. Motion Primitives batch 2 — upstream ibelick/motion-primitives has ~36
-   components; picks: Spotlight, Iris Highlight, Dot Background, Ribbons.
-   Tree: src/extras/motion-primitives/Ui/ (3 pilot components landed:
-   TextScramble, TextShimmerWave, Magnetic).
-2. anime.js pilot promotion — TimelineTextReveal/SvgLineDrawLogo/StaggerChoreo
-   from pilot to documented extras (EXTRAS-ROADMAP P1 concepts, done; promote
-   labels + docs polish).
-3. First src/scenes/ composition — the landing proves the pattern; make
-   src/scenes/ a real layer (scene = multi-component composition; scenes demo
-   pages wired like extras).
-4. QA: 12 blanks in QA-TRIAGE are reclassified (6 verified real-browser,
-   capture-timing; 2 environment WebGPU; CRTWarp verified mobile; ModelViewer
-   + SoftAurora verified desktop). Remaining real investigations: none —
-   all classified.
-5. Minor: Starlight prev/next pagination container renders empty
-   (sidebar + search cover navigation; low priority).
+1. Extras batch 11 — `src/extras/instruments/` per research/README roadmap:
+   MarkovTransitionGrid, HysteresisSlider, DetentSlideRail,
+   MantissaExponentSpinner, SeedBadge, DecayHaloBadge (T0, no new deps).
+2. Extras batch 12 — `src/extras/data/`: BulletViolinKpi, QQBadge,
+   ProfileFingerprint, SparklineText, HorizonStrips, MonteCarloBar.
+3. `src/lib/num/` batch — seeded PRNG, Welford/P2, FFT, Kalman, oklch
+   solver, blue-noise generator (enables batches 12-13).
+4. Screenshots baseline v5 — verify osint/seo pages render (CI pixel scan;
+   `gh workflow run screenshots -R WyattAu/solid-fx`).
+5. WebGPU coverage gate — verify vgpu scenes on a WebGPU browser before
+   batch 14 (fx) per research/03 watch rows.
+6. Minor: Starlight prev/next pagination container renders empty (sidebar +
+   search cover navigation; low priority).
+
+Environment hazards (unchanged): box SIGTERMs builds under load; CI is the
+oracle. Parallel sessions commit to this tree — always `git log` + `git
+status` before staging, and expect absorb-races on shared files.
+
 
