@@ -44,11 +44,11 @@
 
 ## Resume block v4 (2026-11-15, next-session queue)
 
-State: 218 content + 53 extras + 8 scenes; 6 extras sources with sidebar
-navigation (magic-ui 40, tsparticles 9, anime-js 5, motion-primitives 43,
-osint 8, seo 10 pages); CI + deploy green on 6b83d1b. Contract clean (React
-imports 0, PORT-NOTEs 0). Research notes for the 200-concept design survey
-landed in research/ (README + 4 files, scored tiers/effort/verdicts).
+State: 218 content + 166 extras + 8 scenes = 392 pages; 10 extras sources
+with sidebar navigation; CI + deploy green on 42c8006 lineage. Batch 11
+(src/extras/instruments ×6) and batch 12 first half (src/extras/data ×6)
+landed with src/lib/num (mulberry32, Welford/SE, BSM quantile, Box-Muller +
+exponential samplers, Gaussian KDE, excess kurtosis).
 
 Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
 (5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8

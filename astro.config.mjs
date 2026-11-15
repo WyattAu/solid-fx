@@ -73,6 +73,8 @@ const EXTRAS_GROUPS = [
   ['kokonut', 'Kokonut'],
   ['osint', 'OSINT'],
   ['seo', 'SEO'],
+  ['instruments', 'Instruments'],
+  ['data', 'Data'],
 ]
 
 function extrasGroup([source, label]) {

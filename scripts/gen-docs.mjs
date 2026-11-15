@@ -87,6 +87,8 @@ const EXTRAS = [
   { source: 'kokonut', label: 'Kokonut' },
   { source: 'osint', label: 'OSINT' },
   { source: 'seo', label: 'SEO' },
+  { source: 'instruments', label: 'Instruments' },
+  { source: 'data', label: 'Data' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 
