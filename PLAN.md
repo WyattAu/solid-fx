@@ -44,13 +44,14 @@
 
 ## Resume block v4 (2026-11-15, next-session queue)
 
-State: 218 content + 171 extras + 8 scenes = 397 pages; 10 extras sources
-with sidebar navigation; CI + deploy green on a5e3f49 lineage (DocSearch
-island added by a parallel session on top). Batch 13 landed: num kernels
-extended with fftInPlace/magnitudeSpectrum/paretoFrontier/buildSpatialHash;
-BarycentricMixer + PolarDial (instruments ×8) and FftSpectrum +
-ParetoFrontier + SpatialHashScatter (data ×9). Screenshots baseline v5 ran
-green (workflow_dispatch + scheduled).
+State: 218 content + 173 extras + 11 scenes = 402 pages; 11 extras sources
+with sidebar navigation; CI + deploy green on aa29de8 lineage. Batches 14-15
+landed: fx ×2 (ReactionDiffusion WebGL2 Gray-Scott ping-pong with capability
+probe + fallback; DitherField Bayer ordered-dither) and scenes ×3
+(TufteDocScene sidenote rail, ExplorableScene inline-scrubbed physics,
+ZeroClsScene with live PerformanceObserver CLS meter). The WebGPU-compute
+watchlist items remain gated on the phone verification backlog by design —
+batch 14 shipped the WebGL2-safe subset instead.
 
 Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
 (5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8
