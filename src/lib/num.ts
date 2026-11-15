@@ -162,3 +162,207 @@ export function excessKurtosis(data: number[]): number {
   m4 /= n
   return m2 === 0 ? 0 : m4 / (m2 * m2) - 3
 }
+
+// ---------------------------------------------------------------------------
+// Spectral kernel
+// ---------------------------------------------------------------------------
+
+/**
+ * Iterative radix-2 Cooley-Tukey FFT, in place over separate real/imaginary
+ * buffers. Length must be a power of two. ~1 KB of logic, no allocation
+ * beyond the caller's buffers — the zero-Wasm substitute for a DSP binary.
+ */
+export function fftInPlace(re: Float64Array, im: Float64Array): void {
+  const n = re.length
+  if (n !== im.length || n === 0 || (n & (n - 1)) !== 0) {
+    throw new Error('fftInPlace: length must be a nonzero power of two')
+  }
+  // bit-reversal permutation
+  for (let i = 1, j = 0; i < n; i++) {
+    let bit = n >> 1
+    for (; j & bit; bit >>= 1) j ^= bit
+    j ^= bit
+    if (i < j) {
+      const tre = re[i]
+      re[i] = re[j]
+      re[j] = tre
+      const tim = im[i]
+      im[i] = im[j]
+      im[j] = tim
+    }
+  }
+  // butterflies
+  for (let len = 2; len <= n; len <<= 1) {
+    const ang = (-2 * Math.PI) / len
+    const stepRe = Math.cos(ang)
+    const stepIm = Math.sin(ang)
+    const half = len >> 1
+    for (let base = 0; base < n; base += len) {
+      let curRe = 1
+      let curIm = 0
+      for (let k = 0; k < half; k++) {
+        const i = base + k
+        const j = i + half
+        const vRe = re[j] * curRe - im[j] * curIm
+        const vIm = re[j] * curIm + im[j] * curRe
+        re[j] = re[i] - vRe
+        im[j] = im[i] - vIm
+        re[i] += vRe
+        im[i] += vIm
+        const nextRe = curRe * stepRe - curIm * stepIm
+        curIm = curRe * stepIm + curIm * stepRe
+        curRe = nextRe
+      }
+    }
+  }
+}
+
+/** Hann window applied to a copy of the input. */
+export function hannWindow(signal: Float64Array): Float64Array {
+  const n = signal.length
+  const out = new Float64Array(n)
+  const denom = n > 1 ? n - 1 : 1
+  for (let i = 0; i < n; i++) {
+    out[i] = signal[i] * 0.5 * (1 - Math.cos((2 * Math.PI * i) / denom))
+  }
+  return out
+}
+
+/**
+ * One-sided magnitude spectrum: zero-pads to a power of two, Hann-windows,
+ * FFTs, returns magnitudes for bins 0..n/2. Bin k ↔ frequency
+ * k * sampleRate / nextPow2(input length).
+ */
+export function magnitudeSpectrum(signal: ArrayLike<number>): { mags: Float64Array; n: number } {
+  let n = 1
+  while (n < signal.length) n <<= 1
+  const re = new Float64Array(n)
+  for (let i = 0; i < signal.length; i++) re[i] = signal[i]
+  const win = hannWindow(re)
+  const im = new Float64Array(n)
+  fftInPlace(win, im)
+  const half = n >> 1
+  const mags = new Float64Array(half)
+  for (let k = 0; k < half; k++) mags[k] = Math.hypot(win[k], im[k])
+  return { mags, n }
+}
+
+// ---------------------------------------------------------------------------
+// Pareto kernel
+// ---------------------------------------------------------------------------
+
+export interface XYPoint {
+  x: number
+  y: number
+}
+
+/**
+ * Pareto-efficient subset for "bigger is better on both axes". O(n log n)
+ * sort + reverse sweep with a running best-y. For minimize problems, flip
+ * the signs of the coordinates first.
+ */
+export function paretoFrontier(points: XYPoint[]): XYPoint[] {
+  const sorted = [...points].sort((a, b) => a.x - b.x || a.y - b.y)
+  const out: XYPoint[] = []
+  let bestY = Number.NEGATIVE_INFINITY
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    const p = sorted[i]
+    if (p.y > bestY) {
+      out.push(p)
+      bestY = p.y
+    }
+  }
+  return out.reverse()
+}
+
+// ---------------------------------------------------------------------------
+// Spatial hash kernel
+// ---------------------------------------------------------------------------
+
+export interface SpatialHash {
+  /** Nearest point index within the hash, or -1. */
+  queryNearest(x: number, y: number, xs: Float64Array, ys: Float64Array): number
+  readonly cols: number
+  readonly rows: number
+}
+
+/**
+ * Uniform-grid spatial hash in flat typed arrays (CSR layout: cell → count
+ * prefix → indices). O(1) expected nearest queries for the scatter widgets;
+ * zero per-query allocation.
+ */
+export function buildSpatialHash(xs: Float64Array, ys: Float64Array, cell: number): SpatialHash {
+  const n = xs.length
+  let minX = Number.POSITIVE_INFINITY
+  let minY = Number.POSITIVE_INFINITY
+  let maxX = Number.NEGATIVE_INFINITY
+  let maxY = Number.NEGATIVE_INFINITY
+  for (let i = 0; i < n; i++) {
+    if (xs[i] < minX) minX = xs[i]
+    if (xs[i] > maxX) maxX = xs[i]
+    if (ys[i] < minY) minY = ys[i]
+    if (ys[i] > maxY) maxY = ys[i]
+  }
+  const cols = Math.max(1, Math.ceil((maxX - minX) / cell))
+  const rows = Math.max(1, Math.ceil((maxY - minY) / cell))
+  const colOf = (x: number) => Math.min(cols - 1, Math.max(0, Math.floor((x - minX) / cell)))
+  const rowOf = (y: number) => Math.min(rows - 1, Math.max(0, Math.floor((y - minY) / cell)))
+
+  const counts = new Int32Array(cols * rows)
+  for (let i = 0; i < n; i++) counts[rowOf(ys[i]) * cols + colOf(xs[i])] += 1
+  const offsets = new Int32Array(cols * rows + 1)
+  for (let c = 0; c < cols * rows; c++) offsets[c + 1] = offsets[c] + counts[c]
+  const indices = new Int32Array(n)
+  const cursor = new Int32Array(cols * rows)
+  for (let i = 0; i < n; i++) {
+    const c = rowOf(ys[i]) * cols + colOf(xs[i])
+    indices[offsets[c] + cursor[c]] = i
+    cursor[c] += 1
+  }
+
+  const queryNearest = (
+    qx: number,
+    qy: number,
+    xsArr: Float64Array,
+    ysArr: Float64Array,
+  ): number => {
+    if (n === 0) return -1
+    const cx = colOf(qx)
+    const cy = rowOf(qy)
+    const maxRing = Math.max(cols, rows)
+    let best = -1
+    let bestD2 = Number.POSITIVE_INFINITY
+    for (let ring = 0; ring <= maxRing; ring++) {
+      const x0 = Math.max(0, cx - ring)
+      const x1 = Math.min(cols - 1, cx + ring)
+      const y0 = Math.max(0, cy - ring)
+      const y1 = Math.min(rows - 1, cy + ring)
+      for (let ry = y0; ry <= y1; ry++) {
+        for (let rx = x0; rx <= x1; rx++) {
+          // only the ring's perimeter (interiors were scanned at smaller r)
+          if (ring > 0 && rx > x0 && rx < x1 && ry > y0 && ry < y1) continue
+          const c = ry * cols + rx
+          for (let k = offsets[c]; k < offsets[c + 1]; k++) {
+            const idx = indices[k]
+            const dx = xsArr[idx] - qx
+            const dy = ysArr[idx] - qy
+            const d2 = dx * dx + dy * dy
+            if (d2 < bestD2) {
+              bestD2 = d2
+              best = idx
+            }
+          }
+        }
+      }
+      // early exit: any point found in this ring is nearer than anything
+      // a wider ring could contain, because the ring bound is the cell size
+      if (best >= 0 && ring > 0) {
+        const ringDist = (ring - 1) * cell
+        if (bestD2 <= ringDist * ringDist) break
+      }
+    }
+    return best
+  }
+
+  return { queryNearest, cols, rows }
+}
