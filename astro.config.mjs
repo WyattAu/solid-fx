@@ -75,6 +75,7 @@ const EXTRAS_GROUPS = [
   ['seo', 'SEO'],
   ['instruments', 'Instruments'],
   ['data', 'Data'],
+  ['fx', 'FX'],
 ]
 
 function extrasGroup([source, label]) {
