@@ -54,7 +54,9 @@ interface WordRotateProps {
   style?: JSX.CSSProperties
 }
 
-const DEFAULT_MOTION_PROPS: Omit<MotionProps, 'transition'> = {
+// Required<>: the phase values are always defaulted, so `.opacity`/`.y`
+// accessors never see undefined (TS2532 otherwise).
+const DEFAULT_MOTION_PROPS: Required<Omit<MotionProps, 'transition'>> = {
   initial: { opacity: 0, y: -50 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 50 },
@@ -72,8 +74,7 @@ export function WordRotate(props: WordRotateProps) {
 
   const duration = () => own.duration ?? 2500
   const initial = () => own.motionProps?.initial ?? DEFAULT_MOTION_PROPS.initial
-  const animateValues = () =>
-    own.motionProps?.animate ?? DEFAULT_MOTION_PROPS.animate
+  const animateValues = () => own.motionProps?.animate ?? DEFAULT_MOTION_PROPS.animate
   const exitValues = () => own.motionProps?.exit ?? DEFAULT_MOTION_PROPS.exit
   const transition = () =>
     own.motionProps?.transition ?? { duration: 0.25, ease: 'easeOut' as const }
@@ -124,7 +125,11 @@ export function WordRotate(props: WordRotateProps) {
       // Skip the mount run — the enter above already covers it.
       if (gen === 1) return
 
-      const exit = animate(el, { opacity: exitValues().opacity ?? 0, y: exitValues().y ?? 50 }, transition())
+      const exit = animate(
+        el,
+        { opacity: exitValues().opacity ?? 0, y: exitValues().y ?? 50 },
+        transition(),
+      )
       active = exit
       exit.then(() => {
         if (gen !== generation) return

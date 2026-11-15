@@ -60,6 +60,37 @@ function sceneGroup() {
   return { label: 'Scenes', collapsed: true, items }
 }
 
+// "Extras" sidebar groups from the generated docs/extras/<source> tree —
+// docs/extras/<source>/<category-lower>/<Name>.mdx pages (gen-docs.mjs writes
+// one file per component). Links lowercase the file name to match Starlight's
+// slug generation (same rule as catGroup).
+const EXTRAS_GROUPS = [
+  ['magic-ui', 'Magic UI'],
+  ['tsparticles', 'tsParticles'],
+  ['anime-js', 'anime.js'],
+  ['motion-primitives', 'Motion Primitives'],
+  ['osint', 'OSINT'],
+  ['seo', 'SEO'],
+]
+
+function extrasGroup([source, label]) {
+  const base = `./docs/extras/${source}`
+  let pages = []
+  try {
+    pages = readdirSync(base, { recursive: true })
+      .filter(f => f.endsWith('.mdx'))
+      .map(f => f.replace('.mdx', ''))
+      .sort()
+  } catch {
+    pages = []
+  }
+  const items = pages.map(rel => {
+    const name = rel.split('/').pop() ?? rel
+    return { label: name, link: `/extras/${source}/${rel.toLowerCase()}/` }
+  })
+  return { label, collapsed: true, items }
+}
+
 export default defineConfig({
   site: 'https://wyattau.github.io',
   base: '/solid-fx',
@@ -76,7 +107,7 @@ export default defineConfig({
         PageFrame: './src/site/PageFrame.astro',
         Hero: './src/site/Hero.astro',
       },
-      sidebar: [...CATEGORIES.map(catGroup), sceneGroup()],
+      sidebar: [...CATEGORIES.map(catGroup), ...EXTRAS_GROUPS.map(extrasGroup), sceneGroup()],
     }),
     solidJs(),
   ],

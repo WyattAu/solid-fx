@@ -103,7 +103,7 @@ function Background() {
 
       {/* fixed-width lanes → constant 40px spacing, clipped to whatever fits */}
       <For each={LANE_INDEXES}>
-        {(i) => (
+        {i => (
           <div class="flex h-full w-10 shrink-0 justify-center">
             <div class="relative h-full w-px rotate-12 bg-gray-100/10">
               {/* beam rides this diagonal line; ~30% of lanes get one */}

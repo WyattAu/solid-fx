@@ -38,13 +38,7 @@ const LETTER_CLASS =
   '[:hover+span+&]:font-[400]'
 
 export function KineticText(props: KineticTextProps) {
-  const [own, rest] = splitProps(props, [
-    'text',
-    'as',
-    'class',
-    'className',
-    'style',
-  ])
+  const [own, rest] = splitProps(props, ['text', 'as', 'class', 'className', 'style'])
 
   const tag = () => own.as ?? 'h1'
 
@@ -64,7 +58,7 @@ export function KineticText(props: KineticTextProps) {
       style={mergedStyle()}
     >
       <For each={own.text.split('')}>
-        {(letter) => (
+        {letter => (
           <span aria-hidden="true" class={LETTER_CLASS}>
             {letter === ' ' ? '\u00A0' : letter}
           </span>

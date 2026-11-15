@@ -84,7 +84,9 @@ export const AnimatedList = (props: AnimatedListProps) => {
   // window (only possible when the window resets on children/delay change)
   // spring out first, then the shown list commits after the spring settles.
   createEffect(() => {
-    const next = childrenArray().slice(0, index() + 1).reverse()
+    const next = childrenArray()
+      .slice(0, index() + 1)
+      .reverse()
     const removed = untrack(shown).filter(item => !next.includes(item))
 
     if (removed.length === 0) {

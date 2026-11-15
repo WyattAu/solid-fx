@@ -186,7 +186,7 @@ export function AnimatedTimeline(props: AnimatedTimelineProps) {
   })
 
   const setActive = (index: number | null) => {
-    setState((s) => (s.active === index ? s : { active: index, prev: s.active }))
+    setState(s => (s.active === index ? s : { active: index, prev: s.active }))
     props.onEventHover?.(index !== null ? props.events[index] : null)
   }
 

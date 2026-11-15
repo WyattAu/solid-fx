@@ -6,10 +6,7 @@ import WordRotate from './WordRotate'
 function WordRotateDemo() {
   return (
     <div class="flex h-96 w-full items-center justify-center rounded-lg border border-gray-800 bg-gray-950">
-      <WordRotate
-        class="text-4xl font-bold text-white"
-        words={['Word', 'Rotate', 'Solid']}
-      />
+      <WordRotate class="text-4xl font-bold text-white" words={['Word', 'Rotate', 'Solid']} />
     </div>
   )
 }

@@ -116,8 +116,7 @@ export const VideoText = (props: VideoTextProps) => {
   const [svgMask, setSvgMask] = createSignal('')
 
   const buildSvgMask = (): string => {
-    const responsiveFontSize =
-      typeof fontSize() === 'number' ? `${fontSize()}vw` : fontSize()
+    const responsiveFontSize = typeof fontSize() === 'number' ? `${fontSize()}vw` : fontSize()
     return `<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><text x='50%' y='50%' font-size='${responsiveFontSize}' font-weight='${fontWeight()}' text-anchor='${textAnchor()}' dominant-baseline='${dominantBaseline()}' font-family='${fontFamily()}'>${content()}</text></svg>`
   }
 
@@ -134,9 +133,7 @@ export const VideoText = (props: VideoTextProps) => {
     onCleanup(() => window.removeEventListener('resize', updateSvgMask))
   })
 
-  const dataUrlMask = createMemo(
-    () => `url("data:image/svg+xml,${encodeURIComponent(svgMask())}")`,
-  )
+  const dataUrlMask = createMemo(() => `url("data:image/svg+xml,${encodeURIComponent(svgMask())}")`)
 
   return (
     <Dynamic
@@ -164,11 +161,11 @@ export const VideoText = (props: VideoTextProps) => {
             if (muted()) videoEl.muted = true
           }}
           class="h-full w-full object-cover"
-          autoPlay={autoPlay()}
+          autoplay={autoPlay()}
           muted={muted()}
           loop={loop()}
           preload={preload()}
-          playsInline
+          playsinline
         >
           <source src={own.src} />
           Your browser does not support the video tag.

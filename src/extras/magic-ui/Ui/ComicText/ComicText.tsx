@@ -15,13 +15,7 @@ interface ComicTextProps {
 }
 
 export function ComicText(props: ComicTextProps) {
-  const [own, rest] = splitProps(props, [
-    'children',
-    'class',
-    'className',
-    'style',
-    'fontSize',
-  ])
+  const [own, rest] = splitProps(props, ['children', 'class', 'className', 'style', 'fontSize'])
 
   // Upstream: runtime validation, one-shot in the Solid body (component
   // bodies run once per instance), same as upstream's per-render pass.

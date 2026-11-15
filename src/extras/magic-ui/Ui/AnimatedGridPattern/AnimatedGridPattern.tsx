@@ -1,9 +1,17 @@
 // Source: github.com/magicuidesign/magicui apps/www/registry/magicui/animated-grid-pattern.tsx@6f7b531e77659855d4bc1bec8e20fdb0c8199b20. License: MIT.
 
 import type { JSX } from 'solid-js'
-import type { AnimationPlaybackControls } from 'motion'
+import type { AnimationPlaybackControls, DOMKeyframesDefinition } from 'motion'
 import { animate } from 'motion'
-import { createEffect, createSignal, createUniqueId, For, onCleanup, onMount, splitProps } from 'solid-js'
+import {
+  createEffect,
+  createSignal,
+  createUniqueId,
+  For,
+  onCleanup,
+  onMount,
+  splitProps,
+} from 'solid-js'
 
 interface AnimatedSquareProps {
   square: { id: number; pos: [number, number]; iteration: number }
@@ -27,15 +35,14 @@ const AnimatedSquare = (props: AnimatedSquareProps) => {
 
   createEffect(() => {
     const square = props.square
-    const controls: AnimationPlaybackControls = animate(
-      el,
-      { opacity: [0, props.maxOpacity, 0] },
-      {
-        duration: props.duration * 2,
-        delay: props.index * 0.1,
-        easing: 'ease-in-out',
-      },
-    )
+    // Annotated: motion's ObjectTarget<SVGRectElement> overload omits CSS
+    // properties like opacity; the generic Element overload accepts them.
+    const keyframes: DOMKeyframesDefinition = { opacity: [0, props.maxOpacity, 0] }
+    const controls: AnimationPlaybackControls = animate(el, keyframes, {
+      duration: props.duration * 2,
+      delay: props.index * 0.1,
+      easing: 'ease-in-out',
+    })
     const timeout = setTimeout(
       () => props.onComplete(square.id),
       (props.index * 0.1 + props.duration * 2 + props.repeatDelay) * 1000,
@@ -59,7 +66,7 @@ const AnimatedSquare = (props: AnimatedSquareProps) => {
   )
 }
 
-export interface AnimatedGridPatternProps extends JSX.SVGAttributes<SVGSVGElement> {
+export interface AnimatedGridPatternProps extends JSX.GSVGAttributes<SVGSVGElement> {
   width?: number
   height?: number
   x?: number
@@ -156,10 +163,7 @@ export const AnimatedGridPattern = (props: AnimatedGridPatternProps) => {
         setDimensions(currentDimensions => {
           const nextWidth = entry.contentRect.width
           const nextHeight = entry.contentRect.height
-          if (
-            currentDimensions.width === nextWidth &&
-            currentDimensions.height === nextHeight
-          ) {
+          if (currentDimensions.width === nextWidth && currentDimensions.height === nextHeight) {
             return currentDimensions
           }
           return { width: nextWidth, height: nextHeight }
@@ -190,7 +194,7 @@ export const AnimatedGridPattern = (props: AnimatedGridPatternProps) => {
           <path
             d={`M.5 ${height()}V.5H${width()}`}
             fill="none"
-            stroke-dasharray={strokeDasharray()}
+            stroke-dasharray={String(strokeDasharray())}
           />
         </pattern>
       </defs>

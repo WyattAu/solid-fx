@@ -77,9 +77,7 @@ export default function TextFlip(props: TextFlipProps) {
       <style>{textFlipStyles}</style>
       <p class="text-foreground">Coding is</p>
       <div ref={tallestEl} class="flex flex-col overflow-hidden text-blue-400">
-        <For each={FLIP_WORDS}>
-          {(word) => <span class="tf-flip-words">{word}</span>}
-        </For>
+        <For each={FLIP_WORDS}>{word => <span class="tf-flip-words">{word}</span>}</For>
       </div>
     </div>
   )

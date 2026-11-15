@@ -5,9 +5,7 @@ function AnimatedBeamDemo() {
   return (
     <AnimatedBeam class="h-96 w-full rounded-lg border border-gray-800">
       <div class="flex h-full w-full items-center justify-center">
-        <p class="relative z-10 text-center text-lg font-semibold text-white">
-          Ships in the night
-        </p>
+        <p class="relative z-10 text-center text-lg font-semibold text-white">Ships in the night</p>
       </div>
     </AnimatedBeam>
   )

@@ -43,13 +43,6 @@ for (const category of categories) {
   }
 }
 
-const EXTRAS_SOURCES = [
-  { source: 'magic-ui', label: 'Magic UI (MIT)' },
-  { source: 'tsparticles', label: 'tsParticles (MIT)' },
-  { source: 'anime-js', label: 'anime.js (MIT)' },
-  { source: 'motion-primitives', label: 'Motion Primitives (MIT)' },
-]
-
 const index = [
   '---',
   "title: 'solid-fx'",
@@ -83,14 +76,15 @@ const index = [
 writeFileSync(path.join(docsDir, 'index.mdx'), index.join('\n'))
 
 // Extras sources (src/extras/<source>/<Category>/<Name>/<Name>.tsx) —
-// non-react-bits ports, one Starlight page each + an "Extras" sidebar group.
-// Extras sources (src/extras/<source>/<Category>/<Name>/<Name>.tsx) —
-// non-react-bits ports, one Starlight page each + an "Extras" sidebar group.
+// non-react-bits ports + original widget categories, one Starlight page each
+// + a sidebar group per source (astro.config.mjs).
 const EXTRAS = [
   { source: 'magic-ui', label: 'Magic UI' },
   { source: 'tsparticles', label: 'tsParticles' },
   { source: 'anime-js', label: 'anime.js' },
   { source: 'motion-primitives', label: 'Motion Primitives' },
+  { source: 'osint', label: 'OSINT' },
+  { source: 'seo', label: 'SEO' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 
@@ -112,7 +106,7 @@ for (const { source, label } of EXTRAS) {
       const mdx = [
         '---',
         `title: ${base}`,
-        `description: 'SolidJS port of the Magic UI ${base} component (source: ${source}).'`,
+        `description: '${label} ${base} component for SolidJS (source tree: src/extras/${source}).'`,
         '---',
         '',
         `import DemoIsland from '../../../../src/islands/DemoIsland'`,

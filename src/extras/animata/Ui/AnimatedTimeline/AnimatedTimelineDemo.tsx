@@ -14,7 +14,7 @@ function AnimatedTimelineDemo() {
       <AnimatedTimeline
         events={EVENTS}
         initialActiveIndex={1}
-        onEventClick={(event) => console.log('clicked', event.id)}
+        onEventClick={event => console.log('clicked', event.id)}
       />
     </div>
   )
