@@ -178,6 +178,26 @@ for (const [group, groupIslands] of byCategory) {
   }
 }
 
+// Root homepage: category index links (route: index.html via slug).
+const groups = [...byCategory.keys()].sort()
+fs.writeFileSync(
+  path.join(SITE, 'index.md'),
+  [
+    '---',
+    'title: solid-fx on the docs static shell',
+    `description: ${islands.length} interactive SolidJS components served as static-shell islands by docs-compiler.`,
+    'slug: index',
+    '---',
+    '',
+    '# solid-fx on the docs static shell',
+    '',
+    `${islands.length} components across ${groups.length} categories.`,
+    '',
+    ...groups.map(g => `- [${g}](/${g}/index.html)`),
+    '',
+  ].join('\n'),
+)
+
 const shared = fs.readdirSync(OUT).filter(f => f.startsWith('shared/') || f.endsWith('.css'))
 fs.writeFileSync(
   path.join(OUT, 'manifest.json'),
