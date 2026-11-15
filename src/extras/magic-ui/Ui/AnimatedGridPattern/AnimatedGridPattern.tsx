@@ -46,7 +46,7 @@ const AnimatedSquare = (props: AnimatedSquareProps) => {
     const controls: AnimationPlaybackControls = animate(target, keyframes, {
       duration: props.duration * 2,
       delay: props.index * 0.1,
-      easing: 'ease-in-out',
+      ease: 'easeInOut',
     })
     const timeout = setTimeout(
       () => props.onComplete(square.id),
