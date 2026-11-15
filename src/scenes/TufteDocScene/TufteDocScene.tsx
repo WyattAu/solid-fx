@@ -5,7 +5,6 @@
 // Below 720px container width the rail collapses inline.
 import type { JSX } from 'solid-js'
 import { For } from 'solid-js'
-import SparklineText from '@/extras/data/Ui/SparklineText/SparklineText'
 
 export interface Sidenote {
   /** Number rendered in the margin. */
