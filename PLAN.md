@@ -44,11 +44,13 @@
 
 ## Resume block v4 (2026-11-15, next-session queue)
 
-State: 218 content + 166 extras + 8 scenes = 392 pages; 10 extras sources
-with sidebar navigation; CI + deploy green on 42c8006 lineage. Batch 11
-(src/extras/instruments ×6) and batch 12 first half (src/extras/data ×6)
-landed with src/lib/num (mulberry32, Welford/SE, BSM quantile, Box-Muller +
-exponential samplers, Gaussian KDE, excess kurtosis).
+State: 218 content + 171 extras + 8 scenes = 397 pages; 10 extras sources
+with sidebar navigation; CI + deploy green on a5e3f49 lineage (DocSearch
+island added by a parallel session on top). Batch 13 landed: num kernels
+extended with fftInPlace/magnitudeSpectrum/paretoFrontier/buildSpatialHash;
+BarycentricMixer + PolarDial (instruments ×8) and FftSpectrum +
+ParetoFrontier + SpatialHashScatter (data ×9). Screenshots baseline v5 ran
+green (workflow_dispatch + scheduled).
 
 Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
 (5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8
