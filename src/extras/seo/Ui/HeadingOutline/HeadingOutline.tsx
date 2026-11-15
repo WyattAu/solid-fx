@@ -49,7 +49,10 @@ const HeadingOutline = (props: HeadingOutlineProps) => {
   const verdict = (): 'pass' | 'warn' => (h1Count() === 1 && skips().length === 0 ? 'pass' : 'warn')
 
   return (
-    <div class={`flex h-full w-full flex-col gap-3 ${props.class ?? ''} ${props.className ?? ''}`} style={props.style}>
+    <div
+      class={`flex h-full w-full flex-col gap-3 ${props.class ?? ''} ${props.className ?? ''}`}
+      style={props.style}
+    >
       <textarea
         value={html()}
         onInput={e => setHtml(e.currentTarget.value)}
@@ -88,13 +91,18 @@ const HeadingOutline = (props: HeadingOutlineProps) => {
       <div class="min-h-0 flex-1 overflow-y-auto pr-1">
         <For each={outline()}>
           {h => (
-            <p class="px-1 py-0.5 font-mono text-xs text-gray-200" style={{ 'padding-left': `${(h.level - 1) * 16}px` }}>
+            <p
+              class="px-1 py-0.5 font-mono text-xs text-gray-200"
+              style={{ 'padding-left': `${(h.level - 1) * 16}px` }}
+            >
               <span class="text-cyan-500">h{h.level}</span> {h.text}
             </p>
           )}
         </For>
         <Show when={outline().length === 0}>
-          <p class="px-1 py-2 font-mono text-xs text-gray-500">no headings found in the pasted HTML</p>
+          <p class="px-1 py-2 font-mono text-xs text-gray-500">
+            no headings found in the pasted HTML
+          </p>
         </Show>
       </div>
     </div>
