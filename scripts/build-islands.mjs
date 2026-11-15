@@ -169,7 +169,7 @@ for (const [group, groupIslands] of byCategory) {
         '',
         `# ${island.key}`,
         '',
-        `\\\`\\\`\\\`island ${island.key} client=visible`,
+        `\`\`\`island ${island.key} client=visible`,
         '{}',
         '```',
         '',
