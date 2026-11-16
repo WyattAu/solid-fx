@@ -442,7 +442,6 @@ export function PoincareDisk(props: PoincareDiskProps) {
           width={size()}
           height={size()}
           class={`h-full w-full touch-none ${supported() === false ? 'hidden' : ''}`}
-          role="application"
           aria-label={`${own.label ?? 'Poincaré disk'} — ${nodeCount} hyperbolic nodes, ${edgeCount} geodesics. Click or drag to navigate.`}
           tabindex={0}
           onKeyDown={onKeyDown}
