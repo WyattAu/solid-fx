@@ -59,6 +59,20 @@ if (existsSync(extrasRoot)) {
   }
 }
 
+// Scenes (src/scenes/<Scene>/<Scene>.tsx) — flat single-slug pages:
+// /solid-fx/scenes/<scene-lower>/
+const scenesRoot = path.join('src/scenes')
+if (existsSync(scenesRoot)) {
+  for (const scene of readdirSync(scenesRoot).sort()) {
+    if (!existsSync(path.join(scenesRoot, scene, `${scene}.tsx`))) continue
+    pages.push({
+      category: 'scenes',
+      name: scene,
+      url: `${BASE}/scenes/${scene.toLowerCase()}/`,
+    })
+  }
+}
+
 mkdirSync(OUT, { recursive: true })
 
 let browser = await chromium.launch({ timeout: 180000 })

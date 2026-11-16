@@ -2,10 +2,38 @@
 
 Source of truth: the CI `screenshots` workflow (runs on demand + weekly,
 uploads `screenshots/` as an artifact). `scripts/shoot.mjs` additionally
-performs a pointer sweep so interaction-driven components render, and the
-five interaction-driven demos self-animate via
-`src/lib/syntheticPointer.ts` (`autoPointer()` — synthesized pointermove/
-down/click on a Lissajous path inside the demo host).
+performs a pointer sweep so interaction-driven components render, the five
+interaction-driven demos self-animate via `src/lib/syntheticPointer.ts`
+(`autoPointer()` — synthesized pointermove/down/click on a Lissajous path
+inside the demo host), and `scripts/scan-screenshots.py` classifies every
+frame (BLANK / LOW / OK by grayscale stddev).
+
+## Baseline v5 (2026-11-16): 399/399 OK — zero blanks
+
+Dispatched run [43805434440](https://github.com/WyattAu/solid-fx/actions/runs/43805434440),
+scanned with `scripts/scan-screenshots.py` (blank < 1.0 stddev, low < 6.0):
+**OK 399 · LOW 0 · BLANK 0.** Coverage: all 218 content + extras trees.
+Frame evidence for the previously-classified set (grayscale stddev):
+
+| Frame | std | old classification |
+| --- | --- | --- |
+| Backgrounds-AeroShards | 28.92 | blank — "no WebGPU on headless" |
+| Backgrounds-ShapeWaves | 28.92 | blank — same |
+| Animations-SplashCursor | 27.52 | blank — software-GL fluid |
+| Backgrounds-CRTWarp | 31.08 | blank on CI, verified phone-only |
+| Backgrounds-SoftAurora | 34.31 | blank on CI, verified desktop+phone |
+| Components-ModelViewer | 28.23 | blank until data-URL fix |
+| TextAnimations-MaskedHeading | 34.37 | investigate (sync never completed) |
+| Micro-Shredder | 34.56 | timing — legit empty stage at capture |
+| Micro-DodgeField | 48.69 | timing — dodged out of crop |
+
+The CI render environment gained GPU-backed capabilities (WebGPU adapter +
+float-target WebGL2 under SwiftShader) since the v3/v4 baselines: every
+frame that was classified environment/blank now renders with real signal,
+including the batch-14 fx widgets (ReactionDiffusion 35.18, DitherField
+33.76 — the capability-probe + fallback design verified in headless).
+
+## Historical triage (superseded by v5, kept for provenance)
 
 Latest baseline: **271 components** (218 react-bits + 53 extras across 5 sources — magic-ui, tsparticles, anime-js, motion-primitives, animata) — **all verified rendering or classified**; the CI screenshot harness covers content + extras trees (234+ pages per run). Zero port bugs remain in the blank set.
 (re-baselined 2026-11-05: the phone-rig captures were contaminated — the rig
