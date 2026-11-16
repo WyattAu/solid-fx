@@ -1,2 +1,1 @@
-Port 4321 is in use, trying another one...
-{"message":" astro  v7.4.4 ready in 30 ms\n┃ Local    http://localhost:4322/solid-fx\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":" astro  v7.4.4 ready in 23 ms\n┃ Local    http://localhost:4322/solid-fx\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}

@@ -1,0 +1,108 @@
+<!doctype html><meta charset="utf-8"><body style="background:#111">
+<canvas id="c" width="360" height="360"></canvas>
+<pre id="out"></pre>
+<script type="module">
+function mulberry32(seed){let a=seed>>>0;return()=>{a=(a+0x6d2b79f5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296}}
+function geodesicEndPoints(p,q){
+  const pLen=Math.hypot(p[0],p[1]),qLen=Math.hypot(q[0],q[1])
+  if(pLen<1e-9||qLen<1e-9){const dir=pLen>=qLen?p:q;const dLen=Math.hypot(dir[0],dir[1])||1;return[[dir[0]/dLen,dir[1]/dLen],[-dir[0]/dLen,-dir[1]/dLen]]}
+  const det=2*(p[0]*q[1]-p[1]*q[0])
+  if(Math.abs(det)<1e-9){const mx=p[0]+q[0],my=p[1]+q[1];const ml=Math.hypot(mx,my)||1;return[[mx/ml,my/ml],[-mx/ml,-my/ml]]}
+  const b0=(p[0]*p[0]+p[1]*p[1]+1)/2,b1=(q[0]*q[0]+q[1]*q[1]+1)/2
+  const cx=(b0*q[1]-p[1]*b1)/det,cy=(p[0]*b1-b0*q[0])/det
+  const rho=Math.hypot(cx,cy),gamma=Math.atan2(cy,cx),s=1/rho,t=Math.sqrt(Math.max(0,1-s*s))
+  const cg=Math.cos(gamma),sg=Math.sin(gamma)
+  return[[s*cg-t*sg,s*sg+t*cg],[s*cg+t*sg,s*sg-t*cg]]
+}
+const branches=2,maxDepth=4
+const rng=mulberry32(0x9017)
+const nodes=[{pos:[0,0],radius:0.02,depth:0}]
+const edges=[]
+const queue=[{pos:[0,0],depth:0,wedge:[-Math.PI,Math.PI]}]
+while(queue.length>0){const item=queue.shift();if(item.depth>=maxDepth)continue
+  const width=(item.wedge[1]-item.wedge[0])/branches
+  for(let k=0;k<branches;k++){const wa=item.wedge[0]+k*width
+    const angle=wa+width/2+(rng()-0.5)*width*0.3
+    const r=Math.tanh((item.depth+1)*0.55)
+    const childPos=[r*Math.cos(angle),r*Math.sin(angle)]
+    nodes.push({pos:childPos,radius:0.02*(1-r*r)+0.004,depth:item.depth+1})
+    const[ea,eb]=geodesicEndPoints(item.pos,childPos)
+    edges.push({a:item.pos,b:childPos,ea,eb})
+    queue.push({pos:childPos,depth:item.depth+1,wedge:[wa,wa+width]})}}
+
+const c=document.getElementById('c')
+const gl=c.getContext('webgl2',{antialias:false,alpha:false})
+const VERT=`#version 300 es
+const vec2 pos[3]=vec2[3](vec2(-1.0,-1.0),vec2(3.0,-1.0),vec2(-1.0,3.0));
+void main(){gl_Position=vec4(pos[gl_VertexID],0.0,1.0);}`
+const FRAG=`#version 300 es
+precision highp float;
+#define N_NODES 31
+#define N_EDGES 30
+uniform vec2 uRes;
+uniform vec2 uFocus;
+uniform vec4 uNodes[N_NODES];
+uniform vec2 uEdgeA[N_EDGES];
+uniform vec2 uEdgeB[N_EDGES];
+uniform float uAA;
+out vec4 outColor;
+vec2 cmul(vec2 a,vec2 b){return vec2(a.x*b.x-a.y*b.y,a.x*b.y+a.y*b.x);}
+vec2 phi(vec2 z,vec2 a){vec2 num=z-a;vec2 den=vec2(1.0,0.0)-cmul(vec2(a.x,-a.y),z);return num/den;}
+void main(){
+  vec2 uv=(gl_FragCoord.xy-0.5*uRes)/(0.5*min(uRes.x,uRes.y));
+  vec2 z=uv*0.97;
+  float diskMask=1.0-smoothstep(0.965,0.985,length(z));
+  vec2 zt=phi(z,uFocus);
+  float dEdge=1e9;
+  for(int i=0;i<N_EDGES;i++){
+    vec2 ea=phi(uEdgeA[i],uFocus);
+    vec2 eb=phi(uEdgeB[i],uFocus);
+    float dotUV=dot(ea,eb);
+    float d;
+    if(dotUV<-0.999){d=abs(ea.x*zt.y-ea.y*zt.x);}
+    else{vec2 m=(ea+eb)/(1.0+dotUV);float r=sqrt(max(dot(m,m)-1.0,1e-6));d=abs(length(zt-m)-r);}
+    dEdge=min(dEdge,d);
+  }
+  float dNode=1e9;
+  for(int i=0;i<N_NODES;i++){
+    vec3 n=uNodes[i].xyz;
+    vec2 np=phi(n.xy,uFocus);
+    float scale=(1.0-dot(uFocus,uFocus))/max(1e-6,length(cmul(vec2(uFocus.x,-uFocus.y),n.xy)));
+    float rr=n.z*scale;
+    float d=length(zt-np)-rr;
+    dNode=min(dNode,d);
+  }
+  vec3 col=vec3(0.055,0.065,0.085);
+  float edgeGlow=exp(-dEdge*26.0);
+  col=mix(col,vec3(0.16,0.45,0.55),edgeGlow*0.55);
+  float edgeLine=1.0-smoothstep(0.0,0.004,dEdge);
+  col=mix(col,vec3(0.45,0.78,0.85),edgeLine*0.85);
+  float nodeDot=1.0-smoothstep(0.0,0.006,dNode);
+  col=mix(col,vec3(0.95,0.78,0.42),nodeDot);
+  col*=mix(0.35,1.0,diskMask);
+  outColor=vec4(col*diskMask,1.0);
+}`
+const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(sh));return sh}
+const p=gl.createProgram()
+gl.attachShader(p,mk(gl.VERTEX_SHADER,VERT))
+gl.attachShader(p,mk(gl.FRAGMENT_SHADER,FRAG))
+gl.linkProgram(p)
+if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p))
+gl.useProgram(p)
+const ea=new Float32Array(60),eb=new Float32Array(60),nd=new Float32Array(124)
+edges.forEach((e,i)=>{ea.set(e.ea,i*2);eb.set(e.eb,i*2)})
+nodes.forEach((n,i)=>{nd.set([n.pos[0],n.pos[1],n.radius,n.depth],i*4)})
+gl.uniform2f(gl.getUniformLocation(p,'uRes'),360,360)
+gl.uniform2f(gl.getUniformLocation(p,'uFocus'),0,0)
+gl.uniform4fv(gl.getUniformLocation(p,'uNodes'),nd)
+gl.uniform2fv(gl.getUniformLocation(p,'uEdgeA'),ea)
+gl.uniform2fv(gl.getUniformLocation(p,'uEdgeB'),eb)
+gl.uniform1f(gl.getUniformLocation(p,'uAA'),1.6/360)
+gl.viewport(0,0,360,360)
+gl.drawArrays(gl.TRIANGLES,0,3)
+const px=new Uint8Array(360*360*4)
+gl.readPixels(0,0,360,360,gl.RGBA,gl.UNSIGNED_BYTE,px)
+let sum=0,nz=0
+for(let i=0;i<px.length;i+=4){sum+=px[i]+px[i+1]+px[i+2];if(px[i]|px[i+1]|px[i+2])nz++}
+document.getElementById('out').textContent=`sum=${sum} nonzero-px=${nz} / ${360*360} glErr=${gl.getError()}`
+</script>
