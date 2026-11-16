@@ -53,7 +53,7 @@ jobs:
             --base-path /solid-fx/preview
           cp -r dist-islands preview-site/_assets/islands
           test -f preview-site/search.json
-          test -f preview-site/_assets/islands/doc-search.js
+          test -f preview-site/_assets/islands/seo-doc-search.js
       - uses: actions/upload-artifact@v4
         with:
           name: ssg-preview
