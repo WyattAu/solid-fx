@@ -204,7 +204,9 @@ for (const { source, label } of EXTRAS) {
     for (const name of readdirSync(catDir).sort()) {
       if (!existsSync(path.join(catDir, name, `${name}.tsx`))) continue
       const slug = `extras/${source}/${category.toLowerCase()}/${name.toLowerCase()}`
-      llms.push(`- [${name}](https://wyattau.github.io/solid-fx/${slug}/): ${name} widget (source: src/extras/${source}/${category}/${name}/${name}.tsx)`)
+      llms.push(
+        `- [${name}](https://wyattau.github.io/solid-fx/${slug}/): ${name} widget (source: src/extras/${source}/${category}/${name}/${name}.tsx)`,
+      )
     }
   }
   llms.push('')
@@ -217,7 +219,9 @@ if (existsSync(scenesRoot)) {
   for (const scene of readdirSync(scenesRoot).sort()) {
     if (!existsSync(path.join(scenesRoot, scene, `${scene}.tsx`))) continue
     const slug = `scenes/${scene.toLowerCase()}`
-    llms.push(`- [${scene}](https://wyattau.github.io/solid-fx/${slug}/): full-page scene composition (source: src/scenes/${scene}/${scene}.tsx)`)
+    llms.push(
+      `- [${scene}](https://wyattau.github.io/solid-fx/${slug}/): full-page scene composition (source: src/scenes/${scene}/${scene}.tsx)`,
+    )
   }
   llms.push('')
 }
