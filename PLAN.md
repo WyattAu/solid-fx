@@ -44,14 +44,14 @@
 
 ## Resume block v4 (2026-11-15, next-session queue)
 
-State: 218 content + 173 extras + 11 scenes = 402 pages; 11 extras sources
-with sidebar navigation; CI + deploy green on aa29de8 lineage. Batches 14-15
-landed: fx ×2 (ReactionDiffusion WebGL2 Gray-Scott ping-pong with capability
-probe + fallback; DitherField Bayer ordered-dither) and scenes ×3
-(TufteDocScene sidenote rail, ExplorableScene inline-scrubbed physics,
-ZeroClsScene with live PerformanceObserver CLS meter). The WebGPU-compute
-watchlist items remain gated on the phone verification backlog by design —
-batch 14 shipped the WebGL2-safe subset instead.
+State: 218 content + 174 extras + 11 scenes = 403 pages; llms.txt now
+projects the whole site (403 links, was content-only 218); CI + deploy
+green on c752043. QA baseline v5 (run 43805434440, scanned by the new
+scripts/scan-screenshots.py): **399/399 OK, zero blanks** — all legacy
+environment classifications obsolete (headless CI gained WebGPU + float
+WebGL2). shoot.mjs now captures scenes; next screenshots run should emit
+410 frames. Remaining open item: MaskedHeading/old blanks closed by
+evidence in QA-TRIAGE v5 section.
 
 Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
 (5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8
