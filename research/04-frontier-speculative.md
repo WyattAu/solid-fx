@@ -16,7 +16,7 @@ concepts, novel input modalities, platform paradigms.
 
 | # | Concept | Essence | Tier | Effort | Verdict |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Poincaré disk navigation | Hyperbolic tree maps; Möbius transforms expand focus region | T2 | XL | watch — WebGL2 shader path possible; niche |
+| 1 | Poincaré disk navigation | Hyperbolic tree maps; Möbius transforms expand focus region | T2 | XL | **adopt — shipped** (`src/extras/fx/Ui/PoincareDisk`, WebGL2 fragment path, 2026-11-16) |
 | 2 | Entropy-weighted Voronoi dashboards | Power diagrams claim viewport by information entropy; Lloyd relaxation | T2 | XL | watch — JFA compute; CPU Voronoi fallback too slow at 60fps |
 | 3 | Gray-Scott reaction-diffusion chrome | Coupled PDEs in background compute; cursor as chemical perturbation | T2 | L | watch — strongest visual of the set; wait for vgpu compute |
 | 4 | Riemann-surface multi-sheet contexts | Nested views as sheets wound around a branch-point widget | T2 | XL | skip — interaction model unproven; XLScope |

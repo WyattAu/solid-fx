@@ -42,16 +42,30 @@
   artifact `screenshots` (218 PNGs), pixel-scan with the Pillow snippet in
   git history ("blank frames" scan).
 
-## Resume block v4 (2026-11-15, next-session queue)
+## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 174 extras + 11 scenes = 403 pages; llms.txt now
-projects the whole site (403 links, was content-only 218); CI + deploy
-green on c752043. QA baseline v5 (run 43805434440, scanned by the new
-scripts/scan-screenshots.py): **399/399 OK, zero blanks** — all legacy
-environment classifications obsolete (headless CI gained WebGPU + float
-WebGL2). shoot.mjs now captures scenes; next screenshots run should emit
-410 frames. Remaining open item: MaskedHeading/old blanks closed by
-evidence in QA-TRIAGE v5 section.
+State: 218 content + 175 extras + 11 scenes = 404 pages; 11 extras sources
+with sidebar navigation; CI + deploy green on b26657e lineage; llms.txt
+projects the whole site (403 links, was content-only 218). QA baseline v5
+(run 43805434440, scanned by the new scripts/scan-screenshots.py):
+**399/399 OK, zero blanks** — all legacy environment classifications
+obsolete (headless CI gained WebGPU + float WebGL2). shoot.mjs now captures
+scenes; next screenshots run should emit 410 frames. PoincareDisk shipped
+(research 04 #1 promoted watch→adopt): hyperbolic tree navigation, CPU
+per-frame Möbius transforms uploaded as uniform arrays, branchless fragment
+loop. Old blank frames closed by evidence in QA-TRIAGE v5 section.
+
+Debugging session notes (PoincareDisk black-frame hunt): (1) SwiftShader
+miscompiles conditionals + conditional array reads inside fragment loops —
+whole loops silently stop iterating; keep fragment loops branchless, min()
+forms only, no array reads inside loop conditionals. (2) Complex division
+must use the full (num·den)/|den|² form — componentwise num/den divides by
+(1, −0) at rest focus and infests uniforms with Inf/NaN (JSON.stringify
+renders NaN as null — that's the tell in getUniform dumps). (3) role=
+"application" on a canvas is an a11y error — dropped. (4) A parallel
+session's biome.json linter.rules block (preset recommended) newly errors
+on noUnusedFunctionParameters/useIterableCallbackReturn/useForOf — demoted
+to warn in that block.
 
 Done since v3: Motion Primitives exhausted (43 pages), anime.js promoted
 (5), tsParticles (9), Magic UI batches through 10 (40), Animata batch 8
