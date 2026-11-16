@@ -190,6 +190,38 @@ for (const category of categories) {
   }
   llms.push('')
 }
+
+// Extras sources + scenes in the same projection (they were invisible to
+// agents before — the docs-gate tier k catalog must cover the whole site).
+for (const { source, label } of EXTRAS) {
+  const sourceDir = path.join(extrasDir, source)
+  if (!existsSync(sourceDir)) continue
+  llms.push(`## Extras: ${label}`)
+  llms.push('')
+  for (const category of readdirSync(sourceDir)) {
+    const catDir = path.join(sourceDir, category)
+    if (!statSync(catDir, { throwIfNoEntry: false })?.isDirectory()) continue
+    for (const name of readdirSync(catDir).sort()) {
+      if (!existsSync(path.join(catDir, name, `${name}.tsx`))) continue
+      const slug = `extras/${source}/${category.toLowerCase()}/${name.toLowerCase()}`
+      llms.push(`- [${name}](https://wyattau.github.io/solid-fx/${slug}/): ${name} widget (source: src/extras/${source}/${category}/${name}/${name}.tsx)`)
+    }
+  }
+  llms.push('')
+}
+
+const scenesRoot = path.join(root, 'src', 'scenes')
+if (existsSync(scenesRoot)) {
+  llms.push('## Scenes')
+  llms.push('')
+  for (const scene of readdirSync(scenesRoot).sort()) {
+    if (!existsSync(path.join(scenesRoot, scene, `${scene}.tsx`))) continue
+    const slug = `scenes/${scene.toLowerCase()}`
+    llms.push(`- [${scene}](https://wyattau.github.io/solid-fx/${slug}/): full-page scene composition (source: src/scenes/${scene}/${scene}.tsx)`)
+  }
+  llms.push('')
+}
+
 mkdirSync(path.join(root, 'public'), { recursive: true })
 writeFileSync(path.join(root, 'public', 'llms.txt'), llms.join('\n'))
 
