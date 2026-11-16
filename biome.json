@@ -34,6 +34,7 @@
         "useFlatMap": "warn"
       },
       "correctness": {
+        "noUnusedFunctionParameters": "warn",
         "noUnusedImports": "error",
         "noUnusedVariables": "warn",
         "useExhaustiveDependencies": "warn",
@@ -41,6 +42,7 @@
       },
       "suspicious": {
         "noAssignInExpressions": "warn",
+        "useIterableCallbackReturn": "warn",
         "noExplicitAny": "warn",
         "noConsole": "warn",
         "noDoubleEquals": "error",
