@@ -44,8 +44,8 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 180 extras + 11 scenes = 409 pages; 12 extras sources
-with sidebar navigation; CI + deploy green on f06db1e lineage; **v0.1.0 tagged**; jsrepo registry
+State: 218 content + 181 extras + 11 scenes = 410 pages; 12 extras sources
+with sidebar navigation; CI + deploy green on 24273e6 lineage; **v0.1.0 tagged**; jsrepo registry
 now covers all 12 extras sources + 218 content blocks; llms.txt
 projects the whole site (403 links, was content-only 218). QA baseline v5
 (run 43805434440, scanned by the new scripts/scan-screenshots.py):
@@ -63,7 +63,10 @@ sliders, rolling-window brush, ACF correlogram, Kalman pointer, bitset
 facets), URL-state codec (src/lib/urlState.ts) wired into the PSD demo,
 num kernels extended (jacobiEigen, Kalman1D, savgolSmooth, popcount/bitset
 ops, ifftInPlace). M20 JFA callout placer deferred — multi-pass ping-pong
-needs a focused session. Old blank frames
+needs a focused session. **M20 complete: JfaCalloutPlacer (fx ×4)** —
+jump-flood distance transform over a 256² typed-array grid (8 log₂ passes,
+branchless neighbor walk), CPU-side by design for determinism + headless
+safety; maps 1:1 to fragment ping-pong at larger grids. Old blank frames
 closed by evidence in QA-TRIAGE v5 section.
 
 Debugging session notes (PoincareDisk black-frame hunt): (1) SwiftShader
