@@ -144,6 +144,176 @@ export function gaussianKde(data: number[], points: number[]): number[] {
   })
 }
 
+// ---------------------------------------------------------------------------
+// Linear algebra / filtering kernels
+// ---------------------------------------------------------------------------
+
+export interface JacobiResult {
+  /** Eigenvalues, ascending. */
+  values: number[]
+  /** Eigenvectors as rows (v[i] pairs with values[i]). */
+  vectors: number[][]
+}
+
+/**
+ * Cyclic Jacobi eigen-decomposition of a symmetric matrix (~70 lines, the
+ * zero-Wasm substitute for a linear-algebra binary). Returns eigenvalues
+ * ascending with matching orthonormal eigenvector rows.
+ */
+export function jacobiEigen(matrix: number[][]): JacobiResult {
+  const n = matrix.length
+  const a = matrix.map(row => row.slice())
+  const v: number[][] = Array.from({ length: n }, (_, i) => {
+    const row = new Array(n).fill(0)
+    row[i] = 1
+    return row
+  })
+  for (let sweep = 0; sweep < 64; sweep++) {
+    let off = 0
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) off += a[i][j] * a[i][j]
+    if (off < 1e-20) break
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        if (Math.abs(a[i][j]) < 1e-15) continue
+        const theta = (a[j][j] - a[i][i]) / (2 * a[i][j])
+        const sign = theta >= 0 ? 1 : -1
+        const t = sign / (Math.abs(theta) + Math.sqrt(theta * theta + 1))
+        const c = 1 / Math.sqrt(t * t + 1)
+        const s = t * c
+        for (let k = 0; k < n; k++) {
+          const aik = a[i][k]
+          const ajk = a[j][k]
+          a[i][k] = c * aik - s * ajk
+          a[j][k] = s * aik + c * ajk
+        }
+        for (let k = 0; k < n; k++) {
+          const vki = v[k][i]
+          const vkj = v[k][j]
+          v[k][i] = c * vki - s * vkj
+          v[k][j] = s * vki + c * vkj
+        }
+      }
+    }
+  }
+  const order = Array.from({ length: n }, (_, i) => i).sort((x, y) => a[x][x] - a[y][y])
+  return {
+    values: order.map(i => a[i][i]),
+    vectors: order.map(i => Array.from({ length: n }, (_, k) => v[k][i])),
+  }
+}
+
+/** Minimal 1D Kalman filter (scalar state + measurement noise). */
+export class Kalman1D {
+  private x: number | null = null
+  private p = 1
+  constructor(
+    private readonly processNoise: number,
+    private readonly measurementNoise: number,
+  ) {}
+
+  /** Feed one raw measurement, returns the filtered estimate. */
+  update(z: number): number {
+    if (this.x === null) {
+      this.x = z
+      this.p = this.measurementNoise
+      return z
+    }
+    // predict
+    this.p += this.processNoise
+    // correct
+    const k = this.p / (this.p + this.measurementNoise)
+    this.x += k * (z - this.x)
+    this.p *= 1 - k
+    return this.x
+  }
+
+  reset(): void {
+    this.x = null
+    this.p = 1
+  }
+}
+
+/** Savitzky–Golay smoothing coefficients for a window (odd) and poly order. */
+export function savgolSmooth(data: number[], window: number, polyOrder = 2): number[] {
+  const w = window % 2 === 0 ? window + 1 : window
+  const half = (w - 1) / 2
+  const n = data.length
+  if (n < w) return data.slice()
+  // least-squares fit coefficients: rows of the Vandermonde pseudo-inverse
+  const coeffs: number[][] = []
+  for (let c = -half; c <= half; c++) {
+    const row: number[] = []
+    for (let m = 0; m <= polyOrder; m++) row.push(c ** m)
+    coeffs.push(row)
+  }
+  // normal equations AᵀA x = Aᵀ y solved per window via precomputed pinv(AᵀA)Aᵀ row 0
+  const ata: number[][] = Array.from({ length: polyOrder + 1 }, () => new Array(polyOrder + 1).fill(0))
+  for (let i = 0; i <= polyOrder; i++)
+    for (let j = 0; j <= polyOrder; j++) for (const row of coeffs) ata[i][j] += row[i] * row[j]
+  // gaussian elimination inverse of ata (small: ≤ 4×4)
+  const inv: number[][] = ata.map((row, i) => row.map((_, j) => (i === j ? 1 : 0)))
+  for (let col = 0; col <= polyOrder; col++) {
+    let pivot = col
+    for (let r = col + 1; r <= polyOrder; r++) if (Math.abs(inv[r][col]) > Math.abs(inv[pivot][col])) pivot = r
+    ;[inv[col], inv[pivot]] = [inv[pivot], inv[col]]
+    ;[ata[col], ata[pivot]] = [ata[pivot], ata[col]]
+    const d = ata[col][col] || 1e-12
+    for (let j = 0; j <= polyOrder; j++) {
+      ata[col][j] /= d
+      inv[col][j] /= d
+    }
+    for (let r = 0; r <= polyOrder; r++) {
+      if (r === col) continue
+      const f = ata[r][col]
+      for (let j = 0; j <= polyOrder; j++) {
+        ata[r][j] -= f * ata[col][j]
+        inv[r][j] -= f * inv[col][j]
+      }
+    }
+  }
+  // smoothing kernel row (value coefficient at each offset)
+  const kernel = new Array(w).fill(0)
+  for (let k = 0; k < w; k++)
+    for (let m = 0; m <= polyOrder; m++) kernel[k] += inv[0][m] * coeffs[k][m]
+  const out = new Array(n)
+  for (let i = 0; i < n; i++) {
+    let acc = 0
+    for (let k = 0; k < w; k++) {
+      const j = Math.min(n - 1, Math.max(0, i - half + k))
+      acc += data[j] * kernel[k]
+    }
+    out[i] = acc
+  }
+  return out
+}
+
+/** Popcount of a 32-bit word (SWAR). */
+export function popcount32(w: number): number {
+  let x = w - ((w >>> 1) & 0x55555555)
+  x = (x & 0x33333333) + ((x >>> 2) & 0x33333333)
+  x = (x + (x >>> 4)) & 0x0f0f0f0f
+  return (Math.imul(x, 0x01010101) >>> 24) & 0x3f
+}
+
+/** Bitwise AND of two equal-length Uint32Array masks, into `out`. */
+export function bitsetAnd(a: Uint32Array, b: Uint32Array, out: Uint32Array): Uint32Array {
+  for (let i = 0; i < a.length; i++) out[i] = a[i] & b[i]
+  return out
+}
+
+/** Bitwise OR of two equal-length Uint32Array masks, into `out`. */
+export function bitsetOr(a: Uint32Array, b: Uint32Array, out: Uint32Array): Uint32Array {
+  for (let i = 0; i < a.length; i++) out[i] = a[i] | b[i]
+  return out
+}
+
+/** Number of set bits in a mask array. */
+export function bitsetCount(mask: Uint32Array): number {
+  let c = 0
+  for (let i = 0; i < mask.length; i++) c += popcount32(mask[i])
+  return c
+}
+
 /** Excess kurtosis (Fisher) — >0 marks heavy tails for the Q-Q verdict chip. */
 export function excessKurtosis(data: number[]): number {
   const n = data.length
@@ -214,6 +384,18 @@ export function fftInPlace(re: Float64Array, im: Float64Array): void {
         curRe = nextRe
       }
     }
+  }
+}
+
+/** inverse FFT: negate the spectrum, forward transform, negate + scale. */
+export function ifftInPlace(re: Float64Array, im: Float64Array): void {
+  const n = re.length
+  for (let i = 0; i < n; i++) im[i] = -im[i]
+  fftInPlace(re, im)
+  for (let i = 0; i < n; i++) {
+    im[i] = -im[i]
+    re[i] /= n
+    im[i] /= n
   }
 }
 

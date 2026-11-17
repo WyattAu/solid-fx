@@ -116,6 +116,7 @@ export function VernierCaliper(props: VernierCaliperProps) {
       <div
         ref={track}
         class="relative h-10 rounded-md bg-gray-800 outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+        style={{ width: `${width()}px` }}
         role="slider"
         tabindex={0}
         aria-label={own.label ?? 'vernier caliper'}
