@@ -45,7 +45,8 @@
 ## Resume block v5 (2026-11-16, next-session queue)
 
 State: 218 content + 180 extras + 11 scenes = 409 pages; 12 extras sources
-with sidebar navigation; CI + deploy green on d5e58f7 lineage; llms.txt
+with sidebar navigation; CI + deploy green on f06db1e lineage; **v0.1.0 tagged**; jsrepo registry
+now covers all 12 extras sources + 218 content blocks; llms.txt
 projects the whole site (403 links, was content-only 218). QA baseline v5
 (run 43805434440, scanned by the new scripts/scan-screenshots.py):
 **399/399 OK, zero blanks** — all legacy environment classifications
@@ -55,7 +56,14 @@ scenes; next screenshots run should emit 410 frames. PoincareDisk shipped
 per-frame Möbius transforms uploaded as uniform arrays, branchless fragment
 loop. Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
 VernierCaliper) + new emergent category ×3 (BoidsFlocking, HilbertTree,
-SandpileQueue) — the T0 adopt rows from research 04. Old blank frames
+SandpileQueue) — the T0 adopt rows from research 04.
+M17-M19 complete: num kernel unit tests (17/17), 8 quant/geometry widgets
+(PSD correlation editor, Stern-Brocot stepper, harmonic mixer, logit
+sliders, rolling-window brush, ACF correlogram, Kalman pointer, bitset
+facets), URL-state codec (src/lib/urlState.ts) wired into the PSD demo,
+num kernels extended (jacobiEigen, Kalman1D, savgolSmooth, popcount/bitset
+ops, ifftInPlace). M20 JFA callout placer deferred — multi-pass ping-pong
+needs a focused session. Old blank frames
 closed by evidence in QA-TRIAGE v5 section.
 
 Debugging session notes (PoincareDisk black-frame hunt): (1) SwiftShader
