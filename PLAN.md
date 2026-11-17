@@ -44,8 +44,8 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 175 extras + 11 scenes = 404 pages; 11 extras sources
-with sidebar navigation; CI + deploy green on b26657e lineage; llms.txt
+State: 218 content + 180 extras + 11 scenes = 409 pages; 12 extras sources
+with sidebar navigation; CI + deploy green on d5e58f7 lineage; llms.txt
 projects the whole site (403 links, was content-only 218). QA baseline v5
 (run 43805434440, scanned by the new scripts/scan-screenshots.py):
 **399/399 OK, zero blanks** — all legacy environment classifications
@@ -53,7 +53,10 @@ obsolete (headless CI gained WebGPU + float WebGL2). shoot.mjs now captures
 scenes; next screenshots run should emit 410 frames. PoincareDisk shipped
 (research 04 #1 promoted watch→adopt): hyperbolic tree navigation, CPU
 per-frame Möbius transforms uploaded as uniform arrays, branchless fragment
-loop. Old blank frames closed by evidence in QA-TRIAGE v5 section.
+loop. Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
+VernierCaliper) + new emergent category ×3 (BoidsFlocking, HilbertTree,
+SandpileQueue) — the T0 adopt rows from research 04. Old blank frames
+closed by evidence in QA-TRIAGE v5 section.
 
 Debugging session notes (PoincareDisk black-frame hunt): (1) SwiftShader
 miscompiles conditionals + conditional array reads inside fragment loops —
