@@ -8,6 +8,15 @@ interaction-driven demos self-animate via `src/lib/syntheticPointer.ts`
 inside the demo host), and `scripts/scan-screenshots.py` classifies every
 frame (BLANK / LOW / OK by grayscale stddev).
 
+## Baseline v6 (2026-11-17): 426/426 OK — zero blanks
+
+Dispatched run [44098716003](https://github.com/WyattAu/solid-fx/actions/runs/44098716003)
+(covers batches 16–17 and M20): **OK 426 · LOW 0 · BLANK 0.** New-widget
+frame evidence (grayscale stddev): PoincareDisk 30.9, JfaCalloutPlacer 34.2,
+PhaseSpacePendulum 32.0, LangevinScrubber 31.9, VernierCaliper 30.9,
+BoidsFlocking 33.4, HilbertTree 39.7, SandpileQueue 29.9,
+PSDCorrelationEditor 34.7, BitsetFacets 35.2, SternBrocotStepper 33.0.
+
 ## Baseline v5 (2026-11-16): 399/399 OK — zero blanks
 
 Dispatched run [43805434440](https://github.com/WyattAu/solid-fx/actions/runs/43805434440),
