@@ -5,6 +5,8 @@
 // one-click repair projects onto the nearest PSD matrix (research 02 #103).
 import type { JSX } from 'solid-js'
 import { createSignal, splitProps } from 'solid-js'
+import { copyStateUrl, readStateFromHash } from '@/lib/urlState'
+import { copyStateUrl, readStateFromHash } from '@/lib/urlState'
 import { jacobiEigen } from '@/lib/num'
 
 export interface PSDCorrelationEditorProps {
@@ -39,6 +41,15 @@ export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
   const [ab, setAb] = createSignal(own.initial?.[0] ?? 0.3)
   const [ac, setAc] = createSignal(own.initial?.[1] ?? -0.2)
   const [bc, setBc] = createSignal(own.initial?.[2] ?? 0.6)
+  const [shared, setShared] = createSignal('')
+
+  // URL-state pattern: restore from #hash when a share link is opened
+  void readStateFromHash<{ ab: number; ac: number; bc: number }>().then(state => {
+    if (!state) return
+    if (Number.isFinite(state.ab)) setAb(Math.round(state.ab * 1000) / 1000)
+    if (Number.isFinite(state.ac)) setAc(Math.round(state.ac * 1000) / 1000)
+    if (Number.isFinite(state.bc)) setBc(Math.round(state.bc * 1000) / 1000)
+  })
 
   const matrix = () => buildMatrix(ab(), ac(), bc())
 
@@ -110,6 +121,17 @@ export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
         {slider(`${labels()[0]}·${labels()[2]}`, ac, setAc)}
         {slider(`${labels()[1]}·${labels()[2]}`, bc, setBc)}
       </div>
+      <button
+        type="button"
+        class="mb-2 mr-2 rounded bg-gray-800 px-2 py-0.5 text-[11px] text-gray-200 outline-none hover:bg-gray-700 focus-visible:ring-2 focus-visible:ring-sky-400"
+        onClick={async () => {
+          const url = await copyStateUrl({ ab: ab(), ac: ac(), bc: bc() })
+          setShared(url)
+        }}
+      >
+        copy share link
+      </button>
+      {shared() && <span class="mr-2 text-[10px] text-emerald-400">link copied</span>}
       {isPSD() ? (
         <p class="mt-2 text-[10px] text-gray-500">
           min eigenvalue {minEigen().toFixed(4)} — the matrix is a valid covariance.
