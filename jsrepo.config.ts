@@ -1,8 +1,24 @@
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig, type RegistryItem } from 'jsrepo'
 
 const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds']
+
+// Extras sources mirror src/extras/<source>/<Category>/<Name>/.
+const EXTRA_SOURCES = [
+  'magic-ui',
+  'motion-primitives',
+  'animata',
+  'tsparticles',
+  'anime-js',
+  'kokonut',
+  'osint',
+  'seo',
+  'instruments',
+  'data',
+  'fx',
+  'emergent',
+]
 
 const items: RegistryItem[] = []
 for (const category of CATEGORIES) {
@@ -24,6 +40,32 @@ for (const category of CATEGORIES) {
         },
       ],
     })
+  }
+}
+
+for (const source of EXTRA_SOURCES) {
+  const sourceDir = path.join('src/extras', source)
+  if (!existsSync(sourceDir)) continue
+  for (const category of readdirSync(sourceDir).sort()) {
+    const catDir = path.join(sourceDir, category)
+    if (!existsSync(catDir) || !statSync(catDir).isDirectory()) continue
+    for (const name of readdirSync(catDir).sort()) {
+      const component = path.join(catDir, name, `${name}.tsx`)
+      if (!existsSync(component)) continue
+      items.push({
+        name: `${source}/${category}/${name}`,
+        title: name,
+        description: `${name} for SolidJS (source tree: src/extras/${source}).`,
+        category: source,
+        categories: [source],
+        files: [
+          {
+            path: `src/extras/${source}/${category}/${name}/${name}.tsx`,
+            target: `${name}/${name}.tsx`,
+          },
+        ],
+      })
+    }
   }
 }
 
