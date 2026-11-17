@@ -6,7 +6,6 @@
 import type { JSX } from 'solid-js'
 import { createSignal, splitProps } from 'solid-js'
 import { copyStateUrl, readStateFromHash } from '@/lib/urlState'
-import { copyStateUrl, readStateFromHash } from '@/lib/urlState'
 import { jacobiEigen } from '@/lib/num'
 
 export interface PSDCorrelationEditorProps {
