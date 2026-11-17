@@ -427,30 +427,39 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [BarycentricMixer](https://wyattau.github.io/solid-fx/extras/instruments/ui/barycentricmixer/): BarycentricMixer widget (source: src/extras/instruments/Ui/BarycentricMixer/BarycentricMixer.tsx)
 - [DecayHaloBadge](https://wyattau.github.io/solid-fx/extras/instruments/ui/decayhalobadge/): DecayHaloBadge widget (source: src/extras/instruments/Ui/DecayHaloBadge/DecayHaloBadge.tsx)
 - [DetentSlideRail](https://wyattau.github.io/solid-fx/extras/instruments/ui/detentsliderail/): DetentSlideRail widget (source: src/extras/instruments/Ui/DetentSlideRail/DetentSlideRail.tsx)
+- [HarmonicMixer](https://wyattau.github.io/solid-fx/extras/instruments/ui/harmonicmixer/): HarmonicMixer widget (source: src/extras/instruments/Ui/HarmonicMixer/HarmonicMixer.tsx)
 - [HysteresisSlider](https://wyattau.github.io/solid-fx/extras/instruments/ui/hysteresisslider/): HysteresisSlider widget (source: src/extras/instruments/Ui/HysteresisSlider/HysteresisSlider.tsx)
 - [LangevinScrubber](https://wyattau.github.io/solid-fx/extras/instruments/ui/langevinscrubber/): LangevinScrubber widget (source: src/extras/instruments/Ui/LangevinScrubber/LangevinScrubber.tsx)
+- [LogitSliders](https://wyattau.github.io/solid-fx/extras/instruments/ui/logitsliders/): LogitSliders widget (source: src/extras/instruments/Ui/LogitSliders/LogitSliders.tsx)
 - [MantissaExponentSpinner](https://wyattau.github.io/solid-fx/extras/instruments/ui/mantissaexponentspinner/): MantissaExponentSpinner widget (source: src/extras/instruments/Ui/MantissaExponentSpinner/MantissaExponentSpinner.tsx)
 - [MarkovTransitionGrid](https://wyattau.github.io/solid-fx/extras/instruments/ui/markovtransitiongrid/): MarkovTransitionGrid widget (source: src/extras/instruments/Ui/MarkovTransitionGrid/MarkovTransitionGrid.tsx)
+- [PSDCorrelationEditor](https://wyattau.github.io/solid-fx/extras/instruments/ui/psdcorrelationeditor/): PSDCorrelationEditor widget (source: src/extras/instruments/Ui/PSDCorrelationEditor/PSDCorrelationEditor.tsx)
 - [PhaseSpacePendulum](https://wyattau.github.io/solid-fx/extras/instruments/ui/phasespacependulum/): PhaseSpacePendulum widget (source: src/extras/instruments/Ui/PhaseSpacePendulum/PhaseSpacePendulum.tsx)
 - [PolarDial](https://wyattau.github.io/solid-fx/extras/instruments/ui/polardial/): PolarDial widget (source: src/extras/instruments/Ui/PolarDial/PolarDial.tsx)
 - [SeedBadge](https://wyattau.github.io/solid-fx/extras/instruments/ui/seedbadge/): SeedBadge widget (source: src/extras/instruments/Ui/SeedBadge/SeedBadge.tsx)
+- [SternBrocotStepper](https://wyattau.github.io/solid-fx/extras/instruments/ui/sternbrocotstepper/): SternBrocotStepper widget (source: src/extras/instruments/Ui/SternBrocotStepper/SternBrocotStepper.tsx)
 - [VernierCaliper](https://wyattau.github.io/solid-fx/extras/instruments/ui/verniercaliper/): VernierCaliper widget (source: src/extras/instruments/Ui/VernierCaliper/VernierCaliper.tsx)
 
 ## Extras: Data
 
+- [ACFCorrelogram](https://wyattau.github.io/solid-fx/extras/data/ui/acfcorrelogram/): ACFCorrelogram widget (source: src/extras/data/Ui/ACFCorrelogram/ACFCorrelogram.tsx)
+- [BitsetFacets](https://wyattau.github.io/solid-fx/extras/data/ui/bitsetfacets/): BitsetFacets widget (source: src/extras/data/Ui/BitsetFacets/BitsetFacets.tsx)
 - [BulletViolinKpi](https://wyattau.github.io/solid-fx/extras/data/ui/bulletviolinkpi/): BulletViolinKpi widget (source: src/extras/data/Ui/BulletViolinKpi/BulletViolinKpi.tsx)
 - [FftSpectrum](https://wyattau.github.io/solid-fx/extras/data/ui/fftspectrum/): FftSpectrum widget (source: src/extras/data/Ui/FftSpectrum/FftSpectrum.tsx)
 - [HorizonStrips](https://wyattau.github.io/solid-fx/extras/data/ui/horizonstrips/): HorizonStrips widget (source: src/extras/data/Ui/HorizonStrips/HorizonStrips.tsx)
+- [KalmanPointer](https://wyattau.github.io/solid-fx/extras/data/ui/kalmanpointer/): KalmanPointer widget (source: src/extras/data/Ui/KalmanPointer/KalmanPointer.tsx)
 - [MonteCarloBar](https://wyattau.github.io/solid-fx/extras/data/ui/montecarlobar/): MonteCarloBar widget (source: src/extras/data/Ui/MonteCarloBar/MonteCarloBar.tsx)
 - [ParetoFrontier](https://wyattau.github.io/solid-fx/extras/data/ui/paretofrontier/): ParetoFrontier widget (source: src/extras/data/Ui/ParetoFrontier/ParetoFrontier.tsx)
 - [ProfileFingerprint](https://wyattau.github.io/solid-fx/extras/data/ui/profilefingerprint/): ProfileFingerprint widget (source: src/extras/data/Ui/ProfileFingerprint/ProfileFingerprint.tsx)
 - [QQBadge](https://wyattau.github.io/solid-fx/extras/data/ui/qqbadge/): QQBadge widget (source: src/extras/data/Ui/QQBadge/QQBadge.tsx)
+- [RollingWindowBrush](https://wyattau.github.io/solid-fx/extras/data/ui/rollingwindowbrush/): RollingWindowBrush widget (source: src/extras/data/Ui/RollingWindowBrush/RollingWindowBrush.tsx)
 - [SparklineText](https://wyattau.github.io/solid-fx/extras/data/ui/sparklinetext/): SparklineText widget (source: src/extras/data/Ui/SparklineText/SparklineText.tsx)
 - [SpatialHashScatter](https://wyattau.github.io/solid-fx/extras/data/ui/spatialhashscatter/): SpatialHashScatter widget (source: src/extras/data/Ui/SpatialHashScatter/SpatialHashScatter.tsx)
 
 ## Extras: FX
 
 - [DitherField](https://wyattau.github.io/solid-fx/extras/fx/ui/ditherfield/): DitherField widget (source: src/extras/fx/Ui/DitherField/DitherField.tsx)
+- [JfaCalloutPlacer](https://wyattau.github.io/solid-fx/extras/fx/ui/jfacalloutplacer/): JfaCalloutPlacer widget (source: src/extras/fx/Ui/JfaCalloutPlacer/JfaCalloutPlacer.tsx)
 - [PoincareDisk](https://wyattau.github.io/solid-fx/extras/fx/ui/poincaredisk/): PoincareDisk widget (source: src/extras/fx/Ui/PoincareDisk/PoincareDisk.tsx)
 - [ReactionDiffusion](https://wyattau.github.io/solid-fx/extras/fx/ui/reactiondiffusion/): ReactionDiffusion widget (source: src/extras/fx/Ui/ReactionDiffusion/ReactionDiffusion.tsx)
 

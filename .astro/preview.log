@@ -1,1 +1,2 @@
-{"message":" astro  v7.4.4 ready in 23 ms\n┃ Local    http://localhost:4322/solid-fx\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+Port 4322 is in use, trying another one...
+{"message":" astro  v7.4.4 ready in 163 ms\n┃ Local    http://localhost:4323/solid-fx\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
