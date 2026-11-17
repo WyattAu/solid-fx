@@ -428,10 +428,13 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [DecayHaloBadge](https://wyattau.github.io/solid-fx/extras/instruments/ui/decayhalobadge/): DecayHaloBadge widget (source: src/extras/instruments/Ui/DecayHaloBadge/DecayHaloBadge.tsx)
 - [DetentSlideRail](https://wyattau.github.io/solid-fx/extras/instruments/ui/detentsliderail/): DetentSlideRail widget (source: src/extras/instruments/Ui/DetentSlideRail/DetentSlideRail.tsx)
 - [HysteresisSlider](https://wyattau.github.io/solid-fx/extras/instruments/ui/hysteresisslider/): HysteresisSlider widget (source: src/extras/instruments/Ui/HysteresisSlider/HysteresisSlider.tsx)
+- [LangevinScrubber](https://wyattau.github.io/solid-fx/extras/instruments/ui/langevinscrubber/): LangevinScrubber widget (source: src/extras/instruments/Ui/LangevinScrubber/LangevinScrubber.tsx)
 - [MantissaExponentSpinner](https://wyattau.github.io/solid-fx/extras/instruments/ui/mantissaexponentspinner/): MantissaExponentSpinner widget (source: src/extras/instruments/Ui/MantissaExponentSpinner/MantissaExponentSpinner.tsx)
 - [MarkovTransitionGrid](https://wyattau.github.io/solid-fx/extras/instruments/ui/markovtransitiongrid/): MarkovTransitionGrid widget (source: src/extras/instruments/Ui/MarkovTransitionGrid/MarkovTransitionGrid.tsx)
+- [PhaseSpacePendulum](https://wyattau.github.io/solid-fx/extras/instruments/ui/phasespacependulum/): PhaseSpacePendulum widget (source: src/extras/instruments/Ui/PhaseSpacePendulum/PhaseSpacePendulum.tsx)
 - [PolarDial](https://wyattau.github.io/solid-fx/extras/instruments/ui/polardial/): PolarDial widget (source: src/extras/instruments/Ui/PolarDial/PolarDial.tsx)
 - [SeedBadge](https://wyattau.github.io/solid-fx/extras/instruments/ui/seedbadge/): SeedBadge widget (source: src/extras/instruments/Ui/SeedBadge/SeedBadge.tsx)
+- [VernierCaliper](https://wyattau.github.io/solid-fx/extras/instruments/ui/verniercaliper/): VernierCaliper widget (source: src/extras/instruments/Ui/VernierCaliper/VernierCaliper.tsx)
 
 ## Extras: Data
 
@@ -450,6 +453,12 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [DitherField](https://wyattau.github.io/solid-fx/extras/fx/ui/ditherfield/): DitherField widget (source: src/extras/fx/Ui/DitherField/DitherField.tsx)
 - [PoincareDisk](https://wyattau.github.io/solid-fx/extras/fx/ui/poincaredisk/): PoincareDisk widget (source: src/extras/fx/Ui/PoincareDisk/PoincareDisk.tsx)
 - [ReactionDiffusion](https://wyattau.github.io/solid-fx/extras/fx/ui/reactiondiffusion/): ReactionDiffusion widget (source: src/extras/fx/Ui/ReactionDiffusion/ReactionDiffusion.tsx)
+
+## Extras: Emergent
+
+- [BoidsFlocking](https://wyattau.github.io/solid-fx/extras/emergent/ui/boidsflocking/): BoidsFlocking widget (source: src/extras/emergent/Ui/BoidsFlocking/BoidsFlocking.tsx)
+- [HilbertTree](https://wyattau.github.io/solid-fx/extras/emergent/ui/hilberttree/): HilbertTree widget (source: src/extras/emergent/Ui/HilbertTree/HilbertTree.tsx)
+- [SandpileQueue](https://wyattau.github.io/solid-fx/extras/emergent/ui/sandpilequeue/): SandpileQueue widget (source: src/extras/emergent/Ui/SandpileQueue/SandpileQueue.tsx)
 
 ## Scenes
 

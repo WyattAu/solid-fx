@@ -90,6 +90,7 @@ const EXTRAS = [
   { source: 'instruments', label: 'Instruments' },
   { source: 'data', label: 'Data' },
   { source: 'fx', label: 'FX' },
+  { source: 'emergent', label: 'Emergent' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 
