@@ -2,16 +2,17 @@
 
 > 218 animated, interactive components for **SolidJS** — a component-for-component
 > port of [react-bits](https://github.com/DavidHDev/react-bits) (TypeScript +
-> Tailwind variant) to SolidJS idioms, plus 173 extras widgets from ten
+> Tailwind variant) to SolidJS idioms, plus 180 extras widgets from twelve
 > additional sources and 11 full-page scenes.
 
 **Status: `CURRENT`** — 218/218 react-bits components ported with **0
-`PORT-NOTE` markers** (React-free contract oracle green), plus 173 extras
+`PORT-NOTE` markers** (React-free contract oracle green), plus 180 extras
 widgets (Magic UI ×40, Motion Primitives ×43, Animata ×36, tsParticles ×9,
-anime.js ×5, Kokonut ×3, original OSINT ×8, SEO ×10, Instruments ×8,
-Data ×9, FX ×2) and 11 scenes. Every component typechecks (`tsc --noEmit`
-clean), the barrel smoke test passes, and the Starlight site builds all
-402 demo pages with sidebar navigation (`bun run build`; live at
+anime.js ×5, Kokonut ×3, original OSINT ×8, SEO ×11, Instruments ×11,
+Data ×9, FX ×3, Emergent ×3) and 11 scenes. Every component typechecks
+(`tsc --noEmit` clean), the barrel smoke test passes, and the Starlight
+site builds all 409 demo pages with sidebar navigation (`bun run build`;
+live at
 https://wyattau.github.io/solid-fx/).
 
 ## What this is
