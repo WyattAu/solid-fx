@@ -139,6 +139,7 @@ fs.writeFileSync(
     'ai_crawlers = "allow"',
     'stylesheet = "/_assets/islands/islands.css"',
     'island_shim = "/_assets/islands/island.mjs"',
+    'search_island = "/_assets/islands/seo-doc-search.js"',
     '',
   ].join('\n'),
 )
