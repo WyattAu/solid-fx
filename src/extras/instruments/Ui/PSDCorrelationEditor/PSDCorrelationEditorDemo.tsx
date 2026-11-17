@@ -5,7 +5,10 @@ function PSDCorrelationEditorDemo() {
   return (
     <div class="flex w-full flex-wrap items-start justify-center gap-10 p-6">
       <div class="w-72">
-        <PSDCorrelationEditor label="factor covariance (risk/size/momentum)" labels={['risk', 'size', 'mom']} />
+        <PSDCorrelationEditor
+          label="factor covariance (risk/size/momentum)"
+          labels={['risk', 'size', 'mom']}
+        />
       </div>
       <div class="w-72">
         <PSDCorrelationEditor

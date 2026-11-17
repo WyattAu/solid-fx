@@ -247,14 +247,17 @@ export function savgolSmooth(data: number[], window: number, polyOrder = 2): num
     coeffs.push(row)
   }
   // normal equations AᵀA x = Aᵀ y solved per window via precomputed pinv(AᵀA)Aᵀ row 0
-  const ata: number[][] = Array.from({ length: polyOrder + 1 }, () => new Array(polyOrder + 1).fill(0))
+  const ata: number[][] = Array.from({ length: polyOrder + 1 }, () =>
+    new Array(polyOrder + 1).fill(0),
+  )
   for (let i = 0; i <= polyOrder; i++)
     for (let j = 0; j <= polyOrder; j++) for (const row of coeffs) ata[i][j] += row[i] * row[j]
   // gaussian elimination inverse of ata (small: ≤ 4×4)
   const inv: number[][] = ata.map((row, i) => row.map((_, j) => (i === j ? 1 : 0)))
   for (let col = 0; col <= polyOrder; col++) {
     let pivot = col
-    for (let r = col + 1; r <= polyOrder; r++) if (Math.abs(inv[r][col]) > Math.abs(inv[pivot][col])) pivot = r
+    for (let r = col + 1; r <= polyOrder; r++)
+      if (Math.abs(inv[r][col]) > Math.abs(inv[pivot][col])) pivot = r
     ;[inv[col], inv[pivot]] = [inv[pivot], inv[col]]
     ;[ata[col], ata[pivot]] = [ata[pivot], ata[col]]
     const d = ata[col][col] || 1e-12

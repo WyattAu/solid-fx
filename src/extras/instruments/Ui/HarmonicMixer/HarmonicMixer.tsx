@@ -23,7 +23,17 @@ export interface HarmonicMixerProps {
 }
 
 export function HarmonicMixer(props: HarmonicMixerProps) {
-  const [own, rest] = splitProps(props, ['partials', 'amplitudes', 'width', 'height', 'label', 'onChange', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'partials',
+    'amplitudes',
+    'width',
+    'height',
+    'label',
+    'onChange',
+    'class',
+    'className',
+    'style',
+  ])
 
   const n = () => own.partials ?? 8
   const width = () => own.width ?? 320
@@ -67,11 +77,20 @@ export function HarmonicMixer(props: HarmonicMixerProps) {
   const waveformPath = () => {
     const s = samples()
     const pk = peak()
-    return s.map((v, i) => `${i === 0 ? 'M' : 'L'}${((i / (s.length - 1)) * width()).toFixed(1)},${(height() / 2 - (v / pk) * (height() / 2 - 4)).toFixed(1)}`).join(' ')
+    return s
+      .map(
+        (v, i) =>
+          `${i === 0 ? 'M' : 'L'}${((i / (s.length - 1)) * width()).toFixed(1)},${(height() / 2 - (v / pk) * (height() / 2 - 4)).toFixed(1)}`,
+      )
+      .join(' ')
   }
 
   return (
-    <div {...rest} class={`inline-block select-none ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <div
+      {...rest}
+      class={`inline-block select-none ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <div class="mb-1 flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? 'harmonic mixer'}</span>
         <button
@@ -90,7 +109,14 @@ export function HarmonicMixer(props: HarmonicMixerProps) {
         aria-label={`mixed waveform of ${n()} partials`}
         class="rounded-md bg-gray-900"
       >
-        <line x1="0" x2={width()} y1={height() / 2} y2={height() / 2} stroke="oklch(0.32 0.02 250)" stroke-width="1" />
+        <line
+          x1="0"
+          x2={width()}
+          y1={height() / 2}
+          y2={height() / 2}
+          stroke="oklch(0.32 0.02 250)"
+          stroke-width="1"
+        />
         <path d={waveformPath()} fill="none" stroke="oklch(0.75 0.12 235)" stroke-width="1.5" />
       </svg>
       <div class="mt-2 flex items-end gap-1.5">

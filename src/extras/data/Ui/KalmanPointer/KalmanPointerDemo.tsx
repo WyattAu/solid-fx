@@ -11,10 +11,17 @@ function KalmanPointerDemo() {
   return (
     <div class="flex w-full flex-col items-center gap-8 p-6">
       <For each={configs}>
-        {c => <KalmanPointer label={c.label} processNoise={c.processNoise} measurementNoise={c.measurementNoise} />}
+        {c => (
+          <KalmanPointer
+            label={c.label}
+            processNoise={c.processNoise}
+            measurementNoise={c.measurementNoise}
+          />
+        )}
       </For>
       <p class="max-w-md text-center text-xs text-gray-500">
-        dim = raw pointer · bright = Kalman-filtered. Move the pointer over a canvas to drive it directly.
+        dim = raw pointer · bright = Kalman-filtered. Move the pointer over a canvas to drive it
+        directly.
       </p>
     </div>
   )

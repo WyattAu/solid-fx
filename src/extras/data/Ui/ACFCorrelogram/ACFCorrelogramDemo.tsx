@@ -11,7 +11,10 @@ function series(seed: number, f: (i: number) => number): number[] {
 function ACFCorrelogramDemo() {
   return (
     <div class="flex w-full flex-col items-center gap-5 p-6">
-      <ACFCorrelogram label="AR(1) trend — persistent" data={series(0x31, i => i * 0.05 + 3 * Math.sin(i / 9))} />
+      <ACFCorrelogram
+        label="AR(1) trend — persistent"
+        data={series(0x31, i => i * 0.05 + 3 * Math.sin(i / 9))}
+      />
       <For each={[0x32, 0x33]}>
         {seed => (
           <ACFCorrelogram

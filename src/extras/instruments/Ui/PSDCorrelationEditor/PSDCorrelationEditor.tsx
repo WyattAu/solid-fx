@@ -25,7 +25,15 @@ const buildMatrix = (a: number, b: number, c: number): number[][] => [
 ]
 
 export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
-  const [own, rest] = splitProps(props, ['initial', 'labels', 'label', 'onInput', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'initial',
+    'labels',
+    'label',
+    'onInput',
+    'class',
+    'className',
+    'style',
+  ])
 
   const labels = () => own.labels ?? ['A', 'B', 'C']
   const [ab, setAb] = createSignal(own.initial?.[0] ?? 0.3)
@@ -51,7 +59,9 @@ export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
       }
     // rescale to correlation form
     const scale = m.map((_row, i) => 1 / Math.sqrt(Math.abs(m[i][i]) || 1e-12))
-    const corr: number[][] = m.map((row, i) => row.map((v, j) => Math.max(-1, Math.min(1, v * scale[i] * scale[j]))))
+    const corr: number[][] = m.map((row, i) =>
+      row.map((v, j) => Math.max(-1, Math.min(1, v * scale[i] * scale[j]))),
+    )
     setAb(Math.round(corr[0][1] * 1000) / 1000)
     setAc(Math.round(corr[0][2] * 1000) / 1000)
     setBc(Math.round(corr[1][2] * 1000) / 1000)
@@ -80,7 +90,11 @@ export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
   const verdictColor = () => (isPSD() ? 'oklch(0.35 0.08 155)' : 'oklch(0.4 0.12 30)')
 
   return (
-    <div {...rest} class={`inline-block select-none ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <div
+      {...rest}
+      class={`inline-block select-none ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <div class="mb-2 flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? 'correlation matrix'}</span>
         <span
@@ -97,7 +111,9 @@ export function PSDCorrelationEditor(props: PSDCorrelationEditorProps) {
         {slider(`${labels()[1]}·${labels()[2]}`, bc, setBc)}
       </div>
       {isPSD() ? (
-        <p class="mt-2 text-[10px] text-gray-500">min eigenvalue {minEigen().toFixed(4)} — the matrix is a valid covariance.</p>
+        <p class="mt-2 text-[10px] text-gray-500">
+          min eigenvalue {minEigen().toFixed(4)} — the matrix is a valid covariance.
+        </p>
       ) : (
         <button
           type="button"

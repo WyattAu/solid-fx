@@ -20,11 +20,19 @@ export interface LogitSlidersProps {
 const sigmoid = (t: number) => 1 / (1 + Math.exp(-t))
 
 export function LogitSliders(props: LogitSlidersProps) {
-  const [own, rest] = splitProps(props, ['value', 'logitMax', 'label', 'onInput', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'value',
+    'logitMax',
+    'label',
+    'onInput',
+    'class',
+    'className',
+    'style',
+  ])
 
   const logitMax = () => own.logitMax ?? 6
   const initial = own.value ?? 0.95
-  const [logit, setLogit] = createSignal(Math.log((initial / (1 - initial))))
+  const [logit, setLogit] = createSignal(Math.log(initial / (1 - initial)))
 
   const prob = () => sigmoid(logit())
   const odds = () => Math.exp(logit())
@@ -37,7 +45,11 @@ export function LogitSliders(props: LogitSlidersProps) {
   }
 
   return (
-    <div {...rest} class={`select-none ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <div
+      {...rest}
+      class={`select-none ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <div class="mb-1 flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? 'probability'}</span>
         <span class="font-mono" aria-live="polite">

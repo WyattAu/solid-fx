@@ -21,7 +21,16 @@ export interface ACFCorrelogramProps {
 }
 
 export function ACFCorrelogram(props: ACFCorrelogramProps) {
-  const [own, rest] = splitProps(props, ['data', 'maxLag', 'width', 'height', 'label', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'data',
+    'maxLag',
+    'width',
+    'height',
+    'label',
+    'class',
+    'className',
+    'style',
+  ])
 
   const maxLag = () => own.maxLag ?? 20
   const width = () => own.width ?? 220
@@ -85,7 +94,14 @@ export function ACFCorrelogram(props: ACFCorrelogramProps) {
           stroke-dasharray="3 3"
         />
         {/* zero line */}
-        <line x1="0" x2={width()} y1={height() / 2} y2={height() / 2} stroke="oklch(0.3 0.02 250)" stroke-width="0.75" />
+        <line
+          x1="0"
+          x2={width()}
+          y1={height() / 2}
+          y2={height() / 2}
+          stroke="oklch(0.3 0.02 250)"
+          stroke-width="0.75"
+        />
         {/* bars */}
         {acf().map((r, i) => {
           const x = i * barW() + barW() * 0.2

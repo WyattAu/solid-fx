@@ -27,7 +27,16 @@ interface Pt {
 }
 
 export function KalmanPointer(props: KalmanPointerProps) {
-  const [own, rest] = splitProps(props, ['processNoise', 'measurementNoise', 'width', 'height', 'label', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'processNoise',
+    'measurementNoise',
+    'width',
+    'height',
+    'label',
+    'class',
+    'className',
+    'style',
+  ])
 
   const width = () => own.width ?? 420
   const height = () => own.height ?? 260
@@ -132,7 +141,11 @@ export function KalmanPointer(props: KalmanPointerProps) {
   })
 
   return (
-    <figure {...rest} class={`inline-block ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <figure
+      {...rest}
+      class={`inline-block ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <canvas
         ref={canvas}
         width={width()}

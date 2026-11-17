@@ -46,7 +46,16 @@ function convergents(x: number, maxDen: number): Array<{ p: number; q: number }>
 }
 
 export function SternBrocotStepper(props: SternBrocotStepperProps) {
-  const [own, rest] = splitProps(props, ['value', 'maxDenominator', 'step', 'label', 'onInput', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'value',
+    'maxDenominator',
+    'step',
+    'label',
+    'onInput',
+    'class',
+    'className',
+    'style',
+  ])
 
   const maxDen = () => own.maxDenominator ?? 64
   const step = () => own.step ?? 0.01
@@ -70,7 +79,11 @@ export function SternBrocotStepper(props: SternBrocotStepperProps) {
   const errorOf = (p: number, q: number) => value - p / q
 
   return (
-    <div {...rest} class={`select-none ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <div
+      {...rest}
+      class={`select-none ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <div class="flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? 'value'}</span>
         <span class="flex items-center gap-1">

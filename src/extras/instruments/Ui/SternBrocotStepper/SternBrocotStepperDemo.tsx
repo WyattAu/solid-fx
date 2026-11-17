@@ -13,7 +13,13 @@ function SternBrocotStepperDemo() {
         </p>
       </div>
       <div class="w-64">
-        <SternBrocotStepper label="sample stride (coarse den cap 16)" value={1.5} onInput={setV} maxDenominator={16} step={0.05} />
+        <SternBrocotStepper
+          label="sample stride (coarse den cap 16)"
+          value={1.5}
+          onInput={setV}
+          maxDenominator={16}
+          step={0.05}
+        />
       </div>
     </div>
   )

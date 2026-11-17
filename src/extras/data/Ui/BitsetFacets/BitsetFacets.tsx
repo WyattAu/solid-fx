@@ -63,18 +63,24 @@ export function BitsetFacets(props: BitsetFacetsProps) {
   })
 
   const toggle = (idx: number) => {
-    setSelected(sel => (sel.includes(idx) ? sel.filter(s => s !== idx) : [...sel, idx].sort((x, y) => x - y)))
+    setSelected(sel =>
+      sel.includes(idx) ? sel.filter(s => s !== idx) : [...sel, idx].sort((x, y) => x - y),
+    )
   }
 
   const selectivity = () => ((result().count / rows()) * 100).toFixed(2)
 
   return (
-    <div {...rest} class={`select-none ${own.class ?? ''} ${own.className ?? ''}`} style={own.style}>
+    <div
+      {...rest}
+      class={`select-none ${own.class ?? ''} ${own.className ?? ''}`}
+      style={own.style}
+    >
       <div class="mb-2 flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? `facets over ${rows().toLocaleString()} rows`}</span>
         <span class="font-mono" aria-live="polite">
-          <span class="text-sky-300">{result().count.toLocaleString()}</span> rows · {selectivity()}% ·{' '}
-          {result().ms.toFixed(2)} ms
+          <span class="text-sky-300">{result().count.toLocaleString()}</span> rows · {selectivity()}
+          % · {result().ms.toFixed(2)} ms
         </span>
       </div>
       <div class="flex flex-wrap gap-1.5">
@@ -86,7 +92,9 @@ export function BitsetFacets(props: BitsetFacetsProps) {
               <button
                 type="button"
                 class={`rounded-full border px-2 py-0.5 font-mono text-[10px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-sky-400 ${
-                  on() ? 'border-sky-500 bg-sky-900/60 text-sky-200' : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500'
+                  on()
+                    ? 'border-sky-500 bg-sky-900/60 text-sky-200'
+                    : 'border-gray-700 bg-gray-900 text-gray-400 hover:border-gray-500'
                 }`}
                 aria-pressed={on()}
                 onClick={() => toggle(idx())}

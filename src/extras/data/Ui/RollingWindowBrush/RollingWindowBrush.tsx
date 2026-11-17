@@ -22,7 +22,16 @@ export interface RollingWindowBrushProps {
 }
 
 export function RollingWindowBrush(props: RollingWindowBrushProps) {
-  const [own, rest] = splitProps(props, ['data', 'initialWidth', 'width', 'height', 'label', 'class', 'className', 'style'])
+  const [own, rest] = splitProps(props, [
+    'data',
+    'initialWidth',
+    'width',
+    'height',
+    'label',
+    'class',
+    'className',
+    'style',
+  ])
 
   const width = () => own.width ?? 420
   const height = () => own.height ?? 120
