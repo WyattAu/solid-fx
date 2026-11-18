@@ -36,8 +36,11 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
   promise; disposal via `container.destroy()`),
   `@hugeicons/core-free-icons`, `@use-gesture/vanilla`,
   `rough-notation` (vanilla engine: `annotate()` in onMount, `hide()` /
-  `remove()` in onCleanup — MIT, zero deps), and
+  `remove()` in onCleanup — MIT, zero deps), `splitting` (text splitter,
+  chars/words as CSS-var spans), `canvas-confetti` (ISC, burst fire),
+  `@formkit/auto-animate` (FLIP list reflow via the `use:` directive), and
   `@/lib/HugeiconsIcon` / `@/lib/reducedMotion` / `@/lib/syntheticPointer`.
+  gl-transitions GLSL is embedded as string constants (MIT, no dep).
 
 ## 2. Core mapping
 

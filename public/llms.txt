@@ -473,6 +473,27 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 
 - [RoughNotation](https://wyattau.github.io/solid-fx/extras/rough-notation/ui/roughnotation/): RoughNotation widget (source: src/extras/rough-notation/Ui/RoughNotation/RoughNotation.tsx)
 
+## Extras: Splitting
+
+- [SplittingText](https://wyattau.github.io/solid-fx/extras/splitting/ui/splittingtext/): SplittingText widget (source: src/extras/splitting/Ui/SplittingText/SplittingText.tsx)
+
+## Extras: Canvas Confetti
+
+- [ConfettiBurst](https://wyattau.github.io/solid-fx/extras/canvas-confetti/ui/confettiburst/): ConfettiBurst widget (source: src/extras/canvas-confetti/Ui/ConfettiBurst/ConfettiBurst.tsx)
+
+## Extras: Auto Animate
+
+- [AutoAnimateList](https://wyattau.github.io/solid-fx/extras/auto-animate/ui/autoanimatelist/): AutoAnimateList widget (source: src/extras/auto-animate/Ui/AutoAnimateList/AutoAnimateList.tsx)
+
+## Extras: GL Transitions
+
+- [GlTransitionPane](https://wyattau.github.io/solid-fx/extras/gl-transitions/ui/gltransitionpane/): GlTransitionPane widget (source: src/extras/gl-transitions/Ui/GlTransitionPane/GlTransitionPane.tsx)
+
+## Extras: Animate UI
+
+- [HighlightText](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/highlighttext/): HighlightText widget (source: src/extras/animate-ui/Ui/HighlightText/HighlightText.tsx)
+- [RippleButton](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/ripplebutton/): RippleButton widget (source: src/extras/animate-ui/Ui/RippleButton/RippleButton.tsx)
+
 ## Scenes
 
 - [CTAScene](https://wyattau.github.io/solid-fx/scenes/ctascene/): full-page scene composition (source: src/scenes/CTAScene/CTAScene.tsx)

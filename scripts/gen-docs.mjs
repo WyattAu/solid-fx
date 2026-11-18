@@ -92,6 +92,11 @@ const EXTRAS = [
   { source: 'fx', label: 'FX' },
   { source: 'emergent', label: 'Emergent' },
   { source: 'rough-notation', label: 'Rough Notation' },
+  { source: 'splitting', label: 'Splitting' },
+  { source: 'canvas-confetti', label: 'Canvas Confetti' },
+  { source: 'auto-animate', label: 'Auto Animate' },
+  { source: 'gl-transitions', label: 'GL Transitions' },
+  { source: 'animate-ui', label: 'Animate UI' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 

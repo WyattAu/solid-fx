@@ -24,6 +24,7 @@
     "build:islands": "node scripts/build-islands.mjs"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.10.2",
     "@hugeicons/core-free-icons": "^4.3.3",
     "@paper-design/shaders": "0.0.82",
     "@tsparticles/confetti": "^4.5.4",
@@ -44,6 +45,7 @@
     "ogl": "^1.0.11",
     "rough-notation": "^0.5.1",
     "solid-js": "^1.9.5",
+    "splitting": "^1.1.0",
     "three": "^0.180.0",
     "vgpu": "^0.3.1"
   },

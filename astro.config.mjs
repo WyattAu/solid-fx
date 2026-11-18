@@ -78,6 +78,11 @@ const EXTRAS_GROUPS = [
   ['fx', 'FX'],
   ['emergent', 'Emergent'],
   ['rough-notation', 'Rough Notation'],
+  ['splitting', 'Splitting'],
+  ['canvas-confetti', 'Canvas Confetti'],
+  ['auto-animate', 'Auto Animate'],
+  ['gl-transitions', 'GL Transitions'],
+  ['animate-ui', 'Animate UI'],
 ]
 
 function extrasGroup([source, label]) {

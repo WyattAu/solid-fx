@@ -44,7 +44,9 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 182 extras + 11 scenes = 411 pages; 13 extras sources
+State: 218 content + 188 extras + 11 scenes = 417 pages; 18 extras sources
+(12 new sources added since v0.1.0: splitting, canvas-confetti,
+auto-animate, gl-transitions, animate-ui pilots)
 with sidebar navigation; CI + deploy green on 24273e6 lineage; **v0.1.0 tagged**; jsrepo registry
 now covers all 12 extras sources + 218 content blocks; llms.txt
 projects the whole site (403 links, was content-only 218). QA baseline v5
