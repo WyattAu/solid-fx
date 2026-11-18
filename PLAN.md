@@ -63,7 +63,13 @@ shipped, TextAnimations ×1), Skiper UI added (conditional —
 Aceternity-recreation provenance risk), Aceternity downgraded to
 technique-only (licence forbids redistribution as a competing library),
 stale statuses corrected (MP 43, Animata 36, Kokonut 3, Lenis 2 marked
-Ported). Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
+Ported). Engine pilots landed (2026-11-18): SplittingText (splitting),
+ConfettiBurst (canvas-confetti, ISC), AutoAnimateList (@formkit/
+auto-animate FLIP), GlTransitionPane (verbatim gl-transitions Swap/Wind
+GLSL), Animate UI pilots ×2 (HighlightText, RippleButton). Deps added:
+splitting, canvas-confetti, @formkit/auto-animate + @types/canvas-confetti
+(dev). CI lint-gate lesson: piped `| tail` masks exit codes — always echo
+PIPESTATUS. Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
 VernierCaliper) + new emergent category ×3 (BoidsFlocking, HilbertTree,
 SandpileQueue) — the T0 adopt rows from research 04.
 M17-M19 complete: num kernel unit tests (17/17), 8 quant/geometry widgets
