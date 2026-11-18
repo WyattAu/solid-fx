@@ -3,7 +3,7 @@
 // highlight sweeps in from the left, like a marker dragged across the text
 // (Solid + CSS rewrite of the motion-based React original).
 import type { JSX } from 'solid-js'
-import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+import { onMount, splitProps } from 'solid-js'
 
 export interface HighlightTextProps {
   children: string

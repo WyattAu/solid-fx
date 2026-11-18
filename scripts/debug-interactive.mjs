@@ -24,7 +24,7 @@ const PAGES = [
   ['animations', 'ribbons'],
   ['animations', 'splashcursor'],
   ['micro', 'dodgefield'],
-].filter(([cat, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
+].filter(([_cat, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
 
 // Sweep the pointer across the given rect (50+ moves), then click its center.
 async function sweep(page, rect, { click = true } = {}) {

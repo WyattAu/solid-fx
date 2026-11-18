@@ -20,7 +20,7 @@ const PAGES = [
   ['backgrounds', 'crtwarp'],
   ['backgrounds', 'softaurora'],
   ['components', 'modelviewer'],
-].filter(([cat, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
+].filter(([_cat, name]) => !ONLY || ONLY.toLowerCase() === name.toLowerCase())
 
 const probe = page =>
   page.evaluate(() => {

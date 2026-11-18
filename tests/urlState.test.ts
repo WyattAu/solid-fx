@@ -19,7 +19,7 @@ describe('urlState', () => {
 
   it('accepts the plain-JSON fallback format', async () => {
     const state = { p: 0.42 }
-    const fallback = 'fx1j' + encodeURIComponent(JSON.stringify(state))
+    const fallback = `fx1j${encodeURIComponent(JSON.stringify(state))}`
     const decoded = await decodeState<typeof state>(fallback)
     expect(decoded).toEqual(state)
   })
