@@ -34,7 +34,9 @@ Reference ports (read both first): `src/content/Animations/AnimatedContent/Anima
   onCleanup), `@tsparticles/engine` + `@tsparticles/slim` +
   `@tsparticles/confetti` (init once with an idempotent module-level
   promise; disposal via `container.destroy()`),
-  `@hugeicons/core-free-icons`, `@use-gesture/vanilla`, and
+  `@hugeicons/core-free-icons`, `@use-gesture/vanilla`,
+  `rough-notation` (vanilla engine: `annotate()` in onMount, `hide()` /
+  `remove()` in onCleanup — MIT, zero deps), and
   `@/lib/HugeiconsIcon` / `@/lib/reducedMotion` / `@/lib/syntheticPointer`.
 
 ## 2. Core mapping

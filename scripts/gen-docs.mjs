@@ -91,6 +91,7 @@ const EXTRAS = [
   { source: 'data', label: 'Data' },
   { source: 'fx', label: 'FX' },
   { source: 'emergent', label: 'Emergent' },
+  { source: 'rough-notation', label: 'Rough Notation' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 

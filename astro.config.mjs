@@ -77,6 +77,7 @@ const EXTRAS_GROUPS = [
   ['data', 'Data'],
   ['fx', 'FX'],
   ['emergent', 'Emergent'],
+  ['rough-notation', 'Rough Notation'],
 ]
 
 function extrasGroup([source, label]) {

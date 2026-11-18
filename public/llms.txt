@@ -469,6 +469,10 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [HilbertTree](https://wyattau.github.io/solid-fx/extras/emergent/ui/hilberttree/): HilbertTree widget (source: src/extras/emergent/Ui/HilbertTree/HilbertTree.tsx)
 - [SandpileQueue](https://wyattau.github.io/solid-fx/extras/emergent/ui/sandpilequeue/): SandpileQueue widget (source: src/extras/emergent/Ui/SandpileQueue/SandpileQueue.tsx)
 
+## Extras: Rough Notation
+
+- [RoughNotation](https://wyattau.github.io/solid-fx/extras/rough-notation/ui/roughnotation/): RoughNotation widget (source: src/extras/rough-notation/Ui/RoughNotation/RoughNotation.tsx)
+
 ## Scenes
 
 - [CTAScene](https://wyattau.github.io/solid-fx/scenes/ctascene/): full-page scene composition (source: src/scenes/CTAScene/CTAScene.tsx)
