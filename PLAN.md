@@ -44,7 +44,7 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 182 extras + 11 scenes = 411 pages; 12 extras sources
+State: 218 content + 182 extras + 11 scenes = 411 pages; 13 extras sources
 with sidebar navigation; CI + deploy green on 24273e6 lineage; **v0.1.0 tagged**; jsrepo registry
 now covers all 12 extras sources + 218 content blocks; llms.txt
 projects the whole site (403 links, was content-only 218). QA baseline v5
@@ -54,7 +54,14 @@ obsolete (headless CI gained WebGPU + float WebGL2). shoot.mjs now captures
 scenes; next screenshots run should emit 410 frames. PoincareDisk shipped
 (research 04 #1 promoted watch→adopt): hyperbolic tree navigation, CPU
 per-frame Möbius transforms uploaded as uniform arrays, branchless fragment
-loop. Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
+loop. License vetting refresh (2026-11-17, LICENSE-SOURCES.md): Animate UI
+added (MIT + Commons Clause — same grant structure as react-bits, approved,
+pilot pending), rough-notation added (MIT engine — RoughNotation pilot
+shipped, TextAnimations ×1), Skiper UI added (conditional —
+Aceternity-recreation provenance risk), Aceternity downgraded to
+technique-only (licence forbids redistribution as a competing library),
+stale statuses corrected (MP 43, Animata 36, Kokonut 3, Lenis 2 marked
+Ported). Batch 16 landed: instruments +3 (PhaseSpacePendulum, LangevinScrubber,
 VernierCaliper) + new emergent category ×3 (BoidsFlocking, HilbertTree,
 SandpileQueue) — the T0 adopt rows from research 04.
 M17-M19 complete: num kernel unit tests (17/17), 8 quant/geometry widgets
