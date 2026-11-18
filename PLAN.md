@@ -67,8 +67,11 @@ needs a focused session — **shipped 2026-11-17 as M20 (JfaCalloutPlacer,
 fx ×4; baseline v6: 426/426 frames OK, new-widget std 29.9–39.7)** —
 jump-flood distance transform over a 256² typed-array grid (8 log₂ passes,
 branchless neighbor walk), CPU-side by design for determinism + headless
-safety; maps 1:1 to fragment ping-pong at larger grids. Old blank frames
-closed by evidence in QA-TRIAGE v5 section.
+safety; maps 1:1 to fragment ping-pong at larger grids. **v0.1.0
+announcement published** as the GitHub release notes
+(https://github.com/WyattAu/solid-fx/releases/tag/v0.1.0) — distribution
+milestone complete: registry + release + announcement live. Old blank
+frames closed by evidence in QA-TRIAGE v5/v6 sections.
 
 Debugging session notes (PoincareDisk black-frame hunt): (1) SwiftShader
 miscompiles conditionals + conditional array reads inside fragment loops —
