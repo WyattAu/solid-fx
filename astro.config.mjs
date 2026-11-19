@@ -83,6 +83,9 @@ const EXTRAS_GROUPS = [
   ['auto-animate', 'Auto Animate'],
   ['gl-transitions', 'GL Transitions'],
   ['animate-ui', 'Animate UI'],
+  ['gradient-gl', 'Gradient GL'],
+  ['paper-shaders', 'Paper Shaders'],
+  ['lenis', 'Lenis'],
 ]
 
 function extrasGroup([source, label]) {

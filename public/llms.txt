@@ -495,6 +495,22 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [HighlightText](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/highlighttext/): HighlightText widget (source: src/extras/animate-ui/Ui/HighlightText/HighlightText.tsx)
 - [RippleButton](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/ripplebutton/): RippleButton widget (source: src/extras/animate-ui/Ui/RippleButton/RippleButton.tsx)
 
+## Extras: Gradient GL
+
+- [FlowGradient](https://wyattau.github.io/solid-fx/extras/gradient-gl/ui/flowgradient/): FlowGradient widget (source: src/extras/gradient-gl/Ui/FlowGradient/FlowGradient.tsx)
+- [IslandGradient](https://wyattau.github.io/solid-fx/extras/gradient-gl/ui/islandgradient/): IslandGradient widget (source: src/extras/gradient-gl/Ui/IslandGradient/IslandGradient.tsx)
+
+## Extras: Paper Shaders
+
+- [DotOrbit](https://wyattau.github.io/solid-fx/extras/paper-shaders/ui/dotorbit/): DotOrbit widget (source: src/extras/paper-shaders/Ui/DotOrbit/DotOrbit.tsx)
+- [MeshGradient](https://wyattau.github.io/solid-fx/extras/paper-shaders/ui/meshgradient/): MeshGradient widget (source: src/extras/paper-shaders/Ui/MeshGradient/MeshGradient.tsx)
+- [Waves](https://wyattau.github.io/solid-fx/extras/paper-shaders/ui/waves/): Waves widget (source: src/extras/paper-shaders/Ui/Waves/Waves.tsx)
+
+## Extras: Lenis
+
+- [SmoothScroll](https://wyattau.github.io/solid-fx/extras/lenis/ui/smoothscroll/): SmoothScroll widget (source: src/extras/lenis/Ui/SmoothScroll/SmoothScroll.tsx)
+- [StackingCards](https://wyattau.github.io/solid-fx/extras/lenis/ui/stackingcards/): StackingCards widget (source: src/extras/lenis/Ui/StackingCards/StackingCards.tsx)
+
 ## Scenes
 
 - [CTAScene](https://wyattau.github.io/solid-fx/scenes/ctascene/): full-page scene composition (source: src/scenes/CTAScene/CTAScene.tsx)

@@ -97,6 +97,9 @@ const EXTRAS = [
   { source: 'auto-animate', label: 'Auto Animate' },
   { source: 'gl-transitions', label: 'GL Transitions' },
   { source: 'animate-ui', label: 'Animate UI' },
+  { source: 'gradient-gl', label: 'Gradient GL' },
+  { source: 'paper-shaders', label: 'Paper Shaders' },
+  { source: 'lenis', label: 'Lenis' },
 ]
 const extrasDir = path.join(root, 'src', 'extras')
 

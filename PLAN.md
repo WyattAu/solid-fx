@@ -44,7 +44,8 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 188 extras + 11 scenes = 417 pages; 18 extras sources
+State: 218 content + 205 extras + 11 scenes = 434 pages; 21 extras sources
+(gradient-gl ×2, paper-shaders ×3, lenis ×2 docs pages newly wired)
 (12 new sources added since v0.1.0: splitting, canvas-confetti,
 auto-animate, gl-transitions, animate-ui pilots)
 with sidebar navigation; CI + deploy green on 24273e6 lineage; **v0.1.0 tagged**; jsrepo registry
