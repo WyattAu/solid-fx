@@ -9,11 +9,11 @@
 `PORT-NOTE` markers** (React-free contract oracle green), plus 180 extras
 widgets (Magic UI ×40, Motion Primitives ×43, Animata ×36, tsParticles ×9,
 anime.js ×5, Kokonut ×3, original OSINT ×8, SEO ×11, Instruments ×11,
-Data ×13, FX ×5, Emergent ×3, Rough Notation ×1, Splitting ×1,
+Data ×13, FX ×6, Emergent ×3, Rough Notation ×1, Splitting ×1,
 Canvas Confetti ×1, Auto Animate ×1, GL Transitions ×1, Animate UI ×2,
 Paper Shaders ×3, Gradient GL ×2, Lenis ×2) and 11 scenes. Every component typechecks
 (`tsc --noEmit` clean), the barrel smoke test passes, and the Starlight
-site builds all 434 demo pages with sidebar navigation (`bun run build`;
+site builds all 435 demo pages with sidebar navigation (`bun run build`;
 live at
 https://wyattau.github.io/solid-fx/).
 

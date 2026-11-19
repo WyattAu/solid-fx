@@ -461,6 +461,7 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [DitherField](https://wyattau.github.io/solid-fx/extras/fx/ui/ditherfield/): DitherField widget (source: src/extras/fx/Ui/DitherField/DitherField.tsx)
 - [HdrBloomOutliers](https://wyattau.github.io/solid-fx/extras/fx/ui/hdrbloomoutliers/): HdrBloomOutliers widget (source: src/extras/fx/Ui/HdrBloomOutliers/HdrBloomOutliers.tsx)
 - [JfaCalloutPlacer](https://wyattau.github.io/solid-fx/extras/fx/ui/jfacalloutplacer/): JfaCalloutPlacer widget (source: src/extras/fx/Ui/JfaCalloutPlacer/JfaCalloutPlacer.tsx)
+- [LICFlowField](https://wyattau.github.io/solid-fx/extras/fx/ui/licflowfield/): LICFlowField widget (source: src/extras/fx/Ui/LICFlowField/LICFlowField.tsx)
 - [PoincareDisk](https://wyattau.github.io/solid-fx/extras/fx/ui/poincaredisk/): PoincareDisk widget (source: src/extras/fx/Ui/PoincareDisk/PoincareDisk.tsx)
 - [ReactionDiffusion](https://wyattau.github.io/solid-fx/extras/fx/ui/reactiondiffusion/): ReactionDiffusion widget (source: src/extras/fx/Ui/ReactionDiffusion/ReactionDiffusion.tsx)
 

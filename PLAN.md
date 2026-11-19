@@ -64,7 +64,8 @@ shipped, TextAnimations ×1), Skiper UI added (conditional —
 Aceternity-recreation provenance risk), Aceternity downgraded to
 technique-only (licence forbids redistribution as a competing library),
 stale statuses corrected (MP 43, Animata 36, Kokonut 3, Lenis 2 marked
-Ported). Engine pilots landed (2026-11-18): SplittingText (splitting),
+Ported). LICFlowField shipped (research 04 #22 promoted — CPU LIC over typed
+arrays, vortex/source/saddle field, hover tracer; fx ×6). Engine pilots landed (2026-11-18): SplittingText (splitting),
 ConfettiBurst (canvas-confetti, ISC), AutoAnimateList (@formkit/
 auto-animate FLIP), GlTransitionPane (verbatim gl-transitions Swap/Wind
 GLSL), Animate UI pilots ×2 (HighlightText, RippleButton). Deps added:
