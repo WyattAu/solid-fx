@@ -81,6 +81,9 @@ num kernels extended (jacobiEigen, Kalman1D, savgolSmooth, popcount/bitset
 ops, ifftInPlace). M20 JFA callout placer deferred — multi-pass ping-pong
 needs a focused session — **shipped 2026-11-17 as M20 (JfaCalloutPlacer,
 fx ×4; baseline v6: 426/426 frames OK, new-widget std 29.9–39.7)** —
+**baseline v7 (run 44537871533): 434/434 frames OK, zero blanks — a perfect
+sweep matching the catalog page count exactly; every batch 16/17, M20, and
+newly-wired pilot frame verified (std 29.2–66.3)** —
 jump-flood distance transform over a 256² typed-array grid (8 log₂ passes,
 branchless neighbor walk), CPU-side by design for determinism + headless
 safety; maps 1:1 to fragment ping-pong at larger grids. **v0.1.0
