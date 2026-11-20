@@ -18,7 +18,7 @@ const SITE = path.resolve(process.argv[2] ?? 'preview-site')
 const DOCS = path.resolve(process.argv[3] ?? 'docs')
 const ORIGIN = process.argv[4] ?? 'https://wyattau.github.io'
 
-const dashless = (s) => s.toLowerCase().replace(/-/g, '')
+const dashless = s => s.toLowerCase().replace(/-/g, '')
 
 const walkFiles = (root, ext, acc = [], rel = '') => {
   if (!fs.existsSync(root)) return acc
@@ -55,8 +55,8 @@ walkSite(SITE)
 
 // Index: ssgName (sans .html) split into [parentDir, name].
 const ssgPages = ssgRoutes
-  .filter((r) => !r.endsWith('/index.html'))
-  .map((r) => {
+  .filter(r => !r.endsWith('/index.html'))
+  .map(r => {
     const i = r.lastIndexOf('/')
     return { route: r, dir: r.slice(0, i), name: r.slice(i + 1).replace(/\.html$/, '') }
   })
@@ -70,27 +70,28 @@ for (const legacy of legacyRoutes) {
   const parts = legacy.split('/').filter(Boolean)
   const slug = parts[parts.length - 1]
   const slugD = dashless(slug)
-  const hit = ssgPages.filter((p) => {
+  const hit = ssgPages.filter(p => {
     const dirD = dashless(p.dir.split('/').pop() ?? '')
-    if (!parts.some((seg) => dashless(seg) === dirD)) return false
+    if (!parts.some(seg => dashless(seg) === dirD)) return false
     const nameD = dashless(p.name)
-    return (
-      nameD === slugD ||
-      nameD === `${dirD}${slugD}` ||
-      nameD.startsWith(slugD)
-    )
+    return nameD === slugD || nameD === `${dirD}${slugD}` || nameD.startsWith(slugD)
   })
   // Preference tiers: exact name beats category-prefixed beats prefix.
-  const exact = hit.filter((p) => dashless(p.name) === slugD)
-  const prefixed = hit.filter((p) => dashless(p.name) === `${dashless(p.dir.split('/').pop() ?? '')}${slugD}`)
+  const exact = hit.filter(p => dashless(p.name) === slugD)
+  const prefixed = hit.filter(
+    p => dashless(p.name) === `${dashless(p.dir.split('/').pop() ?? '')}${slugD}`,
+  )
   const chosen = exact.length ? exact : prefixed.length ? prefixed : hit
-  if (chosen.length > 1) ambiguous.push(`${legacy} -> ${chosen.map((h) => h.route).join(', ')}`)
+  if (chosen.length > 1) ambiguous.push(`${legacy} -> ${chosen.map(h => h.route).join(', ')}`)
   else if (chosen.length === 1) redirects.push([legacy, chosen[0].route])
   else sectionFallback.push(legacy)
 }
 
 if (ambiguous.length) {
-  console.error(`gen-redirects: ambiguous legacy routes (${ambiguous.length}):`, ambiguous.slice(0, 8))
+  console.error(
+    `gen-redirects: ambiguous legacy routes (${ambiguous.length}):`,
+    ambiguous.slice(0, 8),
+  )
   process.exit(1)
 }
 
@@ -98,7 +99,7 @@ if (ambiguous.length) {
 // pipeline does not ship yet). Land on the deepest section index that
 // exists (case/dash-insensitive dir prefix match), else the site root;
 // loud summary either way.
-const indexPages = ssgPages.filter((p) => p.route.endsWith('/index.html'))
+const indexPages = ssgPages.filter(p => p.route.endsWith('/index.html'))
 for (const legacy of sectionFallback) {
   const legacyD = dashless(legacy)
   let target = 'index.html'
@@ -124,7 +125,9 @@ for (const legacy of sectionFallback) {
       }
     }
     if (bestDir) {
-      const first = ssgPages.filter((p) => p.dir === bestDir).sort((a, b) => a.route.localeCompare(b.route))[0]
+      const first = ssgPages
+        .filter(p => p.dir === bestDir)
+        .sort((a, b) => a.route.localeCompare(b.route))[0]
       target = first.route
     }
   }
@@ -133,7 +136,7 @@ for (const legacy of sectionFallback) {
 }
 
 // ---- emit stubs ----------------------------------------------------
-const stub = (toUrl) => `<!doctype html>
+const stub = toUrl => `<!doctype html>
 <meta charset="utf-8">
 <title>Moved</title>
 <link rel="canonical" href="${ORIGIN}/solid-fx/${toUrl}">
@@ -163,10 +166,10 @@ for (const r of ssgRoutes) {
 // page, so they need stubs even though the sitemap never listed them.
 // Matched by final dir segment against the SSG index pages (legacy
 // "micro" -> content/Micro/index.html); no match = no stub.
-const indexRoutes = ssgRoutes.filter((r) => r.endsWith('/index.html') && r !== 'index.html')
-const legacyDirs = new Set(legacyRoutes.map((r) => r.split('/').filter(Boolean)[0]))
+const indexRoutes = ssgRoutes.filter(r => r.endsWith('/index.html') && r !== 'index.html')
+const legacyDirs = new Set(legacyRoutes.map(r => r.split('/').filter(Boolean)[0]))
 for (const dir of [...legacyDirs].sort()) {
-  const hit = indexRoutes.find((r) => {
+  const hit = indexRoutes.find(r => {
     const dirPart = r.slice(0, -'index.html'.length).replace(/\/$/, '')
     return dashless(dirPart.split('/').pop() ?? '') === dir
   })
