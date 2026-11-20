@@ -159,7 +159,6 @@ export function LICFlowField(props: LICFlowFieldProps) {
     const rect = canvas.getBoundingClientRect()
     const x = (event.clientX - rect.left) / rect.width
     const y = (event.clientY - rect.top) / rect.height
-    setProbe([x, y])
     const [vx, vy] = fieldAt(x, y, params().s, params().src, params().sd)
     setGenLabel(`probe (${x.toFixed(2)}, ${y.toFixed(2)}) → v (${vx.toFixed(2)}, ${vy.toFixed(2)})`)
     const ctx = canvas.getContext('2d')
@@ -198,7 +197,6 @@ export function LICFlowField(props: LICFlowFieldProps) {
         class="w-full cursor-crosshair rounded-lg"
         style={{ 'max-width': `${width()}px` }}
         onPointerMove={onHover}
-        onPointerLeave={() => setProbe(null)}
         role="img"
         aria-label={`${own.label ?? 'LIC flow field'} — vortex/source/saddle phase portrait as line-integral convolution`}
       />
