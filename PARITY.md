@@ -1,10 +1,16 @@
 # PARITY.md - docs-compiler SSG vs production (Phase C root-flip package)
 
-Status: **flip-ready, one decision left** (route mapping). Evidence below was
-collected live on 2026-11-20 from `wyattau.github.io/solid-fx/` (production,
-astro + Starlight chrome) and `wyattau.github.io/solid-fx/preview/` (SSG,
-docs-compiler 0.7.6). Engine fixes landed during this audit are listed in
-section 6.
+Status: **FLIPPED 2026-11-20** (commit abb3d3a + 7b4d446). The SSG is
+production at `/solid-fx/`; legacy astro routes resolve through 915
+meta-refresh stubs (433 page matches + 6 section fallbacks + 471
+retired-preview + 5 category roots). All six acceptance criteria in
+section 5 verified live, including the mobile spot-check on the S7
+(Android 8 compat floor): island demo hydrates, breadcrumbs/pager/
+active-nav render styled. Evidence below was collected live on
+2026-11-20 from `wyattau.github.io/solid-fx/` (production,
+astro + Starlight chrome - now the pre-flip snapshot) and
+`wyattau.github.io/solid-fx/preview/` (SSG, docs-compiler 0.7.6).
+Engine fixes landed during this audit are listed in section 6.
 
 ## 1. Verdict
 
