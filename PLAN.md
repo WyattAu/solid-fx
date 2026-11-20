@@ -65,7 +65,11 @@ Aceternity-recreation provenance risk), Aceternity downgraded to
 technique-only (licence forbids redistribution as a competing library),
 stale statuses corrected (MP 43, Animata 36, Kokonut 3, Lenis 2 marked
 Ported). LICFlowField shipped (research 04 #22 promoted — CPU LIC over typed
-arrays, vortex/source/saddle field, hover tracer; fx ×6). DocSearch wasm
+arrays, vortex/source/saddle field, hover tracer; fx ×6). VaRHistogram
+shipped (research 03 #67 CPU form — sorted-quantile VaR/CVaR, live
+re-binning; data ×14). AnimatedAccordion shipped (Animate UI deeper pilot
+flagged in the roadmap — rebuilt on Kobalte, Solid's Radix-equivalent
+headless layer; animate-ui ×3). DocSearch wasm
 rewrite (parallel session) reverted to last-good — half-written FST reader
 typed broken; re-land when docs_search reader ships in CI-able form. Engine pilots landed (2026-11-18): SplittingText (splitting),
 ConfettiBurst (canvas-confetti, ISC), AutoAnimateList (@formkit/
