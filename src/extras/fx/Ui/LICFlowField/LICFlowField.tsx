@@ -6,7 +6,7 @@
 // CPU LIC over typed arrays (ImageDeg 300×200 ≈ 60k px × L steps — tens of
 // ms), deterministic per seed; recomputes on parameter change only.
 import type { JSX } from 'solid-js'
-import { createSignal, onCleanup, onMount, splitProps } from 'solid-js'
+import { createSignal, onMount, splitProps } from 'solid-js'
 import { mulberry32 } from '@/lib/num'
 
 export interface LICFlowFieldProps {
