@@ -42,22 +42,40 @@
   artifact `screenshots` (218 PNGs), pixel-scan with the Pillow snippet in
   git history ("blank frames" scan).
 
-## Resume block v5 (2026-11-16, next-session queue)
+## Resume block v5 (2026-11-20, post-v0.2.0)
 
-State (2026-11-20, post-v0.2.0): 218 content + 207 extras + 11 scenes =
-437 pages (436 demo pages + index); 22 extras sources with sidebar
-navigation; **v0.2.0 tagged and released**
-(https://github.com/WyattAu/solid-fx/releases/tag/v0.2.0 — GpuHistogram,
-HdrBloomOutliers, LICFlowField, PhysarumGrowth, JfaCalloutPlacer,
-VaRHistogram, AnimatedAccordion on Kobalte, RoughNotation, engine
-pilots, license-vetting refresh with Aceternity downgraded to
-technique-only). QA baseline v8 (run 44684635626): **439/439 frames OK,
-zero blanks** — first sweep covering every v0.2.0 widget (new-frame std
-30.2–40.1); recorded in QA-TRIAGE.md. 22 unit tests (num kernels +
-urlState). Roadmap is now external-signal-driven: the GPU watchlist's
-remaining XL rows (entropy-Voronoi, mipmap semantic zoom, SDF chrome,
-LIC scrubber GPU upgrade, prefix-sum GPU form) are capability-proven and
-scheduled behind installs/issues/feedback, not internal planning.
+State (2026-11-20, Phase A — demand generation): 218 content + 207 extras
++ 11 scenes = 437 pages; 22 extras sources; **v0.2.0 tagged and released**.
+QA baseline v8: 439/439 frames OK, zero blanks. 22 unit tests. **The
+jsrepo registry is now actually installable** — it 404'd for every
+consumer until 2026-11-20 (no registry.json at repo root; found by the
+first end-to-end consumer test, never worked before). Manifest fixed:
+bare item names (the GitHub provider matches the last path segment only;
+15 extras mirrors of taken names are source-prefixed — MagicUi-,
+MotionPrimitives-, Animata-, Kokonut-, TsParticles*), shared lib modules
+shipped as registry items (lib/num etc., auto-wired registryDependencies),
+targets landing in src/components/<Name>/ + src/lib/, freshness gated in
+CI via `registry:check` (jsrepo build + git diff --exit-code). Verified
+end to end in a scratch consumer: bare add + strict tsc green under
+solid-js@1.9.20.
+
+**Gates (pre-committed):**
+- Phase B (consumption hardening) triggers on the first external issue or
+  star. Phase C (maintenance mode — stop all widget batches, keep sync +
+  QA + deps) triggers if **stars < 10 and external issues == 0 on
+  2027-01-15**. Ledger: `metrics/DEMAND.md` via `scripts/traffic-snapshot.py`.
+- Upstream sync SLA: new react-bits components are ported when ≥3
+  accumulate or monthly, whichever first.
+- **Solid 2.0 audit (now concrete):** `bun add solid-js` resolves 2.0.3
+  and solid-fx blocks do NOT typecheck under it (verified 2026-11-20 —
+  onMount/JSX exports differ). All blocks target 1.9.x; README documents
+  the prerequisite. The 1.x→2.x compat audit is the single biggest
+  maintenance workstream and gates any 1.0 release. Do NOT start it
+  before a Phase B signal.
+- License re-vet of the 22 sources is quarterly; next due 2027-02-20.
+- Launch copy lives in `launch/LAUNCH-KIT.md` — never auto-post; every
+  post goes out under WyattAu's hand after re-verifying the install
+  command in a scratch dir.
 
 Prior state: 218 content + 205 extras + 11 scenes = 434 pages; 21 extras sources
 (gradient-gl ×2, paper-shaders ×3, lenis ×2 docs pages newly wired)

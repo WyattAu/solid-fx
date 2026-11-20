@@ -45,14 +45,31 @@ bun run dev        # Astro + Starlight docs site; live demo per component
 Stack: **TypeScript + SolidJS + Tailwind v4** components, **Astro + Starlight**
 docs site (Solid islands), **bun** toolchain, **Biome** lint/format.
 
-## Install (once the port stabilizes)
+## Install
 
-Components are consumed as source, like react-bits:
+Components are consumed as source, like react-bits — verified end to end
+(bar lands at `src/components/<Name>/<Name>.tsx`, shared modules at
+`src/lib/*.ts`):
 
 ```bash
 npx jsrepo add github/WyattAu/solid-fx/SplitText
 # extras: npx jsrepo add github/WyattAu/solid-fx/GpuHistogram
 ```
+
+Requires **SolidJS 1.9.x** (2.x compat audit in progress). Imports use the
+`@/*` alias — map `"@/*": ["./src/*"]` in your tsconfig (Vite/Astro default)
+or move the files and fix imports.
+
+## Stability
+
+Two bands under one version axis:
+
+- **Content ports (218)** — `src/content/*`: stable. Public surface mirrors
+  upstream react-bits 1:1 by contract (`PORTING.md`); changes track upstream,
+  not whim.
+- **Extras (195 + 5 lib modules)** — `src/extras/*`, `src/lib/*`: experimental.
+  Props may shift before 1.0; family-level churn is expected and
+  CHANGELOG-documented.
 
 ## License
 

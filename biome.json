@@ -11,6 +11,7 @@
       "!**/*.min.css",
       "!**/*.svg",
       "!**/bun.lock",
+      "!**/registry.json",
       "!docs",
       "!**/dist-islands",
       "!**/.docs-islands-build",

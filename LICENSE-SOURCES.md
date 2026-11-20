@@ -5,6 +5,10 @@ license-vetted **before** the first port lands, and carries its own NOTICE
 entry here. Non-redistributable or non-commercial sources are excluded
 regardless of quality.
 
+**Re-vet cadence: quarterly.** Upstream licenses can change (Aceternity
+already forced a downgrade). Next re-vet due **2027-02-20**; diff each
+upstream LICENSE against the verdicts below and update statuses in place.
+
 | Source                            | Upstream license                                                                              | Verdict                                                                                         | Status                               |
 | --------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------ |
 | react-bits (DavidHDev)            | MIT + Commons Clause                                                                          | Port allowed: free use inside products, library itself must not be sold. NOTICE in LICENSE.md.  | Ported (218) — `src/content/`        |
