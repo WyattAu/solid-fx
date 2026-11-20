@@ -65,7 +65,7 @@ const index = [
   'copy it into your project, or install it with jsrepo:',
   '',
   '```bash',
-  'npx jsrepo add github/WyattAu/solid-fx/src/content/TextAnimations/SplitText',
+  'npx jsrepo add github/WyattAu/solid-fx/SplitText',
   '```',
   '',
   'Browse by category in the sidebar. Each page renders the component live via a',
@@ -182,7 +182,7 @@ const llms = [
   'Install:',
   '',
   '```',
-  'npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>',
+  'npx jsrepo add github/WyattAu/solid-fx/<Name>',
   '```',
   '',
 ]

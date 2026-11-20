@@ -50,7 +50,8 @@ docs site (Solid islands), **bun** toolchain, **Biome** lint/format.
 Components are consumed as source, like react-bits:
 
 ```bash
-npx jsrepo add github/WyattAu/solid-fx/src/content/TextAnimations/SplitText
+npx jsrepo add github/WyattAu/solid-fx/SplitText
+# extras: npx jsrepo add github/WyattAu/solid-fx/GpuHistogram
 ```
 
 ## License

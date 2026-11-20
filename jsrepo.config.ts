@@ -22,6 +22,17 @@ const EXTRA_SOURCES = [
 
 const items: RegistryItem[] = []
 
+// Consumer-facing item names are bare (the GitHub provider resolves the last
+// path segment of `jsrepo add github/owner/repo/<name>` against the manifest,
+// so names must not contain '/'). Content ports keep upstream names; extras
+// mirrors of a taken name get their source prefixed (PascalCase).
+const pascal = (s: string) =>
+  s
+    .split(/[-_]/)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')
+const usedNames = new Set<string>()
+
 // Shared lib modules as registry items so block imports (@/lib/…) resolve
 // into registryDependencies — consumers get the lib files pulled in and
 // their imports rewritten on add.
@@ -35,6 +46,7 @@ const LIB_ITEMS = [
 for (const file of LIB_ITEMS) {
   const libPath = path.join('src/lib', file)
   if (!existsSync(libPath)) continue
+  usedNames.add(path.basename(file, path.extname(file)))
   items.push({
     name: `lib/${path.basename(file, path.extname(file))}`,
     title: path.basename(file, path.extname(file)),
@@ -57,8 +69,9 @@ for (const category of CATEGORIES) {
   for (const name of readdirSync(categoryDir).sort()) {
     const component = path.join(categoryDir, name, `${name}.tsx`)
     if (!existsSync(component)) continue
+    usedNames.add(name)
     items.push({
-      name: `${category}/${name}`,
+      name,
       title: name,
       description: `SolidJS port of the react-bits ${name} component (TypeScript + Tailwind).`,
       type: 'component',
@@ -83,8 +96,13 @@ for (const source of EXTRA_SOURCES) {
     for (const name of readdirSync(catDir).sort()) {
       const component = path.join(catDir, name, `${name}.tsx`)
       if (!existsSync(component)) continue
+      let itemName = name
+      if (usedNames.has(itemName)) {
+        itemName = `${pascal(source)}${name}`
+      }
+      usedNames.add(itemName)
       items.push({
-        name: `${source}/${category}/${name}`,
+        name: itemName,
         title: name,
         description: `${name} for SolidJS (source tree: src/extras/${source}).`,
         type: 'component',

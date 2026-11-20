@@ -152,7 +152,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ASCIIText",
+			"name": "ASCIIText",
 			"title": "ASCIIText",
 			"description": "SolidJS port of the react-bits ASCIIText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -178,7 +178,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/BlurText",
+			"name": "BlurText",
 			"title": "BlurText",
 			"description": "SolidJS port of the react-bits BlurText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -222,7 +222,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/CircularText",
+			"name": "CircularText",
 			"title": "CircularText",
 			"description": "SolidJS port of the react-bits CircularText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -266,7 +266,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/CountUp",
+			"name": "CountUp",
 			"title": "CountUp",
 			"description": "SolidJS port of the react-bits CountUp component (TypeScript + Tailwind).",
 			"type": "component",
@@ -298,7 +298,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/CurvedLoop",
+			"name": "CurvedLoop",
 			"title": "CurvedLoop",
 			"description": "SolidJS port of the react-bits CurvedLoop component (TypeScript + Tailwind).",
 			"type": "component",
@@ -324,7 +324,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/DecryptedText",
+			"name": "DecryptedText",
 			"title": "DecryptedText",
 			"description": "SolidJS port of the react-bits DecryptedText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -350,7 +350,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/DepthText",
+			"name": "DepthText",
 			"title": "DepthText",
 			"description": "SolidJS port of the react-bits DepthText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -376,7 +376,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/EchoText",
+			"name": "EchoText",
 			"title": "EchoText",
 			"description": "SolidJS port of the react-bits EchoText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -402,7 +402,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/FallingText",
+			"name": "FallingText",
 			"title": "FallingText",
 			"description": "SolidJS port of the react-bits FallingText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -434,7 +434,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/FoldText",
+			"name": "FoldText",
 			"title": "FoldText",
 			"description": "SolidJS port of the react-bits FoldText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -466,7 +466,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/FuzzyText",
+			"name": "FuzzyText",
 			"title": "FuzzyText",
 			"description": "SolidJS port of the react-bits FuzzyText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -492,7 +492,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/GlitchText",
+			"name": "GlitchText",
 			"title": "GlitchText",
 			"description": "SolidJS port of the react-bits GlitchText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -518,7 +518,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/GradientText",
+			"name": "GradientText",
 			"title": "GradientText",
 			"description": "SolidJS port of the react-bits GradientText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -544,7 +544,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/MaskedHeading",
+			"name": "MaskedHeading",
 			"title": "MaskedHeading",
 			"description": "SolidJS port of the react-bits MaskedHeading component (TypeScript + Tailwind).",
 			"type": "component",
@@ -576,7 +576,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ParticleText",
+			"name": "ParticleText",
 			"title": "ParticleText",
 			"description": "SolidJS port of the react-bits ParticleText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -602,7 +602,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/RotatingText",
+			"name": "RotatingText",
 			"title": "RotatingText",
 			"description": "SolidJS port of the react-bits RotatingText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -646,7 +646,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ScrambledText",
+			"name": "ScrambledText",
 			"title": "ScrambledText",
 			"description": "SolidJS port of the react-bits ScrambledText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -678,7 +678,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ScrollFloat",
+			"name": "ScrollFloat",
 			"title": "ScrollFloat",
 			"description": "SolidJS port of the react-bits ScrollFloat component (TypeScript + Tailwind).",
 			"type": "component",
@@ -710,7 +710,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ScrollReveal",
+			"name": "ScrollReveal",
 			"title": "ScrollReveal",
 			"description": "SolidJS port of the react-bits ScrollReveal component (TypeScript + Tailwind).",
 			"type": "component",
@@ -742,7 +742,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ScrollVelocity",
+			"name": "ScrollVelocity",
 			"title": "ScrollVelocity",
 			"description": "SolidJS port of the react-bits ScrollVelocity component (TypeScript + Tailwind).",
 			"type": "component",
@@ -786,7 +786,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/ShinyText",
+			"name": "ShinyText",
 			"title": "ShinyText",
 			"description": "SolidJS port of the react-bits ShinyText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -812,7 +812,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/Shuffle",
+			"name": "Shuffle",
 			"title": "Shuffle",
 			"description": "SolidJS port of the react-bits Shuffle component (TypeScript + Tailwind).",
 			"type": "component",
@@ -844,7 +844,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/SplitFlapText",
+			"name": "SplitFlapText",
 			"title": "SplitFlapText",
 			"description": "SolidJS port of the react-bits SplitFlapText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -882,7 +882,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/SplitText",
+			"name": "SplitText",
 			"title": "SplitText",
 			"description": "SolidJS port of the react-bits SplitText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -914,7 +914,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/StrokeText",
+			"name": "StrokeText",
 			"title": "StrokeText",
 			"description": "SolidJS port of the react-bits StrokeText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -946,7 +946,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TechText",
+			"name": "TechText",
 			"title": "TechText",
 			"description": "SolidJS port of the react-bits TechText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -972,7 +972,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TextCursor",
+			"name": "TextCursor",
 			"title": "TextCursor",
 			"description": "SolidJS port of the react-bits TextCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -998,7 +998,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TextLoop",
+			"name": "TextLoop",
 			"title": "TextLoop",
 			"description": "SolidJS port of the react-bits TextLoop component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1030,7 +1030,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TextPressure",
+			"name": "TextPressure",
 			"title": "TextPressure",
 			"description": "SolidJS port of the react-bits TextPressure component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1056,7 +1056,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TextType",
+			"name": "TextType",
 			"title": "TextType",
 			"description": "SolidJS port of the react-bits TextType component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1100,7 +1100,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/TrueFocus",
+			"name": "TrueFocus",
 			"title": "TrueFocus",
 			"description": "SolidJS port of the react-bits TrueFocus component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1144,7 +1144,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/VariableProximity",
+			"name": "VariableProximity",
 			"title": "VariableProximity",
 			"description": "SolidJS port of the react-bits VariableProximity component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1170,7 +1170,7 @@
 			]
 		},
 		{
-			"name": "TextAnimations/WarpText",
+			"name": "WarpText",
 			"title": "WarpText",
 			"description": "SolidJS port of the react-bits WarpText component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1202,7 +1202,7 @@
 			]
 		},
 		{
-			"name": "Animations/AnimatedContent",
+			"name": "AnimatedContent",
 			"title": "AnimatedContent",
 			"description": "SolidJS port of the react-bits AnimatedContent component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1234,7 +1234,7 @@
 			]
 		},
 		{
-			"name": "Animations/BlobCursor",
+			"name": "BlobCursor",
 			"title": "BlobCursor",
 			"description": "SolidJS port of the react-bits BlobCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1266,7 +1266,7 @@
 			]
 		},
 		{
-			"name": "Animations/ClickSpark",
+			"name": "ClickSpark",
 			"title": "ClickSpark",
 			"description": "SolidJS port of the react-bits ClickSpark component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1292,7 +1292,7 @@
 			]
 		},
 		{
-			"name": "Animations/Crosshair",
+			"name": "Crosshair",
 			"title": "Crosshair",
 			"description": "SolidJS port of the react-bits Crosshair component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1318,7 +1318,7 @@
 			]
 		},
 		{
-			"name": "Animations/CrystalizedBall",
+			"name": "CrystalizedBall",
 			"title": "CrystalizedBall",
 			"description": "SolidJS port of the react-bits CrystalizedBall component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1350,7 +1350,7 @@
 			]
 		},
 		{
-			"name": "Animations/Cubes",
+			"name": "Cubes",
 			"title": "Cubes",
 			"description": "SolidJS port of the react-bits Cubes component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1376,7 +1376,7 @@
 			]
 		},
 		{
-			"name": "Animations/CursorGrid",
+			"name": "CursorGrid",
 			"title": "CursorGrid",
 			"description": "SolidJS port of the react-bits CursorGrid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1402,7 +1402,7 @@
 			]
 		},
 		{
-			"name": "Animations/DitherVeil",
+			"name": "DitherVeil",
 			"title": "DitherVeil",
 			"description": "SolidJS port of the react-bits DitherVeil component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1434,7 +1434,7 @@
 			]
 		},
 		{
-			"name": "Animations/ElasticMesh",
+			"name": "ElasticMesh",
 			"title": "ElasticMesh",
 			"description": "SolidJS port of the react-bits ElasticMesh component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1460,7 +1460,7 @@
 			]
 		},
 		{
-			"name": "Animations/ElectricBorder",
+			"name": "ElectricBorder",
 			"title": "ElectricBorder",
 			"description": "SolidJS port of the react-bits ElectricBorder component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1486,7 +1486,7 @@
 			]
 		},
 		{
-			"name": "Animations/ElectricLogo",
+			"name": "ElectricLogo",
 			"title": "ElectricLogo",
 			"description": "SolidJS port of the react-bits ElectricLogo component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1518,7 +1518,7 @@
 			]
 		},
 		{
-			"name": "Animations/FadeContent",
+			"name": "FadeContent",
 			"title": "FadeContent",
 			"description": "SolidJS port of the react-bits FadeContent component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1550,7 +1550,7 @@
 			]
 		},
 		{
-			"name": "Animations/GhostCursor",
+			"name": "GhostCursor",
 			"title": "GhostCursor",
 			"description": "SolidJS port of the react-bits GhostCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1576,7 +1576,7 @@
 			]
 		},
 		{
-			"name": "Animations/GlareHover",
+			"name": "GlareHover",
 			"title": "GlareHover",
 			"description": "SolidJS port of the react-bits GlareHover component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1602,7 +1602,7 @@
 			]
 		},
 		{
-			"name": "Animations/GlowCursor",
+			"name": "GlowCursor",
 			"title": "GlowCursor",
 			"description": "SolidJS port of the react-bits GlowCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1628,7 +1628,7 @@
 			]
 		},
 		{
-			"name": "Animations/GradualBlur",
+			"name": "GradualBlur",
 			"title": "GradualBlur",
 			"description": "SolidJS port of the react-bits GradualBlur component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1654,7 +1654,7 @@
 			]
 		},
 		{
-			"name": "Animations/HalftoneReveal",
+			"name": "HalftoneReveal",
 			"title": "HalftoneReveal",
 			"description": "SolidJS port of the react-bits HalftoneReveal component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1680,7 +1680,7 @@
 			]
 		},
 		{
-			"name": "Animations/ImageTrail",
+			"name": "ImageTrail",
 			"title": "ImageTrail",
 			"description": "SolidJS port of the react-bits ImageTrail component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1712,7 +1712,7 @@
 			]
 		},
 		{
-			"name": "Animations/LaserFlow",
+			"name": "LaserFlow",
 			"title": "LaserFlow",
 			"description": "SolidJS port of the react-bits LaserFlow component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1738,7 +1738,7 @@
 			]
 		},
 		{
-			"name": "Animations/LogoLoop",
+			"name": "LogoLoop",
 			"title": "LogoLoop",
 			"description": "SolidJS port of the react-bits LogoLoop component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1764,7 +1764,7 @@
 			]
 		},
 		{
-			"name": "Animations/Magnet",
+			"name": "Magnet",
 			"title": "Magnet",
 			"description": "SolidJS port of the react-bits Magnet component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1790,7 +1790,7 @@
 			]
 		},
 		{
-			"name": "Animations/MetaBalls",
+			"name": "MetaBalls",
 			"title": "MetaBalls",
 			"description": "SolidJS port of the react-bits MetaBalls component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1816,7 +1816,7 @@
 			]
 		},
 		{
-			"name": "Animations/MetallicPaint",
+			"name": "MetallicPaint",
 			"title": "MetallicPaint",
 			"description": "SolidJS port of the react-bits MetallicPaint component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1842,7 +1842,7 @@
 			]
 		},
 		{
-			"name": "Animations/Noise",
+			"name": "Noise",
 			"title": "Noise",
 			"description": "SolidJS port of the react-bits Noise component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1868,7 +1868,7 @@
 			]
 		},
 		{
-			"name": "Animations/OrbitImages",
+			"name": "OrbitImages",
 			"title": "OrbitImages",
 			"description": "SolidJS port of the react-bits OrbitImages component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1894,7 +1894,7 @@
 			]
 		},
 		{
-			"name": "Animations/PixelSwap",
+			"name": "PixelSwap",
 			"title": "PixelSwap",
 			"description": "SolidJS port of the react-bits PixelSwap component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1920,7 +1920,7 @@
 			]
 		},
 		{
-			"name": "Animations/PixelTrail",
+			"name": "PixelTrail",
 			"title": "PixelTrail",
 			"description": "SolidJS port of the react-bits PixelTrail component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1946,7 +1946,7 @@
 			]
 		},
 		{
-			"name": "Animations/PixelTransition",
+			"name": "PixelTransition",
 			"title": "PixelTransition",
 			"description": "SolidJS port of the react-bits PixelTransition component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1972,7 +1972,7 @@
 			]
 		},
 		{
-			"name": "Animations/Ribbons",
+			"name": "Ribbons",
 			"title": "Ribbons",
 			"description": "SolidJS port of the react-bits Ribbons component (TypeScript + Tailwind).",
 			"type": "component",
@@ -1998,7 +1998,7 @@
 			]
 		},
 		{
-			"name": "Animations/RippleDistortion",
+			"name": "RippleDistortion",
 			"title": "RippleDistortion",
 			"description": "SolidJS port of the react-bits RippleDistortion component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2030,7 +2030,7 @@
 			]
 		},
 		{
-			"name": "Animations/ScrollExpand",
+			"name": "ScrollExpand",
 			"title": "ScrollExpand",
 			"description": "SolidJS port of the react-bits ScrollExpand component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2056,7 +2056,7 @@
 			]
 		},
 		{
-			"name": "Animations/ShapeBlur",
+			"name": "ShapeBlur",
 			"title": "ShapeBlur",
 			"description": "SolidJS port of the react-bits ShapeBlur component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2082,7 +2082,7 @@
 			]
 		},
 		{
-			"name": "Animations/SplashCursor",
+			"name": "SplashCursor",
 			"title": "SplashCursor",
 			"description": "SolidJS port of the react-bits SplashCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2108,7 +2108,7 @@
 			]
 		},
 		{
-			"name": "Animations/StarBorder",
+			"name": "StarBorder",
 			"title": "StarBorder",
 			"description": "SolidJS port of the react-bits StarBorder component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2134,7 +2134,7 @@
 			]
 		},
 		{
-			"name": "Animations/StickerPeel",
+			"name": "StickerPeel",
 			"title": "StickerPeel",
 			"description": "SolidJS port of the react-bits StickerPeel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2160,7 +2160,7 @@
 			]
 		},
 		{
-			"name": "Animations/Strands",
+			"name": "Strands",
 			"title": "Strands",
 			"description": "SolidJS port of the react-bits Strands component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2186,7 +2186,7 @@
 			]
 		},
 		{
-			"name": "Animations/SwarmCursor",
+			"name": "SwarmCursor",
 			"title": "SwarmCursor",
 			"description": "SolidJS port of the react-bits SwarmCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2212,7 +2212,7 @@
 			]
 		},
 		{
-			"name": "Animations/TargetCursor",
+			"name": "TargetCursor",
 			"title": "TargetCursor",
 			"description": "SolidJS port of the react-bits TargetCursor component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2238,7 +2238,7 @@
 			]
 		},
 		{
-			"name": "Components/AccordionGallery",
+			"name": "AccordionGallery",
 			"title": "AccordionGallery",
 			"description": "SolidJS port of the react-bits AccordionGallery component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2270,7 +2270,7 @@
 			]
 		},
 		{
-			"name": "Components/AnimatedList",
+			"name": "AnimatedList",
 			"title": "AnimatedList",
 			"description": "SolidJS port of the react-bits AnimatedList component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2314,7 +2314,7 @@
 			]
 		},
 		{
-			"name": "Components/BorderGlow",
+			"name": "BorderGlow",
 			"title": "BorderGlow",
 			"description": "SolidJS port of the react-bits BorderGlow component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2340,7 +2340,7 @@
 			]
 		},
 		{
-			"name": "Components/BounceCards",
+			"name": "BounceCards",
 			"title": "BounceCards",
 			"description": "SolidJS port of the react-bits BounceCards component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2366,7 +2366,7 @@
 			]
 		},
 		{
-			"name": "Components/BubbleMenu",
+			"name": "BubbleMenu",
 			"title": "BubbleMenu",
 			"description": "SolidJS port of the react-bits BubbleMenu component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2398,7 +2398,7 @@
 			]
 		},
 		{
-			"name": "Components/CardNav",
+			"name": "CardNav",
 			"title": "CardNav",
 			"description": "SolidJS port of the react-bits CardNav component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2442,7 +2442,7 @@
 			]
 		},
 		{
-			"name": "Components/CardSwap",
+			"name": "CardSwap",
 			"title": "CardSwap",
 			"description": "SolidJS port of the react-bits CardSwap component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2486,7 +2486,7 @@
 			]
 		},
 		{
-			"name": "Components/Carousel",
+			"name": "Carousel",
 			"title": "Carousel",
 			"description": "SolidJS port of the react-bits Carousel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2530,7 +2530,7 @@
 			]
 		},
 		{
-			"name": "Components/ChromaGrid",
+			"name": "ChromaGrid",
 			"title": "ChromaGrid",
 			"description": "SolidJS port of the react-bits ChromaGrid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2556,7 +2556,7 @@
 			]
 		},
 		{
-			"name": "Components/CircularCarousel",
+			"name": "CircularCarousel",
 			"title": "CircularCarousel",
 			"description": "SolidJS port of the react-bits CircularCarousel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2594,7 +2594,7 @@
 			]
 		},
 		{
-			"name": "Components/CircularGallery",
+			"name": "CircularGallery",
 			"title": "CircularGallery",
 			"description": "SolidJS port of the react-bits CircularGallery component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2620,7 +2620,7 @@
 			]
 		},
 		{
-			"name": "Components/Counter",
+			"name": "Counter",
 			"title": "Counter",
 			"description": "SolidJS port of the react-bits Counter component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2646,7 +2646,7 @@
 			]
 		},
 		{
-			"name": "Components/CurvedInput",
+			"name": "CurvedInput",
 			"title": "CurvedInput",
 			"description": "SolidJS port of the react-bits CurvedInput component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2672,7 +2672,7 @@
 			]
 		},
 		{
-			"name": "Components/DecayCard",
+			"name": "DecayCard",
 			"title": "DecayCard",
 			"description": "SolidJS port of the react-bits DecayCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2698,7 +2698,7 @@
 			]
 		},
 		{
-			"name": "Components/DepthCarousel",
+			"name": "DepthCarousel",
 			"title": "DepthCarousel",
 			"description": "SolidJS port of the react-bits DepthCarousel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2730,7 +2730,7 @@
 			]
 		},
 		{
-			"name": "Components/Dock",
+			"name": "Dock",
 			"title": "Dock",
 			"description": "SolidJS port of the react-bits Dock component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2756,7 +2756,7 @@
 			]
 		},
 		{
-			"name": "Components/DomeGallery",
+			"name": "DomeGallery",
 			"title": "DomeGallery",
 			"description": "SolidJS port of the react-bits DomeGallery component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2788,7 +2788,7 @@
 			]
 		},
 		{
-			"name": "Components/DriftWall",
+			"name": "DriftWall",
 			"title": "DriftWall",
 			"description": "SolidJS port of the react-bits DriftWall component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2814,7 +2814,7 @@
 			]
 		},
 		{
-			"name": "Components/ElasticSlider",
+			"name": "ElasticSlider",
 			"title": "ElasticSlider",
 			"description": "SolidJS port of the react-bits ElasticSlider component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2858,7 +2858,7 @@
 			]
 		},
 		{
-			"name": "Components/FlexCarousel",
+			"name": "FlexCarousel",
 			"title": "FlexCarousel",
 			"description": "SolidJS port of the react-bits FlexCarousel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2890,7 +2890,7 @@
 			]
 		},
 		{
-			"name": "Components/FlowingMenu",
+			"name": "FlowingMenu",
 			"title": "FlowingMenu",
 			"description": "SolidJS port of the react-bits FlowingMenu component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2934,7 +2934,7 @@
 			]
 		},
 		{
-			"name": "Components/FluidGlass",
+			"name": "FluidGlass",
 			"title": "FluidGlass",
 			"description": "SolidJS port of the react-bits FluidGlass component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2960,7 +2960,7 @@
 			]
 		},
 		{
-			"name": "Components/FlyingPosters",
+			"name": "FlyingPosters",
 			"title": "FlyingPosters",
 			"description": "SolidJS port of the react-bits FlyingPosters component (TypeScript + Tailwind).",
 			"type": "component",
@@ -2986,7 +2986,7 @@
 			]
 		},
 		{
-			"name": "Components/Folder",
+			"name": "Folder",
 			"title": "Folder",
 			"description": "SolidJS port of the react-bits Folder component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3012,7 +3012,7 @@
 			]
 		},
 		{
-			"name": "Components/GlassIcons",
+			"name": "GlassIcons",
 			"title": "GlassIcons",
 			"description": "SolidJS port of the react-bits GlassIcons component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3038,7 +3038,7 @@
 			]
 		},
 		{
-			"name": "Components/GlassSurface",
+			"name": "GlassSurface",
 			"title": "GlassSurface",
 			"description": "SolidJS port of the react-bits GlassSurface component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3064,7 +3064,7 @@
 			]
 		},
 		{
-			"name": "Components/GooeyNav",
+			"name": "GooeyNav",
 			"title": "GooeyNav",
 			"description": "SolidJS port of the react-bits GooeyNav component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3090,7 +3090,7 @@
 			]
 		},
 		{
-			"name": "Components/HoloCard",
+			"name": "HoloCard",
 			"title": "HoloCard",
 			"description": "SolidJS port of the react-bits HoloCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3116,7 +3116,7 @@
 			]
 		},
 		{
-			"name": "Components/InfiniteMenu",
+			"name": "InfiniteMenu",
 			"title": "InfiniteMenu",
 			"description": "SolidJS port of the react-bits InfiniteMenu component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3142,7 +3142,7 @@
 			]
 		},
 		{
-			"name": "Components/InfiniteSpiral",
+			"name": "InfiniteSpiral",
 			"title": "InfiniteSpiral",
 			"description": "SolidJS port of the react-bits InfiniteSpiral component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3168,7 +3168,7 @@
 			]
 		},
 		{
-			"name": "Components/Lanyard",
+			"name": "Lanyard",
 			"title": "Lanyard",
 			"description": "SolidJS port of the react-bits Lanyard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3200,7 +3200,7 @@
 			]
 		},
 		{
-			"name": "Components/LineSidebar",
+			"name": "LineSidebar",
 			"title": "LineSidebar",
 			"description": "SolidJS port of the react-bits LineSidebar component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3226,7 +3226,7 @@
 			]
 		},
 		{
-			"name": "Components/MagicBento",
+			"name": "MagicBento",
 			"title": "MagicBento",
 			"description": "SolidJS port of the react-bits MagicBento component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3270,7 +3270,7 @@
 			]
 		},
 		{
-			"name": "Components/Masonry",
+			"name": "Masonry",
 			"title": "Masonry",
 			"description": "SolidJS port of the react-bits Masonry component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3314,7 +3314,7 @@
 			]
 		},
 		{
-			"name": "Components/ModelViewer",
+			"name": "ModelViewer",
 			"title": "ModelViewer",
 			"description": "SolidJS port of the react-bits ModelViewer component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3346,7 +3346,7 @@
 			]
 		},
 		{
-			"name": "Components/MorphSlider",
+			"name": "MorphSlider",
 			"title": "MorphSlider",
 			"description": "SolidJS port of the react-bits MorphSlider component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3383,7 +3383,7 @@
 			]
 		},
 		{
-			"name": "Components/OptionWheel",
+			"name": "OptionWheel",
 			"title": "OptionWheel",
 			"description": "SolidJS port of the react-bits OptionWheel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3409,7 +3409,7 @@
 			]
 		},
 		{
-			"name": "Components/PillNav",
+			"name": "PillNav",
 			"title": "PillNav",
 			"description": "SolidJS port of the react-bits PillNav component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3435,7 +3435,7 @@
 			]
 		},
 		{
-			"name": "Components/PixelCard",
+			"name": "PixelCard",
 			"title": "PixelCard",
 			"description": "SolidJS port of the react-bits PixelCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3461,7 +3461,7 @@
 			]
 		},
 		{
-			"name": "Components/ProfileCard",
+			"name": "ProfileCard",
 			"title": "ProfileCard",
 			"description": "SolidJS port of the react-bits ProfileCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3505,7 +3505,7 @@
 			]
 		},
 		{
-			"name": "Components/ReflectiveCard",
+			"name": "ReflectiveCard",
 			"title": "ReflectiveCard",
 			"description": "SolidJS port of the react-bits ReflectiveCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3549,7 +3549,7 @@
 			]
 		},
 		{
-			"name": "Components/ScrollStack",
+			"name": "ScrollStack",
 			"title": "ScrollStack",
 			"description": "SolidJS port of the react-bits ScrollStack component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3575,7 +3575,7 @@
 			]
 		},
 		{
-			"name": "Components/SpecularButton",
+			"name": "SpecularButton",
 			"title": "SpecularButton",
 			"description": "SolidJS port of the react-bits SpecularButton component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3601,7 +3601,7 @@
 			]
 		},
 		{
-			"name": "Components/SpotlightCard",
+			"name": "SpotlightCard",
 			"title": "SpotlightCard",
 			"description": "SolidJS port of the react-bits SpotlightCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3627,7 +3627,7 @@
 			]
 		},
 		{
-			"name": "Components/Stack",
+			"name": "Stack",
 			"title": "Stack",
 			"description": "SolidJS port of the react-bits Stack component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3671,7 +3671,7 @@
 			]
 		},
 		{
-			"name": "Components/StaggeredMenu",
+			"name": "StaggeredMenu",
 			"title": "StaggeredMenu",
 			"description": "SolidJS port of the react-bits StaggeredMenu component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3703,7 +3703,7 @@
 			]
 		},
 		{
-			"name": "Components/Stepper",
+			"name": "Stepper",
 			"title": "Stepper",
 			"description": "SolidJS port of the react-bits Stepper component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3747,7 +3747,7 @@
 			]
 		},
 		{
-			"name": "Components/TiltedCard",
+			"name": "TiltedCard",
 			"title": "TiltedCard",
 			"description": "SolidJS port of the react-bits TiltedCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3773,7 +3773,7 @@
 			]
 		},
 		{
-			"name": "Micro/BellToggle",
+			"name": "BellToggle",
 			"title": "BellToggle",
 			"description": "SolidJS port of the react-bits BellToggle component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3832,7 +3832,7 @@
 			]
 		},
 		{
-			"name": "Micro/BranchedMenu",
+			"name": "BranchedMenu",
 			"title": "BranchedMenu",
 			"description": "SolidJS port of the react-bits BranchedMenu component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3876,7 +3876,7 @@
 			]
 		},
 		{
-			"name": "Micro/CallChip",
+			"name": "CallChip",
 			"title": "CallChip",
 			"description": "SolidJS port of the react-bits CallChip component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3920,7 +3920,7 @@
 			]
 		},
 		{
-			"name": "Micro/CodeSlots",
+			"name": "CodeSlots",
 			"title": "CodeSlots",
 			"description": "SolidJS port of the react-bits CodeSlots component (TypeScript + Tailwind).",
 			"type": "component",
@@ -3979,7 +3979,7 @@
 			]
 		},
 		{
-			"name": "Micro/CometDial",
+			"name": "CometDial",
 			"title": "CometDial",
 			"description": "SolidJS port of the react-bits CometDial component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4023,7 +4023,7 @@
 			]
 		},
 		{
-			"name": "Micro/DodgeField",
+			"name": "DodgeField",
 			"title": "DodgeField",
 			"description": "SolidJS port of the react-bits DodgeField component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4067,7 +4067,7 @@
 			]
 		},
 		{
-			"name": "Micro/FlipCard",
+			"name": "FlipCard",
 			"title": "FlipCard",
 			"description": "SolidJS port of the react-bits FlipCard component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4111,7 +4111,7 @@
 			]
 		},
 		{
-			"name": "Micro/FlyingButton",
+			"name": "FlyingButton",
 			"title": "FlyingButton",
 			"description": "SolidJS port of the react-bits FlyingButton component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4137,7 +4137,7 @@
 			]
 		},
 		{
-			"name": "Micro/FolderFloat",
+			"name": "FolderFloat",
 			"title": "FolderFloat",
 			"description": "SolidJS port of the react-bits FolderFloat component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4181,7 +4181,7 @@
 			]
 		},
 		{
-			"name": "Micro/FuseButton",
+			"name": "FuseButton",
 			"title": "FuseButton",
 			"description": "SolidJS port of the react-bits FuseButton component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4225,7 +4225,7 @@
 			]
 		},
 		{
-			"name": "Micro/GlideSelect",
+			"name": "GlideSelect",
 			"title": "GlideSelect",
 			"description": "SolidJS port of the react-bits GlideSelect component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4269,7 +4269,7 @@
 			]
 		},
 		{
-			"name": "Micro/HoldButton",
+			"name": "HoldButton",
 			"title": "HoldButton",
 			"description": "SolidJS port of the react-bits HoldButton component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4295,7 +4295,7 @@
 			]
 		},
 		{
-			"name": "Micro/JellyRadio",
+			"name": "JellyRadio",
 			"title": "JellyRadio",
 			"description": "SolidJS port of the react-bits JellyRadio component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4339,7 +4339,7 @@
 			]
 		},
 		{
-			"name": "Micro/LatticeLoader",
+			"name": "LatticeLoader",
 			"title": "LatticeLoader",
 			"description": "SolidJS port of the react-bits LatticeLoader component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4365,7 +4365,7 @@
 			]
 		},
 		{
-			"name": "Micro/PaperCrumple",
+			"name": "PaperCrumple",
 			"title": "PaperCrumple",
 			"description": "SolidJS port of the react-bits PaperCrumple component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4397,7 +4397,7 @@
 			]
 		},
 		{
-			"name": "Micro/PeekRating",
+			"name": "PeekRating",
 			"title": "PeekRating",
 			"description": "SolidJS port of the react-bits PeekRating component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4441,7 +4441,7 @@
 			]
 		},
 		{
-			"name": "Micro/PromptBar",
+			"name": "PromptBar",
 			"title": "PromptBar",
 			"description": "SolidJS port of the react-bits PromptBar component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4500,7 +4500,7 @@
 			]
 		},
 		{
-			"name": "Micro/PulseHeart",
+			"name": "PulseHeart",
 			"title": "PulseHeart",
 			"description": "SolidJS port of the react-bits PulseHeart component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4544,7 +4544,7 @@
 			]
 		},
 		{
-			"name": "Micro/RefineFrame",
+			"name": "RefineFrame",
 			"title": "RefineFrame",
 			"description": "SolidJS port of the react-bits RefineFrame component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4588,7 +4588,7 @@
 			]
 		},
 		{
-			"name": "Micro/RubberSegment",
+			"name": "RubberSegment",
 			"title": "RubberSegment",
 			"description": "SolidJS port of the react-bits RubberSegment component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4632,7 +4632,7 @@
 			]
 		},
 		{
-			"name": "Micro/ScrubField",
+			"name": "ScrubField",
 			"title": "ScrubField",
 			"description": "SolidJS port of the react-bits ScrubField component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4676,7 +4676,7 @@
 			]
 		},
 		{
-			"name": "Micro/Shredder",
+			"name": "Shredder",
 			"title": "Shredder",
 			"description": "SolidJS port of the react-bits Shredder component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4702,7 +4702,7 @@
 			]
 		},
 		{
-			"name": "Micro/SlideCommit",
+			"name": "SlideCommit",
 			"title": "SlideCommit",
 			"description": "SolidJS port of the react-bits SlideCommit component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4761,7 +4761,7 @@
 			]
 		},
 		{
-			"name": "Micro/SlingButton",
+			"name": "SlingButton",
 			"title": "SlingButton",
 			"description": "SolidJS port of the react-bits SlingButton component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4820,7 +4820,7 @@
 			]
 		},
 		{
-			"name": "Micro/SloshGauge",
+			"name": "SloshGauge",
 			"title": "SloshGauge",
 			"description": "SolidJS port of the react-bits SloshGauge component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4846,7 +4846,7 @@
 			]
 		},
 		{
-			"name": "Micro/SpringCheck",
+			"name": "SpringCheck",
 			"title": "SpringCheck",
 			"description": "SolidJS port of the react-bits SpringCheck component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4895,7 +4895,7 @@
 			]
 		},
 		{
-			"name": "Micro/SquishSwitch",
+			"name": "SquishSwitch",
 			"title": "SquishSwitch",
 			"description": "SolidJS port of the react-bits SquishSwitch component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4939,7 +4939,7 @@
 			]
 		},
 		{
-			"name": "Micro/StatusMark",
+			"name": "StatusMark",
 			"title": "StatusMark",
 			"description": "SolidJS port of the react-bits StatusMark component (TypeScript + Tailwind).",
 			"type": "component",
@@ -4983,7 +4983,7 @@
 			]
 		},
 		{
-			"name": "Micro/SwipeRow",
+			"name": "SwipeRow",
 			"title": "SwipeRow",
 			"description": "SolidJS port of the react-bits SwipeRow component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5042,7 +5042,7 @@
 			]
 		},
 		{
-			"name": "Micro/SwipeToast",
+			"name": "SwipeToast",
 			"title": "SwipeToast",
 			"description": "SolidJS port of the react-bits SwipeToast component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5101,7 +5101,7 @@
 			]
 		},
 		{
-			"name": "Micro/TearTicket",
+			"name": "TearTicket",
 			"title": "TearTicket",
 			"description": "SolidJS port of the react-bits TearTicket component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5145,7 +5145,7 @@
 			]
 		},
 		{
-			"name": "Micro/ThoughtLine",
+			"name": "ThoughtLine",
 			"title": "ThoughtLine",
 			"description": "SolidJS port of the react-bits ThoughtLine component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5204,7 +5204,7 @@
 			]
 		},
 		{
-			"name": "Micro/VoicePill",
+			"name": "VoicePill",
 			"title": "VoicePill",
 			"description": "SolidJS port of the react-bits VoicePill component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5248,7 +5248,7 @@
 			]
 		},
 		{
-			"name": "Micro/WakeSlider",
+			"name": "WakeSlider",
 			"title": "WakeSlider",
 			"description": "SolidJS port of the react-bits WakeSlider component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5292,7 +5292,7 @@
 			]
 		},
 		{
-			"name": "Micro/WarmTooltip",
+			"name": "WarmTooltip",
 			"title": "WarmTooltip",
 			"description": "SolidJS port of the react-bits WarmTooltip component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5336,7 +5336,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/AcidSquares",
+			"name": "AcidSquares",
 			"title": "AcidSquares",
 			"description": "SolidJS port of the react-bits AcidSquares component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5362,7 +5362,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/AeroShards",
+			"name": "AeroShards",
 			"title": "AeroShards",
 			"description": "SolidJS port of the react-bits AeroShards component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5394,7 +5394,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Antigravity",
+			"name": "Antigravity",
 			"title": "Antigravity",
 			"description": "SolidJS port of the react-bits Antigravity component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5420,7 +5420,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Aurora",
+			"name": "Aurora",
 			"title": "Aurora",
 			"description": "SolidJS port of the react-bits Aurora component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5446,7 +5446,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Balatro",
+			"name": "Balatro",
 			"title": "Balatro",
 			"description": "SolidJS port of the react-bits Balatro component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5472,7 +5472,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Ballpit",
+			"name": "Ballpit",
 			"title": "Ballpit",
 			"description": "SolidJS port of the react-bits Ballpit component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5498,7 +5498,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Beams",
+			"name": "Beams",
 			"title": "Beams",
 			"description": "SolidJS port of the react-bits Beams component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5524,7 +5524,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/CRTWarp",
+			"name": "CRTWarp",
 			"title": "CRTWarp",
 			"description": "SolidJS port of the react-bits CRTWarp component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5550,7 +5550,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/ColorBends",
+			"name": "ColorBends",
 			"title": "ColorBends",
 			"description": "SolidJS port of the react-bits ColorBends component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5582,7 +5582,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/DarkVeil",
+			"name": "DarkVeil",
 			"title": "DarkVeil",
 			"description": "SolidJS port of the react-bits DarkVeil component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5608,7 +5608,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Dither",
+			"name": "Dither",
 			"title": "Dither",
 			"description": "SolidJS port of the react-bits Dither component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5634,7 +5634,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/DotField",
+			"name": "DotField",
 			"title": "DotField",
 			"description": "SolidJS port of the react-bits DotField component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5660,7 +5660,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/DotGrid",
+			"name": "DotGrid",
 			"title": "DotGrid",
 			"description": "SolidJS port of the react-bits DotGrid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5686,7 +5686,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/EvilEye",
+			"name": "EvilEye",
 			"title": "EvilEye",
 			"description": "SolidJS port of the react-bits EvilEye component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5718,7 +5718,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/FaultyTerminal",
+			"name": "FaultyTerminal",
 			"title": "FaultyTerminal",
 			"description": "SolidJS port of the react-bits FaultyTerminal component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5744,7 +5744,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Ferrofluid",
+			"name": "Ferrofluid",
 			"title": "Ferrofluid",
 			"description": "SolidJS port of the react-bits Ferrofluid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5770,7 +5770,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/FloatingLines",
+			"name": "FloatingLines",
 			"title": "FloatingLines",
 			"description": "SolidJS port of the react-bits FloatingLines component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5796,7 +5796,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/FluxLines",
+			"name": "FluxLines",
 			"title": "FluxLines",
 			"description": "SolidJS port of the react-bits FluxLines component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5822,7 +5822,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Galaxy",
+			"name": "Galaxy",
 			"title": "Galaxy",
 			"description": "SolidJS port of the react-bits Galaxy component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5848,7 +5848,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GhostFibers",
+			"name": "GhostFibers",
 			"title": "GhostFibers",
 			"description": "SolidJS port of the react-bits GhostFibers component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5874,7 +5874,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GradientASCII",
+			"name": "GradientASCII",
 			"title": "GradientASCII",
 			"description": "SolidJS port of the react-bits GradientASCII component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5900,7 +5900,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GradientBlinds",
+			"name": "GradientBlinds",
 			"title": "GradientBlinds",
 			"description": "SolidJS port of the react-bits GradientBlinds component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5926,7 +5926,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GradientWaves",
+			"name": "GradientWaves",
 			"title": "GradientWaves",
 			"description": "SolidJS port of the react-bits GradientWaves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5952,7 +5952,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Grainient",
+			"name": "Grainient",
 			"title": "Grainient",
 			"description": "SolidJS port of the react-bits Grainient component (TypeScript + Tailwind).",
 			"type": "component",
@@ -5978,7 +5978,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GridDistortion",
+			"name": "GridDistortion",
 			"title": "GridDistortion",
 			"description": "SolidJS port of the react-bits GridDistortion component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6004,7 +6004,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GridMotion",
+			"name": "GridMotion",
 			"title": "GridMotion",
 			"description": "SolidJS port of the react-bits GridMotion component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6030,7 +6030,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/GridScan",
+			"name": "GridScan",
 			"title": "GridScan",
 			"description": "SolidJS port of the react-bits GridScan component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6056,7 +6056,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Hyperspeed",
+			"name": "Hyperspeed",
 			"title": "Hyperspeed",
 			"description": "SolidJS port of the react-bits Hyperspeed component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6088,7 +6088,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Iridescence",
+			"name": "Iridescence",
 			"title": "Iridescence",
 			"description": "SolidJS port of the react-bits Iridescence component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6114,7 +6114,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LetterGlitch",
+			"name": "LetterGlitch",
 			"title": "LetterGlitch",
 			"description": "SolidJS port of the react-bits LetterGlitch component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6140,7 +6140,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LightPillar",
+			"name": "LightPillar",
 			"title": "LightPillar",
 			"description": "SolidJS port of the react-bits LightPillar component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6166,7 +6166,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LightRays",
+			"name": "LightRays",
 			"title": "LightRays",
 			"description": "SolidJS port of the react-bits LightRays component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6192,7 +6192,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LightTunnel",
+			"name": "LightTunnel",
 			"title": "LightTunnel",
 			"description": "SolidJS port of the react-bits LightTunnel component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6218,7 +6218,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Lightfall",
+			"name": "Lightfall",
 			"title": "Lightfall",
 			"description": "SolidJS port of the react-bits Lightfall component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6244,7 +6244,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Lightning",
+			"name": "Lightning",
 			"title": "Lightning",
 			"description": "SolidJS port of the react-bits Lightning component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6270,7 +6270,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LineWaves",
+			"name": "LineWaves",
 			"title": "LineWaves",
 			"description": "SolidJS port of the react-bits LineWaves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6296,7 +6296,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LiquidChrome",
+			"name": "LiquidChrome",
 			"title": "LiquidChrome",
 			"description": "SolidJS port of the react-bits LiquidChrome component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6322,7 +6322,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/LiquidEther",
+			"name": "LiquidEther",
 			"title": "LiquidEther",
 			"description": "SolidJS port of the react-bits LiquidEther component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6348,7 +6348,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/MagicRings",
+			"name": "MagicRings",
 			"title": "MagicRings",
 			"description": "SolidJS port of the react-bits MagicRings component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6374,7 +6374,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/MagnetLines",
+			"name": "MagnetLines",
 			"title": "MagnetLines",
 			"description": "SolidJS port of the react-bits MagnetLines component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6400,7 +6400,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/MicroSlats",
+			"name": "MicroSlats",
 			"title": "MicroSlats",
 			"description": "SolidJS port of the react-bits MicroSlats component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6432,7 +6432,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/MoltenMetal",
+			"name": "MoltenMetal",
 			"title": "MoltenMetal",
 			"description": "SolidJS port of the react-bits MoltenMetal component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6458,7 +6458,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Orb",
+			"name": "Orb",
 			"title": "Orb",
 			"description": "SolidJS port of the react-bits Orb component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6484,7 +6484,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Particles",
+			"name": "Particles",
 			"title": "Particles",
 			"description": "SolidJS port of the react-bits Particles component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6510,7 +6510,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/PatternWaves",
+			"name": "PatternWaves",
 			"title": "PatternWaves",
 			"description": "SolidJS port of the react-bits PatternWaves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6542,7 +6542,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/PixelBlast",
+			"name": "PixelBlast",
 			"title": "PixelBlast",
 			"description": "SolidJS port of the react-bits PixelBlast component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6568,7 +6568,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/PixelSnow",
+			"name": "PixelSnow",
 			"title": "PixelSnow",
 			"description": "SolidJS port of the react-bits PixelSnow component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6594,7 +6594,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Plasma",
+			"name": "Plasma",
 			"title": "Plasma",
 			"description": "SolidJS port of the react-bits Plasma component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6620,7 +6620,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/PlasmaWave",
+			"name": "PlasmaWave",
 			"title": "PlasmaWave",
 			"description": "SolidJS port of the react-bits PlasmaWave component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6646,7 +6646,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Prism",
+			"name": "Prism",
 			"title": "Prism",
 			"description": "SolidJS port of the react-bits Prism component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6672,7 +6672,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/PrismaticBurst",
+			"name": "PrismaticBurst",
 			"title": "PrismaticBurst",
 			"description": "SolidJS port of the react-bits PrismaticBurst component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6698,7 +6698,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Radar",
+			"name": "Radar",
 			"title": "Radar",
 			"description": "SolidJS port of the react-bits Radar component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6724,7 +6724,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/RippleGrid",
+			"name": "RippleGrid",
 			"title": "RippleGrid",
 			"description": "SolidJS port of the react-bits RippleGrid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6750,7 +6750,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Scanner",
+			"name": "Scanner",
 			"title": "Scanner",
 			"description": "SolidJS port of the react-bits Scanner component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6776,7 +6776,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/ShapeGrid",
+			"name": "ShapeGrid",
 			"title": "ShapeGrid",
 			"description": "SolidJS port of the react-bits ShapeGrid component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6802,7 +6802,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/ShapeWaves",
+			"name": "ShapeWaves",
 			"title": "ShapeWaves",
 			"description": "SolidJS port of the react-bits ShapeWaves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6834,7 +6834,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/SideRays",
+			"name": "SideRays",
 			"title": "SideRays",
 			"description": "SolidJS port of the react-bits SideRays component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6860,7 +6860,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Silk",
+			"name": "Silk",
 			"title": "Silk",
 			"description": "SolidJS port of the react-bits Silk component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6886,7 +6886,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/SlicedWaves",
+			"name": "SlicedWaves",
 			"title": "SlicedWaves",
 			"description": "SolidJS port of the react-bits SlicedWaves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6912,7 +6912,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/SoftAurora",
+			"name": "SoftAurora",
 			"title": "SoftAurora",
 			"description": "SolidJS port of the react-bits SoftAurora component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6938,7 +6938,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Threads",
+			"name": "Threads",
 			"title": "Threads",
 			"description": "SolidJS port of the react-bits Threads component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6964,7 +6964,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Topography",
+			"name": "Topography",
 			"title": "Topography",
 			"description": "SolidJS port of the react-bits Topography component (TypeScript + Tailwind).",
 			"type": "component",
@@ -6990,7 +6990,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/Waves",
+			"name": "Waves",
 			"title": "Waves",
 			"description": "SolidJS port of the react-bits Waves component (TypeScript + Tailwind).",
 			"type": "component",
@@ -7016,7 +7016,7 @@
 			]
 		},
 		{
-			"name": "Backgrounds/WebThreads",
+			"name": "WebThreads",
 			"title": "WebThreads",
 			"description": "SolidJS port of the react-bits WebThreads component (TypeScript + Tailwind).",
 			"type": "component",
@@ -7042,7 +7042,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedCircularProgressBar",
+			"name": "AnimatedCircularProgressBar",
 			"title": "AnimatedCircularProgressBar",
 			"description": "AnimatedCircularProgressBar for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7068,7 +7068,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedGradientText",
+			"name": "AnimatedGradientText",
 			"title": "AnimatedGradientText",
 			"description": "AnimatedGradientText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7094,7 +7094,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedGridPattern",
+			"name": "AnimatedGridPattern",
 			"title": "AnimatedGridPattern",
 			"description": "AnimatedGridPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7126,7 +7126,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedList",
+			"name": "MagicUiAnimatedList",
 			"title": "AnimatedList",
 			"description": "AnimatedList for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7158,7 +7158,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedShinyText",
+			"name": "AnimatedShinyText",
 			"title": "AnimatedShinyText",
 			"description": "AnimatedShinyText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7184,7 +7184,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AnimatedSubscribeButton",
+			"name": "AnimatedSubscribeButton",
 			"title": "AnimatedSubscribeButton",
 			"description": "AnimatedSubscribeButton for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7216,7 +7216,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AuroraText",
+			"name": "AuroraText",
 			"title": "AuroraText",
 			"description": "AuroraText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7242,7 +7242,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/AvatarCircles",
+			"name": "AvatarCircles",
 			"title": "AvatarCircles",
 			"description": "AvatarCircles for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7268,7 +7268,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/BorderBeam",
+			"name": "BorderBeam",
 			"title": "BorderBeam",
 			"description": "BorderBeam for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7300,7 +7300,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/ComicText",
+			"name": "ComicText",
 			"title": "ComicText",
 			"description": "ComicText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7332,7 +7332,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/ConfettiButton",
+			"name": "ConfettiButton",
 			"title": "ConfettiButton",
 			"description": "ConfettiButton for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7364,7 +7364,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/DotPattern",
+			"name": "DotPattern",
 			"title": "DotPattern",
 			"description": "DotPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7396,7 +7396,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/FlickeringGrid",
+			"name": "FlickeringGrid",
 			"title": "FlickeringGrid",
 			"description": "FlickeringGrid for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7422,7 +7422,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/GridPattern",
+			"name": "GridPattern",
 			"title": "GridPattern",
 			"description": "GridPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7448,7 +7448,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/HeroVideoDialog",
+			"name": "HeroVideoDialog",
 			"title": "HeroVideoDialog",
 			"description": "HeroVideoDialog for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7480,7 +7480,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/HexagonPattern",
+			"name": "HexagonPattern",
 			"title": "HexagonPattern",
 			"description": "HexagonPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7506,7 +7506,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/InteractiveGridPattern",
+			"name": "InteractiveGridPattern",
 			"title": "InteractiveGridPattern",
 			"description": "InteractiveGridPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7532,7 +7532,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/KineticText",
+			"name": "KineticText",
 			"title": "KineticText",
 			"description": "KineticText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7558,7 +7558,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/LineShadowText",
+			"name": "LineShadowText",
 			"title": "LineShadowText",
 			"description": "LineShadowText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7584,7 +7584,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/MagicCard",
+			"name": "MagicCard",
 			"title": "MagicCard",
 			"description": "MagicCard for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7610,7 +7610,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/Marquee",
+			"name": "Marquee",
 			"title": "Marquee",
 			"description": "Marquee for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7636,7 +7636,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/Meteors",
+			"name": "Meteors",
 			"title": "Meteors",
 			"description": "Meteors for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7662,7 +7662,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/MorphingText",
+			"name": "MorphingText",
 			"title": "MorphingText",
 			"description": "MorphingText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7688,7 +7688,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/NeonGradientCard",
+			"name": "NeonGradientCard",
 			"title": "NeonGradientCard",
 			"description": "NeonGradientCard for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7714,7 +7714,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/NoiseTexture",
+			"name": "NoiseTexture",
 			"title": "NoiseTexture",
 			"description": "NoiseTexture for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7740,7 +7740,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/NumberTicker",
+			"name": "NumberTicker",
 			"title": "NumberTicker",
 			"description": "NumberTicker for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7766,7 +7766,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/OrbitingCircles",
+			"name": "OrbitingCircles",
 			"title": "OrbitingCircles",
 			"description": "OrbitingCircles for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7792,7 +7792,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/PulsatingButton",
+			"name": "PulsatingButton",
 			"title": "PulsatingButton",
 			"description": "PulsatingButton for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7818,7 +7818,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/RainbowButton",
+			"name": "RainbowButton",
 			"title": "RainbowButton",
 			"description": "RainbowButton for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7844,7 +7844,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/RetroGrid",
+			"name": "RetroGrid",
 			"title": "RetroGrid",
 			"description": "RetroGrid for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7870,7 +7870,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/Ripple",
+			"name": "Ripple",
 			"title": "Ripple",
 			"description": "Ripple for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7896,7 +7896,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/ShimmerButton",
+			"name": "ShimmerButton",
 			"title": "ShimmerButton",
 			"description": "ShimmerButton for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7922,7 +7922,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/ShineBorder",
+			"name": "ShineBorder",
 			"title": "ShineBorder",
 			"description": "ShineBorder for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7948,7 +7948,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/SparklesText",
+			"name": "SparklesText",
 			"title": "SparklesText",
 			"description": "SparklesText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -7980,7 +7980,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/SpinningText",
+			"name": "SpinningText",
 			"title": "SpinningText",
 			"description": "SpinningText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8012,7 +8012,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/StripedPattern",
+			"name": "StripedPattern",
 			"title": "StripedPattern",
 			"description": "StripedPattern for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8038,7 +8038,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/TypingAnimation",
+			"name": "TypingAnimation",
 			"title": "TypingAnimation",
 			"description": "TypingAnimation for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8064,7 +8064,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/VideoText",
+			"name": "VideoText",
 			"title": "VideoText",
 			"description": "VideoText for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8090,7 +8090,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/WarpBackground",
+			"name": "WarpBackground",
 			"title": "WarpBackground",
 			"description": "WarpBackground for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8116,7 +8116,7 @@
 			]
 		},
 		{
-			"name": "magic-ui/Ui/WordRotate",
+			"name": "WordRotate",
 			"title": "WordRotate",
 			"description": "WordRotate for SolidJS (source tree: src/extras/magic-ui).",
 			"type": "component",
@@ -8148,7 +8148,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Accordion",
+			"name": "Accordion",
 			"title": "Accordion",
 			"description": "Accordion for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8180,7 +8180,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/AnimatedBackground",
+			"name": "AnimatedBackground",
 			"title": "AnimatedBackground",
 			"description": "AnimatedBackground for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8212,7 +8212,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/AnimatedGroup",
+			"name": "AnimatedGroup",
 			"title": "AnimatedGroup",
 			"description": "AnimatedGroup for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8244,7 +8244,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/AnimatedNumber",
+			"name": "AnimatedNumber",
 			"title": "AnimatedNumber",
 			"description": "AnimatedNumber for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8276,7 +8276,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/BlurFade",
+			"name": "BlurFade",
 			"title": "BlurFade",
 			"description": "BlurFade for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8302,7 +8302,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/BorderTrail",
+			"name": "BorderTrail",
 			"title": "BorderTrail",
 			"description": "BorderTrail for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8334,7 +8334,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Carousel",
+			"name": "MotionPrimitivesCarousel",
 			"title": "Carousel",
 			"description": "Carousel for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8366,7 +8366,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Cursor",
+			"name": "Cursor",
 			"title": "Cursor",
 			"description": "Cursor for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8398,7 +8398,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Dialog",
+			"name": "Dialog",
 			"title": "Dialog",
 			"description": "Dialog for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8430,7 +8430,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Disclosure",
+			"name": "Disclosure",
 			"title": "Disclosure",
 			"description": "Disclosure for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8462,7 +8462,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Dock",
+			"name": "MotionPrimitivesDock",
 			"title": "Dock",
 			"description": "Dock for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8494,7 +8494,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/DotBackground",
+			"name": "DotBackground",
 			"title": "DotBackground",
 			"description": "DotBackground for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8526,7 +8526,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/DotPattern",
+			"name": "MotionPrimitivesDotPattern",
 			"title": "DotPattern",
 			"description": "DotPattern for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8558,7 +8558,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/GlowEffect",
+			"name": "GlowEffect",
 			"title": "GlowEffect",
 			"description": "GlowEffect for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8590,7 +8590,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ImageComparison",
+			"name": "ImageComparison",
 			"title": "ImageComparison",
 			"description": "ImageComparison for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8622,7 +8622,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/InView",
+			"name": "InView",
 			"title": "InView",
 			"description": "InView for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8654,7 +8654,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/InfiniteSlider",
+			"name": "InfiniteSlider",
 			"title": "InfiniteSlider",
 			"description": "InfiniteSlider for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8686,7 +8686,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Lens",
+			"name": "Lens",
 			"title": "Lens",
 			"description": "Lens for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8718,7 +8718,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Magnetic",
+			"name": "Magnetic",
 			"title": "Magnetic",
 			"description": "Magnetic for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8750,7 +8750,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/MorphingDialog",
+			"name": "MorphingDialog",
 			"title": "MorphingDialog",
 			"description": "MorphingDialog for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8782,7 +8782,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/MorphingPopover",
+			"name": "MorphingPopover",
 			"title": "MorphingPopover",
 			"description": "MorphingPopover for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8814,7 +8814,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ProgressiveBlur",
+			"name": "ProgressiveBlur",
 			"title": "ProgressiveBlur",
 			"description": "ProgressiveBlur for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8840,7 +8840,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Ripple",
+			"name": "MotionPrimitivesRipple",
 			"title": "Ripple",
 			"description": "Ripple for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8866,7 +8866,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ScrollProgress",
+			"name": "ScrollProgress",
 			"title": "ScrollProgress",
 			"description": "ScrollProgress for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8898,7 +8898,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ScrollVelocity",
+			"name": "MotionPrimitivesScrollVelocity",
 			"title": "ScrollVelocity",
 			"description": "ScrollVelocity for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8930,7 +8930,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/SlidingNumber",
+			"name": "SlidingNumber",
 			"title": "SlidingNumber",
 			"description": "SlidingNumber for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8962,7 +8962,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/SmoothCursor",
+			"name": "SmoothCursor",
 			"title": "SmoothCursor",
 			"description": "SmoothCursor for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -8994,7 +8994,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/SpinningText",
+			"name": "MotionPrimitivesSpinningText",
 			"title": "SpinningText",
 			"description": "SpinningText for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9026,7 +9026,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Spotlight",
+			"name": "Spotlight",
 			"title": "Spotlight",
 			"description": "Spotlight for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9058,7 +9058,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextAnimate",
+			"name": "TextAnimate",
 			"title": "TextAnimate",
 			"description": "TextAnimate for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9090,7 +9090,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextEffect",
+			"name": "TextEffect",
 			"title": "TextEffect",
 			"description": "TextEffect for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9122,7 +9122,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextGenerate",
+			"name": "TextGenerate",
 			"title": "TextGenerate",
 			"description": "TextGenerate for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9154,7 +9154,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextLoop",
+			"name": "MotionPrimitivesTextLoop",
 			"title": "TextLoop",
 			"description": "TextLoop for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9186,7 +9186,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextMorph",
+			"name": "TextMorph",
 			"title": "TextMorph",
 			"description": "TextMorph for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9218,7 +9218,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextRoll",
+			"name": "TextRoll",
 			"title": "TextRoll",
 			"description": "TextRoll for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9250,7 +9250,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextScramble",
+			"name": "TextScramble",
 			"title": "TextScramble",
 			"description": "TextScramble for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9276,7 +9276,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextShimmer",
+			"name": "TextShimmer",
 			"title": "TextShimmer",
 			"description": "TextShimmer for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9308,7 +9308,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TextShimmerWave",
+			"name": "TextShimmerWave",
 			"title": "TextShimmerWave",
 			"description": "TextShimmerWave for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9340,7 +9340,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/Tilt",
+			"name": "Tilt",
 			"title": "Tilt",
 			"description": "Tilt for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9372,7 +9372,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ToolbarDynamic",
+			"name": "ToolbarDynamic",
 			"title": "ToolbarDynamic",
 			"description": "ToolbarDynamic for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9404,7 +9404,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/ToolbarExpandable",
+			"name": "ToolbarExpandable",
 			"title": "ToolbarExpandable",
 			"description": "ToolbarExpandable for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9436,7 +9436,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/TransitionPanel",
+			"name": "TransitionPanel",
 			"title": "TransitionPanel",
 			"description": "TransitionPanel for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9468,7 +9468,7 @@
 			]
 		},
 		{
-			"name": "motion-primitives/Ui/WordsRotate",
+			"name": "WordsRotate",
 			"title": "WordsRotate",
 			"description": "WordsRotate for SolidJS (source tree: src/extras/motion-primitives).",
 			"type": "component",
@@ -9500,7 +9500,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/AnimatedBeam",
+			"name": "AnimatedBeam",
 			"title": "AnimatedBeam",
 			"description": "AnimatedBeam for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9526,7 +9526,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/AnimatedGradientText",
+			"name": "AnimataAnimatedGradientText",
 			"title": "AnimatedGradientText",
 			"description": "AnimatedGradientText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9552,7 +9552,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/AnimatedTimeline",
+			"name": "AnimatedTimeline",
 			"title": "AnimatedTimeline",
 			"description": "AnimatedTimeline for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9578,7 +9578,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/BlurryBlob",
+			"name": "BlurryBlob",
 			"title": "BlurryBlob",
 			"description": "BlurryBlob for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9604,7 +9604,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/CircularText",
+			"name": "AnimataCircularText",
 			"title": "CircularText",
 			"description": "CircularText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9630,7 +9630,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/DiagonalLines",
+			"name": "DiagonalLines",
 			"title": "DiagonalLines",
 			"description": "DiagonalLines for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9656,7 +9656,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/Dot",
+			"name": "Dot",
 			"title": "Dot",
 			"description": "Dot for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9682,7 +9682,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/DoubleUnderline",
+			"name": "DoubleUnderline",
 			"title": "DoubleUnderline",
 			"description": "DoubleUnderline for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9708,7 +9708,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/FibonacciLines",
+			"name": "FibonacciLines",
 			"title": "FibonacciLines",
 			"description": "FibonacciLines for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9734,7 +9734,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/FlipCard",
+			"name": "AnimataFlipCard",
 			"title": "FlipCard",
 			"description": "FlipCard for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9760,7 +9760,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/GibberishText",
+			"name": "GibberishText",
 			"title": "GibberishText",
 			"description": "GibberishText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9786,7 +9786,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/GlitchText",
+			"name": "AnimataGlitchText",
 			"title": "GlitchText",
 			"description": "GlitchText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9812,7 +9812,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/GlowingCard",
+			"name": "GlowingCard",
 			"title": "GlowingCard",
 			"description": "GlowingCard for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9838,7 +9838,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/Grid",
+			"name": "Grid",
 			"title": "Grid",
 			"description": "Grid for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9864,7 +9864,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/InteractiveGrid",
+			"name": "InteractiveGrid",
 			"title": "InteractiveGrid",
 			"description": "InteractiveGrid for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9890,7 +9890,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/JitterText",
+			"name": "JitterText",
 			"title": "JitterText",
 			"description": "JitterText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9922,7 +9922,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/LEDBoard",
+			"name": "LEDBoard",
 			"title": "LEDBoard",
 			"description": "LEDBoard for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9948,7 +9948,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/MirrorText",
+			"name": "MirrorText",
 			"title": "MirrorText",
 			"description": "MirrorText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -9974,7 +9974,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/MovingGradient",
+			"name": "MovingGradient",
 			"title": "MovingGradient",
 			"description": "MovingGradient for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10000,7 +10000,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/RippleButton",
+			"name": "RippleButton",
 			"title": "RippleButton",
 			"description": "RippleButton for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10026,7 +10026,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/ShiningButton",
+			"name": "ShiningButton",
 			"title": "ShiningButton",
 			"description": "ShiningButton for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10052,7 +10052,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/ShootingStars",
+			"name": "ShootingStars",
 			"title": "ShootingStars",
 			"description": "ShootingStars for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10078,7 +10078,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/SlideArrowButton",
+			"name": "SlideArrowButton",
 			"title": "SlideArrowButton",
 			"description": "SlideArrowButton for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10104,7 +10104,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/Spinner",
+			"name": "Spinner",
 			"title": "Spinner",
 			"description": "Spinner for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10130,7 +10130,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/SplitText",
+			"name": "AnimataSplitText",
 			"title": "SplitText",
 			"description": "SplitText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10156,7 +10156,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/SwapText",
+			"name": "SwapText",
 			"title": "SwapText",
 			"description": "SwapText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10182,7 +10182,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/SwipeButton",
+			"name": "SwipeButton",
 			"title": "SwipeButton",
 			"description": "SwipeButton for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10208,7 +10208,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/TextFlip",
+			"name": "TextFlip",
 			"title": "TextFlip",
 			"description": "TextFlip for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10234,7 +10234,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/TiltCard",
+			"name": "TiltCard",
 			"title": "TiltCard",
 			"description": "TiltCard for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10260,7 +10260,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/ToggleSwitch",
+			"name": "ToggleSwitch",
 			"title": "ToggleSwitch",
 			"description": "ToggleSwitch for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10286,7 +10286,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/TypingText",
+			"name": "TypingText",
 			"title": "TypingText",
 			"description": "TypingText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10312,7 +10312,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/UnderlineHoverText",
+			"name": "UnderlineHoverText",
 			"title": "UnderlineHoverText",
 			"description": "UnderlineHoverText for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10338,7 +10338,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/VerticalTiles",
+			"name": "VerticalTiles",
 			"title": "VerticalTiles",
 			"description": "VerticalTiles for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10370,7 +10370,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/WaveReveal",
+			"name": "WaveReveal",
 			"title": "WaveReveal",
 			"description": "WaveReveal for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10396,7 +10396,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/WorkButton",
+			"name": "WorkButton",
 			"title": "WorkButton",
 			"description": "WorkButton for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10422,7 +10422,7 @@
 			]
 		},
 		{
-			"name": "animata/Ui/ZigZag",
+			"name": "ZigZag",
 			"title": "ZigZag",
 			"description": "ZigZag for SolidJS (source tree: src/extras/animata).",
 			"type": "component",
@@ -10448,7 +10448,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/BigCircles",
+			"name": "BigCircles",
 			"title": "BigCircles",
 			"description": "BigCircles for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10502,7 +10502,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Confetti",
+			"name": "Confetti",
 			"title": "Confetti",
 			"description": "Confetti for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10551,7 +10551,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Emojis",
+			"name": "Emojis",
 			"title": "Emojis",
 			"description": "Emojis for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10600,7 +10600,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Parallax",
+			"name": "Parallax",
 			"title": "Parallax",
 			"description": "Parallax for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10649,7 +10649,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Particles",
+			"name": "TsparticlesParticles",
 			"title": "Particles",
 			"description": "Particles for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10698,7 +10698,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/PolygonMask",
+			"name": "PolygonMask",
 			"title": "PolygonMask",
 			"description": "PolygonMask for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10752,7 +10752,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Snow",
+			"name": "Snow",
 			"title": "Snow",
 			"description": "Snow for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10806,7 +10806,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/SquaresConnector",
+			"name": "SquaresConnector",
 			"title": "SquaresConnector",
 			"description": "SquaresConnector for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10855,7 +10855,7 @@
 			]
 		},
 		{
-			"name": "tsparticles/Ui/Stars",
+			"name": "Stars",
 			"title": "Stars",
 			"description": "Stars for SolidJS (source tree: src/extras/tsparticles).",
 			"type": "component",
@@ -10909,7 +10909,7 @@
 			]
 		},
 		{
-			"name": "anime-js/Ui/LoopPulse",
+			"name": "LoopPulse",
 			"title": "LoopPulse",
 			"description": "LoopPulse for SolidJS (source tree: src/extras/anime-js).",
 			"type": "component",
@@ -10953,7 +10953,7 @@
 			]
 		},
 		{
-			"name": "anime-js/Ui/SequenceBars",
+			"name": "SequenceBars",
 			"title": "SequenceBars",
 			"description": "SequenceBars for SolidJS (source tree: src/extras/anime-js).",
 			"type": "component",
@@ -10997,7 +10997,7 @@
 			]
 		},
 		{
-			"name": "anime-js/Ui/StaggerChoreo",
+			"name": "StaggerChoreo",
 			"title": "StaggerChoreo",
 			"description": "StaggerChoreo for SolidJS (source tree: src/extras/anime-js).",
 			"type": "component",
@@ -11041,7 +11041,7 @@
 			]
 		},
 		{
-			"name": "anime-js/Ui/SvgLineDrawLogo",
+			"name": "SvgLineDrawLogo",
 			"title": "SvgLineDrawLogo",
 			"description": "SvgLineDrawLogo for SolidJS (source tree: src/extras/anime-js).",
 			"type": "component",
@@ -11085,7 +11085,7 @@
 			]
 		},
 		{
-			"name": "anime-js/Ui/TimelineTextReveal",
+			"name": "TimelineTextReveal",
 			"title": "TimelineTextReveal",
 			"description": "TimelineTextReveal for SolidJS (source tree: src/extras/anime-js).",
 			"type": "component",
@@ -11129,7 +11129,7 @@
 			]
 		},
 		{
-			"name": "kokonut/Ui/CausticsBackground",
+			"name": "CausticsBackground",
 			"title": "CausticsBackground",
 			"description": "CausticsBackground for SolidJS (source tree: src/extras/kokonut).",
 			"type": "component",
@@ -11155,7 +11155,7 @@
 			]
 		},
 		{
-			"name": "kokonut/Ui/SplitFlapText",
+			"name": "KokonutSplitFlapText",
 			"title": "SplitFlapText",
 			"description": "SplitFlapText for SolidJS (source tree: src/extras/kokonut).",
 			"type": "component",
@@ -11181,7 +11181,7 @@
 			]
 		},
 		{
-			"name": "kokonut/Ui/TypewriterTitle",
+			"name": "TypewriterTitle",
 			"title": "TypewriterTitle",
 			"description": "TypewriterTitle for SolidJS (source tree: src/extras/kokonut).",
 			"type": "component",
@@ -11225,7 +11225,7 @@
 			]
 		},
 		{
-			"name": "osint/Ui/AsnPrefixes",
+			"name": "AsnPrefixes",
 			"title": "AsnPrefixes",
 			"description": "AsnPrefixes for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
@@ -11251,14 +11251,14 @@
 			]
 		},
 		{
-			"name": "osint/Ui/BgpAsnInfo",
+			"name": "BgpAsnInfo",
 			"title": "BgpAsnInfo",
 			"description": "BgpAsnInfo for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"Components/GlassSurface",
-				"magic-ui/Ui/TypingAnimation"
+				"GlassSurface",
+				"TypingAnimation"
 			],
 			"dependencies": [],
 			"devDependencies": [],
@@ -11271,7 +11271,7 @@
 					"_imports_": [
 						{
 							"import": "@/content/Components/GlassSurface/GlassSurface",
-							"item": "Components/GlassSurface",
+							"item": "GlassSurface",
 							"file": {
 								"type": "component",
 								"path": "GlassSurface.tsx"
@@ -11280,7 +11280,7 @@
 						},
 						{
 							"import": "@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation",
-							"item": "magic-ui/Ui/TypingAnimation",
+							"item": "TypingAnimation",
 							"file": {
 								"type": "component",
 								"path": "TypingAnimation.tsx"
@@ -11299,13 +11299,13 @@
 			]
 		},
 		{
-			"name": "osint/Ui/CertViz",
+			"name": "CertViz",
 			"title": "CertViz",
 			"description": "CertViz for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"magic-ui/Ui/TypingAnimation"
+				"TypingAnimation"
 			],
 			"dependencies": [],
 			"devDependencies": [],
@@ -11318,7 +11318,7 @@
 					"_imports_": [
 						{
 							"import": "@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation",
-							"item": "magic-ui/Ui/TypingAnimation",
+							"item": "TypingAnimation",
 							"file": {
 								"type": "component",
 								"path": "TypingAnimation.tsx"
@@ -11337,13 +11337,13 @@
 			]
 		},
 		{
-			"name": "osint/Ui/DnsRecords",
+			"name": "DnsRecords",
 			"title": "DnsRecords",
 			"description": "DnsRecords for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"magic-ui/Ui/TypingAnimation"
+				"TypingAnimation"
 			],
 			"dependencies": [],
 			"devDependencies": [],
@@ -11356,7 +11356,7 @@
 					"_imports_": [
 						{
 							"import": "@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation",
-							"item": "magic-ui/Ui/TypingAnimation",
+							"item": "TypingAnimation",
 							"file": {
 								"type": "component",
 								"path": "TypingAnimation.tsx"
@@ -11375,14 +11375,14 @@
 			]
 		},
 		{
-			"name": "osint/Ui/IpLookup",
+			"name": "IpLookup",
 			"title": "IpLookup",
 			"description": "IpLookup for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"Components/GlassSurface",
-				"magic-ui/Ui/TypingAnimation"
+				"GlassSurface",
+				"TypingAnimation"
 			],
 			"dependencies": [],
 			"devDependencies": [],
@@ -11395,7 +11395,7 @@
 					"_imports_": [
 						{
 							"import": "@/content/Components/GlassSurface/GlassSurface",
-							"item": "Components/GlassSurface",
+							"item": "GlassSurface",
 							"file": {
 								"type": "component",
 								"path": "GlassSurface.tsx"
@@ -11404,7 +11404,7 @@
 						},
 						{
 							"import": "@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation",
-							"item": "magic-ui/Ui/TypingAnimation",
+							"item": "TypingAnimation",
 							"file": {
 								"type": "component",
 								"path": "TypingAnimation.tsx"
@@ -11423,13 +11423,13 @@
 			]
 		},
 		{
-			"name": "osint/Ui/PortScanViz",
+			"name": "PortScanViz",
 			"title": "PortScanViz",
 			"description": "PortScanViz for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"magic-ui/Ui/GridPattern"
+				"GridPattern"
 			],
 			"dependencies": [
 				{
@@ -11448,7 +11448,7 @@
 					"_imports_": [
 						{
 							"import": "@/extras/magic-ui/Ui/GridPattern/GridPattern",
-							"item": "magic-ui/Ui/GridPattern",
+							"item": "GridPattern",
 							"file": {
 								"type": "component",
 								"path": "GridPattern.tsx"
@@ -11467,7 +11467,7 @@
 			]
 		},
 		{
-			"name": "osint/Ui/WaybackTimeline",
+			"name": "WaybackTimeline",
 			"title": "WaybackTimeline",
 			"description": "WaybackTimeline for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
@@ -11493,13 +11493,13 @@
 			]
 		},
 		{
-			"name": "osint/Ui/WhoisLookup",
+			"name": "WhoisLookup",
 			"title": "WhoisLookup",
 			"description": "WhoisLookup for SolidJS (source tree: src/extras/osint).",
 			"type": "component",
 			"add": "when-added",
 			"registryDependencies": [
-				"magic-ui/Ui/TypingAnimation"
+				"TypingAnimation"
 			],
 			"dependencies": [],
 			"devDependencies": [],
@@ -11512,7 +11512,7 @@
 					"_imports_": [
 						{
 							"import": "@/extras/magic-ui/Ui/TypingAnimation/TypingAnimation",
-							"item": "magic-ui/Ui/TypingAnimation",
+							"item": "TypingAnimation",
 							"file": {
 								"type": "component",
 								"path": "TypingAnimation.tsx"
@@ -11531,7 +11531,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/CwVitals",
+			"name": "CwVitals",
 			"title": "CwVitals",
 			"description": "CwVitals for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11557,7 +11557,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/DocSearch",
+			"name": "DocSearch",
 			"title": "DocSearch",
 			"description": "DocSearch for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11583,7 +11583,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/FaqSchemaGen",
+			"name": "FaqSchemaGen",
 			"title": "FaqSchemaGen",
 			"description": "FaqSchemaGen for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11609,7 +11609,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/HeadingOutline",
+			"name": "HeadingOutline",
 			"title": "HeadingOutline",
 			"description": "HeadingOutline for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11635,7 +11635,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/LighthouseRing",
+			"name": "LighthouseRing",
 			"title": "LighthouseRing",
 			"description": "LighthouseRing for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11661,7 +11661,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/LlmTxtForge",
+			"name": "LlmTxtForge",
 			"title": "LlmTxtForge",
 			"description": "LlmTxtForge for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11687,7 +11687,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/MetaPreview",
+			"name": "MetaPreview",
 			"title": "MetaPreview",
 			"description": "MetaPreview for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11713,7 +11713,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/RobotsTxtViz",
+			"name": "RobotsTxtViz",
 			"title": "RobotsTxtViz",
 			"description": "RobotsTxtViz for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11739,7 +11739,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/SchemaViz",
+			"name": "SchemaViz",
 			"title": "SchemaViz",
 			"description": "SchemaViz for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11765,7 +11765,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/SerpPreview",
+			"name": "SerpPreview",
 			"title": "SerpPreview",
 			"description": "SerpPreview for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11791,7 +11791,7 @@
 			]
 		},
 		{
-			"name": "seo/Ui/SitemapViz",
+			"name": "SitemapViz",
 			"title": "SitemapViz",
 			"description": "SitemapViz for SolidJS (source tree: src/extras/seo).",
 			"type": "component",
@@ -11817,7 +11817,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/BarycentricMixer",
+			"name": "BarycentricMixer",
 			"title": "BarycentricMixer",
 			"description": "BarycentricMixer for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11843,7 +11843,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/DecayHaloBadge",
+			"name": "DecayHaloBadge",
 			"title": "DecayHaloBadge",
 			"description": "DecayHaloBadge for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11869,7 +11869,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/DetentSlideRail",
+			"name": "DetentSlideRail",
 			"title": "DetentSlideRail",
 			"description": "DetentSlideRail for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11895,7 +11895,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/HarmonicMixer",
+			"name": "HarmonicMixer",
 			"title": "HarmonicMixer",
 			"description": "HarmonicMixer for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11921,7 +11921,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/HysteresisSlider",
+			"name": "HysteresisSlider",
 			"title": "HysteresisSlider",
 			"description": "HysteresisSlider for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11947,7 +11947,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/LangevinScrubber",
+			"name": "LangevinScrubber",
 			"title": "LangevinScrubber",
 			"description": "LangevinScrubber for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -11985,7 +11985,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/LogitSliders",
+			"name": "LogitSliders",
 			"title": "LogitSliders",
 			"description": "LogitSliders for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12011,7 +12011,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/MantissaExponentSpinner",
+			"name": "MantissaExponentSpinner",
 			"title": "MantissaExponentSpinner",
 			"description": "MantissaExponentSpinner for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12037,7 +12037,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/MarkovTransitionGrid",
+			"name": "MarkovTransitionGrid",
 			"title": "MarkovTransitionGrid",
 			"description": "MarkovTransitionGrid for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12063,7 +12063,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/PSDCorrelationEditor",
+			"name": "PSDCorrelationEditor",
 			"title": "PSDCorrelationEditor",
 			"description": "PSDCorrelationEditor for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12111,7 +12111,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/PhaseSpacePendulum",
+			"name": "PhaseSpacePendulum",
 			"title": "PhaseSpacePendulum",
 			"description": "PhaseSpacePendulum for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12137,7 +12137,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/PolarDial",
+			"name": "PolarDial",
 			"title": "PolarDial",
 			"description": "PolarDial for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12163,7 +12163,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/SeedBadge",
+			"name": "SeedBadge",
 			"title": "SeedBadge",
 			"description": "SeedBadge for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12189,7 +12189,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/SternBrocotStepper",
+			"name": "SternBrocotStepper",
 			"title": "SternBrocotStepper",
 			"description": "SternBrocotStepper for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12215,7 +12215,7 @@
 			]
 		},
 		{
-			"name": "instruments/Ui/VernierCaliper",
+			"name": "VernierCaliper",
 			"title": "VernierCaliper",
 			"description": "VernierCaliper for SolidJS (source tree: src/extras/instruments).",
 			"type": "component",
@@ -12241,7 +12241,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/ACFCorrelogram",
+			"name": "ACFCorrelogram",
 			"title": "ACFCorrelogram",
 			"description": "ACFCorrelogram for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12267,7 +12267,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/BitsetFacets",
+			"name": "BitsetFacets",
 			"title": "BitsetFacets",
 			"description": "BitsetFacets for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12305,7 +12305,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/BulletViolinKpi",
+			"name": "BulletViolinKpi",
 			"title": "BulletViolinKpi",
 			"description": "BulletViolinKpi for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12343,7 +12343,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/FftSpectrum",
+			"name": "FftSpectrum",
 			"title": "FftSpectrum",
 			"description": "FftSpectrum for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12381,7 +12381,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/HorizonStrips",
+			"name": "HorizonStrips",
 			"title": "HorizonStrips",
 			"description": "HorizonStrips for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12407,7 +12407,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/KalmanPointer",
+			"name": "KalmanPointer",
 			"title": "KalmanPointer",
 			"description": "KalmanPointer for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12445,7 +12445,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/MonteCarloBar",
+			"name": "MonteCarloBar",
 			"title": "MonteCarloBar",
 			"description": "MonteCarloBar for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12483,7 +12483,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/ParetoFrontier",
+			"name": "ParetoFrontier",
 			"title": "ParetoFrontier",
 			"description": "ParetoFrontier for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12521,7 +12521,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/ProfileFingerprint",
+			"name": "ProfileFingerprint",
 			"title": "ProfileFingerprint",
 			"description": "ProfileFingerprint for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12547,7 +12547,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/QQBadge",
+			"name": "QQBadge",
 			"title": "QQBadge",
 			"description": "QQBadge for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12585,7 +12585,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/RollingWindowBrush",
+			"name": "RollingWindowBrush",
 			"title": "RollingWindowBrush",
 			"description": "RollingWindowBrush for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12623,7 +12623,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/SparklineText",
+			"name": "SparklineText",
 			"title": "SparklineText",
 			"description": "SparklineText for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12649,7 +12649,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/SpatialHashScatter",
+			"name": "SpatialHashScatter",
 			"title": "SpatialHashScatter",
 			"description": "SpatialHashScatter for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12687,7 +12687,7 @@
 			]
 		},
 		{
-			"name": "data/Ui/VaRHistogram",
+			"name": "VaRHistogram",
 			"title": "VaRHistogram",
 			"description": "VaRHistogram for SolidJS (source tree: src/extras/data).",
 			"type": "component",
@@ -12713,7 +12713,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/DitherField",
+			"name": "DitherField",
 			"title": "DitherField",
 			"description": "DitherField for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12739,7 +12739,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/GpuHistogram",
+			"name": "GpuHistogram",
 			"title": "GpuHistogram",
 			"description": "GpuHistogram for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12777,7 +12777,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/HdrBloomOutliers",
+			"name": "HdrBloomOutliers",
 			"title": "HdrBloomOutliers",
 			"description": "HdrBloomOutliers for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12815,7 +12815,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/JfaCalloutPlacer",
+			"name": "JfaCalloutPlacer",
 			"title": "JfaCalloutPlacer",
 			"description": "JfaCalloutPlacer for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12853,7 +12853,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/LICFlowField",
+			"name": "LICFlowField",
 			"title": "LICFlowField",
 			"description": "LICFlowField for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12891,7 +12891,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/PoincareDisk",
+			"name": "PoincareDisk",
 			"title": "PoincareDisk",
 			"description": "PoincareDisk for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12929,7 +12929,7 @@
 			]
 		},
 		{
-			"name": "fx/Ui/ReactionDiffusion",
+			"name": "ReactionDiffusion",
 			"title": "ReactionDiffusion",
 			"description": "ReactionDiffusion for SolidJS (source tree: src/extras/fx).",
 			"type": "component",
@@ -12955,7 +12955,7 @@
 			]
 		},
 		{
-			"name": "emergent/Ui/BoidsFlocking",
+			"name": "BoidsFlocking",
 			"title": "BoidsFlocking",
 			"description": "BoidsFlocking for SolidJS (source tree: src/extras/emergent).",
 			"type": "component",
@@ -12993,7 +12993,7 @@
 			]
 		},
 		{
-			"name": "emergent/Ui/HilbertTree",
+			"name": "HilbertTree",
 			"title": "HilbertTree",
 			"description": "HilbertTree for SolidJS (source tree: src/extras/emergent).",
 			"type": "component",
@@ -13019,7 +13019,7 @@
 			]
 		},
 		{
-			"name": "emergent/Ui/PhysarumGrowth",
+			"name": "PhysarumGrowth",
 			"title": "PhysarumGrowth",
 			"description": "PhysarumGrowth for SolidJS (source tree: src/extras/emergent).",
 			"type": "component",
@@ -13057,7 +13057,7 @@
 			]
 		},
 		{
-			"name": "emergent/Ui/SandpileQueue",
+			"name": "SandpileQueue",
 			"title": "SandpileQueue",
 			"description": "SandpileQueue for SolidJS (source tree: src/extras/emergent).",
 			"type": "component",
