@@ -133,10 +133,13 @@ fs.mkdirSync(SITE, { recursive: true })
 fs.writeFileSync(
   path.join(SITE, 'site.toml'),
   [
-    'base_url = "http://localhost:8125"',
+    // Pages origin (canonical/sitemap/og:url); the deploy passes the
+    // preview subpath via `--base-path`. Dev serves ignore canonicals.
+    'base_url = "https://wyattau.github.io"',
     'site_title = "solid-fx on the docs static shell"',
     'author = "Wyatt"',
     'ai_crawlers = "allow"',
+    'accent = "#38bdf8"',
     'stylesheet = "/_assets/islands/islands.css"',
     'island_shim = "/_assets/islands/island.mjs"',
     'search_island = "/_assets/islands/seo-doc-search.js"',
