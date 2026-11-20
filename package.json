@@ -1,6 +1,6 @@
 {
   "name": "solid-fx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Animated, interactive SolidJS components. A Solid port of react-bits (DavidHDev/react-bits).",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE.md",
