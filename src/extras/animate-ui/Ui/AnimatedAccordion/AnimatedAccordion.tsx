@@ -4,7 +4,7 @@
 // the panel height glides as the trigger toggles and the chevron rotates.
 // The Radix dependency of the React original becomes Kobalte — the idiomatic
 // Solid equivalent.
-import { Accordion as AccordionPrimitive } from '@kobalte/core/accordion'
+import { Accordion as AccordionPrimitive } from '@kobalte/core'
 import { For, splitProps } from 'solid-js'
 import type { JSX } from 'solid-js'
 
@@ -78,7 +78,7 @@ export function AnimatedAccordion(props: AnimatedAccordionProps) {
         role="group"
         aria-label={own.label ?? 'accordion'}
       >
-        <AccordionPrimitive multiple defaultValue={own.defaultOpen?.map(String)}>
+        <AccordionPrimitive.Root multiple defaultValue={own.defaultOpen?.map(String)}>
           <For each={own.items}>
             {(item, index) => (
               <AccordionPrimitive.Item class="anui-acc-item" value={String(index())}>
@@ -108,7 +108,7 @@ export function AnimatedAccordion(props: AnimatedAccordionProps) {
               </AccordionPrimitive.Item>
             )}
           </For>
-        </AccordionPrimitive>
+        </AccordionPrimitive.Root>
       </div>
     </>
   )

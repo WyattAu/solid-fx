@@ -455,6 +455,7 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 - [RollingWindowBrush](https://wyattau.github.io/solid-fx/extras/data/ui/rollingwindowbrush/): RollingWindowBrush widget (source: src/extras/data/Ui/RollingWindowBrush/RollingWindowBrush.tsx)
 - [SparklineText](https://wyattau.github.io/solid-fx/extras/data/ui/sparklinetext/): SparklineText widget (source: src/extras/data/Ui/SparklineText/SparklineText.tsx)
 - [SpatialHashScatter](https://wyattau.github.io/solid-fx/extras/data/ui/spatialhashscatter/): SpatialHashScatter widget (source: src/extras/data/Ui/SpatialHashScatter/SpatialHashScatter.tsx)
+- [VaRHistogram](https://wyattau.github.io/solid-fx/extras/data/ui/varhistogram/): VaRHistogram widget (source: src/extras/data/Ui/VaRHistogram/VaRHistogram.tsx)
 
 ## Extras: FX
 
@@ -493,6 +494,7 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 
 ## Extras: Animate UI
 
+- [AnimatedAccordion](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/animatedaccordion/): AnimatedAccordion widget (source: src/extras/animate-ui/Ui/AnimatedAccordion/AnimatedAccordion.tsx)
 - [HighlightText](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/highlighttext/): HighlightText widget (source: src/extras/animate-ui/Ui/HighlightText/HighlightText.tsx)
 - [RippleButton](https://wyattau.github.io/solid-fx/extras/animate-ui/ui/ripplebutton/): RippleButton widget (source: src/extras/animate-ui/Ui/RippleButton/RippleButton.tsx)
 

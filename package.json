@@ -26,6 +26,7 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.10.2",
     "@hugeicons/core-free-icons": "^4.3.3",
+    "@kobalte/core": "^0.13.14",
     "@paper-design/shaders": "0.0.82",
     "@tsparticles/confetti": "^4.5.4",
     "@tsparticles/engine": "^4.5.4",
