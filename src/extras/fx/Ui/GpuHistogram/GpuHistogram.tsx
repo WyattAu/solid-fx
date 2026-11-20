@@ -74,14 +74,6 @@ void main() {
   outColor = vec4(col, 1.0);
 }`
 
-const VERT_FS = `#version 300 es
-const vec2 pos[3] = vec2[3](vec2(-1.0,-1.0), vec2(3.0,-1.0), vec2(-1.0,3.0));
-out vec2 vUv;
-void main() {
-  vUv = pos[gl_VertexID] * 0.5 + 0.5;
-  gl_Position = vec4(pos[gl_VertexID], 0.0, 1.0);
-}`
-
 function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader | null {
   const sh = gl.createShader(type)
   if (!sh) return null
@@ -96,6 +88,7 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLSh
 }
 
 export function GpuHistogram(props: GpuHistogramProps) {
+  const alpha = () => own.varAlpha ?? 0.05
   const [own, rest] = splitProps(props, [
     'bins',
     'seed',
@@ -292,7 +285,7 @@ export function GpuHistogram(props: GpuHistogramProps) {
       <figcaption class="mt-1.5 flex items-baseline justify-between text-xs text-gray-400">
         <span>{own.label ?? 'GPU histogram'}</span>
         <span class="font-mono text-[10px] text-gray-500" aria-live="polite">
-          {readout()} · {nb()} reduction passes · zero CPU counting
+          VaR {alpha() * 100}% · {readout()} · {nb()} reduction passes · zero CPU counting
         </span>
       </figcaption>
     </figure>
