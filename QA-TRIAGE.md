@@ -8,6 +8,16 @@ interaction-driven demos self-animate via `src/lib/syntheticPointer.ts`
 inside the demo host), and `scripts/scan-screenshots.py` classifies every
 frame (BLANK / LOW / OK by grayscale stddev).
 
+## Baseline v8 (2026-11-20): 439/439 OK — zero blanks
+
+Dispatched run [44684635626](https://github.com/WyattAu/solid-fx/actions/runs/44684635626)
+(release cut for v0.2.0; first sweep covering PhysarumGrowth, GpuHistogram,
+VaRHistogram, AnimatedAccordion, RoughNotation, LICFlowField):
+**OK 439 · LOW 0 · BLANK 0.** New-frame evidence (grayscale stddev):
+PhysarumGrowth 40.1, GpuHistogram 36.2, AnimatedAccordion 35.5,
+VaRHistogram 34.1, LICFlowField 32.3, RoughNotation 31.4,
+HdrBloomOutliers 30.9, JfaCalloutPlacer 30.2.
+
 ## Baseline v6 (2026-11-17): 426/426 OK — zero blanks
 
 Dispatched run [44098716003](https://github.com/WyattAu/solid-fx/actions/runs/44098716003)
