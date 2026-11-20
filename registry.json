@@ -41,6 +41,7 @@
 					"path": "HugeiconsIcon.tsx",
 					"relativePath": "src/lib/HugeiconsIcon.tsx",
 					"_imports_": [],
+					"target": "src/lib/HugeiconsIcon.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -66,6 +67,7 @@
 					"path": "num.ts",
 					"relativePath": "src/lib/num.ts",
 					"_imports_": [],
+					"target": "src/lib/num.ts",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -91,6 +93,7 @@
 					"path": "reducedMotion.ts",
 					"relativePath": "src/lib/reducedMotion.ts",
 					"_imports_": [],
+					"target": "src/lib/reducedMotion.ts",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -116,6 +119,7 @@
 					"path": "syntheticPointer.ts",
 					"relativePath": "src/lib/syntheticPointer.ts",
 					"_imports_": [],
+					"target": "src/lib/syntheticPointer.ts",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -141,6 +145,7 @@
 					"path": "urlState.ts",
 					"relativePath": "src/lib/urlState.ts",
 					"_imports_": [],
+					"target": "src/lib/urlState.ts",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -166,6 +171,7 @@
 					"path": "ASCIIText.tsx",
 					"relativePath": "src/content/TextAnimations/ASCIIText/ASCIIText.tsx",
 					"_imports_": [],
+					"target": "src/components/ASCIIText/ASCIIText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -209,6 +215,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BlurText/BlurText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -252,6 +259,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CircularText/CircularText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -283,6 +291,7 @@
 					"path": "CountUp.tsx",
 					"relativePath": "src/content/TextAnimations/CountUp/CountUp.tsx",
 					"_imports_": [],
+					"target": "src/components/CountUp/CountUp.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -308,6 +317,7 @@
 					"path": "CurvedLoop.tsx",
 					"relativePath": "src/content/TextAnimations/CurvedLoop/CurvedLoop.tsx",
 					"_imports_": [],
+					"target": "src/components/CurvedLoop/CurvedLoop.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -333,6 +343,7 @@
 					"path": "DecryptedText.tsx",
 					"relativePath": "src/content/TextAnimations/DecryptedText/DecryptedText.tsx",
 					"_imports_": [],
+					"target": "src/components/DecryptedText/DecryptedText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -358,6 +369,7 @@
 					"path": "DepthText.tsx",
 					"relativePath": "src/content/TextAnimations/DepthText/DepthText.tsx",
 					"_imports_": [],
+					"target": "src/components/DepthText/DepthText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -383,6 +395,7 @@
 					"path": "EchoText.tsx",
 					"relativePath": "src/content/TextAnimations/EchoText/EchoText.tsx",
 					"_imports_": [],
+					"target": "src/components/EchoText/EchoText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -414,6 +427,7 @@
 					"path": "FallingText.tsx",
 					"relativePath": "src/content/TextAnimations/FallingText/FallingText.tsx",
 					"_imports_": [],
+					"target": "src/components/FallingText/FallingText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -445,6 +459,7 @@
 					"path": "FoldText.tsx",
 					"relativePath": "src/content/TextAnimations/FoldText/FoldText.tsx",
 					"_imports_": [],
+					"target": "src/components/FoldText/FoldText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -470,6 +485,7 @@
 					"path": "FuzzyText.tsx",
 					"relativePath": "src/content/TextAnimations/FuzzyText/FuzzyText.tsx",
 					"_imports_": [],
+					"target": "src/components/FuzzyText/FuzzyText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -495,6 +511,7 @@
 					"path": "GlitchText.tsx",
 					"relativePath": "src/content/TextAnimations/GlitchText/GlitchText.tsx",
 					"_imports_": [],
+					"target": "src/components/GlitchText/GlitchText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -520,6 +537,7 @@
 					"path": "GradientText.tsx",
 					"relativePath": "src/content/TextAnimations/GradientText/GradientText.tsx",
 					"_imports_": [],
+					"target": "src/components/GradientText/GradientText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -551,6 +569,7 @@
 					"path": "MaskedHeading.tsx",
 					"relativePath": "src/content/TextAnimations/MaskedHeading/MaskedHeading.tsx",
 					"_imports_": [],
+					"target": "src/components/MaskedHeading/MaskedHeading.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -576,6 +595,7 @@
 					"path": "ParticleText.tsx",
 					"relativePath": "src/content/TextAnimations/ParticleText/ParticleText.tsx",
 					"_imports_": [],
+					"target": "src/components/ParticleText/ParticleText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -619,6 +639,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/RotatingText/RotatingText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -650,6 +671,7 @@
 					"path": "ScrambledText.tsx",
 					"relativePath": "src/content/TextAnimations/ScrambledText/ScrambledText.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrambledText/ScrambledText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -681,6 +703,7 @@
 					"path": "ScrollFloat.tsx",
 					"relativePath": "src/content/TextAnimations/ScrollFloat/ScrollFloat.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrollFloat/ScrollFloat.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -712,6 +735,7 @@
 					"path": "ScrollReveal.tsx",
 					"relativePath": "src/content/TextAnimations/ScrollReveal/ScrollReveal.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrollReveal/ScrollReveal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -755,6 +779,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ScrollVelocity/ScrollVelocity.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -780,6 +805,7 @@
 					"path": "ShinyText.tsx",
 					"relativePath": "src/content/TextAnimations/ShinyText/ShinyText.tsx",
 					"_imports_": [],
+					"target": "src/components/ShinyText/ShinyText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -811,6 +837,7 @@
 					"path": "Shuffle.tsx",
 					"relativePath": "src/content/TextAnimations/Shuffle/Shuffle.tsx",
 					"_imports_": [],
+					"target": "src/components/Shuffle/Shuffle.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -848,6 +875,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SplitFlapText/SplitFlapText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -879,6 +907,7 @@
 					"path": "SplitText.tsx",
 					"relativePath": "src/content/TextAnimations/SplitText/SplitText.tsx",
 					"_imports_": [],
+					"target": "src/components/SplitText/SplitText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -910,6 +939,7 @@
 					"path": "StrokeText.tsx",
 					"relativePath": "src/content/TextAnimations/StrokeText/StrokeText.tsx",
 					"_imports_": [],
+					"target": "src/components/StrokeText/StrokeText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -935,6 +965,7 @@
 					"path": "TechText.tsx",
 					"relativePath": "src/content/TextAnimations/TechText/TechText.tsx",
 					"_imports_": [],
+					"target": "src/components/TechText/TechText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -960,6 +991,7 @@
 					"path": "TextCursor.tsx",
 					"relativePath": "src/content/TextAnimations/TextCursor/TextCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/TextCursor/TextCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -991,6 +1023,7 @@
 					"path": "TextLoop.tsx",
 					"relativePath": "src/content/TextAnimations/TextLoop/TextLoop.tsx",
 					"_imports_": [],
+					"target": "src/components/TextLoop/TextLoop.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1016,6 +1049,7 @@
 					"path": "TextPressure.tsx",
 					"relativePath": "src/content/TextAnimations/TextPressure/TextPressure.tsx",
 					"_imports_": [],
+					"target": "src/components/TextPressure/TextPressure.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1059,6 +1093,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TextType/TextType.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1102,6 +1137,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TrueFocus/TrueFocus.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1127,6 +1163,7 @@
 					"path": "VariableProximity.tsx",
 					"relativePath": "src/content/TextAnimations/VariableProximity/VariableProximity.tsx",
 					"_imports_": [],
+					"target": "src/components/VariableProximity/VariableProximity.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1158,6 +1195,7 @@
 					"path": "WarpText.tsx",
 					"relativePath": "src/content/TextAnimations/WarpText/WarpText.tsx",
 					"_imports_": [],
+					"target": "src/components/WarpText/WarpText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1189,6 +1227,7 @@
 					"path": "AnimatedContent.tsx",
 					"relativePath": "src/content/Animations/AnimatedContent/AnimatedContent.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedContent/AnimatedContent.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1220,6 +1259,7 @@
 					"path": "BlobCursor.tsx",
 					"relativePath": "src/content/Animations/BlobCursor/BlobCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/BlobCursor/BlobCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1245,6 +1285,7 @@
 					"path": "ClickSpark.tsx",
 					"relativePath": "src/content/Animations/ClickSpark/ClickSpark.tsx",
 					"_imports_": [],
+					"target": "src/components/ClickSpark/ClickSpark.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1270,6 +1311,7 @@
 					"path": "Crosshair.tsx",
 					"relativePath": "src/content/Animations/Crosshair/Crosshair.tsx",
 					"_imports_": [],
+					"target": "src/components/Crosshair/Crosshair.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1301,6 +1343,7 @@
 					"path": "CrystalizedBall.tsx",
 					"relativePath": "src/content/Animations/CrystalizedBall/CrystalizedBall.tsx",
 					"_imports_": [],
+					"target": "src/components/CrystalizedBall/CrystalizedBall.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1326,6 +1369,7 @@
 					"path": "Cubes.tsx",
 					"relativePath": "src/content/Animations/Cubes/Cubes.tsx",
 					"_imports_": [],
+					"target": "src/components/Cubes/Cubes.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1351,6 +1395,7 @@
 					"path": "CursorGrid.tsx",
 					"relativePath": "src/content/Animations/CursorGrid/CursorGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/CursorGrid/CursorGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1382,6 +1427,7 @@
 					"path": "DitherVeil.tsx",
 					"relativePath": "src/content/Animations/DitherVeil/DitherVeil.tsx",
 					"_imports_": [],
+					"target": "src/components/DitherVeil/DitherVeil.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1407,6 +1453,7 @@
 					"path": "ElasticMesh.tsx",
 					"relativePath": "src/content/Animations/ElasticMesh/ElasticMesh.tsx",
 					"_imports_": [],
+					"target": "src/components/ElasticMesh/ElasticMesh.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1432,6 +1479,7 @@
 					"path": "ElectricBorder.tsx",
 					"relativePath": "src/content/Animations/ElectricBorder/ElectricBorder.tsx",
 					"_imports_": [],
+					"target": "src/components/ElectricBorder/ElectricBorder.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1463,6 +1511,7 @@
 					"path": "ElectricLogo.tsx",
 					"relativePath": "src/content/Animations/ElectricLogo/ElectricLogo.tsx",
 					"_imports_": [],
+					"target": "src/components/ElectricLogo/ElectricLogo.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1494,6 +1543,7 @@
 					"path": "FadeContent.tsx",
 					"relativePath": "src/content/Animations/FadeContent/FadeContent.tsx",
 					"_imports_": [],
+					"target": "src/components/FadeContent/FadeContent.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1519,6 +1569,7 @@
 					"path": "GhostCursor.tsx",
 					"relativePath": "src/content/Animations/GhostCursor/GhostCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/GhostCursor/GhostCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1544,6 +1595,7 @@
 					"path": "GlareHover.tsx",
 					"relativePath": "src/content/Animations/GlareHover/GlareHover.tsx",
 					"_imports_": [],
+					"target": "src/components/GlareHover/GlareHover.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1569,6 +1621,7 @@
 					"path": "GlowCursor.tsx",
 					"relativePath": "src/content/Animations/GlowCursor/GlowCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/GlowCursor/GlowCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1594,6 +1647,7 @@
 					"path": "GradualBlur.tsx",
 					"relativePath": "src/content/Animations/GradualBlur/GradualBlur.tsx",
 					"_imports_": [],
+					"target": "src/components/GradualBlur/GradualBlur.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1619,6 +1673,7 @@
 					"path": "HalftoneReveal.tsx",
 					"relativePath": "src/content/Animations/HalftoneReveal/HalftoneReveal.tsx",
 					"_imports_": [],
+					"target": "src/components/HalftoneReveal/HalftoneReveal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1650,6 +1705,7 @@
 					"path": "ImageTrail.tsx",
 					"relativePath": "src/content/Animations/ImageTrail/ImageTrail.tsx",
 					"_imports_": [],
+					"target": "src/components/ImageTrail/ImageTrail.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1675,6 +1731,7 @@
 					"path": "LaserFlow.tsx",
 					"relativePath": "src/content/Animations/LaserFlow/LaserFlow.tsx",
 					"_imports_": [],
+					"target": "src/components/LaserFlow/LaserFlow.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1700,6 +1757,7 @@
 					"path": "LogoLoop.tsx",
 					"relativePath": "src/content/Animations/LogoLoop/LogoLoop.tsx",
 					"_imports_": [],
+					"target": "src/components/LogoLoop/LogoLoop.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1725,6 +1783,7 @@
 					"path": "Magnet.tsx",
 					"relativePath": "src/content/Animations/Magnet/Magnet.tsx",
 					"_imports_": [],
+					"target": "src/components/Magnet/Magnet.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1750,6 +1809,7 @@
 					"path": "MetaBalls.tsx",
 					"relativePath": "src/content/Animations/MetaBalls/MetaBalls.tsx",
 					"_imports_": [],
+					"target": "src/components/MetaBalls/MetaBalls.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1775,6 +1835,7 @@
 					"path": "MetallicPaint.tsx",
 					"relativePath": "src/content/Animations/MetallicPaint/MetallicPaint.tsx",
 					"_imports_": [],
+					"target": "src/components/MetallicPaint/MetallicPaint.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1800,6 +1861,7 @@
 					"path": "Noise.tsx",
 					"relativePath": "src/content/Animations/Noise/Noise.tsx",
 					"_imports_": [],
+					"target": "src/components/Noise/Noise.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1825,6 +1887,7 @@
 					"path": "OrbitImages.tsx",
 					"relativePath": "src/content/Animations/OrbitImages/OrbitImages.tsx",
 					"_imports_": [],
+					"target": "src/components/OrbitImages/OrbitImages.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1850,6 +1913,7 @@
 					"path": "PixelSwap.tsx",
 					"relativePath": "src/content/Animations/PixelSwap/PixelSwap.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelSwap/PixelSwap.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1875,6 +1939,7 @@
 					"path": "PixelTrail.tsx",
 					"relativePath": "src/content/Animations/PixelTrail/PixelTrail.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelTrail/PixelTrail.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1900,6 +1965,7 @@
 					"path": "PixelTransition.tsx",
 					"relativePath": "src/content/Animations/PixelTransition/PixelTransition.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelTransition/PixelTransition.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1925,6 +1991,7 @@
 					"path": "Ribbons.tsx",
 					"relativePath": "src/content/Animations/Ribbons/Ribbons.tsx",
 					"_imports_": [],
+					"target": "src/components/Ribbons/Ribbons.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1956,6 +2023,7 @@
 					"path": "RippleDistortion.tsx",
 					"relativePath": "src/content/Animations/RippleDistortion/RippleDistortion.tsx",
 					"_imports_": [],
+					"target": "src/components/RippleDistortion/RippleDistortion.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -1981,6 +2049,7 @@
 					"path": "ScrollExpand.tsx",
 					"relativePath": "src/content/Animations/ScrollExpand/ScrollExpand.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrollExpand/ScrollExpand.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2006,6 +2075,7 @@
 					"path": "ShapeBlur.tsx",
 					"relativePath": "src/content/Animations/ShapeBlur/ShapeBlur.tsx",
 					"_imports_": [],
+					"target": "src/components/ShapeBlur/ShapeBlur.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2031,6 +2101,7 @@
 					"path": "SplashCursor.tsx",
 					"relativePath": "src/content/Animations/SplashCursor/SplashCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/SplashCursor/SplashCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2056,6 +2127,7 @@
 					"path": "StarBorder.tsx",
 					"relativePath": "src/content/Animations/StarBorder/StarBorder.tsx",
 					"_imports_": [],
+					"target": "src/components/StarBorder/StarBorder.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2081,6 +2153,7 @@
 					"path": "StickerPeel.tsx",
 					"relativePath": "src/content/Animations/StickerPeel/StickerPeel.tsx",
 					"_imports_": [],
+					"target": "src/components/StickerPeel/StickerPeel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2106,6 +2179,7 @@
 					"path": "Strands.tsx",
 					"relativePath": "src/content/Animations/Strands/Strands.tsx",
 					"_imports_": [],
+					"target": "src/components/Strands/Strands.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2131,6 +2205,7 @@
 					"path": "SwarmCursor.tsx",
 					"relativePath": "src/content/Animations/SwarmCursor/SwarmCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/SwarmCursor/SwarmCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2156,6 +2231,7 @@
 					"path": "TargetCursor.tsx",
 					"relativePath": "src/content/Animations/TargetCursor/TargetCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/TargetCursor/TargetCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2187,6 +2263,7 @@
 					"path": "AccordionGallery.tsx",
 					"relativePath": "src/content/Components/AccordionGallery/AccordionGallery.tsx",
 					"_imports_": [],
+					"target": "src/components/AccordionGallery/AccordionGallery.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2230,6 +2307,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/AnimatedList/AnimatedList.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2255,6 +2333,7 @@
 					"path": "BorderGlow.tsx",
 					"relativePath": "src/content/Components/BorderGlow/BorderGlow.tsx",
 					"_imports_": [],
+					"target": "src/components/BorderGlow/BorderGlow.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2280,6 +2359,7 @@
 					"path": "BounceCards.tsx",
 					"relativePath": "src/content/Components/BounceCards/BounceCards.tsx",
 					"_imports_": [],
+					"target": "src/components/BounceCards/BounceCards.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2311,6 +2391,7 @@
 					"path": "BubbleMenu.tsx",
 					"relativePath": "src/content/Components/BubbleMenu/BubbleMenu.tsx",
 					"_imports_": [],
+					"target": "src/components/BubbleMenu/BubbleMenu.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2354,6 +2435,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CardNav/CardNav.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2397,6 +2479,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CardSwap/CardSwap.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2440,6 +2523,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Carousel/Carousel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2465,6 +2549,7 @@
 					"path": "ChromaGrid.tsx",
 					"relativePath": "src/content/Components/ChromaGrid/ChromaGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/ChromaGrid/ChromaGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2502,6 +2587,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CircularCarousel/CircularCarousel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2527,6 +2613,7 @@
 					"path": "CircularGallery.tsx",
 					"relativePath": "src/content/Components/CircularGallery/CircularGallery.tsx",
 					"_imports_": [],
+					"target": "src/components/CircularGallery/CircularGallery.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2552,6 +2639,7 @@
 					"path": "Counter.tsx",
 					"relativePath": "src/content/Components/Counter/Counter.tsx",
 					"_imports_": [],
+					"target": "src/components/Counter/Counter.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2577,6 +2665,7 @@
 					"path": "CurvedInput.tsx",
 					"relativePath": "src/content/Components/CurvedInput/CurvedInput.tsx",
 					"_imports_": [],
+					"target": "src/components/CurvedInput/CurvedInput.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2602,6 +2691,7 @@
 					"path": "DecayCard.tsx",
 					"relativePath": "src/content/Components/DecayCard/DecayCard.tsx",
 					"_imports_": [],
+					"target": "src/components/DecayCard/DecayCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2633,6 +2723,7 @@
 					"path": "DepthCarousel.tsx",
 					"relativePath": "src/content/Components/DepthCarousel/DepthCarousel.tsx",
 					"_imports_": [],
+					"target": "src/components/DepthCarousel/DepthCarousel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2658,6 +2749,7 @@
 					"path": "Dock.tsx",
 					"relativePath": "src/content/Components/Dock/Dock.tsx",
 					"_imports_": [],
+					"target": "src/components/Dock/Dock.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2689,6 +2781,7 @@
 					"path": "DomeGallery.tsx",
 					"relativePath": "src/content/Components/DomeGallery/DomeGallery.tsx",
 					"_imports_": [],
+					"target": "src/components/DomeGallery/DomeGallery.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2714,6 +2807,7 @@
 					"path": "DriftWall.tsx",
 					"relativePath": "src/content/Components/DriftWall/DriftWall.tsx",
 					"_imports_": [],
+					"target": "src/components/DriftWall/DriftWall.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2757,6 +2851,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ElasticSlider/ElasticSlider.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2788,6 +2883,7 @@
 					"path": "FlexCarousel.tsx",
 					"relativePath": "src/content/Components/FlexCarousel/FlexCarousel.tsx",
 					"_imports_": [],
+					"target": "src/components/FlexCarousel/FlexCarousel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2831,6 +2927,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/FlowingMenu/FlowingMenu.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2856,6 +2953,7 @@
 					"path": "FluidGlass.tsx",
 					"relativePath": "src/content/Components/FluidGlass/FluidGlass.tsx",
 					"_imports_": [],
+					"target": "src/components/FluidGlass/FluidGlass.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2881,6 +2979,7 @@
 					"path": "FlyingPosters.tsx",
 					"relativePath": "src/content/Components/FlyingPosters/FlyingPosters.tsx",
 					"_imports_": [],
+					"target": "src/components/FlyingPosters/FlyingPosters.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2906,6 +3005,7 @@
 					"path": "Folder.tsx",
 					"relativePath": "src/content/Components/Folder/Folder.tsx",
 					"_imports_": [],
+					"target": "src/components/Folder/Folder.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2931,6 +3031,7 @@
 					"path": "GlassIcons.tsx",
 					"relativePath": "src/content/Components/GlassIcons/GlassIcons.tsx",
 					"_imports_": [],
+					"target": "src/components/GlassIcons/GlassIcons.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2956,6 +3057,7 @@
 					"path": "GlassSurface.tsx",
 					"relativePath": "src/content/Components/GlassSurface/GlassSurface.tsx",
 					"_imports_": [],
+					"target": "src/components/GlassSurface/GlassSurface.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -2981,6 +3083,7 @@
 					"path": "GooeyNav.tsx",
 					"relativePath": "src/content/Components/GooeyNav/GooeyNav.tsx",
 					"_imports_": [],
+					"target": "src/components/GooeyNav/GooeyNav.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3006,6 +3109,7 @@
 					"path": "HoloCard.tsx",
 					"relativePath": "src/content/Components/HoloCard/HoloCard.tsx",
 					"_imports_": [],
+					"target": "src/components/HoloCard/HoloCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3031,6 +3135,7 @@
 					"path": "InfiniteMenu.tsx",
 					"relativePath": "src/content/Components/InfiniteMenu/InfiniteMenu.tsx",
 					"_imports_": [],
+					"target": "src/components/InfiniteMenu/InfiniteMenu.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3056,6 +3161,7 @@
 					"path": "InfiniteSpiral.tsx",
 					"relativePath": "src/content/Components/InfiniteSpiral/InfiniteSpiral.tsx",
 					"_imports_": [],
+					"target": "src/components/InfiniteSpiral/InfiniteSpiral.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3087,6 +3193,7 @@
 					"path": "Lanyard.tsx",
 					"relativePath": "src/content/Components/Lanyard/Lanyard.tsx",
 					"_imports_": [],
+					"target": "src/components/Lanyard/Lanyard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3112,6 +3219,7 @@
 					"path": "LineSidebar.tsx",
 					"relativePath": "src/content/Components/LineSidebar/LineSidebar.tsx",
 					"_imports_": [],
+					"target": "src/components/LineSidebar/LineSidebar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3155,6 +3263,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/MagicBento/MagicBento.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3198,6 +3307,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Masonry/Masonry.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3229,6 +3339,7 @@
 					"path": "ModelViewer.tsx",
 					"relativePath": "src/content/Components/ModelViewer/ModelViewer.tsx",
 					"_imports_": [],
+					"target": "src/components/ModelViewer/ModelViewer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3265,6 +3376,7 @@
 					"path": "MorphSlider.tsx",
 					"relativePath": "src/content/Components/MorphSlider/MorphSlider.tsx",
 					"_imports_": [],
+					"target": "src/components/MorphSlider/MorphSlider.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3290,6 +3402,7 @@
 					"path": "OptionWheel.tsx",
 					"relativePath": "src/content/Components/OptionWheel/OptionWheel.tsx",
 					"_imports_": [],
+					"target": "src/components/OptionWheel/OptionWheel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3315,6 +3428,7 @@
 					"path": "PillNav.tsx",
 					"relativePath": "src/content/Components/PillNav/PillNav.tsx",
 					"_imports_": [],
+					"target": "src/components/PillNav/PillNav.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3340,6 +3454,7 @@
 					"path": "PixelCard.tsx",
 					"relativePath": "src/content/Components/PixelCard/PixelCard.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelCard/PixelCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3383,6 +3498,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ProfileCard/ProfileCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3426,6 +3542,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ReflectiveCard/ReflectiveCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3451,6 +3568,7 @@
 					"path": "ScrollStack.tsx",
 					"relativePath": "src/content/Components/ScrollStack/ScrollStack.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrollStack/ScrollStack.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3476,6 +3594,7 @@
 					"path": "SpecularButton.tsx",
 					"relativePath": "src/content/Components/SpecularButton/SpecularButton.tsx",
 					"_imports_": [],
+					"target": "src/components/SpecularButton/SpecularButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3501,6 +3620,7 @@
 					"path": "SpotlightCard.tsx",
 					"relativePath": "src/content/Components/SpotlightCard/SpotlightCard.tsx",
 					"_imports_": [],
+					"target": "src/components/SpotlightCard/SpotlightCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3544,6 +3664,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Stack/Stack.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3575,6 +3696,7 @@
 					"path": "StaggeredMenu.tsx",
 					"relativePath": "src/content/Components/StaggeredMenu/StaggeredMenu.tsx",
 					"_imports_": [],
+					"target": "src/components/StaggeredMenu/StaggeredMenu.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3618,6 +3740,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Stepper/Stepper.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3643,6 +3766,7 @@
 					"path": "TiltedCard.tsx",
 					"relativePath": "src/content/Components/TiltedCard/TiltedCard.tsx",
 					"_imports_": [],
+					"target": "src/components/TiltedCard/TiltedCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3701,6 +3825,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BellToggle/BellToggle.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3744,6 +3869,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BranchedMenu/BranchedMenu.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3787,6 +3913,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CallChip/CallChip.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3845,6 +3972,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CodeSlots/CodeSlots.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3888,6 +4016,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CometDial/CometDial.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3931,6 +4060,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/DodgeField/DodgeField.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3974,6 +4104,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/FlipCard/FlipCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -3999,6 +4130,7 @@
 					"path": "FlyingButton.tsx",
 					"relativePath": "src/content/Micro/FlyingButton/FlyingButton.tsx",
 					"_imports_": [],
+					"target": "src/components/FlyingButton/FlyingButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4042,6 +4174,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/FolderFloat/FolderFloat.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4085,6 +4218,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/FuseButton/FuseButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4128,6 +4262,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/GlideSelect/GlideSelect.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4153,6 +4288,7 @@
 					"path": "HoldButton.tsx",
 					"relativePath": "src/content/Micro/HoldButton/HoldButton.tsx",
 					"_imports_": [],
+					"target": "src/components/HoldButton/HoldButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4196,6 +4332,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/JellyRadio/JellyRadio.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4221,6 +4358,7 @@
 					"path": "LatticeLoader.tsx",
 					"relativePath": "src/content/Micro/LatticeLoader/LatticeLoader.tsx",
 					"_imports_": [],
+					"target": "src/components/LatticeLoader/LatticeLoader.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4252,6 +4390,7 @@
 					"path": "PaperCrumple.tsx",
 					"relativePath": "src/content/Micro/PaperCrumple/PaperCrumple.tsx",
 					"_imports_": [],
+					"target": "src/components/PaperCrumple/PaperCrumple.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4295,6 +4434,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PeekRating/PeekRating.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4353,6 +4493,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PromptBar/PromptBar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4396,6 +4537,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PulseHeart/PulseHeart.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4439,6 +4581,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/RefineFrame/RefineFrame.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4482,6 +4625,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/RubberSegment/RubberSegment.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4525,6 +4669,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ScrubField/ScrubField.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4550,6 +4695,7 @@
 					"path": "Shredder.tsx",
 					"relativePath": "src/content/Micro/Shredder/Shredder.tsx",
 					"_imports_": [],
+					"target": "src/components/Shredder/Shredder.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4608,6 +4754,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SlideCommit/SlideCommit.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4666,6 +4813,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SlingButton/SlingButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4691,6 +4839,7 @@
 					"path": "SloshGauge.tsx",
 					"relativePath": "src/content/Micro/SloshGauge/SloshGauge.tsx",
 					"_imports_": [],
+					"target": "src/components/SloshGauge/SloshGauge.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4739,6 +4888,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SpringCheck/SpringCheck.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4782,6 +4932,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SquishSwitch/SquishSwitch.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4825,6 +4976,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/StatusMark/StatusMark.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4883,6 +5035,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SwipeRow/SwipeRow.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4941,6 +5094,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SwipeToast/SwipeToast.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -4984,6 +5138,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TearTicket/TearTicket.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5042,6 +5197,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ThoughtLine/ThoughtLine.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5085,6 +5241,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/VoicePill/VoicePill.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5128,6 +5285,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/WakeSlider/WakeSlider.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5171,6 +5329,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/WarmTooltip/WarmTooltip.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5196,6 +5355,7 @@
 					"path": "AcidSquares.tsx",
 					"relativePath": "src/content/Backgrounds/AcidSquares/AcidSquares.tsx",
 					"_imports_": [],
+					"target": "src/components/AcidSquares/AcidSquares.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5227,6 +5387,7 @@
 					"path": "AeroShards.tsx",
 					"relativePath": "src/content/Backgrounds/AeroShards/AeroShards.tsx",
 					"_imports_": [],
+					"target": "src/components/AeroShards/AeroShards.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5252,6 +5413,7 @@
 					"path": "Antigravity.tsx",
 					"relativePath": "src/content/Backgrounds/Antigravity/Antigravity.tsx",
 					"_imports_": [],
+					"target": "src/components/Antigravity/Antigravity.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5277,6 +5439,7 @@
 					"path": "Aurora.tsx",
 					"relativePath": "src/content/Backgrounds/Aurora/Aurora.tsx",
 					"_imports_": [],
+					"target": "src/components/Aurora/Aurora.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5302,6 +5465,7 @@
 					"path": "Balatro.tsx",
 					"relativePath": "src/content/Backgrounds/Balatro/Balatro.tsx",
 					"_imports_": [],
+					"target": "src/components/Balatro/Balatro.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5327,6 +5491,7 @@
 					"path": "Ballpit.tsx",
 					"relativePath": "src/content/Backgrounds/Ballpit/Ballpit.tsx",
 					"_imports_": [],
+					"target": "src/components/Ballpit/Ballpit.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5352,6 +5517,7 @@
 					"path": "Beams.tsx",
 					"relativePath": "src/content/Backgrounds/Beams/Beams.tsx",
 					"_imports_": [],
+					"target": "src/components/Beams/Beams.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5377,6 +5543,7 @@
 					"path": "CRTWarp.tsx",
 					"relativePath": "src/content/Backgrounds/CRTWarp/CRTWarp.tsx",
 					"_imports_": [],
+					"target": "src/components/CRTWarp/CRTWarp.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5408,6 +5575,7 @@
 					"path": "ColorBends.tsx",
 					"relativePath": "src/content/Backgrounds/ColorBends/ColorBends.tsx",
 					"_imports_": [],
+					"target": "src/components/ColorBends/ColorBends.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5433,6 +5601,7 @@
 					"path": "DarkVeil.tsx",
 					"relativePath": "src/content/Backgrounds/DarkVeil/DarkVeil.tsx",
 					"_imports_": [],
+					"target": "src/components/DarkVeil/DarkVeil.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5458,6 +5627,7 @@
 					"path": "Dither.tsx",
 					"relativePath": "src/content/Backgrounds/Dither/Dither.tsx",
 					"_imports_": [],
+					"target": "src/components/Dither/Dither.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5483,6 +5653,7 @@
 					"path": "DotField.tsx",
 					"relativePath": "src/content/Backgrounds/DotField/DotField.tsx",
 					"_imports_": [],
+					"target": "src/components/DotField/DotField.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5508,6 +5679,7 @@
 					"path": "DotGrid.tsx",
 					"relativePath": "src/content/Backgrounds/DotGrid/DotGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/DotGrid/DotGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5539,6 +5711,7 @@
 					"path": "EvilEye.tsx",
 					"relativePath": "src/content/Backgrounds/EvilEye/EvilEye.tsx",
 					"_imports_": [],
+					"target": "src/components/EvilEye/EvilEye.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5564,6 +5737,7 @@
 					"path": "FaultyTerminal.tsx",
 					"relativePath": "src/content/Backgrounds/FaultyTerminal/FaultyTerminal.tsx",
 					"_imports_": [],
+					"target": "src/components/FaultyTerminal/FaultyTerminal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5589,6 +5763,7 @@
 					"path": "Ferrofluid.tsx",
 					"relativePath": "src/content/Backgrounds/Ferrofluid/Ferrofluid.tsx",
 					"_imports_": [],
+					"target": "src/components/Ferrofluid/Ferrofluid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5614,6 +5789,7 @@
 					"path": "FloatingLines.tsx",
 					"relativePath": "src/content/Backgrounds/FloatingLines/FloatingLines.tsx",
 					"_imports_": [],
+					"target": "src/components/FloatingLines/FloatingLines.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5639,6 +5815,7 @@
 					"path": "FluxLines.tsx",
 					"relativePath": "src/content/Backgrounds/FluxLines/FluxLines.tsx",
 					"_imports_": [],
+					"target": "src/components/FluxLines/FluxLines.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5664,6 +5841,7 @@
 					"path": "Galaxy.tsx",
 					"relativePath": "src/content/Backgrounds/Galaxy/Galaxy.tsx",
 					"_imports_": [],
+					"target": "src/components/Galaxy/Galaxy.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5689,6 +5867,7 @@
 					"path": "GhostFibers.tsx",
 					"relativePath": "src/content/Backgrounds/GhostFibers/GhostFibers.tsx",
 					"_imports_": [],
+					"target": "src/components/GhostFibers/GhostFibers.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5714,6 +5893,7 @@
 					"path": "GradientASCII.tsx",
 					"relativePath": "src/content/Backgrounds/GradientASCII/GradientASCII.tsx",
 					"_imports_": [],
+					"target": "src/components/GradientASCII/GradientASCII.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5739,6 +5919,7 @@
 					"path": "GradientBlinds.tsx",
 					"relativePath": "src/content/Backgrounds/GradientBlinds/GradientBlinds.tsx",
 					"_imports_": [],
+					"target": "src/components/GradientBlinds/GradientBlinds.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5764,6 +5945,7 @@
 					"path": "GradientWaves.tsx",
 					"relativePath": "src/content/Backgrounds/GradientWaves/GradientWaves.tsx",
 					"_imports_": [],
+					"target": "src/components/GradientWaves/GradientWaves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5789,6 +5971,7 @@
 					"path": "Grainient.tsx",
 					"relativePath": "src/content/Backgrounds/Grainient/Grainient.tsx",
 					"_imports_": [],
+					"target": "src/components/Grainient/Grainient.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5814,6 +5997,7 @@
 					"path": "GridDistortion.tsx",
 					"relativePath": "src/content/Backgrounds/GridDistortion/GridDistortion.tsx",
 					"_imports_": [],
+					"target": "src/components/GridDistortion/GridDistortion.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5839,6 +6023,7 @@
 					"path": "GridMotion.tsx",
 					"relativePath": "src/content/Backgrounds/GridMotion/GridMotion.tsx",
 					"_imports_": [],
+					"target": "src/components/GridMotion/GridMotion.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5864,6 +6049,7 @@
 					"path": "GridScan.tsx",
 					"relativePath": "src/content/Backgrounds/GridScan/GridScan.tsx",
 					"_imports_": [],
+					"target": "src/components/GridScan/GridScan.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5895,6 +6081,7 @@
 					"path": "Hyperspeed.tsx",
 					"relativePath": "src/content/Backgrounds/Hyperspeed/Hyperspeed.tsx",
 					"_imports_": [],
+					"target": "src/components/Hyperspeed/Hyperspeed.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5920,6 +6107,7 @@
 					"path": "Iridescence.tsx",
 					"relativePath": "src/content/Backgrounds/Iridescence/Iridescence.tsx",
 					"_imports_": [],
+					"target": "src/components/Iridescence/Iridescence.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5945,6 +6133,7 @@
 					"path": "LetterGlitch.tsx",
 					"relativePath": "src/content/Backgrounds/LetterGlitch/LetterGlitch.tsx",
 					"_imports_": [],
+					"target": "src/components/LetterGlitch/LetterGlitch.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5970,6 +6159,7 @@
 					"path": "LightPillar.tsx",
 					"relativePath": "src/content/Backgrounds/LightPillar/LightPillar.tsx",
 					"_imports_": [],
+					"target": "src/components/LightPillar/LightPillar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -5995,6 +6185,7 @@
 					"path": "LightRays.tsx",
 					"relativePath": "src/content/Backgrounds/LightRays/LightRays.tsx",
 					"_imports_": [],
+					"target": "src/components/LightRays/LightRays.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6020,6 +6211,7 @@
 					"path": "LightTunnel.tsx",
 					"relativePath": "src/content/Backgrounds/LightTunnel/LightTunnel.tsx",
 					"_imports_": [],
+					"target": "src/components/LightTunnel/LightTunnel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6045,6 +6237,7 @@
 					"path": "Lightfall.tsx",
 					"relativePath": "src/content/Backgrounds/Lightfall/Lightfall.tsx",
 					"_imports_": [],
+					"target": "src/components/Lightfall/Lightfall.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6070,6 +6263,7 @@
 					"path": "Lightning.tsx",
 					"relativePath": "src/content/Backgrounds/Lightning/Lightning.tsx",
 					"_imports_": [],
+					"target": "src/components/Lightning/Lightning.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6095,6 +6289,7 @@
 					"path": "LineWaves.tsx",
 					"relativePath": "src/content/Backgrounds/LineWaves/LineWaves.tsx",
 					"_imports_": [],
+					"target": "src/components/LineWaves/LineWaves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6120,6 +6315,7 @@
 					"path": "LiquidChrome.tsx",
 					"relativePath": "src/content/Backgrounds/LiquidChrome/LiquidChrome.tsx",
 					"_imports_": [],
+					"target": "src/components/LiquidChrome/LiquidChrome.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6145,6 +6341,7 @@
 					"path": "LiquidEther.tsx",
 					"relativePath": "src/content/Backgrounds/LiquidEther/LiquidEther.tsx",
 					"_imports_": [],
+					"target": "src/components/LiquidEther/LiquidEther.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6170,6 +6367,7 @@
 					"path": "MagicRings.tsx",
 					"relativePath": "src/content/Backgrounds/MagicRings/MagicRings.tsx",
 					"_imports_": [],
+					"target": "src/components/MagicRings/MagicRings.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6195,6 +6393,7 @@
 					"path": "MagnetLines.tsx",
 					"relativePath": "src/content/Backgrounds/MagnetLines/MagnetLines.tsx",
 					"_imports_": [],
+					"target": "src/components/MagnetLines/MagnetLines.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6226,6 +6425,7 @@
 					"path": "MicroSlats.tsx",
 					"relativePath": "src/content/Backgrounds/MicroSlats/MicroSlats.tsx",
 					"_imports_": [],
+					"target": "src/components/MicroSlats/MicroSlats.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6251,6 +6451,7 @@
 					"path": "MoltenMetal.tsx",
 					"relativePath": "src/content/Backgrounds/MoltenMetal/MoltenMetal.tsx",
 					"_imports_": [],
+					"target": "src/components/MoltenMetal/MoltenMetal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6276,6 +6477,7 @@
 					"path": "Orb.tsx",
 					"relativePath": "src/content/Backgrounds/Orb/Orb.tsx",
 					"_imports_": [],
+					"target": "src/components/Orb/Orb.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6301,6 +6503,7 @@
 					"path": "Particles.tsx",
 					"relativePath": "src/content/Backgrounds/Particles/Particles.tsx",
 					"_imports_": [],
+					"target": "src/components/Particles/Particles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6332,6 +6535,7 @@
 					"path": "PatternWaves.tsx",
 					"relativePath": "src/content/Backgrounds/PatternWaves/PatternWaves.tsx",
 					"_imports_": [],
+					"target": "src/components/PatternWaves/PatternWaves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6357,6 +6561,7 @@
 					"path": "PixelBlast.tsx",
 					"relativePath": "src/content/Backgrounds/PixelBlast/PixelBlast.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelBlast/PixelBlast.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6382,6 +6587,7 @@
 					"path": "PixelSnow.tsx",
 					"relativePath": "src/content/Backgrounds/PixelSnow/PixelSnow.tsx",
 					"_imports_": [],
+					"target": "src/components/PixelSnow/PixelSnow.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6407,6 +6613,7 @@
 					"path": "Plasma.tsx",
 					"relativePath": "src/content/Backgrounds/Plasma/Plasma.tsx",
 					"_imports_": [],
+					"target": "src/components/Plasma/Plasma.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6432,6 +6639,7 @@
 					"path": "PlasmaWave.tsx",
 					"relativePath": "src/content/Backgrounds/PlasmaWave/PlasmaWave.tsx",
 					"_imports_": [],
+					"target": "src/components/PlasmaWave/PlasmaWave.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6457,6 +6665,7 @@
 					"path": "Prism.tsx",
 					"relativePath": "src/content/Backgrounds/Prism/Prism.tsx",
 					"_imports_": [],
+					"target": "src/components/Prism/Prism.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6482,6 +6691,7 @@
 					"path": "PrismaticBurst.tsx",
 					"relativePath": "src/content/Backgrounds/PrismaticBurst/PrismaticBurst.tsx",
 					"_imports_": [],
+					"target": "src/components/PrismaticBurst/PrismaticBurst.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6507,6 +6717,7 @@
 					"path": "Radar.tsx",
 					"relativePath": "src/content/Backgrounds/Radar/Radar.tsx",
 					"_imports_": [],
+					"target": "src/components/Radar/Radar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6532,6 +6743,7 @@
 					"path": "RippleGrid.tsx",
 					"relativePath": "src/content/Backgrounds/RippleGrid/RippleGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/RippleGrid/RippleGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6557,6 +6769,7 @@
 					"path": "Scanner.tsx",
 					"relativePath": "src/content/Backgrounds/Scanner/Scanner.tsx",
 					"_imports_": [],
+					"target": "src/components/Scanner/Scanner.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6582,6 +6795,7 @@
 					"path": "ShapeGrid.tsx",
 					"relativePath": "src/content/Backgrounds/ShapeGrid/ShapeGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/ShapeGrid/ShapeGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6613,6 +6827,7 @@
 					"path": "ShapeWaves.tsx",
 					"relativePath": "src/content/Backgrounds/ShapeWaves/ShapeWaves.tsx",
 					"_imports_": [],
+					"target": "src/components/ShapeWaves/ShapeWaves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6638,6 +6853,7 @@
 					"path": "SideRays.tsx",
 					"relativePath": "src/content/Backgrounds/SideRays/SideRays.tsx",
 					"_imports_": [],
+					"target": "src/components/SideRays/SideRays.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6663,6 +6879,7 @@
 					"path": "Silk.tsx",
 					"relativePath": "src/content/Backgrounds/Silk/Silk.tsx",
 					"_imports_": [],
+					"target": "src/components/Silk/Silk.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6688,6 +6905,7 @@
 					"path": "SlicedWaves.tsx",
 					"relativePath": "src/content/Backgrounds/SlicedWaves/SlicedWaves.tsx",
 					"_imports_": [],
+					"target": "src/components/SlicedWaves/SlicedWaves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6713,6 +6931,7 @@
 					"path": "SoftAurora.tsx",
 					"relativePath": "src/content/Backgrounds/SoftAurora/SoftAurora.tsx",
 					"_imports_": [],
+					"target": "src/components/SoftAurora/SoftAurora.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6738,6 +6957,7 @@
 					"path": "Threads.tsx",
 					"relativePath": "src/content/Backgrounds/Threads/Threads.tsx",
 					"_imports_": [],
+					"target": "src/components/Threads/Threads.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6763,6 +6983,7 @@
 					"path": "Topography.tsx",
 					"relativePath": "src/content/Backgrounds/Topography/Topography.tsx",
 					"_imports_": [],
+					"target": "src/components/Topography/Topography.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6788,6 +7009,7 @@
 					"path": "Waves.tsx",
 					"relativePath": "src/content/Backgrounds/Waves/Waves.tsx",
 					"_imports_": [],
+					"target": "src/components/Waves/Waves.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6813,6 +7035,7 @@
 					"path": "WebThreads.tsx",
 					"relativePath": "src/content/Backgrounds/WebThreads/WebThreads.tsx",
 					"_imports_": [],
+					"target": "src/components/WebThreads/WebThreads.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6838,6 +7061,7 @@
 					"path": "AnimatedCircularProgressBar.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedCircularProgressBar/AnimatedCircularProgressBar.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedCircularProgressBar/AnimatedCircularProgressBar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6863,6 +7087,7 @@
 					"path": "AnimatedGradientText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedGradientText/AnimatedGradientText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedGradientText/AnimatedGradientText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6894,6 +7119,7 @@
 					"path": "AnimatedGridPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedGridPattern/AnimatedGridPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedGridPattern/AnimatedGridPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6925,6 +7151,7 @@
 					"path": "AnimatedList.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedList/AnimatedList.tsx",
 					"_imports_": [],
+					"target": "src/components/MagicUiAnimatedList/MagicUiAnimatedList.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6950,6 +7177,7 @@
 					"path": "AnimatedShinyText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedShinyText/AnimatedShinyText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedShinyText/AnimatedShinyText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -6981,6 +7209,7 @@
 					"path": "AnimatedSubscribeButton.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AnimatedSubscribeButton/AnimatedSubscribeButton.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedSubscribeButton/AnimatedSubscribeButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7006,6 +7235,7 @@
 					"path": "AuroraText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AuroraText/AuroraText.tsx",
 					"_imports_": [],
+					"target": "src/components/AuroraText/AuroraText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7031,6 +7261,7 @@
 					"path": "AvatarCircles.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/AvatarCircles/AvatarCircles.tsx",
 					"_imports_": [],
+					"target": "src/components/AvatarCircles/AvatarCircles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7062,6 +7293,7 @@
 					"path": "BorderBeam.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/BorderBeam/BorderBeam.tsx",
 					"_imports_": [],
+					"target": "src/components/BorderBeam/BorderBeam.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7093,6 +7325,7 @@
 					"path": "ComicText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/ComicText/ComicText.tsx",
 					"_imports_": [],
+					"target": "src/components/ComicText/ComicText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7124,6 +7357,7 @@
 					"path": "ConfettiButton.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/ConfettiButton/ConfettiButton.tsx",
 					"_imports_": [],
+					"target": "src/components/ConfettiButton/ConfettiButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7155,6 +7389,7 @@
 					"path": "DotPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/DotPattern/DotPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/DotPattern/DotPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7180,6 +7415,7 @@
 					"path": "FlickeringGrid.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/FlickeringGrid/FlickeringGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/FlickeringGrid/FlickeringGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7205,6 +7441,7 @@
 					"path": "GridPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/GridPattern/GridPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/GridPattern/GridPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7236,6 +7473,7 @@
 					"path": "HeroVideoDialog.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/HeroVideoDialog/HeroVideoDialog.tsx",
 					"_imports_": [],
+					"target": "src/components/HeroVideoDialog/HeroVideoDialog.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7261,6 +7499,7 @@
 					"path": "HexagonPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/HexagonPattern/HexagonPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/HexagonPattern/HexagonPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7286,6 +7525,7 @@
 					"path": "InteractiveGridPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/InteractiveGridPattern/InteractiveGridPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/InteractiveGridPattern/InteractiveGridPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7311,6 +7551,7 @@
 					"path": "KineticText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/KineticText/KineticText.tsx",
 					"_imports_": [],
+					"target": "src/components/KineticText/KineticText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7336,6 +7577,7 @@
 					"path": "LineShadowText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/LineShadowText/LineShadowText.tsx",
 					"_imports_": [],
+					"target": "src/components/LineShadowText/LineShadowText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7361,6 +7603,7 @@
 					"path": "MagicCard.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/MagicCard/MagicCard.tsx",
 					"_imports_": [],
+					"target": "src/components/MagicCard/MagicCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7386,6 +7629,7 @@
 					"path": "Marquee.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/Marquee/Marquee.tsx",
 					"_imports_": [],
+					"target": "src/components/Marquee/Marquee.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7411,6 +7655,7 @@
 					"path": "Meteors.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/Meteors/Meteors.tsx",
 					"_imports_": [],
+					"target": "src/components/Meteors/Meteors.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7436,6 +7681,7 @@
 					"path": "MorphingText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/MorphingText/MorphingText.tsx",
 					"_imports_": [],
+					"target": "src/components/MorphingText/MorphingText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7461,6 +7707,7 @@
 					"path": "NeonGradientCard.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/NeonGradientCard/NeonGradientCard.tsx",
 					"_imports_": [],
+					"target": "src/components/NeonGradientCard/NeonGradientCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7486,6 +7733,7 @@
 					"path": "NoiseTexture.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/NoiseTexture/NoiseTexture.tsx",
 					"_imports_": [],
+					"target": "src/components/NoiseTexture/NoiseTexture.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7511,6 +7759,7 @@
 					"path": "NumberTicker.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/NumberTicker/NumberTicker.tsx",
 					"_imports_": [],
+					"target": "src/components/NumberTicker/NumberTicker.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7536,6 +7785,7 @@
 					"path": "OrbitingCircles.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/OrbitingCircles/OrbitingCircles.tsx",
 					"_imports_": [],
+					"target": "src/components/OrbitingCircles/OrbitingCircles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7561,6 +7811,7 @@
 					"path": "PulsatingButton.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/PulsatingButton/PulsatingButton.tsx",
 					"_imports_": [],
+					"target": "src/components/PulsatingButton/PulsatingButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7586,6 +7837,7 @@
 					"path": "RainbowButton.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/RainbowButton/RainbowButton.tsx",
 					"_imports_": [],
+					"target": "src/components/RainbowButton/RainbowButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7611,6 +7863,7 @@
 					"path": "RetroGrid.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/RetroGrid/RetroGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/RetroGrid/RetroGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7636,6 +7889,7 @@
 					"path": "Ripple.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/Ripple/Ripple.tsx",
 					"_imports_": [],
+					"target": "src/components/Ripple/Ripple.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7661,6 +7915,7 @@
 					"path": "ShimmerButton.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/ShimmerButton/ShimmerButton.tsx",
 					"_imports_": [],
+					"target": "src/components/ShimmerButton/ShimmerButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7686,6 +7941,7 @@
 					"path": "ShineBorder.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/ShineBorder/ShineBorder.tsx",
 					"_imports_": [],
+					"target": "src/components/ShineBorder/ShineBorder.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7717,6 +7973,7 @@
 					"path": "SparklesText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/SparklesText/SparklesText.tsx",
 					"_imports_": [],
+					"target": "src/components/SparklesText/SparklesText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7748,6 +8005,7 @@
 					"path": "SpinningText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/SpinningText/SpinningText.tsx",
 					"_imports_": [],
+					"target": "src/components/SpinningText/SpinningText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7773,6 +8031,7 @@
 					"path": "StripedPattern.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/StripedPattern/StripedPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/StripedPattern/StripedPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7798,6 +8057,7 @@
 					"path": "TypingAnimation.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/TypingAnimation/TypingAnimation.tsx",
 					"_imports_": [],
+					"target": "src/components/TypingAnimation/TypingAnimation.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7823,6 +8083,7 @@
 					"path": "VideoText.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/VideoText/VideoText.tsx",
 					"_imports_": [],
+					"target": "src/components/VideoText/VideoText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7848,6 +8109,7 @@
 					"path": "WarpBackground.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/WarpBackground/WarpBackground.tsx",
 					"_imports_": [],
+					"target": "src/components/WarpBackground/WarpBackground.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7879,6 +8141,7 @@
 					"path": "WordRotate.tsx",
 					"relativePath": "src/extras/magic-ui/Ui/WordRotate/WordRotate.tsx",
 					"_imports_": [],
+					"target": "src/components/WordRotate/WordRotate.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7910,6 +8173,7 @@
 					"path": "Accordion.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Accordion/Accordion.tsx",
 					"_imports_": [],
+					"target": "src/components/Accordion/Accordion.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7941,6 +8205,7 @@
 					"path": "AnimatedBackground.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/AnimatedBackground/AnimatedBackground.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedBackground/AnimatedBackground.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -7972,6 +8237,7 @@
 					"path": "AnimatedGroup.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/AnimatedGroup/AnimatedGroup.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedGroup/AnimatedGroup.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8003,6 +8269,7 @@
 					"path": "AnimatedNumber.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/AnimatedNumber/AnimatedNumber.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedNumber/AnimatedNumber.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8028,6 +8295,7 @@
 					"path": "BlurFade.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/BlurFade/BlurFade.tsx",
 					"_imports_": [],
+					"target": "src/components/BlurFade/BlurFade.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8059,6 +8327,7 @@
 					"path": "BorderTrail.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/BorderTrail/BorderTrail.tsx",
 					"_imports_": [],
+					"target": "src/components/BorderTrail/BorderTrail.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8090,6 +8359,7 @@
 					"path": "Carousel.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Carousel/Carousel.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesCarousel/MotionPrimitivesCarousel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8121,6 +8391,7 @@
 					"path": "Cursor.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Cursor/Cursor.tsx",
 					"_imports_": [],
+					"target": "src/components/Cursor/Cursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8152,6 +8423,7 @@
 					"path": "Dialog.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Dialog/Dialog.tsx",
 					"_imports_": [],
+					"target": "src/components/Dialog/Dialog.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8183,6 +8455,7 @@
 					"path": "Disclosure.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Disclosure/Disclosure.tsx",
 					"_imports_": [],
+					"target": "src/components/Disclosure/Disclosure.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8214,6 +8487,7 @@
 					"path": "Dock.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Dock/Dock.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesDock/MotionPrimitivesDock.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8245,6 +8519,7 @@
 					"path": "DotBackground.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/DotBackground/DotBackground.tsx",
 					"_imports_": [],
+					"target": "src/components/DotBackground/DotBackground.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8276,6 +8551,7 @@
 					"path": "DotPattern.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/DotPattern/DotPattern.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesDotPattern/MotionPrimitivesDotPattern.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8307,6 +8583,7 @@
 					"path": "GlowEffect.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/GlowEffect/GlowEffect.tsx",
 					"_imports_": [],
+					"target": "src/components/GlowEffect/GlowEffect.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8338,6 +8615,7 @@
 					"path": "ImageComparison.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ImageComparison/ImageComparison.tsx",
 					"_imports_": [],
+					"target": "src/components/ImageComparison/ImageComparison.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8369,6 +8647,7 @@
 					"path": "InView.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/InView/InView.tsx",
 					"_imports_": [],
+					"target": "src/components/InView/InView.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8400,6 +8679,7 @@
 					"path": "InfiniteSlider.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/InfiniteSlider/InfiniteSlider.tsx",
 					"_imports_": [],
+					"target": "src/components/InfiniteSlider/InfiniteSlider.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8431,6 +8711,7 @@
 					"path": "Lens.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Lens/Lens.tsx",
 					"_imports_": [],
+					"target": "src/components/Lens/Lens.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8462,6 +8743,7 @@
 					"path": "Magnetic.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Magnetic/Magnetic.tsx",
 					"_imports_": [],
+					"target": "src/components/Magnetic/Magnetic.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8493,6 +8775,7 @@
 					"path": "MorphingDialog.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/MorphingDialog/MorphingDialog.tsx",
 					"_imports_": [],
+					"target": "src/components/MorphingDialog/MorphingDialog.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8524,6 +8807,7 @@
 					"path": "MorphingPopover.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/MorphingPopover/MorphingPopover.tsx",
 					"_imports_": [],
+					"target": "src/components/MorphingPopover/MorphingPopover.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8549,6 +8833,7 @@
 					"path": "ProgressiveBlur.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ProgressiveBlur/ProgressiveBlur.tsx",
 					"_imports_": [],
+					"target": "src/components/ProgressiveBlur/ProgressiveBlur.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8574,6 +8859,7 @@
 					"path": "Ripple.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Ripple/Ripple.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesRipple/MotionPrimitivesRipple.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8605,6 +8891,7 @@
 					"path": "ScrollProgress.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ScrollProgress/ScrollProgress.tsx",
 					"_imports_": [],
+					"target": "src/components/ScrollProgress/ScrollProgress.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8636,6 +8923,7 @@
 					"path": "ScrollVelocity.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ScrollVelocity/ScrollVelocity.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesScrollVelocity/MotionPrimitivesScrollVelocity.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8667,6 +8955,7 @@
 					"path": "SlidingNumber.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/SlidingNumber/SlidingNumber.tsx",
 					"_imports_": [],
+					"target": "src/components/SlidingNumber/SlidingNumber.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8698,6 +8987,7 @@
 					"path": "SmoothCursor.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/SmoothCursor/SmoothCursor.tsx",
 					"_imports_": [],
+					"target": "src/components/SmoothCursor/SmoothCursor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8729,6 +9019,7 @@
 					"path": "SpinningText.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/SpinningText/SpinningText.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesSpinningText/MotionPrimitivesSpinningText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8760,6 +9051,7 @@
 					"path": "Spotlight.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Spotlight/Spotlight.tsx",
 					"_imports_": [],
+					"target": "src/components/Spotlight/Spotlight.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8791,6 +9083,7 @@
 					"path": "TextAnimate.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextAnimate/TextAnimate.tsx",
 					"_imports_": [],
+					"target": "src/components/TextAnimate/TextAnimate.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8822,6 +9115,7 @@
 					"path": "TextEffect.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextEffect/TextEffect.tsx",
 					"_imports_": [],
+					"target": "src/components/TextEffect/TextEffect.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8853,6 +9147,7 @@
 					"path": "TextGenerate.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextGenerate/TextGenerate.tsx",
 					"_imports_": [],
+					"target": "src/components/TextGenerate/TextGenerate.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8884,6 +9179,7 @@
 					"path": "TextLoop.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextLoop/TextLoop.tsx",
 					"_imports_": [],
+					"target": "src/components/MotionPrimitivesTextLoop/MotionPrimitivesTextLoop.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8915,6 +9211,7 @@
 					"path": "TextMorph.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextMorph/TextMorph.tsx",
 					"_imports_": [],
+					"target": "src/components/TextMorph/TextMorph.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8946,6 +9243,7 @@
 					"path": "TextRoll.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextRoll/TextRoll.tsx",
 					"_imports_": [],
+					"target": "src/components/TextRoll/TextRoll.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -8971,6 +9269,7 @@
 					"path": "TextScramble.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextScramble/TextScramble.tsx",
 					"_imports_": [],
+					"target": "src/components/TextScramble/TextScramble.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9002,6 +9301,7 @@
 					"path": "TextShimmer.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextShimmer/TextShimmer.tsx",
 					"_imports_": [],
+					"target": "src/components/TextShimmer/TextShimmer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9033,6 +9333,7 @@
 					"path": "TextShimmerWave.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TextShimmerWave/TextShimmerWave.tsx",
 					"_imports_": [],
+					"target": "src/components/TextShimmerWave/TextShimmerWave.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9064,6 +9365,7 @@
 					"path": "Tilt.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/Tilt/Tilt.tsx",
 					"_imports_": [],
+					"target": "src/components/Tilt/Tilt.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9095,6 +9397,7 @@
 					"path": "ToolbarDynamic.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ToolbarDynamic/ToolbarDynamic.tsx",
 					"_imports_": [],
+					"target": "src/components/ToolbarDynamic/ToolbarDynamic.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9126,6 +9429,7 @@
 					"path": "ToolbarExpandable.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/ToolbarExpandable/ToolbarExpandable.tsx",
 					"_imports_": [],
+					"target": "src/components/ToolbarExpandable/ToolbarExpandable.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9157,6 +9461,7 @@
 					"path": "TransitionPanel.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/TransitionPanel/TransitionPanel.tsx",
 					"_imports_": [],
+					"target": "src/components/TransitionPanel/TransitionPanel.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9188,6 +9493,7 @@
 					"path": "WordsRotate.tsx",
 					"relativePath": "src/extras/motion-primitives/Ui/WordsRotate/WordsRotate.tsx",
 					"_imports_": [],
+					"target": "src/components/WordsRotate/WordsRotate.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9213,6 +9519,7 @@
 					"path": "AnimatedBeam.tsx",
 					"relativePath": "src/extras/animata/Ui/AnimatedBeam/AnimatedBeam.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedBeam/AnimatedBeam.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9238,6 +9545,7 @@
 					"path": "AnimatedGradientText.tsx",
 					"relativePath": "src/extras/animata/Ui/AnimatedGradientText/AnimatedGradientText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimataAnimatedGradientText/AnimataAnimatedGradientText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9263,6 +9571,7 @@
 					"path": "AnimatedTimeline.tsx",
 					"relativePath": "src/extras/animata/Ui/AnimatedTimeline/AnimatedTimeline.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimatedTimeline/AnimatedTimeline.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9288,6 +9597,7 @@
 					"path": "BlurryBlob.tsx",
 					"relativePath": "src/extras/animata/Ui/BlurryBlob/BlurryBlob.tsx",
 					"_imports_": [],
+					"target": "src/components/BlurryBlob/BlurryBlob.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9313,6 +9623,7 @@
 					"path": "CircularText.tsx",
 					"relativePath": "src/extras/animata/Ui/CircularText/CircularText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimataCircularText/AnimataCircularText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9338,6 +9649,7 @@
 					"path": "DiagonalLines.tsx",
 					"relativePath": "src/extras/animata/Ui/DiagonalLines/DiagonalLines.tsx",
 					"_imports_": [],
+					"target": "src/components/DiagonalLines/DiagonalLines.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9363,6 +9675,7 @@
 					"path": "Dot.tsx",
 					"relativePath": "src/extras/animata/Ui/Dot/Dot.tsx",
 					"_imports_": [],
+					"target": "src/components/Dot/Dot.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9388,6 +9701,7 @@
 					"path": "DoubleUnderline.tsx",
 					"relativePath": "src/extras/animata/Ui/DoubleUnderline/DoubleUnderline.tsx",
 					"_imports_": [],
+					"target": "src/components/DoubleUnderline/DoubleUnderline.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9413,6 +9727,7 @@
 					"path": "FibonacciLines.tsx",
 					"relativePath": "src/extras/animata/Ui/FibonacciLines/FibonacciLines.tsx",
 					"_imports_": [],
+					"target": "src/components/FibonacciLines/FibonacciLines.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9438,6 +9753,7 @@
 					"path": "FlipCard.tsx",
 					"relativePath": "src/extras/animata/Ui/FlipCard/FlipCard.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimataFlipCard/AnimataFlipCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9463,6 +9779,7 @@
 					"path": "GibberishText.tsx",
 					"relativePath": "src/extras/animata/Ui/GibberishText/GibberishText.tsx",
 					"_imports_": [],
+					"target": "src/components/GibberishText/GibberishText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9488,6 +9805,7 @@
 					"path": "GlitchText.tsx",
 					"relativePath": "src/extras/animata/Ui/GlitchText/GlitchText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimataGlitchText/AnimataGlitchText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9513,6 +9831,7 @@
 					"path": "GlowingCard.tsx",
 					"relativePath": "src/extras/animata/Ui/GlowingCard/GlowingCard.tsx",
 					"_imports_": [],
+					"target": "src/components/GlowingCard/GlowingCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9538,6 +9857,7 @@
 					"path": "Grid.tsx",
 					"relativePath": "src/extras/animata/Ui/Grid/Grid.tsx",
 					"_imports_": [],
+					"target": "src/components/Grid/Grid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9563,6 +9883,7 @@
 					"path": "InteractiveGrid.tsx",
 					"relativePath": "src/extras/animata/Ui/InteractiveGrid/InteractiveGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/InteractiveGrid/InteractiveGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9594,6 +9915,7 @@
 					"path": "JitterText.tsx",
 					"relativePath": "src/extras/animata/Ui/JitterText/JitterText.tsx",
 					"_imports_": [],
+					"target": "src/components/JitterText/JitterText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9619,6 +9941,7 @@
 					"path": "LEDBoard.tsx",
 					"relativePath": "src/extras/animata/Ui/LEDBoard/LEDBoard.tsx",
 					"_imports_": [],
+					"target": "src/components/LEDBoard/LEDBoard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9644,6 +9967,7 @@
 					"path": "MirrorText.tsx",
 					"relativePath": "src/extras/animata/Ui/MirrorText/MirrorText.tsx",
 					"_imports_": [],
+					"target": "src/components/MirrorText/MirrorText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9669,6 +9993,7 @@
 					"path": "MovingGradient.tsx",
 					"relativePath": "src/extras/animata/Ui/MovingGradient/MovingGradient.tsx",
 					"_imports_": [],
+					"target": "src/components/MovingGradient/MovingGradient.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9694,6 +10019,7 @@
 					"path": "RippleButton.tsx",
 					"relativePath": "src/extras/animata/Ui/RippleButton/RippleButton.tsx",
 					"_imports_": [],
+					"target": "src/components/RippleButton/RippleButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9719,6 +10045,7 @@
 					"path": "ShiningButton.tsx",
 					"relativePath": "src/extras/animata/Ui/ShiningButton/ShiningButton.tsx",
 					"_imports_": [],
+					"target": "src/components/ShiningButton/ShiningButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9744,6 +10071,7 @@
 					"path": "ShootingStars.tsx",
 					"relativePath": "src/extras/animata/Ui/ShootingStars/ShootingStars.tsx",
 					"_imports_": [],
+					"target": "src/components/ShootingStars/ShootingStars.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9769,6 +10097,7 @@
 					"path": "SlideArrowButton.tsx",
 					"relativePath": "src/extras/animata/Ui/SlideArrowButton/SlideArrowButton.tsx",
 					"_imports_": [],
+					"target": "src/components/SlideArrowButton/SlideArrowButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9794,6 +10123,7 @@
 					"path": "Spinner.tsx",
 					"relativePath": "src/extras/animata/Ui/Spinner/Spinner.tsx",
 					"_imports_": [],
+					"target": "src/components/Spinner/Spinner.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9819,6 +10149,7 @@
 					"path": "SplitText.tsx",
 					"relativePath": "src/extras/animata/Ui/SplitText/SplitText.tsx",
 					"_imports_": [],
+					"target": "src/components/AnimataSplitText/AnimataSplitText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9844,6 +10175,7 @@
 					"path": "SwapText.tsx",
 					"relativePath": "src/extras/animata/Ui/SwapText/SwapText.tsx",
 					"_imports_": [],
+					"target": "src/components/SwapText/SwapText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9869,6 +10201,7 @@
 					"path": "SwipeButton.tsx",
 					"relativePath": "src/extras/animata/Ui/SwipeButton/SwipeButton.tsx",
 					"_imports_": [],
+					"target": "src/components/SwipeButton/SwipeButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9894,6 +10227,7 @@
 					"path": "TextFlip.tsx",
 					"relativePath": "src/extras/animata/Ui/TextFlip/TextFlip.tsx",
 					"_imports_": [],
+					"target": "src/components/TextFlip/TextFlip.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9919,6 +10253,7 @@
 					"path": "TiltCard.tsx",
 					"relativePath": "src/extras/animata/Ui/TiltCard/TiltCard.tsx",
 					"_imports_": [],
+					"target": "src/components/TiltCard/TiltCard.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9944,6 +10279,7 @@
 					"path": "ToggleSwitch.tsx",
 					"relativePath": "src/extras/animata/Ui/ToggleSwitch/ToggleSwitch.tsx",
 					"_imports_": [],
+					"target": "src/components/ToggleSwitch/ToggleSwitch.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9969,6 +10305,7 @@
 					"path": "TypingText.tsx",
 					"relativePath": "src/extras/animata/Ui/TypingText/TypingText.tsx",
 					"_imports_": [],
+					"target": "src/components/TypingText/TypingText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -9994,6 +10331,7 @@
 					"path": "UnderlineHoverText.tsx",
 					"relativePath": "src/extras/animata/Ui/UnderlineHoverText/UnderlineHoverText.tsx",
 					"_imports_": [],
+					"target": "src/components/UnderlineHoverText/UnderlineHoverText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10025,6 +10363,7 @@
 					"path": "VerticalTiles.tsx",
 					"relativePath": "src/extras/animata/Ui/VerticalTiles/VerticalTiles.tsx",
 					"_imports_": [],
+					"target": "src/components/VerticalTiles/VerticalTiles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10050,6 +10389,7 @@
 					"path": "WaveReveal.tsx",
 					"relativePath": "src/extras/animata/Ui/WaveReveal/WaveReveal.tsx",
 					"_imports_": [],
+					"target": "src/components/WaveReveal/WaveReveal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10075,6 +10415,7 @@
 					"path": "WorkButton.tsx",
 					"relativePath": "src/extras/animata/Ui/WorkButton/WorkButton.tsx",
 					"_imports_": [],
+					"target": "src/components/WorkButton/WorkButton.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10100,6 +10441,7 @@
 					"path": "ZigZag.tsx",
 					"relativePath": "src/extras/animata/Ui/ZigZag/ZigZag.tsx",
 					"_imports_": [],
+					"target": "src/components/ZigZag/ZigZag.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10153,6 +10495,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BigCircles/BigCircles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10201,6 +10544,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Confetti/Confetti.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10249,6 +10593,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Emojis/Emojis.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10297,6 +10642,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Parallax/Parallax.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10345,6 +10691,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TsparticlesParticles/TsparticlesParticles.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10398,6 +10745,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PolygonMask/PolygonMask.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10451,6 +10799,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Snow/Snow.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10499,6 +10848,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SquaresConnector/SquaresConnector.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10552,6 +10902,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/Stars/Stars.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10595,6 +10946,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/LoopPulse/LoopPulse.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10638,6 +10990,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SequenceBars/SequenceBars.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10681,6 +11034,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/StaggerChoreo/StaggerChoreo.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10724,6 +11078,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SvgLineDrawLogo/SvgLineDrawLogo.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10767,6 +11122,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TimelineTextReveal/TimelineTextReveal.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10792,6 +11148,7 @@
 					"path": "CausticsBackground.tsx",
 					"relativePath": "src/extras/kokonut/Ui/CausticsBackground/CausticsBackground.tsx",
 					"_imports_": [],
+					"target": "src/components/CausticsBackground/CausticsBackground.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10817,6 +11174,7 @@
 					"path": "SplitFlapText.tsx",
 					"relativePath": "src/extras/kokonut/Ui/SplitFlapText/SplitFlapText.tsx",
 					"_imports_": [],
+					"target": "src/components/KokonutSplitFlapText/KokonutSplitFlapText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10860,6 +11218,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/TypewriterTitle/TypewriterTitle.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10885,6 +11244,7 @@
 					"path": "AsnPrefixes.tsx",
 					"relativePath": "src/extras/osint/Ui/AsnPrefixes/AsnPrefixes.tsx",
 					"_imports_": [],
+					"target": "src/components/AsnPrefixes/AsnPrefixes.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10932,6 +11292,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BgpAsnInfo/BgpAsnInfo.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -10969,6 +11330,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/CertViz/CertViz.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11006,6 +11368,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/DnsRecords/DnsRecords.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11053,6 +11416,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/IpLookup/IpLookup.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11096,6 +11460,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PortScanViz/PortScanViz.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11121,6 +11486,7 @@
 					"path": "WaybackTimeline.tsx",
 					"relativePath": "src/extras/osint/Ui/WaybackTimeline/WaybackTimeline.tsx",
 					"_imports_": [],
+					"target": "src/components/WaybackTimeline/WaybackTimeline.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11158,6 +11524,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/WhoisLookup/WhoisLookup.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11183,6 +11550,7 @@
 					"path": "CwVitals.tsx",
 					"relativePath": "src/extras/seo/Ui/CwVitals/CwVitals.tsx",
 					"_imports_": [],
+					"target": "src/components/CwVitals/CwVitals.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11208,6 +11576,7 @@
 					"path": "DocSearch.tsx",
 					"relativePath": "src/extras/seo/Ui/DocSearch/DocSearch.tsx",
 					"_imports_": [],
+					"target": "src/components/DocSearch/DocSearch.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11233,6 +11602,7 @@
 					"path": "FaqSchemaGen.tsx",
 					"relativePath": "src/extras/seo/Ui/FaqSchemaGen/FaqSchemaGen.tsx",
 					"_imports_": [],
+					"target": "src/components/FaqSchemaGen/FaqSchemaGen.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11258,6 +11628,7 @@
 					"path": "HeadingOutline.tsx",
 					"relativePath": "src/extras/seo/Ui/HeadingOutline/HeadingOutline.tsx",
 					"_imports_": [],
+					"target": "src/components/HeadingOutline/HeadingOutline.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11283,6 +11654,7 @@
 					"path": "LighthouseRing.tsx",
 					"relativePath": "src/extras/seo/Ui/LighthouseRing/LighthouseRing.tsx",
 					"_imports_": [],
+					"target": "src/components/LighthouseRing/LighthouseRing.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11308,6 +11680,7 @@
 					"path": "LlmTxtForge.tsx",
 					"relativePath": "src/extras/seo/Ui/LlmTxtForge/LlmTxtForge.tsx",
 					"_imports_": [],
+					"target": "src/components/LlmTxtForge/LlmTxtForge.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11333,6 +11706,7 @@
 					"path": "MetaPreview.tsx",
 					"relativePath": "src/extras/seo/Ui/MetaPreview/MetaPreview.tsx",
 					"_imports_": [],
+					"target": "src/components/MetaPreview/MetaPreview.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11358,6 +11732,7 @@
 					"path": "RobotsTxtViz.tsx",
 					"relativePath": "src/extras/seo/Ui/RobotsTxtViz/RobotsTxtViz.tsx",
 					"_imports_": [],
+					"target": "src/components/RobotsTxtViz/RobotsTxtViz.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11383,6 +11758,7 @@
 					"path": "SchemaViz.tsx",
 					"relativePath": "src/extras/seo/Ui/SchemaViz/SchemaViz.tsx",
 					"_imports_": [],
+					"target": "src/components/SchemaViz/SchemaViz.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11408,6 +11784,7 @@
 					"path": "SerpPreview.tsx",
 					"relativePath": "src/extras/seo/Ui/SerpPreview/SerpPreview.tsx",
 					"_imports_": [],
+					"target": "src/components/SerpPreview/SerpPreview.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11433,6 +11810,7 @@
 					"path": "SitemapViz.tsx",
 					"relativePath": "src/extras/seo/Ui/SitemapViz/SitemapViz.tsx",
 					"_imports_": [],
+					"target": "src/components/SitemapViz/SitemapViz.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11458,6 +11836,7 @@
 					"path": "BarycentricMixer.tsx",
 					"relativePath": "src/extras/instruments/Ui/BarycentricMixer/BarycentricMixer.tsx",
 					"_imports_": [],
+					"target": "src/components/BarycentricMixer/BarycentricMixer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11483,6 +11862,7 @@
 					"path": "DecayHaloBadge.tsx",
 					"relativePath": "src/extras/instruments/Ui/DecayHaloBadge/DecayHaloBadge.tsx",
 					"_imports_": [],
+					"target": "src/components/DecayHaloBadge/DecayHaloBadge.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11508,6 +11888,7 @@
 					"path": "DetentSlideRail.tsx",
 					"relativePath": "src/extras/instruments/Ui/DetentSlideRail/DetentSlideRail.tsx",
 					"_imports_": [],
+					"target": "src/components/DetentSlideRail/DetentSlideRail.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11533,6 +11914,7 @@
 					"path": "HarmonicMixer.tsx",
 					"relativePath": "src/extras/instruments/Ui/HarmonicMixer/HarmonicMixer.tsx",
 					"_imports_": [],
+					"target": "src/components/HarmonicMixer/HarmonicMixer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11558,6 +11940,7 @@
 					"path": "HysteresisSlider.tsx",
 					"relativePath": "src/extras/instruments/Ui/HysteresisSlider/HysteresisSlider.tsx",
 					"_imports_": [],
+					"target": "src/components/HysteresisSlider/HysteresisSlider.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11595,6 +11978,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/LangevinScrubber/LangevinScrubber.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11620,6 +12004,7 @@
 					"path": "LogitSliders.tsx",
 					"relativePath": "src/extras/instruments/Ui/LogitSliders/LogitSliders.tsx",
 					"_imports_": [],
+					"target": "src/components/LogitSliders/LogitSliders.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11645,6 +12030,7 @@
 					"path": "MantissaExponentSpinner.tsx",
 					"relativePath": "src/extras/instruments/Ui/MantissaExponentSpinner/MantissaExponentSpinner.tsx",
 					"_imports_": [],
+					"target": "src/components/MantissaExponentSpinner/MantissaExponentSpinner.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11670,6 +12056,7 @@
 					"path": "MarkovTransitionGrid.tsx",
 					"relativePath": "src/extras/instruments/Ui/MarkovTransitionGrid/MarkovTransitionGrid.tsx",
 					"_imports_": [],
+					"target": "src/components/MarkovTransitionGrid/MarkovTransitionGrid.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11717,6 +12104,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PSDCorrelationEditor/PSDCorrelationEditor.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11742,6 +12130,7 @@
 					"path": "PhaseSpacePendulum.tsx",
 					"relativePath": "src/extras/instruments/Ui/PhaseSpacePendulum/PhaseSpacePendulum.tsx",
 					"_imports_": [],
+					"target": "src/components/PhaseSpacePendulum/PhaseSpacePendulum.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11767,6 +12156,7 @@
 					"path": "PolarDial.tsx",
 					"relativePath": "src/extras/instruments/Ui/PolarDial/PolarDial.tsx",
 					"_imports_": [],
+					"target": "src/components/PolarDial/PolarDial.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11792,6 +12182,7 @@
 					"path": "SeedBadge.tsx",
 					"relativePath": "src/extras/instruments/Ui/SeedBadge/SeedBadge.tsx",
 					"_imports_": [],
+					"target": "src/components/SeedBadge/SeedBadge.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11817,6 +12208,7 @@
 					"path": "SternBrocotStepper.tsx",
 					"relativePath": "src/extras/instruments/Ui/SternBrocotStepper/SternBrocotStepper.tsx",
 					"_imports_": [],
+					"target": "src/components/SternBrocotStepper/SternBrocotStepper.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11842,6 +12234,7 @@
 					"path": "VernierCaliper.tsx",
 					"relativePath": "src/extras/instruments/Ui/VernierCaliper/VernierCaliper.tsx",
 					"_imports_": [],
+					"target": "src/components/VernierCaliper/VernierCaliper.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11867,6 +12260,7 @@
 					"path": "ACFCorrelogram.tsx",
 					"relativePath": "src/extras/data/Ui/ACFCorrelogram/ACFCorrelogram.tsx",
 					"_imports_": [],
+					"target": "src/components/ACFCorrelogram/ACFCorrelogram.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11904,6 +12298,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BitsetFacets/BitsetFacets.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11941,6 +12336,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BulletViolinKpi/BulletViolinKpi.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -11978,6 +12374,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/FftSpectrum/FftSpectrum.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12003,6 +12400,7 @@
 					"path": "HorizonStrips.tsx",
 					"relativePath": "src/extras/data/Ui/HorizonStrips/HorizonStrips.tsx",
 					"_imports_": [],
+					"target": "src/components/HorizonStrips/HorizonStrips.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12040,6 +12438,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/KalmanPointer/KalmanPointer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12077,6 +12476,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/MonteCarloBar/MonteCarloBar.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12114,6 +12514,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/ParetoFrontier/ParetoFrontier.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12139,6 +12540,7 @@
 					"path": "ProfileFingerprint.tsx",
 					"relativePath": "src/extras/data/Ui/ProfileFingerprint/ProfileFingerprint.tsx",
 					"_imports_": [],
+					"target": "src/components/ProfileFingerprint/ProfileFingerprint.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12176,6 +12578,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/QQBadge/QQBadge.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12213,6 +12616,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/RollingWindowBrush/RollingWindowBrush.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12238,6 +12642,7 @@
 					"path": "SparklineText.tsx",
 					"relativePath": "src/extras/data/Ui/SparklineText/SparklineText.tsx",
 					"_imports_": [],
+					"target": "src/components/SparklineText/SparklineText.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12275,6 +12680,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SpatialHashScatter/SpatialHashScatter.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12300,6 +12706,7 @@
 					"path": "VaRHistogram.tsx",
 					"relativePath": "src/extras/data/Ui/VaRHistogram/VaRHistogram.tsx",
 					"_imports_": [],
+					"target": "src/components/VaRHistogram/VaRHistogram.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12325,6 +12732,7 @@
 					"path": "DitherField.tsx",
 					"relativePath": "src/extras/fx/Ui/DitherField/DitherField.tsx",
 					"_imports_": [],
+					"target": "src/components/DitherField/DitherField.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12362,6 +12770,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/GpuHistogram/GpuHistogram.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12399,6 +12808,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/HdrBloomOutliers/HdrBloomOutliers.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12436,6 +12846,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/JfaCalloutPlacer/JfaCalloutPlacer.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12473,6 +12884,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/LICFlowField/LICFlowField.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12510,6 +12922,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PoincareDisk/PoincareDisk.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12535,6 +12948,7 @@
 					"path": "ReactionDiffusion.tsx",
 					"relativePath": "src/extras/fx/Ui/ReactionDiffusion/ReactionDiffusion.tsx",
 					"_imports_": [],
+					"target": "src/components/ReactionDiffusion/ReactionDiffusion.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12572,6 +12986,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/BoidsFlocking/BoidsFlocking.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12597,6 +13012,7 @@
 					"path": "HilbertTree.tsx",
 					"relativePath": "src/extras/emergent/Ui/HilbertTree/HilbertTree.tsx",
 					"_imports_": [],
+					"target": "src/components/HilbertTree/HilbertTree.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12634,6 +13050,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/PhysarumGrowth/PhysarumGrowth.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
@@ -12671,6 +13088,7 @@
 							"meta": {}
 						}
 					],
+					"target": "src/components/SandpileQueue/SandpileQueue.tsx",
 					"registryDependencies": [],
 					"dependencies": [],
 					"devDependencies": []
