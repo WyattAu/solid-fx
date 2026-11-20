@@ -471,6 +471,7 @@ npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
 
 - [BoidsFlocking](https://wyattau.github.io/solid-fx/extras/emergent/ui/boidsflocking/): BoidsFlocking widget (source: src/extras/emergent/Ui/BoidsFlocking/BoidsFlocking.tsx)
 - [HilbertTree](https://wyattau.github.io/solid-fx/extras/emergent/ui/hilberttree/): HilbertTree widget (source: src/extras/emergent/Ui/HilbertTree/HilbertTree.tsx)
+- [PhysarumGrowth](https://wyattau.github.io/solid-fx/extras/emergent/ui/physarumgrowth/): PhysarumGrowth widget (source: src/extras/emergent/Ui/PhysarumGrowth/PhysarumGrowth.tsx)
 - [SandpileQueue](https://wyattau.github.io/solid-fx/extras/emergent/ui/sandpilequeue/): SandpileQueue widget (source: src/extras/emergent/Ui/SandpileQueue/SandpileQueue.tsx)
 
 ## Extras: Rough Notation
