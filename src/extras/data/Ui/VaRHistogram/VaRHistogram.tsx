@@ -6,7 +6,6 @@
 // (research 03 #67, CPU typed-array form).
 import type { JSX } from 'solid-js'
 import { createMemo, createSignal, For, splitProps } from 'solid-js'
-import { mulberry32, normalSampler } from '@/lib/num'
 
 export interface VaRHistogramProps {
   /** Sample array (default: 60k seeded Student-t-ish returns). */
