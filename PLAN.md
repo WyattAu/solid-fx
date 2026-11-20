@@ -44,7 +44,22 @@
 
 ## Resume block v5 (2026-11-16, next-session queue)
 
-State: 218 content + 205 extras + 11 scenes = 434 pages; 21 extras sources
+State (2026-11-20, post-v0.2.0): 218 content + 207 extras + 11 scenes =
+437 pages (436 demo pages + index); 22 extras sources with sidebar
+navigation; **v0.2.0 tagged and released**
+(https://github.com/WyattAu/solid-fx/releases/tag/v0.2.0 — GpuHistogram,
+HdrBloomOutliers, LICFlowField, PhysarumGrowth, JfaCalloutPlacer,
+VaRHistogram, AnimatedAccordion on Kobalte, RoughNotation, engine
+pilots, license-vetting refresh with Aceternity downgraded to
+technique-only). QA baseline v8 (run 44684635626): **439/439 frames OK,
+zero blanks** — first sweep covering every v0.2.0 widget (new-frame std
+30.2–40.1); recorded in QA-TRIAGE.md. 22 unit tests (num kernels +
+urlState). Roadmap is now external-signal-driven: the GPU watchlist's
+remaining XL rows (entropy-Voronoi, mipmap semantic zoom, SDF chrome,
+LIC scrubber GPU upgrade, prefix-sum GPU form) are capability-proven and
+scheduled behind installs/issues/feedback, not internal planning.
+
+Prior state: 218 content + 205 extras + 11 scenes = 434 pages; 21 extras sources
 (gradient-gl ×2, paper-shaders ×3, lenis ×2 docs pages newly wired)
 (12 new sources added since v0.1.0: splitting, canvas-confetti,
 auto-animate, gl-transitions, animate-ui pilots)
