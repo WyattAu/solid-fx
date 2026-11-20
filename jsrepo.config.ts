@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { defineConfig, type RegistryItem } from 'jsrepo'
+import { defineConfig, type RegistryItem, repository } from 'jsrepo'
 
 const CATEGORIES = ['TextAnimations', 'Animations', 'Components', 'Micro', 'Backgrounds']
 
@@ -21,6 +21,35 @@ const EXTRA_SOURCES = [
 ]
 
 const items: RegistryItem[] = []
+
+// Shared lib modules as registry items so block imports (@/lib/…) resolve
+// into registryDependencies — consumers get the lib files pulled in and
+// their imports rewritten on add.
+const LIB_ITEMS = [
+  'HugeiconsIcon.tsx',
+  'num.ts',
+  'reducedMotion.ts',
+  'syntheticPointer.ts',
+  'urlState.ts',
+]
+for (const file of LIB_ITEMS) {
+  const libPath = path.join('src/lib', file)
+  if (!existsSync(libPath)) continue
+  items.push({
+    name: `lib/${path.basename(file, path.extname(file))}`,
+    title: path.basename(file, path.extname(file)),
+    description: `Shared utility module for solid-fx blocks (src/lib/${file}).`,
+    category: 'lib',
+    categories: ['lib'],
+    files: [
+      {
+        path: libPath,
+        target: `lib/${file}`,
+      },
+    ],
+  })
+}
+
 for (const category of CATEGORIES) {
   const categoryDir = path.join('src/content', category)
   if (!existsSync(categoryDir)) continue
@@ -92,5 +121,6 @@ export default defineConfig({
     ],
     excludeDeps: ['solid-js'],
     items,
+    outputs: [repository()],
   },
 })

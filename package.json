@@ -18,7 +18,8 @@
     "fmt:check": "biome format .",
     "contract": "bash scripts/check-contract.sh",
     "coverage": "bun run gen:index && vitest run --coverage",
-    "ci": "bun run build && bun run test && bun run fmt:check && bun run lint && bun run contract",
+    "ci": "bun run build && bun run test && bun run fmt:check && bun run lint && bun run contract && bun run registry:check",
+    "registry:check": "jsrepo build && git diff --exit-code registry.json",
     "shoot": "bun run build && (bunx astro preview --port 4321 &) && sleep 3 && node scripts/shoot.mjs",
     "shoot:dev": "node scripts/shoot.mjs",
     "build:islands": "node scripts/build-islands.mjs"
