@@ -7,7 +7,7 @@
 Install:
 
 ```
-npx jsrepo add github/WyattAu/solid-fx/src/content/<Category>/<Name>
+npx jsrepo add github/WyattAu/solid-fx/<Name>
 ```
 
 ## Animations
