@@ -159,6 +159,23 @@ for (const r of ssgRoutes) {
   n += 1
 }
 
+// Legacy astro category roots (/{cat}/): linked from the old landing
+// page, so they need stubs even though the sitemap never listed them.
+// Matched by final dir segment against the SSG index pages (legacy
+// "micro" -> content/Micro/index.html); no match = no stub.
+const indexRoutes = ssgRoutes.filter((r) => r.endsWith('/index.html') && r !== 'index.html')
+const legacyDirs = new Set(legacyRoutes.map((r) => r.split('/').filter(Boolean)[0]))
+for (const dir of [...legacyDirs].sort()) {
+  const hit = indexRoutes.find((r) => {
+    const dirPart = r.slice(0, -'index.html'.length).replace(/\/$/, '')
+    return dashless(dirPart.split('/').pop() ?? '') === dir
+  })
+  if (hit) {
+    writeStub(`${dir}/index.html`, hit)
+    n += 1
+  }
+}
+
 console.log(
   `redirects: ${redirects.length - sectionFallback.length} page + ${sectionFallback.length} section + ${ssgRoutes.length - 1} retired-preview = ${n} stubs -> ${SITE}`,
 )
