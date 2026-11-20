@@ -39,6 +39,7 @@ for (const file of LIB_ITEMS) {
     name: `lib/${path.basename(file, path.extname(file))}`,
     title: path.basename(file, path.extname(file)),
     description: `Shared utility module for solid-fx blocks (src/lib/${file}).`,
+    type: 'lib',
     category: 'lib',
     categories: ['lib'],
     files: [
@@ -60,6 +61,7 @@ for (const category of CATEGORIES) {
       name: `${category}/${name}`,
       title: name,
       description: `SolidJS port of the react-bits ${name} component (TypeScript + Tailwind).`,
+      type: 'component',
       category,
       categories: [category],
       files: [
@@ -85,6 +87,7 @@ for (const source of EXTRA_SOURCES) {
         name: `${source}/${category}/${name}`,
         title: name,
         description: `${name} for SolidJS (source tree: src/extras/${source}).`,
+        type: 'component',
         category: source,
         categories: [source],
         files: [
