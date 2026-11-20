@@ -65,7 +65,9 @@ Aceternity-recreation provenance risk), Aceternity downgraded to
 technique-only (licence forbids redistribution as a competing library),
 stale statuses corrected (MP 43, Animata 36, Kokonut 3, Lenis 2 marked
 Ported). LICFlowField shipped (research 04 #22 promoted — CPU LIC over typed
-arrays, vortex/source/saddle field, hover tracer; fx ×6). VaRHistogram
+arrays, vortex/source/saddle field, hover tracer; fx ×6). PhysarumGrowth shipped (research 04 #24 promoted —
+emergent ×4; CPU typed-array trail field, 3-sensor agents, deterministic
+per seed). VaRHistogram
 shipped (research 03 #67 CPU form — sorted-quantile VaR/CVaR, live
 re-binning; data ×14). AnimatedAccordion shipped (Animate UI deeper pilot
 flagged in the roadmap — rebuilt on Kobalte, Solid's Radix-equivalent
