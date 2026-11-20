@@ -41,7 +41,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: install docs-compiler (published crate, pinned)
-        run: cargo install --locked --version 0.7.5 docs-compiler
+        run: cargo install --locked --version 0.7.6 docs-compiler
       - name: clone docs-core for the island shim
         run: git clone --depth 1 https://github.com/WyattAu/docs-core ../docs-core
       - name: build islands + docs site (preview subpath)
