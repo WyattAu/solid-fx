@@ -14,26 +14,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - run: bun install --frozen-lockfile
-      - run: bun run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: astro-dist
-          path: dist
-          retention-days: 1
-
-  # docs-compiler SSG preview (Wave 2d): the island pipeline + static
-  # shell built from crates.io's docs-compiler, deployed under /preview/.
-  # continue-on-error keeps the production Starlight deploy green while
-  # the preview is young — flip to needs: [build] only after parity.
+  # docs-compiler SSG at the production root (Phase C flip, PARITY.md):
+  # the island pipeline + static shell built from crates.io's
+  # docs-compiler. Legacy astro routes resolve through meta-refresh
+  # stubs emitted by gen-redirects.mjs. Rollback = revert this commit
+  # (the astro root re-deploys on the next push).
   build-preview-ssg:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -46,14 +33,16 @@ jobs:
         run: git clone --depth 1 https://github.com/WyattAu/docs-core ../docs-core
       - name: build islands + docs site (preview subpath)
         run: bun run build:islands
-      - name: docs-compiler build (preview)
+      - name: docs-compiler build (production root)
         run: |
           docs-compiler build docs-site-src \
             --out preview-site \
-            --base-path /solid-fx/preview
+            --base-path /solid-fx
           cp -r dist-islands preview-site/_assets/islands
           test -f preview-site/search.json
           test -f preview-site/_assets/islands/seo-doc-search.js
+      - name: legacy route redirect stubs (astro + retired preview paths)
+        run: bun scripts/gen-redirects.mjs preview-site
       - uses: actions/upload-artifact@v4
         with:
           name: ssg-preview
@@ -61,17 +50,13 @@ jobs:
           retention-days: 7
 
   merge-and-upload:
-    needs: [build, build-preview-ssg]
+    needs: [build-preview-ssg]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: astro-dist
-          path: merged
-      - uses: actions/download-artifact@v4
-        with:
           name: ssg-preview
-          path: merged/preview
+          path: merged
       - uses: actions/upload-pages-artifact@v3
         with:
           path: merged
