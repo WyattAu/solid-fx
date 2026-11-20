@@ -1,0 +1,35 @@
+name: metrics
+# Weekly demand-side snapshot (Phase A gates) — appends to metrics/DEMAND.md.
+# Manual: gh workflow run metrics
+
+on:
+  schedule:
+    - cron: "23 6 * * 1" # Mondays 06:23 UTC — off the hour, away from the hourlies
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: metrics
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/traffic-snapshot.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Commit ledger if it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add metrics/DEMAND.md
+          if git diff --cached --quiet; then
+            echo "no change"
+          else
+            git commit -m "metrics: weekly demand snapshot"
+            git push
+          fi
