@@ -88,7 +88,6 @@ function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLSh
 }
 
 export function GpuHistogram(props: GpuHistogramProps) {
-  const alpha = () => own.varAlpha ?? 0.05
   const [own, rest] = splitProps(props, [
     'bins',
     'seed',
@@ -100,6 +99,8 @@ export function GpuHistogram(props: GpuHistogramProps) {
     'className',
     'style',
   ])
+
+  const alpha = () => own.varAlpha ?? 0.05
 
   const width = () => own.width ?? 440
   const height = () => own.height ?? 180
@@ -244,8 +245,6 @@ export function GpuHistogram(props: GpuHistogramProps) {
       g.getExtension('WEBGL_lose_context')?.loseContext()
     })
   })
-
-  const alpha = () => own.varAlpha ?? 0.05
 
   return (
     <figure
