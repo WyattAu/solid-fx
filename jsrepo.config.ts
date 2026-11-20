@@ -57,7 +57,6 @@ for (const file of LIB_ITEMS) {
     files: [
       {
         path: libPath,
-        target: `lib/${file}`,
       },
     ],
   })
@@ -80,7 +79,6 @@ for (const category of CATEGORIES) {
       files: [
         {
           path: `src/content/${category}/${name}/${name}.tsx`,
-          target: `${name}/${name}.tsx`,
         },
       ],
     })
@@ -111,7 +109,6 @@ for (const source of EXTRA_SOURCES) {
         files: [
           {
             path: `src/extras/${source}/${category}/${name}/${name}.tsx`,
-            target: `${name}/${name}.tsx`,
           },
         ],
       })
