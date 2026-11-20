@@ -142,6 +142,10 @@ export default defineConfig({
     ],
     excludeDeps: ['solid-js'],
     items,
+    defaultPaths: {
+      component: 'src/components',
+      lib: 'src/lib',
+    },
     outputs: [repository()],
   },
 })
