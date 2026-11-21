@@ -1,6 +1,7 @@
 // solid-fx SEO widget — original component (not a port). Free APIs: none (fetches the site's own search corpus emitted by docs-compiler).
-import { onMount, createResource, createSignal, For, Show } from 'solid-js'
+
 import type { JSX } from 'solid-js'
+import { createResource, createSignal, For, onMount, Show } from 'solid-js'
 
 export interface DocSearchProps {
   /** URL of the search corpus (search.json emitted by docs-compiler). */
@@ -167,7 +168,9 @@ const DocSearch = (props: DocSearchProps) => {
           const entry = entries[hit.doc]
           if (!entry) return null
           const snippet =
-            entry.body.length > 120 ? `${entry.body.slice(0, 120)}...` : entry.body || entry.description
+            entry.body.length > 120
+              ? `${entry.body.slice(0, 120)}...`
+              : entry.body || entry.description
           return { entry, score: hit.score, snippet }
         })
         .filter((s): s is Scored => s !== null)
