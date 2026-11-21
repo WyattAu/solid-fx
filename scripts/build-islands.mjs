@@ -34,8 +34,15 @@ const OUT = path.resolve(
 )
 const BUILD = path.resolve(ROOT, '.docs-islands-build')
 const SHIM_SRC = path.resolve(ROOT, '../docs-core/islands')
+const OG_CARD = path.resolve(ROOT, 'assets/og-card.png')
 
 const kebab = s => s.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+// Display name from an island key: "masked-heading" -> "Masked Heading".
+const titleCase = s =>
+  s
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 
 // Discover every <Name>Demo.tsx, keyed by a unique island name.
 const islands = []
@@ -119,6 +126,11 @@ for (const f of ['island.mjs', 'island-core.mjs']) {
   else console.warn(`shim missing: ${src} (clone docs-core beside solid-fx)`)
 }
 
+// The og:image social card — served at /_assets/islands/og-card.png and
+// referenced from site.toml (absolute URL, scraper-facing).
+if (fs.existsSync(OG_CARD)) fs.copyFileSync(OG_CARD, path.join(OUT, 'og-card.png'))
+else console.warn(`og card missing: ${OG_CARD} (run scripts/gen-og-card.py)`)
+
 // The emitted stylesheet is named after the package; normalize it to
 // islands.css so site.toml has a stable URL.
 const emittedCss = fs.readdirSync(OUT).find(f => f.endsWith('.css'))
@@ -136,13 +148,18 @@ fs.writeFileSync(
     // Pages origin (canonical/sitemap/og:url); the deploy passes the
     // preview subpath via `--base-path`. Dev serves ignore canonicals.
     'base_url = "https://wyattau.github.io"',
-    'site_title = "solid-fx on the docs static shell"',
+    'site_title = "solid-fx — 400+ SolidJS components as source you own"',
     'author = "Wyatt"',
     'ai_crawlers = "allow"',
     'accent = "#38bdf8"',
+    // Absolute URL on purpose: the scraper needs a full address and the
+    // engine emits og:image verbatim (no base_path join).
+    'og_image = "https://wyattau.github.io/solid-fx/_assets/islands/og-card.png"',
     'stylesheet = "/_assets/islands/islands.css"',
     'island_shim = "/_assets/islands/island.mjs"',
     'search_island = "/_assets/islands/seo-doc-search.js"',
+    'search_wasm = "/_assets/islands/docs_search.wasm"',
+    'search_bin = "/search.bin"',
     '',
   ].join('\n'),
 )
@@ -163,15 +180,18 @@ for (const [group, groupIslands] of byCategory) {
     `---\ntitle: ${group}\ndescription: ${groupIslands.length} interactive component(s) in this category.\nslug: index\n---\n\n# ${group}\n\n${links}\n`,
   )
   for (const island of groupIslands) {
+    const display = titleCase(island.key)
     fs.writeFileSync(
       path.join(dir, `${island.key}.md`),
       [
         '---',
-        `title: ${island.key}`,
-        `description: Interactive ${island.key} demo from solid-fx, hydrated as a static-shell island.`,
+        `title: ${display} — solid-fx`,
+        `description: ${display} for SolidJS — copy-paste source you own, live demo, installable with jsrepo.`,
         '---',
         '',
-        `# ${island.key}`,
+        `# ${display}`,
+        '',
+        `Source: \`${island.demoPath}\` — copy it into your project or install it with jsrepo.`,
         '',
         `\`\`\`island ${island.key} client=visible`,
         '{}',
@@ -184,18 +204,19 @@ for (const [group, groupIslands] of byCategory) {
 
 // Root homepage: category index links (route: index.html via slug).
 const groups = [...byCategory.keys()].sort()
+const landingDesc = `${islands.length} SolidJS components — the complete react-bits port plus instruments, data-viz, FX and emergent widgets. Copy-paste source; live demo per component.`
 fs.writeFileSync(
   path.join(SITE, 'index.md'),
   [
     '---',
-    'title: solid-fx on the docs static shell',
-    `description: ${islands.length} interactive SolidJS components served as static-shell islands by docs-compiler.`,
+    'title: solid-fx — 400+ SolidJS components as source you own',
+    `description: ${landingDesc}`,
     'slug: index',
     '---',
     '',
-    '# solid-fx on the docs static shell',
+    '# solid-fx',
     '',
-    `${islands.length} components across ${groups.length} categories.`,
+    landingDesc,
     '',
     ...groups.map(g => `- [${g}](/${g}/index.html)`),
     '',
