@@ -26,9 +26,18 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
+      - name: build the docs-search wasm reader (browser target, no WASI imports)
+        run: |
+          git clone --depth 1 https://github.com/WyattAu/docs-search ../docs-search
+          cargo rustc --manifest-path ../docs-search/Cargo.toml --lib \
+            --crate-type cdylib --target wasm32-unknown-unknown --release
+          mkdir -p dist-wasm
+          cp target/wasm32-unknown-unknown/release/docs_search.wasm dist-wasm/
       - name: install docs-compiler (published crate, pinned)
-        run: cargo install --locked --version 0.7.7 docs-compiler
+        run: cargo install --locked --version 0.7.8 docs-compiler
       - name: clone docs-core for the island shim
         run: git clone --depth 1 https://github.com/WyattAu/docs-core ../docs-core
       - name: build islands + docs site (preview subpath)
@@ -39,8 +48,11 @@ jobs:
             --out preview-site \
             --base-path /solid-fx
           cp -r dist-islands preview-site/_assets/islands
+          cp dist-wasm/docs_search.wasm preview-site/_assets/islands/
           test -f preview-site/search.json
           test -f preview-site/_assets/islands/seo-doc-search.js
+          test -f preview-site/_assets/islands/docs_search.wasm
+          test -f preview-site/search.bin
       - name: legacy route redirect stubs (astro + retired preview paths)
         run: bun scripts/gen-redirects.mjs preview-site
       - uses: actions/upload-artifact@v4
