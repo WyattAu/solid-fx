@@ -71,7 +71,7 @@ contamination and shows the correct purple warp.)
 | ModelViewer | **verified** | Data-URL dispatch fix confirmed in production: octahedron renders lit + rotating (desktop playwright screenshot, 2026-11-06). Full sidebar + chrome also verified on the same pass. |
 | DodgeField | verified | Loads + renders healthy in a real browser (dodge counter live, zero hang, zero console errors — verified via Aileron, 2026-11-05). CI blank = capture timing: elements dodge out of the crop region. |
 | Shredder | verified (timing) | Port matches upstream loop logic exactly (loopAfterDelete revive / loop-when-empty). CI blank = legit empty stage between shred cycles at capture time. Capture earlier or accept. |
-| MaskedHeading | investigate | Content in DOM but glyphs never position (0/20) — sync() is wired (ResizeObserver + fonts.ready) yet never completes. Debug the measure/sync path: likely `measureEl`/wordEls refs empty at first sync and no later trigger fires. |
+| MaskedHeading | **verified** (local build, 2026-11-21) | Playwright probe against a local build: 20/20 clipPath glyphs positioned (x/y set), sync completes (word spans found between Solid's comment markers), mount reveal settles, image visible through the mask (std 33.7). Screenshot + probe: `scripts/debug-maskedheading.mjs` / `scripts/debug-maskedheading-shot.mjs`. The earlier "glyphs never position (0/20)" classification predates the current build. Caveat: probing the LIVE site mid-deploy misleads — the docs scheme was changing under the probe (legacy redirects pointing at not-yet-deployed paths). Probe a local build for component-level verdicts. |
 
 ## Site chrome (fixed 2026-11-06)
 
@@ -79,10 +79,10 @@ contamination and shows the correct purple warp.)
   Search Ctrl+K, theme select, GitHub) and the sidebar pane on all doc
   pages — verified live via playwright (header buttons enumerated,
   theme select present).
-- Follow-up (minor): Starlight prev/next pagination container renders but
-  stays empty on doc pages — likely needs explicit `prev`/`next` frontmatter
-  or a sidebar-order hint per category. Low priority: sidebar + search cover
-  navigation.
+- Follow-up (resolved 2026-11-21): Starlight prev/next pagination now
+  renders correctly on doc pages (Previous/Next cards visible in the
+  MaskedHeading local-build screenshot). Likely fixed by the docs-scheme
+  rework; no action needed.
 
 ## Debt
 
