@@ -103,6 +103,27 @@ export default function renderIsland({ props, element }) {
   entries[island.key] = entryPath
 }
 
+// The header search: the bare DocSearch component. The demo scaffold
+// (h-40 box) must not render in the sticky header - it pushed the
+// input 33px above the viewport. Maps the chrome's verbatim props.
+const headerEntry = path.join(BUILD, 'seo-search-header.tsx')
+const relSearch = path
+  .relative(BUILD, path.join(ROOT, 'src/extras/seo/Ui/DocSearch/DocSearch'))
+  .split(path.sep)
+  .join('/')
+fs.writeFileSync(
+  headerEntry,
+  `import { render as __r } from 'solid-js/web'
+import './islands.css'
+import DocSearch from '${relSearch}'
+
+export default function renderIsland({ props, element }) {
+  __r(() => <DocSearch indexUrl={props.index} wasmUrl={props.wasm} binUrl={props.bin} />, element)
+}
+`,
+)
+entries['seo-search-header'] = headerEntry
+
 console.log(`building ${islands.length} island(s)...`)
 await build({
   root: ROOT,
@@ -157,7 +178,7 @@ fs.writeFileSync(
     'og_image = "https://wyattau.github.io/solid-fx/_assets/islands/og-card.png"',
     'stylesheet = "/_assets/islands/islands.css"',
     'island_shim = "/_assets/islands/island.mjs"',
-    'search_island = "/_assets/islands/seo-doc-search.js"',
+    'search_island = "/_assets/islands/seo-search-header.js"',
     'search_wasm = "/_assets/islands/docs_search.wasm"',
     'search_bin = "/search.bin"',
     '',
