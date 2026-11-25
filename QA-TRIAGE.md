@@ -8,6 +8,16 @@ interaction-driven demos self-animate via `src/lib/syntheticPointer.ts`
 inside the demo host), and `scripts/scan-screenshots.py` classifies every
 frame (BLANK / LOW / OK by grayscale stddev).
 
+## Baseline v9 (2026-11-25): 442/442 OK — zero blanks
+
+Dispatched run [45607626416](https://github.com/WyattAu/solid-fx/actions/runs/45607626416)
+(upstream-sync batch: first sweep covering HoloMosaic, NeonGlyphs,
+NeonLogo): **OK 442 · LOW 0 · BLANK 0.** New-frame evidence (grayscale
+stddev): NeonLogo 37.6, NeonGlyphs 31.6, HoloMosaic 30.2 — all three
+WebGL2 pipelines render under headless software GL despite
+upstream-verbatim conditional loops (SwiftShader tolerated this shader
+set; recorded as data against the branchless-loop heuristic).
+
 ## Baseline v8 (2026-11-20): 439/439 OK — zero blanks
 
 Dispatched run [44684635626](https://github.com/WyattAu/solid-fx/actions/runs/44684635626)
