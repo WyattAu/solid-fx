@@ -80,6 +80,7 @@ npx jsrepo add github/WyattAu/solid-fx/<Name>
 - [GridDistortion](https://wyattau.github.io/solid-fx/backgrounds/griddistortion/): GridDistortion component (source: src/content/Backgrounds/GridDistortion/GridDistortion.tsx)
 - [GridMotion](https://wyattau.github.io/solid-fx/backgrounds/gridmotion/): GridMotion component (source: src/content/Backgrounds/GridMotion/GridMotion.tsx)
 - [GridScan](https://wyattau.github.io/solid-fx/backgrounds/gridscan/): GridScan component (source: src/content/Backgrounds/GridScan/GridScan.tsx)
+- [HoloMosaic](https://wyattau.github.io/solid-fx/backgrounds/holomosaic/): HoloMosaic component (source: src/content/Backgrounds/HoloMosaic/HoloMosaic.tsx)
 - [Hyperspeed](https://wyattau.github.io/solid-fx/backgrounds/hyperspeed/): Hyperspeed component (source: src/content/Backgrounds/Hyperspeed/Hyperspeed.tsx)
 - [Iridescence](https://wyattau.github.io/solid-fx/backgrounds/iridescence/): Iridescence component (source: src/content/Backgrounds/Iridescence/Iridescence.tsx)
 - [LetterGlitch](https://wyattau.github.io/solid-fx/backgrounds/letterglitch/): LetterGlitch component (source: src/content/Backgrounds/LetterGlitch/LetterGlitch.tsx)
