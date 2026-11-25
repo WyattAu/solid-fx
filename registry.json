@@ -1785,6 +1785,31 @@
 			]
 		},
 		{
+			"name": "NeonLogo",
+			"title": "NeonLogo",
+			"description": "SolidJS port of the react-bits NeonLogo component (TypeScript + Tailwind).",
+			"type": "component",
+			"add": "when-added",
+			"registryDependencies": [],
+			"dependencies": [],
+			"devDependencies": [],
+			"files": [
+				{
+					"type": "component",
+					"role": "file",
+					"path": "NeonLogo.tsx",
+					"relativePath": "src/content/Animations/NeonLogo/NeonLogo.tsx",
+					"_imports_": [],
+					"registryDependencies": [],
+					"dependencies": [],
+					"devDependencies": []
+				}
+			],
+			"categories": [
+				"Animations"
+			]
+		},
+		{
 			"name": "Noise",
 			"title": "Noise",
 			"description": "SolidJS port of the react-bits Noise component (TypeScript + Tailwind).",
@@ -5874,6 +5899,31 @@
 			]
 		},
 		{
+			"name": "HoloMosaic",
+			"title": "HoloMosaic",
+			"description": "SolidJS port of the react-bits HoloMosaic component (TypeScript + Tailwind).",
+			"type": "component",
+			"add": "when-added",
+			"registryDependencies": [],
+			"dependencies": [],
+			"devDependencies": [],
+			"files": [
+				{
+					"type": "component",
+					"role": "file",
+					"path": "HoloMosaic.tsx",
+					"relativePath": "src/content/Backgrounds/HoloMosaic/HoloMosaic.tsx",
+					"_imports_": [],
+					"registryDependencies": [],
+					"dependencies": [],
+					"devDependencies": []
+				}
+			],
+			"categories": [
+				"Backgrounds"
+			]
+		},
+		{
 			"name": "Hyperspeed",
 			"title": "Hyperspeed",
 			"description": "SolidJS port of the react-bits Hyperspeed component (TypeScript + Tailwind).",
@@ -6250,6 +6300,31 @@
 					"role": "file",
 					"path": "MoltenMetal.tsx",
 					"relativePath": "src/content/Backgrounds/MoltenMetal/MoltenMetal.tsx",
+					"_imports_": [],
+					"registryDependencies": [],
+					"dependencies": [],
+					"devDependencies": []
+				}
+			],
+			"categories": [
+				"Backgrounds"
+			]
+		},
+		{
+			"name": "NeonGlyphs",
+			"title": "NeonGlyphs",
+			"description": "SolidJS port of the react-bits NeonGlyphs component (TypeScript + Tailwind).",
+			"type": "component",
+			"add": "when-added",
+			"registryDependencies": [],
+			"dependencies": [],
+			"devDependencies": [],
+			"files": [
+				{
+					"type": "component",
+					"role": "file",
+					"path": "NeonGlyphs.tsx",
+					"relativePath": "src/content/Backgrounds/NeonGlyphs/NeonGlyphs.tsx",
 					"_imports_": [],
 					"registryDependencies": [],
 					"dependencies": [],
