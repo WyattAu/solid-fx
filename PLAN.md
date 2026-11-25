@@ -65,12 +65,13 @@ solid-js@1.9.20.
   QA + deps) triggers if **stars < 10 and external issues == 0 on
   2027-01-15**. Ledger: `metrics/DEMAND.md` via `scripts/traffic-snapshot.py`.
 - Upstream sync SLA: new react-bits components are ported when ≥3
-  accumulate or monthly, whichever first. Drift 2026-11-25: **3 missing
-  (HoloMosaic, NeonGlyphs, NeonLogo) — batch trigger FIRED**; sync-check
-  workflow fixed 2026-11-25 (it diffed upstream category names vs our
-  component names — false-positive missing=5 and real drift invisible;
-  now walks per-category dirs and has issues:write, verified live via
-  drift issue #1). Monthly deadline 2026-12-17.
+  accumulate or monthly, whichever first. **Batch 1 COMPLETE
+  (2026-11-25)**: HoloMosaic, NeonGlyphs, NeonLogo ported (drift issue
+  #1 closed; catalog 221 content components, registry 421 items).
+  sync-check workflow fixed the same day (was diffing upstream category
+  names vs our component names — false positives; now walks
+  per-category dirs, issues:write granted, verified live). Next
+  monthly deadline 2026-12-17 or the next ≥3 drift, whichever first.
 - **Registry targets tension (2026-11-23, jsrepo):** the first estate
   consumer (hydrated_personal_site) adopted blocks with jsrepo
   add/update, so explicit files[].target were dropped — consumers'
