@@ -96,6 +96,7 @@ npx jsrepo add github/WyattAu/solid-fx/<Name>
 - [MagnetLines](https://wyattau.github.io/solid-fx/backgrounds/magnetlines/): MagnetLines component (source: src/content/Backgrounds/MagnetLines/MagnetLines.tsx)
 - [MicroSlats](https://wyattau.github.io/solid-fx/backgrounds/microslats/): MicroSlats component (source: src/content/Backgrounds/MicroSlats/MicroSlats.tsx)
 - [MoltenMetal](https://wyattau.github.io/solid-fx/backgrounds/moltenmetal/): MoltenMetal component (source: src/content/Backgrounds/MoltenMetal/MoltenMetal.tsx)
+- [NeonGlyphs](https://wyattau.github.io/solid-fx/backgrounds/neonglyphs/): NeonGlyphs component (source: src/content/Backgrounds/NeonGlyphs/NeonGlyphs.tsx)
 - [Orb](https://wyattau.github.io/solid-fx/backgrounds/orb/): Orb component (source: src/content/Backgrounds/Orb/Orb.tsx)
 - [Particles](https://wyattau.github.io/solid-fx/backgrounds/particles/): Particles component (source: src/content/Backgrounds/Particles/Particles.tsx)
 - [PatternWaves](https://wyattau.github.io/solid-fx/backgrounds/patternwaves/): PatternWaves component (source: src/content/Backgrounds/PatternWaves/PatternWaves.tsx)
