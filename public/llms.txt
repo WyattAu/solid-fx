@@ -35,6 +35,7 @@ npx jsrepo add github/WyattAu/solid-fx/<Name>
 - [Magnet](https://wyattau.github.io/solid-fx/animations/magnet/): Magnet component (source: src/content/Animations/Magnet/Magnet.tsx)
 - [MetaBalls](https://wyattau.github.io/solid-fx/animations/metaballs/): MetaBalls component (source: src/content/Animations/MetaBalls/MetaBalls.tsx)
 - [MetallicPaint](https://wyattau.github.io/solid-fx/animations/metallicpaint/): MetallicPaint component (source: src/content/Animations/MetallicPaint/MetallicPaint.tsx)
+- [NeonLogo](https://wyattau.github.io/solid-fx/animations/neonlogo/): NeonLogo component (source: src/content/Animations/NeonLogo/NeonLogo.tsx)
 - [Noise](https://wyattau.github.io/solid-fx/animations/noise/): Noise component (source: src/content/Animations/Noise/Noise.tsx)
 - [OrbitImages](https://wyattau.github.io/solid-fx/animations/orbitimages/): OrbitImages component (source: src/content/Animations/OrbitImages/OrbitImages.tsx)
 - [PixelSwap](https://wyattau.github.io/solid-fx/animations/pixelswap/): PixelSwap component (source: src/content/Animations/PixelSwap/PixelSwap.tsx)
