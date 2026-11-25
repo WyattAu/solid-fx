@@ -6,13 +6,13 @@ before telling people it exists. Each post links the docs site and names
 the instruments family as the differentiator; effects are the tail, not
 the pitch.
 
-Verified facts these posts rely on (2026-11-20):
+Verified facts these posts rely on (2026-11-25):
 
-- Install now works end to end: bare `npx jsrepo add
-  github/WyattAu/solid-fx/GpuHistogram` lands
-  `src/components/GpuHistogram/GpuHistogram.tsx` + `src/lib/num.ts` and
-  typechecks clean under `solid-js@1.9.20` strict (verified in a scratch
-  consumer project; CI gates the manifest freshness).
+- Install is two steps: drop a 9-line `jsrepo.config.ts` (paths pick
+  where blocks land), then `bunx jsrepo add GpuHistogram`. Shared lib
+  modules come along automatically; verified typecheck-clean in a
+  scratch consumer. A bare one-liner prompts interactively (CLI doesn't
+  honor registry defaults for scripted adds — documented in README).
 - **Requires Solid 1.9.x** — NOT compatible with solid-js 2.x yet
   (2.0.3 is what `bun add solid-js` resolves today; the 2.x compat audit
   is open work, see PLAN).
@@ -37,9 +37,11 @@ Body:
 > Physarum transport networks, sandpiles).
 >
 > Everything installs as single-file source you copy into your repo
-> (jsrepo), so there's no runtime dependency and no wrapper layer:
+> (jsrepo) — a 9-line config picks where blocks land, then:
 >
->     npx jsrepo add github/WyattAu/solid-fx/GpuHistogram
+>     bunx jsrepo add GpuHistogram
+>
+> so there's no runtime dependency and no wrapper layer.
 >
 > Design constraints I held to: zero React imports (CI-enforced), zero
 > Wasm (numerics on typed arrays in `src/lib/num.ts`, ~22 known-answer

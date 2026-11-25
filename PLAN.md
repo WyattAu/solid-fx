@@ -65,9 +65,22 @@ solid-js@1.9.20.
   QA + deps) triggers if **stars < 10 and external issues == 0 on
   2027-01-15**. Ledger: `metrics/DEMAND.md` via `scripts/traffic-snapshot.py`.
 - Upstream sync SLA: new react-bits components are ported when ≥3
-  accumulate or monthly, whichever first. Drift check 2026-11-21:
-  upstream 219 vs ported 218 — `HoloMosaic` pending (1/3 toward the
-  batch trigger; monthly deadline 2026-12-17).
+  accumulate or monthly, whichever first. Drift 2026-11-25: **3 missing
+  (HoloMosaic, NeonGlyphs, NeonLogo) — batch trigger FIRED**; sync-check
+  workflow fixed 2026-11-25 (it diffed upstream category names vs our
+  component names — false-positive missing=5 and real drift invisible;
+  now walks per-category dirs and has issues:write, verified live via
+  drift issue #1). Monthly deadline 2026-12-17.
+- **Registry targets tension (2026-11-23, jsrepo):** the first estate
+  consumer (hydrated_personal_site) adopted blocks with jsrepo
+  add/update, so explicit files[].target were dropped — consumers'
+  `paths` config now controls landing layout. Trade-off, verified both
+  ways: bare `--yes` one-liners now fail ("No path was provided") and
+  interactive prompts don't prefill registry `defaultPaths` — the CLI
+  has no per-invocation path flag. README + launch kit document the
+  9-line-config + add flow (verified typecheck-clean in a scratch
+  consumer). Upstream gap: jsrepo could honor registry defaultPaths for
+  scripted adds.
 - **Solid 2.0 audit (now concrete):** `bun add solid-js` resolves 2.0.3
   and solid-fx blocks do NOT typecheck under it (verified 2026-11-20 —
   onMount/JSX exports differ). All blocks target 1.9.x; README documents

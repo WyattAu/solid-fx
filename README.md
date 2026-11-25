@@ -47,14 +47,33 @@ docs site (Solid islands), **bun** toolchain, **Biome** lint/format.
 
 ## Install
 
-Components are consumed as source, like react-bits — verified end to end
-(bar lands at `src/components/<Name>/<Name>.tsx`, shared modules at
-`src/lib/*.ts`):
+Components are consumed as source, like react-bits. Two steps — drop a
+9-line config (picks where blocks land; your layout, your control), then
+add:
+
+```ts
+// jsrepo.config.ts
+import { defineConfig } from 'jsrepo'
+
+export default defineConfig({
+  registries: ['github/WyattAu/solid-fx'],
+  paths: {
+    component: '@/components',
+    lib: '@/lib',
+  },
+})
+```
 
 ```bash
-npx jsrepo add github/WyattAu/solid-fx/SplitText
-# extras: npx jsrepo add github/WyattAu/solid-fx/GpuHistogram
+bunx jsrepo add GpuHistogram          # extras
+bunx jsrepo add SplitText             # react-bits ports
 ```
+
+Verified end to end in a scratch consumer: shared modules (`num.ts`,
+`HugeiconsIcon`, …) come along automatically and everything typechecks
+strict under `solid-js@1.9`. Without the config, `jsrepo add` prompts for
+a destination path — a bare `--yes` one-liner is not supported (the CLI
+ignores registry defaults for scripted adds).
 
 Requires **SolidJS 1.9.x** (2.x compat audit in progress). Imports use the
 `@/*` alias — map `"@/*": ["./src/*"]` in your tsconfig (Vite/Astro default)
