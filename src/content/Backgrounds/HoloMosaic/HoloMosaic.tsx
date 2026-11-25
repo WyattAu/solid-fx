@@ -2,7 +2,6 @@ import { createEffect, createMemo, createSignal, on, onCleanup, splitProps } fro
 // Upstream extends React's HTMLAttributes and spreads `...rest` onto the
 // container; narrowed to Solid's div attribute shape.
 import type { JSX } from 'solid-js'
-import { Dynamic } from 'solid-js/web'
 
 const MAX_WAVES = 6
 const MAX_RENDER_DIM = 2400
